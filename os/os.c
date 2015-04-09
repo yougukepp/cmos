@@ -332,6 +332,15 @@ osThreadId osThreadCreate(const osThreadDef_t *thread_def, void *argv)
     return id;
 }
 
+__asm osStatus osSVCDemo(int32 argv1, int32 argv2, int32 argv3, int32 argv4)
+{
+    /* 8字节对齐 */
+    REQUIRE8
+    PRESERVE8
+
+    SVC #0x2A;
+}
+
 /*---------------------------------- 等待函数 ---------------------------------*/
 /*******************************************************************************
  *

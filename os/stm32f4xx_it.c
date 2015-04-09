@@ -164,6 +164,48 @@ void UsageFault_Handler(void)
 
 /*******************************************************************************
  *
+ * 函数名  : SVC_Handler_C
+ * 负责人  : 彭鹏
+ * 创建日期：20150409 
+ * 函数功能: 系统调用主逻辑
+ *
+ * 输入参数: sp任务堆栈
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 调用状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+int32 SVC_Handler_C(const uint32 *sp)
+{
+    uint8 svc_number = 0;
+
+    svc_number = ((uint8 *) sp[6])[-2];
+
+    switch(svc_number)
+    {
+        case 0x00:
+            {
+                svc_number = 0x00;
+            }
+        case 0x2A:
+            {
+                svc_number = 0x2A;
+            }
+        default:
+            {
+                svc_number = 0xFF;
+            }
+    }
+
+    return 0;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : SVC_Handler
  * 负责人  : 彭鹏
  * 创建日期：20150321 
@@ -179,8 +221,18 @@ void UsageFault_Handler(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void SVC_Handler(void)
+__asm void SVC_Handler(void)
 {
+    IMPORT SVC_Handler_C
+    /* 8字节对齐 */
+    REQUIRE8
+    PRESERVE8 
+
+    TST   LR, #4 /* 测试EXC_RETURN的bit2 用于检查当前SP为 PSP or MSP */
+    ITE   EQ
+    MRSEQ R0, MSP /* 为0则使用MSP */
+    MRSNE R0, PSP /* 为1则使用MSP */
+    B     SVC_Handler_C /* 调用C语言主逻辑 */
 }
 
 /*******************************************************************************
@@ -282,26 +334,31 @@ void *SwitchSP(const void *cur_stack)
  ******************************************************************************/
 __asm void PendSV_Handler(void)
 {
-    import SwitchSP
+    /* 导入调度算法 */
+    IMPORT SwitchSP
+
+    /* 8字节对齐 */
     REQUIRE8
     PRESERVE8 
     
     /* step 1 */ 
-    mrs r0 , psp
-    stmdb.w r0!, {r4-r11,lr} /* 等效于push {r4-r11, lr} */
+    MRS R0 , PSP
+    STMDB.W R0!, {R4-R11,LR} /* 等效于PUSH {R4-R11, LR} */
     /* r0此时已经是最新的psp值 */
     
     /* step 2 r0作为参数和返回值 */
-    bl SwitchSP
+    BL SwitchSP
     /* r0此时已经是最新的psp值 */
    
     /* step 3 */
-    ldmia.w r0!, {r4-r11,lr} /* 等效于 pop {r4-R11, lr} */
-    msr psp, r0
-    isb
+    LDMIA.W R0!, {R4-R11,LR} /* 等效于 POP {R4-R11, LR} */
+    MSR PSP, R0
+    ISB
     
     /* step 4 */
-    bx lr
+    BX LR
+
+    ALIGN 4
 }
 
 

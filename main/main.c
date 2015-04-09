@@ -152,11 +152,11 @@ int main(void)
     osThreadCreate(osThread(job1), NULL);
     osThreadCreate(osThread(job2), NULL);
     osKernelStart ();
-	
-	  while(1);
+
+    while(1);
     
     /* 不可达 */
-    Error_Handler();
+    //Error_Handler();
 }
 
 static void SystemClock_Config(void)
@@ -212,7 +212,10 @@ static void job1 (void const *argument)
             i++;
         }
         BSP_LED_Toggle(LED3);
-        i = 0;
+        i = 0; 
+
+        osStatus osSVCDemo(int32 argv1, int32 argv2, int32 argv3, int32 argv4);
+        osStatus rst = osSVCDemo(1, 2, 3, 4);
     }
 }
 
