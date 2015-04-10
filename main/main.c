@@ -14,11 +14,10 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include <stdio.h>
+#include "cmsis_os.h"
 
-#include <cmsis_os.h>
-
-#include "main.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f429i_discovery.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -204,7 +203,7 @@ static void Error_Handler(void)
 
 static void job1 (void const *argument)
 {
-		uint32 i = 0;
+    int32_t i = 0;
     while (1)
     {
         while(i < 0xffffff)
@@ -221,7 +220,7 @@ static void job1 (void const *argument)
 
 static void job2 (void const *argument)
 {
-		uint32 i = 0;
+    int32_t i = 0;
     while (1)
     {
         while(i < 0x1fffff)

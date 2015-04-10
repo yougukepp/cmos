@@ -418,11 +418,6 @@
               <FileType>1</FileType>
               <FilePath>..\main\system_stm32f4xx.c</FilePath>
             </File>
-            <File>
-              <FileName>syscall.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\syscall.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -434,14 +429,24 @@
               <FilePath>..\os\os.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
               <FileName>startup_stm32f429xx.s</FileName>
               <FileType>2</FileType>
               <FilePath>..\os\startup_stm32f429xx.s</FilePath>
+            </File>
+            <File>
+              <FileName>cmsis_os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\cmsis_os.c</FilePath>
+            </File>
+            <File>
+              <FileName>isr_stm32f429xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\isr_stm32f429xx.c</FilePath>
+            </File>
+            <File>
+              <FileName>syscall.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\syscall.c</FilePath>
             </File>
           </Files>
         </Group>

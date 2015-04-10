@@ -11,10 +11,11 @@
 *
 ********************************************************************************/
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _POS_TYPE_DEF_H_
-#define _POS_TYPE_DEF_H_
+#ifndef __TYPE_DEF_H__
+#define __TYPE_DEF_H__
 
 /************************************ 头文件 ***********************************/
+#include "cmsis_os.h"
 
 /************************************ 宏定义 ***********************************/
 /* bool 宏 */
@@ -32,19 +33,30 @@
 #endif
 
 /*********************************** 类型定义 **********************************/
-typedef unsigned char       uint8;
-typedef unsigned short      uint16;
-typedef unsigned int        uint32;
-typedef unsigned long long  uint64;
-typedef char                int8;
-typedef short               int16;
-typedef int                 int32;
-typedef long long           int64;
-typedef unsigned char       bool;
+typedef unsigned char       cm_uint8_t;
+typedef unsigned short      cm_uint16_t;
+typedef unsigned int        cm_uint32_t;
+typedef unsigned long long  cm_uint64_t;
+typedef char                cm_int8_t;
+typedef short               cm_int16_t;
+typedef int                 cm_int32_t;
+typedef long long           cm_int64_t;
+typedef unsigned char       cm_bool_t;
 
-/* 定义pc寄存器使用 */
-typedef void(*pc_t)(void);
-typedef pc_t                syscall_enter_t;
+/* 函数入口地址 */
+typedef void                (*cm_func_t)(void);
+
+
+/* 线程控制块 */
+typedef struct os_thread_cb
+{
+    os_pthread pthread;
+    void       *argv;
+
+    cm_uint32_t *psp;
+    osPriority priority;
+    cm_uint32_t stack_size;
+}osThreadCb_t;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -52,5 +64,8 @@ typedef pc_t                syscall_enter_t;
 
 /*********************************** 接口函数 **********************************/
 
-#endif // #_POS_TYPE_DEF_H_
+#endif /* __TYPE_DEF_H__ */
+
+
+
 
