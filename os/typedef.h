@@ -44,6 +44,7 @@ typedef unsigned char       bool;
 
 /* 定义pc寄存器使用 */
 typedef void(*pc_t)(void);
+typedef pc_t                syscall_enter_t;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

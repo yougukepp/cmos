@@ -6,8 +6,8 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 1. cmsis\_os.h文件加入工程                                                      OK
-2. 整理os.c stm32f4xx\_it.c中的内容 分别整入不同的文件中
-3. 规划系统调用号的分配 制表
+2. 规划系统调用号的分配 制表
+3. 整理os.c stm32f4xx\_it.c中的内容 分别整入不同的文件中
 4. 用系统调用实现osXXX函数(申明于cmsis\_os.h)
 5. 实现Idle线程任务 该任务可以统计系统信息 检查任务堆栈 之后休眠处理器
 6. 清理代码格式 不用tab等 清理C++相关#ifdef
