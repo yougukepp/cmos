@@ -424,11 +424,6 @@
           <GroupName>os</GroupName>
           <Files>
             <File>
-              <FileName>os.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\os.c</FilePath>
-            </File>
-            <File>
               <FileName>startup_stm32f429xx.s</FileName>
               <FileType>2</FileType>
               <FilePath>..\os\startup_stm32f429xx.s</FilePath>
@@ -447,6 +442,21 @@
               <FileName>syscall.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\os\syscall.c</FilePath>
+            </File>
+            <File>
+              <FileName>kernel.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\kernel.c</FilePath>
+            </File>
+            <File>
+              <FileName>misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\misc.c</FilePath>
+            </File>
+            <File>
+              <FileName>thread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\thread.c</FilePath>
             </File>
           </Files>
         </Group>

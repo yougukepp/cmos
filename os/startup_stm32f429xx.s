@@ -112,12 +112,12 @@ UsageFault_Handler\
                 ENDP
 
 SVC_Handler     PROC 
-                IMPORT SVC_Handler_C
+                IMPORT syscall_c
                 TST   LR, #4                        ; 测试EXC_RETURN的bit2 用于检查当前SP为 PSP or MSP
                 ITE   EQ
                 MRSEQ R0, MSP                       ; 为0则使用MSP
                 MRSNE R0, PSP                       ; 为1则使用MSP
-                B     SVC_Handler_C                 ; 调用C语言主逻辑
+                B     syscall_c                     ; 调用C语言主逻辑
                 ENDP
 
 DebugMon_Handler\
@@ -158,7 +158,7 @@ DebugMon_Handler\
 ;******************************************************************************/
 PendSV_Handler  PROC
                 ; 导入调度算法
-                IMPORT __thread_switch
+                IMPORT thread_switch
 
                 ; step 1
                 MRS R0 , PSP
@@ -166,7 +166,7 @@ PendSV_Handler  PROC
                 ; r0此时已经是最新的psp值 
                 
                 ; step 2 r0作为参数和返回值
-                BL __thread_switch
+                BL thread_switch
                 ; r0此时已经是最新的psp值 
                 
                 ; step 3

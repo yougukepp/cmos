@@ -19,6 +19,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmsis_os.h"
+#include "cmos.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -34,28 +35,17 @@
 /*------------------------------- 内核信息与控制 ------------------------------*/
 osStatus osKernelInitialize(void)   
 {
-    return osOK;
+    return kernel_initialize();
 }
 
 osStatus osKernelStart(void)   
 {
-    return osOK;
-}
-
-uint32_t osKernelSysTick(void)
-{
-    return osOK;
+    return kernel_start();
 }
 
 /*---------------------------------- 线程管理 ---------------------------------*/
 osThreadId osThreadCreate(const osThreadDef_t *thread_def, void *argv)   
 {
-    return osOK;
-}
-
-/*---------------------------------- 等待函数 ---------------------------------*/
-osStatus osDelay(uint32_t delayTime)
-{
-    return osOK;
+    return thread_create(thread_def, argv);
 }
 

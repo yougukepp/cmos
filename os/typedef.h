@@ -47,6 +47,14 @@ typedef unsigned char       cm_bool_t;
 typedef void                (*cm_func_t)(void);
 
 
+/* 函数状态 通常用于返回值 */
+typedef osStatus            cm_status_t;
+
+/* 线程id号 */
+typedef osThreadId          cm_thread_id_t;
+/* 线程定义 */
+typedef osThreadDef_t       cm_thread_def_t;
+
 /* 线程控制块 */
 typedef struct os_thread_cb
 {

@@ -14,28 +14,22 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include <typedef.h>
+#include <syscall.h>
 
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-/**/
-static cm_func_t s_syscall_table[256]={
-    0
-};
-
 
 /********************************** 函数声明区 *********************************/
-
+static void syscall_unimplemented(void);
 
 /********************************** 变量实现区 *********************************/
-
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
  *
- * 函数名  : SVC_Handler_C
+ * 函数名  : syscall_c
  * 负责人  : 彭鹏
  * 创建日期：20150409 
  * 函数功能: 系统调用主逻辑
@@ -50,13 +44,77 @@ static cm_func_t s_syscall_table[256]={
  * 其 它   : 无
  *
  ******************************************************************************/
-cm_uint32_t SVC_Handler_C(const cm_uint32_t *sp)
+cm_uint32_t syscall_c(const cm_uint32_t *sp)
 {
     cm_uint8_t svc_number = 0;
     svc_number = ((cm_uint8_t *) sp[6])[-2];
 
-    s_syscall_table[svc_number]();
+    /***************************************************************************
+     *
+     *  系统调用编号规则:
+     *  - 系统调用编号1 Byte.
+     *  - 高四位指示系统调用类别(CMSIS共有10类系统调用)
+     *  - 低四位指示系统调用类别中的不同调用 
+     *  - CMSIS未使用的调用号,用于内核自身扩展
+     *    目前已经定义的系统调用号：
+     *      0x0 内核信息与控制(Kernel Information and Control)
+     *        0x00 osKernelInitialize
+     *        0x01 osKernelStart
+     *        ...待实现...
+     *      0x1 线程管理(Thread Management)
+     *        0x10 osThreadCreate
+     *        ...待实现...
+     *      0x2 普通等待(Generic Wait Functions)
+     *        ...待实现...
+     *
+     **************************************************************************/
+    switch(svc_number)
+    {
+        case 0x00:
+            {
+                syscall_kernel_initialize();
+                break;
+            }
+        case 0x01:
+            {
+                syscall_kernel_start();
+                break;
+            }
+        case 0x10:
+            {
+                syscall_thread_create();
+                break;
+            }
+        default:
+            {
+                syscall_unimplemented();
+                break;
+            }
+    }
 
     return 0;
+}
+
+void syscall_kernel_initialize(void)
+{
+    ;
+}
+
+void syscall_kernel_start(void)
+{
+    ;
+}
+
+void syscall_thread_create(void)
+{
+    ;
+}
+
+static void syscall_unimplemented(void)
+{ 
+  while (1)
+  {
+      ;
+  }
 }
 
