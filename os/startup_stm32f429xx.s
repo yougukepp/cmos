@@ -81,48 +81,8 @@ Reset_Handler    PROC
                  BX      R0
                  ENDP
 
-; 未使用的异常 死循环
-NMI_Handler     PROC
-                EXPORT  NMI_Handler
-                B       .
-                ENDP
-
-HardFault_Handler\
-                PROC
-                EXPORT  HardFault_Handler
-                B       .
-                ENDP
-
-MemManage_Handler\
-                PROC
-                EXPORT  MemManage_Handler
-                B       .
-                ENDP
-
-BusFault_Handler\
-                PROC
-                EXPORT  BusFault_Handler
-                B       .
-                ENDP
-
-UsageFault_Handler\
-                PROC
-                EXPORT  UsageFault_Handler
-                B       .
-                ENDP
-
-SVC_Handler     PROC 
-                IMPORT syscall_c
-                TST   LR, #4                        ; 测试EXC_RETURN的bit2 用于检查当前SP为 PSP or MSP
-                ITE   EQ
-                MRSEQ R0, MSP                       ; 为0则使用MSP
-                MRSNE R0, PSP                       ; 为1则使用MSP
-                B     syscall_c                     ; 调用C语言主逻辑
-                ENDP
-
-DebugMon_Handler\
-                PROC
-                EXPORT  DebugMon_Handler
+SysTick_Handler PROC
+                EXPORT  SysTick_Handler            [WEAK]
                 B       .
                 ENDP
 
@@ -168,7 +128,7 @@ PendSV_Handler  PROC
                 ; step 2 r0作为参数和返回值
                 BL thread_switch
                 ; r0此时已经是最新的psp值 
-                
+
                 ; step 3
                 LDMIA.W R0!, {R4-R11,LR} ; /* 等效于 POP {R4-R11, LR} */
                 MSR PSP, R0
@@ -178,13 +138,82 @@ PendSV_Handler  PROC
                 BX LR
                 ENDP
 
-SysTick_Handler PROC
-                EXPORT  SysTick_Handler            [WEAK]
+SVC_Handler     PROC 
+                IMPORT syscall_c
+                TST   LR, #4                        ; 测试EXC_RETURN的bit2 用于检查当前SP为 PSP or MSP
+                ITE   EQ
+                MRSEQ R0, MSP                       ; 为0则使用MSP
+                MRSNE R0, PSP                       ; 为1则使用MSP
+                B     syscall_c                     ; 调用C语言主逻辑
+                ENDP
+
+; 未使用的异常 死循环
+NMI_Handler     PROC
+                EXPORT  NMI_Handler
                 B       .
                 ENDP
 
-                ALIGN
+HardFault_Handler\
+                PROC
+                EXPORT  HardFault_Handler
+                B       .
+                ENDP
 
+MemManage_Handler\
+                PROC
+                EXPORT  MemManage_Handler
+                B       .
+                ENDP
+
+BusFault_Handler\
+                PROC
+                EXPORT  BusFault_Handler
+                B       .
+                ENDP
+
+UsageFault_Handler\
+                PROC
+                EXPORT  UsageFault_Handler
+                B       .
+                ENDP
+
+DebugMon_Handler\
+                PROC
+                EXPORT  DebugMon_Handler
+                B       .
+                ENDP
+
+
+;*******************************************************************************
+; 系统调用
+;*******************************************************************************
+kernel_initialize PROC 
+                EXPORT  kernel_initialize          [WEAK]
+                SVC 0x00
+                BX  LR
+                ENDP
+
+kernel_start    PROC 
+                EXPORT  kernel_start               [WEAK]
+                SVC 0x01
+                BX  LR
+                ENDP
+
+thread_create   PROC 
+                EXPORT  thread_create              [WEAK]
+                SVC 0x10
+                BX  LR
+                ENDP
+
+; 汇编函数库
+; 初始启动线程
+first_thread_start PROC
+	            EXPORT  first_thread_start         [WEAK]
+				MOV LR, R0
+                BX LR
+				ENDP
+					
+                ALIGN
 ;*******************************************************************************
 ; 堆栈初始化
 ;*******************************************************************************

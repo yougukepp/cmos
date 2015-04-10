@@ -54,6 +54,8 @@ typedef osStatus            cm_status_t;
 typedef osThreadId          cm_thread_id_t;
 /* 线程定义 */
 typedef osThreadDef_t       cm_thread_def_t;
+/* 线程入口地址 */
+typedef os_pthread          cm_pthread_t;
 
 /* 线程控制块 */
 typedef struct os_thread_cb

@@ -5,7 +5,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 ## 目录结构
 
 ## 计划
-0. 实现两灯轮闪
+0. merge入主线
 1. 实现Idle线程任务 该任务可以统计系统信息 检查任务堆栈 之后休眠处理器
 2. 清理代码格式 不用tab等 清理C++相关#ifdef
 3. cmos下一步实现 调度 算法 时间管理 等

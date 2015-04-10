@@ -16,8 +16,18 @@
 #define __CMOS_CONFIG_H__
 
 /************************************ 头文件 ***********************************/
+#include "typedef.h"
 
 /************************************ 宏定义 ***********************************/
+/* 任务栈 顶部 */
+#define CMOS_THREAD_STACK_BASE_32						(0x20030000)
+#define CMOS_THREAD_STACK_BASE 							((cm_uint32_t *)CMOS_THREAD_STACK_BASE_32);
+#define CMOS_FIRST_STACK_BASE 							((cm_uint32_t *)(CMOS_THREAD_STACK_BASE_32 - 8 * 4));
+
+/* */
+#define CMOS_INITIAL_XPSR         (0x01000000)
+/* */
+#define CMOS_INITIAL_EXEC_RETURN  (0xfffffffd)
 
 /*********************************** 类型定义 **********************************/
 

@@ -1,5 +1,12 @@
 #include "typedef.h"
 
+void Error_Handler(void)
+{
+  while(1)
+  {
+  }
+}
+
 #ifdef  USE_FULL_ASSERT
 /*******************************************************************************
 *

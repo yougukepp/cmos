@@ -14,15 +14,14 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include <syscall.h>
-
+#include "syscall.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static void syscall_unimplemented(void);
+static cm_uint32_t syscall_unimplemented(void);
 
 /********************************** 变量实现区 *********************************/
 
@@ -44,10 +43,20 @@ static void syscall_unimplemented(void);
  * 其 它   : 无
  *
  ******************************************************************************/
-cm_uint32_t syscall_c(const cm_uint32_t *sp)
+void syscall_c(cm_uint32_t *sp)
 {
+    cm_uint32_t stacked_r0 = 0;
+    cm_uint32_t stacked_r1 = 0;
+    //cm_uint32_t stacked_r2 = 0;
+    //cm_uint32_t stacked_r3 = 0;
+
     cm_uint8_t svc_number = 0;
+
     svc_number = ((cm_uint8_t *) sp[6])[-2];
+    stacked_r0 = sp[0];
+    stacked_r1 = sp[1];
+    //stacked_r2 = sp[2];
+    //stacked_r3 = sp[3];
 
     /***************************************************************************
      *
@@ -72,45 +81,30 @@ cm_uint32_t syscall_c(const cm_uint32_t *sp)
     {
         case 0x00:
             {
-                syscall_kernel_initialize();
+                sp[0] = syscall_kernel_initialize();
                 break;
             }
         case 0x01:
             {
-                syscall_kernel_start();
+                sp[0] = syscall_kernel_start();
                 break;
             }
         case 0x10:
             {
-                syscall_thread_create();
+                sp[0] = (cm_uint32_t)syscall_thread_create((void *)stacked_r0, (void *)stacked_r1);
                 break;
             }
         default:
             {
-                syscall_unimplemented();
+                sp[0] = syscall_unimplemented();
                 break;
             }
     }
 
-    return 0;
+    return;
 }
 
-void syscall_kernel_initialize(void)
-{
-    ;
-}
-
-void syscall_kernel_start(void)
-{
-    ;
-}
-
-void syscall_thread_create(void)
-{
-    ;
-}
-
-static void syscall_unimplemented(void)
+static cm_uint32_t syscall_unimplemented(void)
 { 
   while (1)
   {
