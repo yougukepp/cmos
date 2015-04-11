@@ -50,8 +50,6 @@ osThreadDef(cm_idle_thread, osPriorityNormal, 1, 0x1000);
 /********************************** 变量实现区 *********************************/
 /* 仅仅测试两个线程切换 */
 cm_tcb_t g_thread_cb[2] = {{0}, {0}};
-/* 当前线程 */
-os_pthread g_cur_pthread = NULL;
 /* 空闲的任务栈顶 */
 static cm_uint32_t *s_user_stack_base = CMOS_THREAD_STACK_BASE;
 
@@ -105,35 +103,6 @@ cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *ar
     s_user_stack_base -= stack_size;
 
     return id;
-}
-
-/*******************************************************************************
- *
- * 函数名  : thread_switch
- * 负责人  : 彭鹏
- * 创建日期：20150331 
- * 函数功能: 任务切换
- *
- * 输入参数: 当前任务sp
- *
- * 输出参数: 无
- *
- * 返回值  : 准备运行任务的sp
- *          
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-void *thread_switch(const void *cur_stack)
-{
-    static cm_uint32_t next_id = 0;
-    cm_uint32_t *next_psp = NULL; 
-    
-    next_id++;
-    next_id %= 2; 
-    
-    next_psp = g_thread_cb[next_id].psp; 
-    return next_psp;
 }
 
 void thread_idle_create(void)

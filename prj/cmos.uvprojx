@@ -458,6 +458,11 @@
               <FileType>1</FileType>
               <FilePath>..\os\thread.c</FilePath>
             </File>
+            <File>
+              <FileName>thread_switch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\thread_switch.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
