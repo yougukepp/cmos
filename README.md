@@ -1,6 +1,5 @@
 # cmos说明文档
-cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的简称.
-本文档暂时用于描述开发计划.
+cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的简称.本文档暂时用于描述开发计划.
 
 ## 目录结构
 
