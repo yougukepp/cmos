@@ -64,6 +64,10 @@ static void SystemClock_Config(void);
 
 void syscall_kernel_initialize(void)
 {
+		/* psp任务栈顶 */
+    cm_uint32_t *psp_top = CMOS_THREAD_STACK_BASE;
+    __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */
+	
     HAL_Init(); 
   
     BSP_LED_Init(LED3);
@@ -99,10 +103,10 @@ void syscall_kernel_initialize(void)
 
 void syscall_kernel_start(void)
 {
-		/* psp指向最先创建的任务 启动之 */
-    cm_uint32_t *psp_top = CMOS_FIRST_STACK_BASE;
+		/* psp指向最先创建的任务(idle)栈顶 启动之 */
+    cm_uint32_t *psp_top = CMOS_FIRST_STACK_INIT_TOP;
     __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */
-
+	
   	/* TODO:SVC中无法实现 不开浮点 使用PSP 非特权级 */ 
     __set_CONTROL(0x00000003);
 	  void first_thread_start();

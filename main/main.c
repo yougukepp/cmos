@@ -44,26 +44,6 @@
 static void job1 (void const *argv);
 osThreadDef(job1, osPriorityAboveNormal, 1, 0x1000);
 
-/*******************************************************************************
-*
-* 函数名  : job2
-* 负责人  : 彭鹏
-* 创建日期: 20150321
-* 函数功能: 任务2
-*
-* 输入参数: 无
-*
-* 输出参数: 无
-*
-* 返回值  : 无
-*
-* 调用关系: 无
-* 其 它   : 无
-*
-******************************************************************************/
-static void job2 (void const *argv);
-osThreadDef(job2, osPriorityNormal, 1, 0x1000);
-
 /********************************** 变量实现区 *********************************/
 
 
@@ -89,7 +69,6 @@ int main(void)
 {
     osKernelInitialize();
     osThreadCreate(osThread(job1), NULL);
-    osThreadCreate(osThread(job2), NULL);
     osKernelStart();
 
     while(1);
@@ -111,18 +90,3 @@ static void job1 (void const *argument)
         //osStatus rst = osSVCDemo(1, 2, 3, 4);
     }
 }
-
-static void job2 (void const *argument)
-{
-    int32_t i = 0;
-    while (1)
-    {
-        while(i < 0x1fffff)
-        {
-            i++;
-        }
-        BSP_LED_Toggle(LED4);
-        i = 0;
-    }
-}
-

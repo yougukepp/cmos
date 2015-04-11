@@ -21,8 +21,18 @@
 /************************************ 宏定义 ***********************************/
 /* 任务栈 顶部 */
 #define CMOS_THREAD_STACK_BASE_32						(0x20030000)
-#define CMOS_THREAD_STACK_BASE 							((cm_uint32_t *)CMOS_THREAD_STACK_BASE_32);
-#define CMOS_FIRST_STACK_BASE 							((cm_uint32_t *)(CMOS_THREAD_STACK_BASE_32 - 8 * 4));
+#define CMOS_THREAD_STACK_BASE 							((cm_uint32_t *)CMOS_THREAD_STACK_BASE_32)
+/* 初始任务栈结构
+       xPSR
+       PC
+       LR
+       R12
+       R3
+       R2
+       R1
+       R0
+thread_init_stack负责构造 */
+#define CMOS_FIRST_STACK_INIT_TOP 					((cm_uint32_t *)(CMOS_THREAD_STACK_BASE_32 - 8 * 4))
 
 /* */
 #define CMOS_INITIAL_XPSR         (0x01000000)

@@ -187,14 +187,19 @@ DebugMon_Handler\
 ;*******************************************************************************
 ; 系统调用
 ;*******************************************************************************
-kernel_initialize PROC 
+kernel_initialize PROC
+	            IMPORT thread_idle_create
                 EXPORT  kernel_initialize          [WEAK]
                 SVC 0x00
+				PUSH {LR}
+		        LDR R0, =thread_idle_create        ; 创建idle线程
+                BLX R0
+				POP {LR}
                 BX  LR
                 ENDP
 
-kernel_start    PROC 
-                EXPORT  kernel_start               [WEAK]
+kernel_start    PROC
+                EXPORT  kernel_start               [WEAK]	
                 SVC 0x01
                 BX  LR
                 ENDP

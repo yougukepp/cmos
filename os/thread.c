@@ -17,6 +17,7 @@
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
 #include "cmos_config.h"
+#include "stm32f429i_discovery.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -26,10 +27,29 @@
 /********************************** 函数声明区 *********************************/
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv);
 static void thread_exit_error(void);
+/*******************************************************************************
+*
+* 函数名  : job2
+* 负责人  : 彭鹏
+* 创建日期: 20150321
+* 函数功能: 任务2
+*
+* 输入参数: 无
+*
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static void job2 (void const *argv);
+osThreadDef(job2, osPriorityNormal, 1, 0x1000);
 
 /********************************** 变量实现区 *********************************/
 /* 仅仅测试两个线程切换 */
-osThreadCb_t g_thread_cb[2] = {{0}, {0}};
+cm_tcb_t g_thread_cb[2] = {{0}, {0}};
 /* 当前线程 */
 os_pthread g_cur_pthread = NULL;
 /* 空闲的任务栈顶 */
@@ -114,6 +134,25 @@ void *thread_switch(const void *cur_stack)
     
     next_psp = g_thread_cb[next_id].psp; 
     return next_psp;
+}
+
+void thread_idle_create(void)
+{
+    osThreadCreate(osThread(job2), NULL);
+}
+
+static void job2 (void const *argument)
+{
+    int32_t i = 0;
+    while (1)
+    {
+        while(i < 0x1fffff)
+        {
+            i++;
+        }
+        BSP_LED_Toggle(LED4);
+        i = 0;
+    }
 }
 
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv)
