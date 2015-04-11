@@ -42,6 +42,17 @@ thread_init_stack负责构造 */
 /* */
 #define CMOS_IDLE_STACK_SIZE			(4096)
 
+/* 优先级个数
+ * 0 Idle
+ * 1 Low
+ * 2 BelowNormal
+ * 3 Normal
+ * 4 AboveNormal
+ * 5 High
+ * 6 Realtime
+ * */
+#define CMOS_PRIORITY_MAX					(7)
+
 /*********************************** 类型定义 **********************************/
 
 
