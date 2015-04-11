@@ -29,6 +29,9 @@
 /* */
 #define CMOS_INITIAL_EXEC_RETURN  (0xfffffffd)
 
+/* */
+#define CMOS_IDLE_STACK_SIZE			(4096)
+
 /*********************************** 类型定义 **********************************/
 
 

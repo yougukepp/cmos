@@ -22,10 +22,6 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-/* 仅仅测试两个线程切换 */
-extern osThreadCb_t g_thread_cb[2];
-/* 当前线程 */
-extern os_pthread g_cur_pthread;
 
 /********************************** 函数声明区 *********************************/
 /*******************************************************************************
@@ -111,9 +107,6 @@ void syscall_kernel_start(void)
     __set_CONTROL(0x00000003);
 	  void first_thread_start();
     first_thread_start(CMOS_INITIAL_EXEC_RETURN);
-    /* 启动线程 */
-    /*g_cur_pthread = g_thread_cb[0].pthread;
-    g_thread_cb[0].pthread(g_thread_cb[0].argv);*/
 }
 
 

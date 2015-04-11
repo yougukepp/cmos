@@ -66,7 +66,8 @@ typedef struct os_thread_cb
     cm_uint32_t *psp;
     osPriority priority;
     cm_uint32_t stack_size;
-}osThreadCb_t;
+}cm_tcb_t;
+
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
