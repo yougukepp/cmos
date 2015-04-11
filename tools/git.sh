@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# 推送 tag到远程
+#git push --tag
+
 #删除远程分支
 #git push origin --delete <branchName>
 
