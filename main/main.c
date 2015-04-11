@@ -83,7 +83,7 @@ static void job1 (void const *argument)
         {
             i++;
         }
-        BSP_LED_Toggle(LED3);
+        BSP_LED_Toggle(LED4);
         i = 0; 
 
         //osStatus osSVCDemo(int32 argv1, int32 argv2, int32 argv3, int32 argv4);

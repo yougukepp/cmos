@@ -29,10 +29,10 @@ static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, vo
 static void thread_exit_error(void);
 /*******************************************************************************
 *
-* 函数名  : job2
+* 函数名  : cm_idle_thread
 * 负责人  : 彭鹏
 * 创建日期: 20150321
-* 函数功能: 任务2
+* 函数功能: idle线程
 *
 * 输入参数: 无
 *
@@ -44,8 +44,8 @@ static void thread_exit_error(void);
 * 其 它   : 无
 *
 ******************************************************************************/
-static void job2 (void const *argv);
-osThreadDef(job2, osPriorityNormal, 1, 0x1000);
+static void cm_idle_thread (void const *argv);
+osThreadDef(cm_idle_thread, osPriorityNormal, 1, 0x1000);
 
 /********************************** 变量实现区 *********************************/
 /* 仅仅测试两个线程切换 */
@@ -138,10 +138,10 @@ void *thread_switch(const void *cur_stack)
 
 void thread_idle_create(void)
 {
-    osThreadCreate(osThread(job2), NULL);
+    osThreadCreate(osThread(cm_idle_thread), NULL);
 }
 
-static void job2 (void const *argument)
+static void cm_idle_thread(void const *argument)
 {
     int32_t i = 0;
     while (1)
@@ -150,7 +150,7 @@ static void job2 (void const *argument)
         {
             i++;
         }
-        BSP_LED_Toggle(LED4);
+        BSP_LED_Toggle(LED3);
         i = 0;
     }
 }
