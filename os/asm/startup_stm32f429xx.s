@@ -6,10 +6,15 @@
 ;* 版本号  ： v1.0
 ;* 文件描述： stm32f429xx芯片启动汇编(for MDK-ARM)
 ;*            它主要完成
+;*            - 设置向量表
 ;*            - 设置初始SP
 ;*            - 设置初始PC == Reset_Handler
-;*            - 设置向量表
 ;*            - 跳转到C运行时库的__main函数,该函数会调用main
+;*            - 设置系统堆栈
+;*            - 实现任务切换 PendSV_Handler
+;*            - 实现系统调用 SVC_Handler
+;*            - 实现系统调用函数 
+;*            - 完成首个任务启动 first_thread_start
 ;*            复位之后Cortex-M4进入Tread模式,特权级别(Privileged),SP使用MSP
 ;* 
 ;* 版权说明： Copyright (c) 2000-2020 GNU
@@ -37,7 +42,6 @@ __heap_limit
 
                 PRESERVE8
                 THUMB
-
 
 ; 复位后向量表位于0x00000000
                 AREA    RESET, DATA, READONLY
@@ -189,13 +193,13 @@ DebugMon_Handler\
 ; 系统调用
 ;*******************************************************************************
 kernel_initialize PROC
-	            IMPORT thread_idle_create
+	        IMPORT thread_idle_create
                 EXPORT  kernel_initialize          [WEAK]
                 SVC 0x00
-				PUSH {LR}
-		        LDR R0, =thread_idle_create        ; 创建idle线程
+		PUSH {LR}
+		LDR R0, =thread_idle_create        ; 创建idle线程
                 BLX R0
-				POP {LR}
+		POP {LR}
                 BX  LR
                 ENDP
 
@@ -214,12 +218,13 @@ thread_create   PROC
 ; 汇编函数库
 ; 初始启动线程
 first_thread_start PROC
-	            EXPORT  first_thread_start         [WEAK]
-				MOV LR, R0
+	        EXPORT  first_thread_start         [WEAK]
+		MOV LR, R0
                 BX LR
-				ENDP
-					
+		ENDP
+
                 ALIGN
+
 ;*******************************************************************************
 ; 堆栈初始化
 ;*******************************************************************************
