@@ -17,11 +17,11 @@
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
 #include "cmos_config.h"
+#include "switch.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-extern cm_tcb_t g_thread_cb[2];
 
 /* 优先级 */
 /*
@@ -35,10 +35,10 @@ extern cm_tcb_t g_thread_cb[2];
   osPriorityError        bit7
   sys_thread_create维护
   bit7不能为1
-  g_priority_cur不能为0x00
-  0x00 < g_priority_cur <= 0x7F
+  s_priority_cur不能为0x00
+  0x00 < s_priority_cur <= 0x7F
   */
-cm_uint8_t g_priority_cur = 0x01; /* idle */
+static cm_uint8_t s_priority_cur = 0x00;
 
 /* 优先级线程链表数组 
  * 每个元素指向某一优先级的线程链表
@@ -50,14 +50,14 @@ cm_uint8_t g_priority_cur = 0x01; /* idle */
  * 5 High
  * 6 Realtime
  * */
-cm_tcb_t *g_priority_tcb_table[CMOS_PRIORITY_MAX];
+static cm_tcb_t *s_priority_tcb_table[CMOS_PRIORITY_MAX] = {NULL};
 
 /* 
- * 每个位置表示g_priority_cur的值
- * 每个值表示一个优先级 0-6 同时是g_priority_tcb_table中的索引
+ * 每个位置表示s_priority_cur的值
+ * 每个值表示一个优先级 0-6 同时是s_priority_tcb_table中的索引
  * tools/generate_bitmap.py生成
  * */
-const cm_uint8_t g_priority_bitmap[] = {
+static const cm_uint8_t s_priority_bitmap[] = {
     0,  /* 00000000 Idle 没有任何优先级线程就绪 这是不可能的情况 */
     0,  /* 00000001 Idle */
     1,  /* 00000010 Low */
@@ -197,13 +197,37 @@ const cm_uint8_t g_priority_bitmap[] = {
 /********************************** 函数实现区 *********************************/
 void *thread_switch(const void *cur_stack)
 {
-    static cm_uint32_t next_id = 0;
-    cm_uint32_t *next_psp = NULL; 
-    
-    next_id++;
-    next_id %= 2; 
-    
-    next_psp = g_thread_cb[next_id].psp; 
-    return next_psp;
+    return NULL;
+} 
+
+void thread_switch_add_thread(cm_tcb_t *ptr_tcb)
+{
+    cm_priority_t priority = 0;
+
+    priority = ptr_tcb->priority;
+    s_priority_cur |= priority; /* 置位优先级位 */ 
+
+    cm_tcb_t *pre = NULL;
+    const cm_tcb_t *cur = NULL;
+    /* 同一优先级链表头 */
+    pre = s_priority_tcb_table[priority];
+    if(NULL == pre) /* 本优先级的第一个线程 */
+    {
+        s_priority_tcb_table[priority] = ptr_tcb;
+        return;
+    }
+
+    /* 查找插入的位置 */
+    do
+    { 
+        cur = pre->next;
+        if(NULL == cur) /* 位置找到 */
+        {
+            pre->next = ptr_tcb;
+            break;
+        }
+        pre = pre->next; /* 继续向后找 */
+    }while(TRUE);
+
 }
 

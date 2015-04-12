@@ -47,32 +47,45 @@ typedef unsigned char       cm_bool_t;
 typedef void                (*cm_func_t)(void);
 
 
+
 /* 函数状态 通常用于返回值 */
 typedef osStatus            cm_status_t;
 
-/* 线程id号 */
-typedef osThreadId          cm_thread_id_t;
-/* 线程定义 */
-typedef osThreadDef_t       cm_thread_def_t;
+
+/* 优先级 osPriority 是枚举 cm_priority_t定义为uint32保持一定的兼容性 */ 
+typedef cm_uint32_t         cm_priority_t;
+
 /* 线程入口地址 */
 typedef os_pthread          cm_pthread_t;
+
+/* 线程定义 */
+typedef struct cm_thread_def_tag
+{
+    cm_pthread_t            pthread; 
+    cm_priority_t           priority;
+    cm_uint32_t             stack_size;
+    cm_uint32_t             time_slice; /* 同一优先级有多个线程 该线程的运行时间 SysTick为单位 */
+}cm_thread_def_t;
 
 /* 线程控制块 */
 typedef struct os_thread_cb
 {
-    os_pthread pthread;
-    void       *argv;
-
-    cm_uint32_t *psp;
-    osPriority priority;
-    cm_uint32_t stack_size;
+    cm_pthread_t            pthread; /* 入口函数 */
+    void                    * argv; /* 参数 */
+    cm_uint32_t             stack_size; /* 栈大小 Byte单位*/
+    cm_uint32_t             * psp; /* sp指针 */
+    cm_priority_t             priority; /* 优先级 */
+    struct os_thread_cb     *next;
 }cm_tcb_t;
+
+/* 线程id号 */
+typedef cm_tcb_t*           cm_thread_id_t;
 
 /*
  * 空闲内存块链表 
  * 内存块 大小固定为 sizeof(cm_tcb_t)
  */
-#define CM_TCB_SIZE (5)
+#define CM_TCB_SIZE (6)
 //const cm_uint32_t CM_TCB_SIZE = sizeof(cm_tcb_t);
 typedef struct cm_mem_block_tag
 {
@@ -87,7 +100,4 @@ typedef struct cm_mem_block_tag
 /*********************************** 接口函数 **********************************/
 
 #endif /* __TYPE_DEF_H__ */
-
-
-
 

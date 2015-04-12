@@ -46,6 +46,9 @@
  ******************************************************************************/
 void *thread_switch(const void *cur_stack);
 
+/* 新线程加入 */
+void thread_switch_add_thread(cm_tcb_t *ptr_tcb);
+
 #endif // #ifndef _THREAD_SWITCH_H_
 
 

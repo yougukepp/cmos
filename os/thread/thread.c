@@ -18,12 +18,12 @@
 #include "typedef.h"
 #include "cmos_config.h"
 #include "mem.h"
+#include "switch.h"
 #include "stm32f429i_discovery.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-
 
 /********************************** 函数声明区 *********************************/
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv);
@@ -46,77 +46,44 @@ static void thread_exit_error(void);
 *
 ******************************************************************************/
 static void cm_idle_thread (void const *argv);
-osThreadDef(cm_idle_thread, osPriorityNormal, 1, 0x1000);
+osThreadDef(cm_idle_thread, osPriorityIdle, 1, 0x1000);
 
 /********************************** 变量实现区 *********************************/
-/* 仅仅测试两个线程切换 */
-cm_tcb_t g_thread_cb[2] = {{0}, {0}};
 /* 空闲的任务栈顶 */
 static cm_uint32_t *s_user_stack_base = CMOS_THREAD_STACK_BASE;
 
 /********************************** 函数实现区 *********************************/
 cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *argv)   
-{
-    /* 测试内存分配 */
-#if 1 
-    cm_tcb_t *tcb_list[10] = {NULL};
-
-    tcb_list[0] = mem_malloc_tcb();
-    tcb_list[1] = mem_malloc_tcb();
-
-    mem_free_tcb(tcb_list[1]);
-    mem_free_tcb(tcb_list[0]);
-#endif
-
-
-
-    static int times = 0;
-    cm_thread_id_t id = NULL; 
+{ 
+    cm_tcb_t *ptr_tcb = NULL;
     cm_uint32_t stack_size = 0;
-    cm_uint32_t *new_psp = NULL;
 
-    stack_size = thread_def->stacksize;
-    
-    /* 栈必须8 Bytes 对齐 */
-    if(0 != (stack_size & 0x00000007))
-    {
-        return NULL;
-    }
-		
-    /* 仅支持1、2次创建 */
-    if((times < 0) || (times > 1))
+    stack_size = thread_def->stack_size;
+    /* 栈大小必须4Bytes对齐 */
+    if(0 != (stack_size & 0x00000003))
     {
         return NULL;
     }
 
-    if(0 == times)
-    {
-        id = &g_thread_cb[0];
-    }
-    else
-    {
-        id = &g_thread_cb[1];
-    }
-    times++; 
-    
-    /* 准备栈 */
-    stack_size >>= 2;
-    id->pthread = thread_def->pthread;
-    id->argv = argv;
-
-    id->priority = thread_def->tpriority;
-    id->stack_size = stack_size; /* 以32Bytes为单位 */
-
-    id->psp = s_user_stack_base;
+    ptr_tcb = mem_malloc_tcb();
+    /* 初始化ptr_tcb */
+    ptr_tcb->pthread = thread_def->pthread;
+    ptr_tcb->argv = argv;
+    ptr_tcb->stack_size = stack_size;
+    ptr_tcb->psp = s_user_stack_base;
+    ptr_tcb->priority = thread_def->priority;
+    ptr_tcb->next = NULL;
 
     /* 初始化栈内容 */
-    new_psp = thread_init_stack(id->psp, id->pthread, id->argv);
-		id->psp = new_psp;
+    ptr_tcb->psp = thread_init_stack(ptr_tcb->psp, ptr_tcb->pthread, ptr_tcb->argv);
 
-    /* 下一任务栈顶 */
-    s_user_stack_base -= stack_size;
+    /* 计算下一任务栈顶 */
+    s_user_stack_base -= (stack_size >> 2); /* 4Bytes对齐*/
 
-    return id;
+    /* 通知线程切换模块有新线程 */ 
+    thread_switch_add_thread(ptr_tcb);
+
+    return (cm_thread_id_t)ptr_tcb;
 }
 
 void thread_idle_create(void)

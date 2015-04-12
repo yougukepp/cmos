@@ -18,15 +18,16 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include "cmsis_os.h"
 #include "cmos.h"
-#include "stm32f4xx_hal.h"
+#include "misc.h"
+#include "cmsis_os.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/ 
 
 /********************************** 函数声明区 *********************************/
+static cm_priority_t osPriority2cmPriority(osPriority priority);
 
 
 /********************************** 变量实现区 *********************************/
@@ -46,7 +47,77 @@ osStatus osKernelStart(void)
 
 /*---------------------------------- 线程管理 ---------------------------------*/
 osThreadId osThreadCreate(const osThreadDef_t *thread_def, void *argv)   
-{
-    return thread_create(thread_def, argv);
+{ 
+    cm_thread_id_t id = NULL;
+    cm_thread_def_t cm_thread_def;
+
+    cm_thread_def.pthread = thread_def->pthread;
+    cm_thread_def.priority = osPriority2cmPriority(thread_def->tpriority);
+    cm_thread_def.stack_size = thread_def->stacksize;
+    cm_thread_def.time_slice = 100; /* 默认使用100 SysTick为单位 */
+
+    id = thread_create(&cm_thread_def, argv);
+
+    return (osThreadId)id;
 }
+
+/* CMSIS优先级转换为CM优先级 
+ * bit0 Idle
+ * bit1 Low
+ * bit2 BelowNormal
+ * bit3 Normal
+ * bit4 AboveNormal
+ * bit5 High
+ * bit6 Realtime
+ */
+static cm_priority_t osPriority2cmPriority(osPriority priority)
+{
+    cm_priority_t cm_priority = 0;
+    switch(priority)
+    {
+        case osPriorityIdle:
+            {
+                cm_priority = 0x01;
+                break;
+            }
+        case osPriorityLow:
+            {
+                cm_priority = 0x02;
+                break;
+            }
+        case osPriorityBelowNormal:
+            {
+                cm_priority = 0x04;
+                break;
+            }
+        case osPriorityNormal:
+            {
+                cm_priority = 0x08;
+                break;
+            }
+        case osPriorityAboveNormal:
+            {
+                cm_priority = 0x10;
+                break;
+            }
+        case osPriorityHigh:
+            {
+                cm_priority = 0x20;
+                break;
+            }
+        case osPriorityRealtime:
+            {
+                cm_priority = 0x40;
+                break;
+            }
+        default:
+            {
+                Error_Handler();
+            }
+    }
+
+    return cm_priority;
+}
+
+
 

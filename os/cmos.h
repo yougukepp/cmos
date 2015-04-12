@@ -46,7 +46,7 @@
  * 其 它:    无
  *
  ******************************************************************************/
-__asm cm_status_t kernel_initialize(void);
+cm_status_t kernel_initialize(void);
 
 /*******************************************************************************
  *
@@ -65,7 +65,7 @@ __asm cm_status_t kernel_initialize(void);
  * 其 它:    无
  *
  ******************************************************************************/
-__asm cm_status_t kernel_start(void);
+cm_status_t kernel_start(void);
 
 /*---------------------------------- 线程管理 ---------------------------------*/
 /*******************************************************************************
@@ -73,7 +73,7 @@ __asm cm_status_t kernel_start(void);
  * TODO: 注释
  *
  ******************************************************************************/
-__asm cm_thread_id_t thread_create(const cm_thread_def_t *thread_def, void *argv);
+cm_thread_id_t thread_create(const cm_thread_def_t *thread_def, void *argv);
 
 #endif // #ifndef __CMOS_H__
 
