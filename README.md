@@ -5,7 +5,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 1. 实现动态内存管理
-2. 自己初始化内存 
+2. 自己初始化内存不依赖与keil运行时
 3. cmos下一步实现调度算法
 2.1 位图算法
 2.2 TCB链表实现
