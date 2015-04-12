@@ -17,6 +17,7 @@
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
 #include "cmos_config.h"
+#include "mem.h"
 #include "stm32f429i_discovery.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -56,6 +57,19 @@ static cm_uint32_t *s_user_stack_base = CMOS_THREAD_STACK_BASE;
 /********************************** 函数实现区 *********************************/
 cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *argv)   
 {
+    /* 测试内存分配 */
+#if 1 
+    cm_tcb_t *tcb_list[10] = {NULL};
+
+    tcb_list[0] = mem_malloc_tcb();
+    tcb_list[1] = mem_malloc_tcb();
+
+    mem_free_tcb(tcb_list[1]);
+    mem_free_tcb(tcb_list[0]);
+#endif
+
+
+
     static int times = 0;
     cm_thread_id_t id = NULL; 
     cm_uint32_t stack_size = 0;

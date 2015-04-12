@@ -28,10 +28,12 @@
 
 /********************************** 变量声明区 *********************************/
 /* heap_base <= s_sp_top < heap_limit */
-cm_uint32_t s_heap_base = 0;  /* 堆区基地址 */
-cm_uint32_t s_heap_limit = 0; /* 堆区上限地址 */
+static cm_uint32_t s_heap_base = 0;  /* 堆区基地址 */
+static cm_uint32_t s_heap_limit = 0; /* 堆区上限地址 */ 
 
-const cm_uint32_t item_size = sizeof(cm_tcb_t);
+/* 空闲内存链表首地址 */
+static cm_mem_block_t *s_free_blk_head = NULL;
+static cm_uint32_t    s_free_blk_max = 0;
 
 /********************************** 函数声明区 *********************************/
 cm_uint32_t get_heap_base(void);
@@ -90,15 +92,51 @@ void mem_init(void)
         mem_block_ptr->next = mem_block_ptr + 1;
         mem_block_ptr++;
     }
+
+    s_free_blk_head = (cm_mem_block_t *)s_heap_base;
+    s_free_blk_max = count;
 }
 
-void *mem_malloc_tcb(void)
+cm_tcb_t *mem_malloc_tcb(void)
 {
-    return NULL;
+    cm_mem_block_t *new_addr = NULL;
+    static cm_uint32_t malloced_count = 0;
+
+    /* 已经用完堆内存 */
+    if(malloced_count >= s_free_blk_max)
+    {
+        return NULL;
+    } 
+    
+    malloced_count++;
+
+    new_addr = s_free_blk_head;
+    s_free_blk_head = s_free_blk_head->next;
+
+    return (cm_tcb_t *)new_addr;
 }
 
 void mem_free_tcb(cm_tcb_t *ptr)
 {
-    ;
+    cm_mem_block_t *mem_block_ptr = NULL;
+
+    /* 参数检查 */
+    if(NULL == ptr)
+    {
+        return;
+    }
+
+    mem_block_ptr = (cm_mem_block_t *)ptr; 
+    
+    /* 初始化堆内存 */
+    for(int j = 0; j<CM_TCB_SIZE; j++)
+    { 
+        mem_block_ptr->data[j] = 0x48454150; /* ASCII "HEAP" */
+    }
+
+    /* 直接插入表头 */
+    mem_block_ptr->next = s_free_blk_head;
+    s_free_blk_head = mem_block_ptr;
+
 }
 

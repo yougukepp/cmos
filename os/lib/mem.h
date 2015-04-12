@@ -29,6 +29,9 @@
 /*********************************** 接口函数 **********************************/
 void mem_init(void); 
 
+cm_tcb_t *mem_malloc_tcb(void);
+void mem_free_tcb(cm_tcb_t *ptr);
+
 #endif // #ifndef _MEM_H_
 
 
