@@ -57,7 +57,6 @@
 *
 ******************************************************************************/
 static void SystemClock_Config(void);
-
 /********************************** 变量实现区 *********************************/
 
 
@@ -65,10 +64,7 @@ static void SystemClock_Config(void);
 
 void syscall_kernel_initialize(void)
 {
-	  mem_init();
-		/* psp任务栈顶 */
-    cm_uint32_t *psp_top = CMOS_THREAD_STACK_BASE;
-    __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */
+    mem_init();
 	
     HAL_Init(); 
   
@@ -88,30 +84,21 @@ void syscall_kernel_initialize(void)
     HAL_NVIC_SetPriority(SVCall_IRQn, SVC_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(PendSV_IRQn, PENDSV_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(SysTick_IRQn, TICK_INT_PRIORITY, 0);
-    /* TODO:开中断 */
-			
-	/* TODO:SVC中无法实现 不开浮点 使用MSP 非特权级 */ 
+    /* TODO:开中断 */ 
+    
+    /* TODO:SVC中无法实现 不开浮点 使用MSP 非特权级 */ 
     __set_CONTROL(0x00000001);
-    /* 从用户堆栈顶 初始化4kBytes */
-    cm_uint32_t *ptr = CMOS_THREAD_STACK_BASE;
-    ptr--;
-    for(cm_uint32_t i = 0; i < 4096; i++)
-    {
-        *ptr-- = 0x5354414B; /* ASCII "STACK" => "STAK" */
-    }
-
-    /* TODO:定义一个Idle线程 */
 }
 
 void syscall_kernel_start(void)
 {
-		/* psp指向最先创建的任务(idle)栈顶 启动之 */
+    /* psp指向最先创建的任务(idle)栈顶 启动之 */
     cm_uint32_t *psp_top = CMOS_FIRST_STACK_INIT_TOP;
-    __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */
-	
-  	/* TODO:SVC中无法实现 不开浮点 使用PSP 非特权级 */ 
+    __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */ 
+    
+    /* TODO:SVC中无法实现 不开浮点 使用PSP 非特权级 */ 
     __set_CONTROL(0x00000003);
-	  void first_thread_start();
+    void first_thread_start();
     first_thread_start(CMOS_INITIAL_EXEC_RETURN);
 }
 

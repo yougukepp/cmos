@@ -68,6 +68,17 @@ typedef struct os_thread_cb
     cm_uint32_t stack_size;
 }cm_tcb_t;
 
+/*
+ * 空闲内存块链表 
+ * 内存块 大小固定为 sizeof(cm_tcb_t)
+ */
+#define CM_TCB_SIZE (5)
+//const cm_uint32_t CM_TCB_SIZE = sizeof(cm_tcb_t);
+typedef struct cm_mem_block_tag
+{
+    cm_uint32_t data[CM_TCB_SIZE];
+    struct cm_mem_block_tag *next;
+}cm_mem_block_t;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

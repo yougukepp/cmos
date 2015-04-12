@@ -233,8 +233,15 @@ get_heap_base   PROC
 get_heap_limit  PROC
                 EXPORT  get_heap_limit
                 LDR R0, =__heap_limit
-                BX LR
+                BX LR 
                 ENDP
+
+get_initial_sp  PROC
+                EXPORT  get_initial_sp
+                LDR R0, =__initial_sp
+                BX LR 
+                ENDP
+
 
                 ALIGN
 
