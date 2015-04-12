@@ -193,18 +193,18 @@ DebugMon_Handler\
 ; 系统调用
 ;*******************************************************************************
 kernel_initialize PROC
-	        IMPORT thread_idle_create
+                IMPORT thread_idle_create
                 EXPORT  kernel_initialize          [WEAK]
                 SVC 0x00
-		PUSH {LR}
-		LDR R0, =thread_idle_create        ; 创建idle线程
+                PUSH {LR}
+                LDR R0, =thread_idle_create        ; 创建idle线程
                 BLX R0
-		POP {LR}
+                POP {LR}
                 BX  LR
                 ENDP
 
 kernel_start    PROC
-                EXPORT  kernel_start               [WEAK]	
+                EXPORT  kernel_start               [WEAK]
                 SVC 0x01
                 BX  LR
                 ENDP
@@ -218,10 +218,10 @@ thread_create   PROC
 ; 汇编函数库
 ; 初始启动线程
 first_thread_start PROC
-	        EXPORT  first_thread_start
-		MOV LR, R0
+                EXPORT  first_thread_start
+                MOV LR, R0
                 BX LR
-		ENDP
+                ENDP
 
 ; 获取堆分布信息
 get_heap_base   PROC
