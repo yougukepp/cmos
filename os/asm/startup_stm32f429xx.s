@@ -218,10 +218,23 @@ thread_create   PROC
 ; 汇编函数库
 ; 初始启动线程
 first_thread_start PROC
-	        EXPORT  first_thread_start         [WEAK]
+	        EXPORT  first_thread_start
 		MOV LR, R0
                 BX LR
 		ENDP
+
+; 获取堆分布信息
+get_heap_base   PROC
+                EXPORT  get_heap_base
+                LDR R0, =__heap_base
+                BX LR
+                ENDP
+
+get_heap_limit  PROC
+                EXPORT  get_heap_limit
+                LDR R0, =__heap_limit
+                BX LR
+                ENDP
 
                 ALIGN
 
@@ -240,7 +253,6 @@ first_thread_start PROC
                  EXPORT  __user_initial_stackheap
                  
 __user_initial_stackheap
-
                  LDR     R0, =  Heap_Mem
                  LDR     R1, =(Stack_Mem + Stack_Size)
                  LDR     R2, = (Heap_Mem +  Heap_Size)

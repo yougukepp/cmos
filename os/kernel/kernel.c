@@ -18,6 +18,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f429i_discovery.h"
 #include "misc.h"
+#include "mem.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -64,6 +65,7 @@ static void SystemClock_Config(void);
 
 void syscall_kernel_initialize(void)
 {
+	  mem_init();
 		/* psp任务栈顶 */
     cm_uint32_t *psp_top = CMOS_THREAD_STACK_BASE;
     __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */
