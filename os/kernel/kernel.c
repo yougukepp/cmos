@@ -97,7 +97,7 @@ void syscall_kernel_initialize(void)
     ptr--;
     for(cm_uint32_t i = 0; i < 4096; i++)
     {
-        *ptr-- = 0xA5A5A5A5;
+        *ptr-- = 0x5354414B; /* ASCII "STACK" => "STAK" */
     }
 
     /* TODO:定义一个Idle线程 */
