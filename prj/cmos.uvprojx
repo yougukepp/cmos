@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F429xx,USE_STM32F429I_DISCO,</Define>
               <Undefine></Undefine>
-              <IncludePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Device\ST\STM32F4xx\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\Components\Common;E:\Keil_v5\STM32Cube_FW_F4\Utilities\CPU;E:\Keil_v5\STM32Cube_FW_F4\Utilities\Log;..\main;..\os</IncludePath>
+              <IncludePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Device\ST\STM32F4xx\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\Components\Common;E:\Keil_v5\STM32Cube_FW_F4\Utilities\CPU;E:\Keil_v5\STM32Cube_FW_F4\Utilities\Log;..\main;..\os;..\os\kernel;..\os\lib;..\os\thread</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -426,42 +426,42 @@
             <File>
               <FileName>startup_stm32f429xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\os\startup_stm32f429xx.s</FilePath>
+              <FilePath>..\os\asm\startup_stm32f429xx.s</FilePath>
+            </File>
+            <File>
+              <FileName>kernel.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\kernel\kernel.c</FilePath>
+            </File>
+            <File>
+              <FileName>isr_stm32f429xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\lib\isr_stm32f429xx.c</FilePath>
+            </File>
+            <File>
+              <FileName>misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\lib\misc.c</FilePath>
+            </File>
+            <File>
+              <FileName>syscall.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\lib\syscall.c</FilePath>
+            </File>
+            <File>
+              <FileName>switch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\thread\switch.c</FilePath>
+            </File>
+            <File>
+              <FileName>thread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\thread\thread.c</FilePath>
             </File>
             <File>
               <FileName>cmsis_os.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\os\cmsis_os.c</FilePath>
-            </File>
-            <File>
-              <FileName>isr_stm32f429xx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\isr_stm32f429xx.c</FilePath>
-            </File>
-            <File>
-              <FileName>syscall.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\syscall.c</FilePath>
-            </File>
-            <File>
-              <FileName>kernel.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\kernel.c</FilePath>
-            </File>
-            <File>
-              <FileName>misc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\misc.c</FilePath>
-            </File>
-            <File>
-              <FileName>thread.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\thread.c</FilePath>
-            </File>
-            <File>
-              <FileName>thread_switch.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\thread_switch.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -526,7 +526,7 @@
             <File>
               <FileName>printf.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\os\printf.c</FilePath>
+              <FilePath>..\os\debug\printf.c</FilePath>
             </File>
           </Files>
         </Group>
