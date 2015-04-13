@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * 文件名  ： thread_switch.c
+ * 文件名  ： switch.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20150411 
  * 版本号  ： v1.0
@@ -197,7 +197,27 @@ static const cm_uint8_t s_priority_bitmap[] = {
 /********************************** 函数实现区 *********************************/
 void *thread_switch(const void *cur_stack)
 {
-    return NULL;
+    cm_tcb_t *next_tcb = NULL;
+    cm_uint32_t *next_psp = NULL;
+
+    cm_uint8_t tcb_table_index = 0;
+
+    if(0x00 == s_priority_cur) /* idle线程都没创建(初始化未完成) 继续初始化 */
+    {
+        next_psp = cur_stack;
+    }
+    else if(0x80 & s_priority_cur) /* 错误优先级 */
+    { 
+        Error_Handler();
+    }
+    else /* 正确的优先级 0x00 < s_priority_cur <= 0x7F */
+    { 
+        tcb_table_index = s_priority_bitmap[s_priority_cur]; /* 查最高优先级 */
+        next_tcb = s_priority_tcb_table[tcb_table_index]; /* 获取最高优先级线程TCB */
+        next_psp = next_tcb->psp;
+    }
+
+    return next_psp;
 } 
 
 void thread_switch_add_thread(cm_tcb_t *ptr_tcb)
