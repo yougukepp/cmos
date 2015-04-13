@@ -46,7 +46,7 @@ static void thread_exit_error(void);
 *
 ******************************************************************************/
 static void cm_idle_thread (void const *argv);
-osThreadDef(cm_idle_thread, osPriorityIdle, 1, 0x1000);
+osThreadDef(cm_idle_thread, osPriorityNormal, 1, 0x1000);
 
 /********************************** 变量实现区 *********************************/
 /* 空闲的任务栈顶 */
