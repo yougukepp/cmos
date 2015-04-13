@@ -1,8 +1,8 @@
 /******************************************************************************
  *
- * 文件名  ： thread_switch.h
+ * 文件名  ： switch.h
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20150116 
+ * 创建日期： 20150410 
  * 版本号  ： v1.0
  * 文件描述： 线程调度实现
  * 版权说明： Copyright (c) 2000-2020 GNU
@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _THREAD_SWITCH_H_
-#define _THREAD_SWITCH_H_
+#ifndef _SWITCH_H_
+#define _SWITCH_H_
 
 /************************************ 头文件 ***********************************/
 
@@ -49,6 +49,9 @@ void *thread_switch(const void *cur_stack);
 /* 新线程加入 */
 void thread_switch_add_thread(cm_tcb_t *ptr_tcb);
 
-#endif // #ifndef _THREAD_SWITCH_H_
+/* 跟新线程时间片 */
+void thread_switch_update_timeslice(void);
+
+#endif // #ifndef _SWITCH_H_
 
 

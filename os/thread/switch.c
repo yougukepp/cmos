@@ -189,27 +189,30 @@ static const cm_uint8_t s_priority_bitmap[] = {
 };
 
 /********************************** 函数声明区 *********************************/
+/* O(1)算法 */
+static cm_tcb_t *thread_switch_get_highest_tcb(void);
+
+/* 遍历到TCB链表表尾 */
+static cm_tcb_t *thread_switch_goto_tail(cm_tcb_t *head);
 
 
 /********************************** 变量实现区 *********************************/
 
 
 /********************************** 函数实现区 *********************************/
-void *thread_switch(const void *cur_stack)
+void *thread_switch(const void *cur_psp)
 {
-    cm_tcb_t *next_tcb = NULL;
     cm_uint32_t *next_psp = NULL;
+    cm_tcb_t *next_tcb = NULL;
 
-    cm_uint8_t tcb_table_index = 0;
-
-    if( (0x00 == s_priority_cur) || (0x80 & s_priority_cur)) /* 非法优先级 */
+    /* 查找最高优先级线程 */
+    next_tcb = thread_switch_get_highest_tcb();
+    if(NULL == next_tcb) /* 无合适的可以切换线程 */
     {
-        next_psp = (cm_uint32_t *)cur_stack;
+        next_psp = (cm_uint32_t *)cur_psp;
     }
-    else /* 正确的优先级 0x00 < s_priority_cur <= 0x7F */
-    { 
-        tcb_table_index = s_priority_bitmap[s_priority_cur]; /* 查最高优先级 */
-        next_tcb = s_priority_tcb_table[tcb_table_index]; /* 获取最高优先级线程TCB */
+    else 
+    {
         next_psp = next_tcb->psp;
     }
 
@@ -218,35 +221,110 @@ void *thread_switch(const void *cur_stack)
 
 void thread_switch_add_thread(cm_tcb_t *ptr_tcb)
 {
-    cm_priority_t priority = 0;
-    cm_priority_t priority_bit = 0;
+    cm_tcb_t *head = NULL;
+    cm_tcb_t *tail = NULL; 
+
+    cm_priority_t priority = 0; 
 
     priority = ptr_tcb->priority;
-    priority_bit = (1 << priority);
+    
+    /* 跟新优先级位图索引 */
+    s_priority_cur |= (1 << priority);
 
-    s_priority_cur |= priority_bit; /* 置位优先级位 */ 
+    /* 获取当前优先级线程链表头 */
+    head = s_priority_tcb_table[priority];
+
+    if(NULL == head) /* ptr_tcb是头节点 */
+    {
+        s_priority_tcb_table[priority] = ptr_tcb;
+    }
+    else /* 找尾 并 加入 */
+    { 
+        
+        tail = thread_switch_goto_tail(head);
+        tail->next = ptr_tcb;
+    }
+}
+
+void thread_switch_update_timeslice(void)
+{
+    cm_uint8_t tcb_table_index = 0;
+    cm_tcb_t *higighest_tcb = NULL;
+    cm_tcb_t *head = NULL;
+    cm_tcb_t *tail = NULL;
+
+    /* 查找最高优先级线程 */
+    higighest_tcb = thread_switch_get_highest_tcb();
+
+    higighest_tcb->tick--;
+	
+    /* 当前线程时间片结束 */
+    if(0 == higighest_tcb->tick)
+    {
+        /* 重置时间片 */
+        higighest_tcb->tick = higighest_tcb->time_slice;
+       
+        /* 若有其他线程把本线程移动到链表尾部 */
+        if(NULL != higighest_tcb->next)
+        {
+            /* 获取表尾 */
+            head = higighest_tcb;
+            tail = thread_switch_goto_tail(head);
+           
+            /* 后一线程前移 */ 
+            tcb_table_index = s_priority_bitmap[s_priority_cur];
+            s_priority_tcb_table[tcb_table_index] = higighest_tcb->next;
+
+            /* higighest_tcb 加入到表尾巴 */
+            tail->next = higighest_tcb;
+            higighest_tcb->next = NULL;
+        }
+    }
+}
+
+/* O(1)算法 */
+static cm_tcb_t *thread_switch_get_highest_tcb(void)
+{
+    cm_tcb_t *higighest_tcb = NULL;
+
+    cm_uint8_t tcb_table_index = 0;
+   
+    /* 正确的优先级 0x00 < s_priority_cur <= 0x7F */
+    if(! ((0x00 == s_priority_cur) || (0x80 & s_priority_cur)) )
+    {
+        tcb_table_index = s_priority_bitmap[s_priority_cur]; /* 查最高优先级 */
+        higighest_tcb = s_priority_tcb_table[tcb_table_index]; /* 获取最高优先级线程TCB */
+    }
+
+    /* 错误(或无线程)返回 NULL */
+
+    return higighest_tcb;
+}
+
+static cm_tcb_t *thread_switch_goto_tail(cm_tcb_t *head)
+{
+    cm_tcb_t *tail = NULL;
 
     cm_tcb_t *pre = NULL;
     const cm_tcb_t *cur = NULL;
-    /* 同一优先级链表头 */
-    pre = s_priority_tcb_table[priority];
-    if(NULL == pre) /* 本优先级的第一个线程 */
+
+    if(NULL == head) /* 头都是空的,头就是尾 */
     {
-        s_priority_tcb_table[priority] = ptr_tcb;
-        return;
+        return NULL;
     }
 
-    /* 查找插入的位置 */
+    pre = head;
     do
-    { 
-        cur = pre->next;
+    {
+        cur = pre->next; 
         if(NULL == cur) /* 位置找到 */
         {
-            pre->next = ptr_tcb;
+            tail = pre;
             break;
         }
         pre = pre->next; /* 继续向后找 */
     }while(TRUE);
 
+    return tail;
 }
 

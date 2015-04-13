@@ -67,7 +67,9 @@ typedef struct cm_thread_def_tag
     cm_uint32_t             time_slice; /* 同一优先级有多个线程 该线程的运行时间 SysTick为单位 */
 }cm_thread_def_t;
 
-/* 线程控制块 */
+/* 线程控制块 
+ * FIXME: 有任何大小改动 需要改动CM_TCB_SIZE
+ * */
 typedef struct os_thread_cb
 {
     cm_pthread_t            pthread; /* 入口函数 */
@@ -75,7 +77,9 @@ typedef struct os_thread_cb
     cm_uint32_t             stack_size; /* 栈大小 Byte单位*/
     cm_uint32_t             * psp; /* sp指针 */
     cm_priority_t             priority; /* 优先级 */
-    struct os_thread_cb     *next;
+    cm_uint32_t               time_slice; /* 可运行时间片 */
+    cm_uint32_t               tick; /* 当前剩余时间片 */
+    struct os_thread_cb     *next; /* 下一线程 */
 }cm_tcb_t;
 
 /* 线程id号 */
@@ -85,8 +89,7 @@ typedef cm_tcb_t*           cm_thread_id_t;
  * 空闲内存块链表 
  * 内存块 大小固定为 sizeof(cm_tcb_t)
  */
-#define CM_TCB_SIZE (6)
-//const cm_uint32_t CM_TCB_SIZE = sizeof(cm_tcb_t);
+#define CM_TCB_SIZE (8)
 typedef struct cm_mem_block_tag
 {
     cm_uint32_t data[CM_TCB_SIZE];

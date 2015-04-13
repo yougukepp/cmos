@@ -72,6 +72,8 @@ cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *ar
     ptr_tcb->stack_size = stack_size;
     ptr_tcb->psp = s_user_stack_base;
     ptr_tcb->priority = thread_def->priority;
+    ptr_tcb->time_slice = thread_def->time_slice;
+    ptr_tcb->tick = thread_def->time_slice;
     ptr_tcb->next = NULL;
 
     /* 初始化栈内容 */
