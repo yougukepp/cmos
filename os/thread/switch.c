@@ -202,13 +202,9 @@ void *thread_switch(const void *cur_stack)
 
     cm_uint8_t tcb_table_index = 0;
 
-    if(0x00 == s_priority_cur) /* idle线程都没创建(初始化未完成) 继续初始化 */
+    if( (0x00 == s_priority_cur) || (0x80 & s_priority_cur)) /* 非法优先级 */
     {
-        next_psp = cur_stack;
-    }
-    else if(0x80 & s_priority_cur) /* 错误优先级 */
-    { 
-        Error_Handler();
+        next_psp = (cm_uint32_t *)cur_stack;
     }
     else /* 正确的优先级 0x00 < s_priority_cur <= 0x7F */
     { 
