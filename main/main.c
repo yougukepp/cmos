@@ -42,7 +42,7 @@
 *
 ******************************************************************************/
 static void job1 (void const *argv);
-osThreadDef(job1, osPriorityAboveNormal, 1, 0x1000);
+osThreadDef(job1, osPriorityNormal, 1, 0x1000);
 
 /********************************** 变量实现区 *********************************/
 
@@ -85,8 +85,5 @@ static void job1 (void const *argument)
         }
         BSP_LED_Toggle(LED4);
         i = 0; 
-
-        //osStatus osSVCDemo(int32 argv1, int32 argv2, int32 argv3, int32 argv4);
-        //osStatus rst = osSVCDemo(1, 2, 3, 4);
     }
 }

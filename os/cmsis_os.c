@@ -77,37 +77,37 @@ static cm_priority_t osPriority2cmPriority(osPriority priority)
     {
         case osPriorityIdle:
             {
-                cm_priority = 0x01;
+                cm_priority = 0;
                 break;
             }
         case osPriorityLow:
             {
-                cm_priority = 0x02;
+                cm_priority = 1;
                 break;
             }
         case osPriorityBelowNormal:
             {
-                cm_priority = 0x04;
+                cm_priority = 2;
                 break;
             }
         case osPriorityNormal:
             {
-                cm_priority = 0x08;
+                cm_priority = 3;
                 break;
             }
         case osPriorityAboveNormal:
             {
-                cm_priority = 0x10;
+                cm_priority = 4;
                 break;
             }
         case osPriorityHigh:
             {
-                cm_priority = 0x20;
+                cm_priority = 5;
                 break;
             }
         case osPriorityRealtime:
             {
-                cm_priority = 0x40;
+                cm_priority = 6;
                 break;
             }
         default:

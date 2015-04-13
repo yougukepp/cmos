@@ -25,14 +25,14 @@
 
 /* 优先级 */
 /*
-  osPriorityIdle         bit0
-  osPriorityLow          bit1
-  osPriorityBelowNormal  bit2
-  osPriorityNormal       bit3
-  osPriorityAboveNormal  bit4
-  osPriorityHigh         bit5
-  osPriorityRealtime     bit6
-  osPriorityError        bit7
+  osPriorityIdle         0
+  osPriorityLow          1
+  osPriorityBelowNormal  2
+  osPriorityNormal       3
+  osPriorityAboveNormal  4
+  osPriorityHigh         5
+  osPriorityRealtime     6
+  osPriorityError        7
   sys_thread_create维护
   bit7不能为1
   s_priority_cur不能为0x00
@@ -219,9 +219,12 @@ void *thread_switch(const void *cur_stack)
 void thread_switch_add_thread(cm_tcb_t *ptr_tcb)
 {
     cm_priority_t priority = 0;
+    cm_priority_t priority_bit = 0;
 
     priority = ptr_tcb->priority;
-    s_priority_cur |= priority; /* 置位优先级位 */ 
+    priority_bit = (1 << priority);
+
+    s_priority_cur |= priority_bit; /* 置位优先级位 */ 
 
     cm_tcb_t *pre = NULL;
     const cm_tcb_t *cur = NULL;
