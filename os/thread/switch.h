@@ -6,7 +6,10 @@
  * 版本号  ： v1.0
  * 文件描述： 线程调度实现
  * 版权说明： Copyright (c) 2000-2020 GNU
- * 其    他： 算法描述 见 thread_switch.c文件
+ * 其    他： 
+ *            1. 算法描述 见switch.c文件
+ *            2. 所有切换算法相关的变量全部定义(static)于本文件
+ *            3. 其他模块(例如tcb_list.c)需要使用2中的变量本模块通过set/get函数导出
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -16,6 +19,7 @@
 #define _SWITCH_H_
 
 /************************************ 头文件 ***********************************/
+#include "typedef.h"
 
 /************************************ 宏定义 ***********************************/
 
@@ -46,12 +50,13 @@
  ******************************************************************************/
 void *thread_switch(const void *cur_stack);
 
-/* 新线程加入 */
-void thread_switch_add_thread(cm_tcb_t *ptr_tcb);
-
-/* 跟新线程时间片 */
 void thread_switch_update_timeslice(void);
 
-#endif // #ifndef _SWITCH_H_
+static cm_tcb_t *thread_switch_get_highest_tcb(void);
 
+cm_tcb_t *get_tcb_head(cm_priority_t priority);
+
+void thread_switch_init_one_tcb(cm_tcb_t *ptr_tcb);
+
+#endif // #ifndef _SWITCH_H_
 

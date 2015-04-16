@@ -17,7 +17,6 @@
 
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
-#include "switch.h"
 
 /************************************ 宏定义 ***********************************/
 
@@ -30,6 +29,8 @@
 
 /*********************************** 接口函数 **********************************/
 cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *argv);
+
+cm_priority_t thread_get_priority(cm_tcb_t *ptr_tcb);
 
 #endif // #ifndef __THREAD_H__
 

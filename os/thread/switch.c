@@ -6,7 +6,10 @@
  * 版本号  ： v1.0
  * 文件描述： 线程切换算法的实现
  * 版权说明： Copyright (c) 2000-2020   烽火通信科技股份有限公司
- * 其    他： TODO:算法描述
+ * 其    他： 
+ *            TODO:
+ *            1. 算法描述 *
+ *            2. 该模块关键段较多,需要关中断
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -18,6 +21,8 @@
 #include "typedef.h"
 #include "cmos_config.h"
 #include "switch.h"
+#include "tcb_list.h"
+#include "thread.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -192,12 +197,7 @@ static const cm_uint8_t s_priority_bitmap[] = {
 /* O(1)算法 */
 static cm_tcb_t *thread_switch_get_highest_tcb(void);
 
-/* 遍历到TCB链表表尾 */
-static cm_tcb_t *thread_switch_goto_tail(cm_tcb_t *head);
-
-
 /********************************** 变量实现区 *********************************/
-
 
 /********************************** 函数实现区 *********************************/
 void *thread_switch(const void *cur_psp)
@@ -219,31 +219,43 @@ void *thread_switch(const void *cur_psp)
     return next_psp;
 } 
 
-void thread_switch_add_thread(cm_tcb_t *ptr_tcb)
+/* O(1)算法 */
+static cm_tcb_t *thread_switch_get_highest_tcb(void)
+{
+    cm_tcb_t *higighest_tcb = NULL;
+
+    cm_uint8_t tcb_table_index = 0;
+   
+    /* 正确的优先级 0x00 < s_priority_cur <= 0x7F */
+    if(! ((0x00 == s_priority_cur) || (0x80 & s_priority_cur)) )
+    {
+        tcb_table_index = s_priority_bitmap[s_priority_cur]; /* 查最高优先级 */
+        higighest_tcb = s_priority_tcb_table[tcb_table_index]; /* 获取最高优先级线程TCB */
+    }
+
+    /* 错误(或无线程)返回 NULL */
+    return higighest_tcb;
+}
+
+cm_tcb_t *get_tcb_head(cm_priority_t priority)
 {
     cm_tcb_t *head = NULL;
-    cm_tcb_t *tail = NULL; 
 
-    cm_priority_t priority = 0; 
+    head = s_priority_tcb_table[priority];
 
-    priority = ptr_tcb->priority;
-    
+    return head;
+} 
+
+void thread_switch_init_one_tcb(cm_tcb_t *ptr_tcb)
+{ 
+    cm_priority_t priority = 0;
+
+    priority = thread_get_priority(ptr_tcb);
     /* 跟新优先级位图索引 */
     s_priority_cur |= (1 << priority);
 
-    /* 获取当前优先级线程链表头 */
-    head = s_priority_tcb_table[priority];
-
-    if(NULL == head) /* ptr_tcb是头节点 */
-    {
-        s_priority_tcb_table[priority] = ptr_tcb;
-    }
-    else /* 找尾 并 加入 */
-    { 
-        
-        tail = thread_switch_goto_tail(head);
-        tail->next = ptr_tcb;
-    }
+    /* 初始化该优先级TCB链表 */
+    s_priority_tcb_table[priority] = ptr_tcb;
 }
 
 void thread_switch_update_timeslice(void)
@@ -263,7 +275,7 @@ void thread_switch_update_timeslice(void)
     {
         /* 重置时间片 */
         higighest_tcb->tick = higighest_tcb->time_slice;
-       
+
         /* 若有其他线程把本线程移动到链表尾部 */
         if(NULL != higighest_tcb->next)
         {
@@ -282,49 +294,4 @@ void thread_switch_update_timeslice(void)
     }
 }
 
-/* O(1)算法 */
-static cm_tcb_t *thread_switch_get_highest_tcb(void)
-{
-    cm_tcb_t *higighest_tcb = NULL;
-
-    cm_uint8_t tcb_table_index = 0;
-   
-    /* 正确的优先级 0x00 < s_priority_cur <= 0x7F */
-    if(! ((0x00 == s_priority_cur) || (0x80 & s_priority_cur)) )
-    {
-        tcb_table_index = s_priority_bitmap[s_priority_cur]; /* 查最高优先级 */
-        higighest_tcb = s_priority_tcb_table[tcb_table_index]; /* 获取最高优先级线程TCB */
-    }
-
-    /* 错误(或无线程)返回 NULL */
-
-    return higighest_tcb;
-}
-
-static cm_tcb_t *thread_switch_goto_tail(cm_tcb_t *head)
-{
-    cm_tcb_t *tail = NULL;
-
-    cm_tcb_t *pre = NULL;
-    const cm_tcb_t *cur = NULL;
-
-    if(NULL == head) /* 头都是空的,头就是尾 */
-    {
-        return NULL;
-    }
-
-    pre = head;
-    do
-    {
-        cur = pre->next; 
-        if(NULL == cur) /* 位置找到 */
-        {
-            tail = pre;
-            break;
-        }
-        pre = pre->next; /* 继续向后找 */
-    }while(TRUE);
-
-    return tail;
-}
 

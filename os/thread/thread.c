@@ -17,9 +17,10 @@
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
 #include "cmos_config.h"
+#include "stm32f429i_discovery.h"
 #include "mem.h"
 #include "switch.h"
-#include "stm32f429i_discovery.h"
+#include "tcb_list.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -105,6 +106,11 @@ static void cm_idle_thread(void const *argument)
         BSP_LED_Toggle(LED3);
         i = 0;
     }
+}
+
+cm_priority_t thread_get_priority(cm_tcb_t *ptr_tcb)
+{
+    return ptr_tcb->priority;
 }
 
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv)
