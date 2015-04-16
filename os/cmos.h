@@ -75,6 +75,8 @@ cm_status_t kernel_start(void);
  ******************************************************************************/
 cm_thread_id_t thread_create(const cm_thread_def_t *thread_def, void *argv);
 
+cm_status_t delay(cm_uint32_t mil_sec);
+
 #endif // #ifndef _CMOS_H_
 
 

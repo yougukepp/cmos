@@ -50,13 +50,18 @@
  ******************************************************************************/
 void *thread_switch(const void *cur_stack);
 
-void switch_update_timeslice(void);
+void switch_update_tcb_time(void);
 
-static cm_tcb_t *switch_get_highest_tcb(void);
+/* O(1)算法 */
+cm_tcb_t *switch_get_highest_tcb(void);
 
 cm_tcb_t *switch_get_first_tcb(cm_priority_t priority);
 
 void switch_init_first_tcb(cm_tcb_t *ptr_tcb);
+
+void switch_pend(void);
+
+void switch_update(void);
 
 #endif // #ifndef _CM_SWITCH_H_
 

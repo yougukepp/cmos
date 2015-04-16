@@ -61,6 +61,17 @@ osThreadId osThreadCreate(const osThreadDef_t *thread_def, void *argv)
     return (osThreadId)id;
 }
 
+/*---------------------------------- 一般等待 ---------------------------------*/
+osStatus osDelay(uint32_t millisec)
+{
+    cm_uint32_t mil_sec = 0;
+
+    mil_sec = millisec;
+
+    return delay(mil_sec);
+}
+
+
 /* CMSIS优先级转换为CM优先级 
  * bit0 Idle
  * bit1 Low

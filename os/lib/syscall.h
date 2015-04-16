@@ -19,6 +19,7 @@
 #include "typedef.h"
 #include "kernel.h"
 #include "thread.h"
+#include "wait.h"
 
 /************************************ 宏定义 ***********************************/
 

@@ -19,7 +19,6 @@
 
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
-#include "stm32f4xx_hal.h"
 #include "switch.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -54,17 +53,17 @@ static cm_uint32_t s_tick = 0;
  * 返回值  : 无
  *          
  * 调用关系: 无
- * 其 它   : 无
+ * 其 它   : 1ms 该函数会被调用一次
  *
  ******************************************************************************/
 void SysTick_Handler(void)
 {
     s_tick++;
 
-    /* 处理time_slice */
-    switch_update_timeslice();
-
-    /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
-    SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+    /* 处理 time_slice delay等时间信息 */
+    switch_update_tcb_time(); 
+    
+    /* 调度 */
+    switch_pend();
 }
 

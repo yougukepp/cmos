@@ -79,3 +79,22 @@ void tcb_list_add(cm_tcb_t *ptr_tcb)
         tail->next = ptr_tcb;
     }
 }
+
+/* 遍历 */
+void tcb_list_walk(cm_tcb_t *head, cm_tcb_list_walk_func_t func)
+{
+    cm_tcb_t *walker = NULL;
+
+    walker = head;
+
+    if(NULL == walker)
+    {
+        return;
+    }
+
+    do{
+        func(walker);
+        walker = walker->next;
+    }while(NULL != walker->next);
+}
+

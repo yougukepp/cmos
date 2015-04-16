@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F429xx,USE_STM32F429I_DISCO,</Define>
               <Undefine></Undefine>
-              <IncludePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Device\ST\STM32F4xx\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\Components\Common;E:\Keil_v5\STM32Cube_FW_F4\Utilities\CPU;E:\Keil_v5\STM32Cube_FW_F4\Utilities\Log;..\main;..\os;..\os\kernel;..\os\lib;..\os\thread</IncludePath>
+              <IncludePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\Device\ST\STM32F4xx\Include;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\Components\Common;E:\Keil_v5\STM32Cube_FW_F4\Utilities\CPU;E:\Keil_v5\STM32Cube_FW_F4\Utilities\Log;..\main;..\os;..\os\kernel;..\os\lib;..\os\thread;..\os\wait</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -482,6 +482,11 @@
               <FileName>idle.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\os\thread\idle.c</FilePath>
+            </File>
+            <File>
+              <FileName>wait.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\wait\wait.c</FilePath>
             </File>
           </Files>
         </Group>

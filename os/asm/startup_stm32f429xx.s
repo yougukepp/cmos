@@ -215,6 +215,12 @@ thread_create   PROC
                 BX  LR
                 ENDP
 
+delay           PROC 
+                EXPORT  delay                      [WEAK]
+                SVC 0x20
+                BX  LR
+                ENDP
+
 ; 汇编函数库
 ; 初始启动线程
 first_thread_start PROC

@@ -24,6 +24,7 @@
 #include "tcb_list.h"
 #include "thread.h"
 #include "tcb.h"
+#include "stm32f4xx_hal.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -195,8 +196,6 @@ static const cm_uint8_t s_priority_bitmap[] = {
 };
 
 /********************************** 函数声明区 *********************************/
-/* O(1)算法 */
-static cm_tcb_t *switch_get_highest_tcb(void);
 
 /********************************** 变量实现区 *********************************/
 
@@ -221,7 +220,7 @@ void *thread_switch(const void *cur_psp)
 } 
 
 /* O(1)算法 */
-static cm_tcb_t *switch_get_highest_tcb(void)
+cm_tcb_t *switch_get_highest_tcb(void)
 {
     cm_tcb_t *higighest_tcb = NULL;
 
@@ -259,7 +258,7 @@ void switch_init_first_tcb(cm_tcb_t *ptr_tcb)
     s_tcb_table_by_priority[priority] = ptr_tcb;
 }
 
-void switch_update_timeslice(void)
+void switch_update_tcb_time(void)
 {
     cm_uint8_t tcb_table_index = 0;
     cm_tcb_t *higighest_tcb = NULL;
@@ -269,13 +268,13 @@ void switch_update_timeslice(void)
     /* 查找最高优先级线程 */
     higighest_tcb = switch_get_highest_tcb();
 
-    higighest_tcb->tick--;
+    tcb_tick_dec(higighest_tcb);
    
     /* 当前线程时间片结束 */
-    if(0 == higighest_tcb->tick)
+    if(tcb_tick_over(higighest_tcb))
     {
         /* 重置时间片 */
-        higighest_tcb->tick = higighest_tcb->time_slice;
+        tcb_tick_reset(higighest_tcb);
 
         /* 若有其他线程把本线程移动到链表尾部 */
         if(NULL != higighest_tcb->next)
@@ -292,6 +291,19 @@ void switch_update_timeslice(void)
             tail->next = higighest_tcb;
             higighest_tcb->next = NULL;
         }
-    }
+    } 
+    
+    tcb_list_walk(higighest_tcb, tcb_delay_dec);
+}
+
+void switch_update(void)
+{
+    ;
+}
+
+void switch_pend(void)
+{ 
+    /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
+    SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
 

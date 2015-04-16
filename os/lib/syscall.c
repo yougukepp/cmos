@@ -74,6 +74,7 @@ void syscall_c(cm_uint32_t *sp)
      *        0x10 osThreadCreate
      *        ...待实现...
      *      0x2 普通等待(Generic Wait Functions)
+     *        0x20 osDelay
      *        ...待实现...
      *
      **************************************************************************/
@@ -92,6 +93,11 @@ void syscall_c(cm_uint32_t *sp)
         case 0x10:
             {
                 sp[0] = (cm_uint32_t)syscall_thread_create((void *)stacked_r0, (void *)stacked_r1);
+                break;
+            }
+        case 0x20:
+            {
+                sp[0] = syscall_delay((cm_uint32_t)stacked_r0);
                 break;
             }
         default:
