@@ -19,6 +19,7 @@
 #include "tcb_list.h"
 #include "switch.h"
 #include "thread.h"
+#include "tcb.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -65,7 +66,7 @@ void tcb_list_add(cm_tcb_t *ptr_tcb)
     cm_tcb_t *tail = NULL;
     cm_priority_t priority = 0;
 
-    priority = thread_get_priority(ptr_tcb);
+    priority = tcb_get_priority(ptr_tcb);
 
     head = switch_get_first_tcb(priority);
     if(NULL == head) /* ptr_tcb是头节点 */

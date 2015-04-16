@@ -19,8 +19,10 @@
 #include "cmos_config.h"
 #include "stm32f429i_discovery.h"
 #include "mem.h"
+#include "misc.h"
 #include "switch.h"
 #include "tcb_list.h"
+#include "tcb.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -28,7 +30,7 @@
 
 /********************************** 函数声明区 *********************************/
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv);
-static void thread_exit_error(void);
+
 /*******************************************************************************
 *
 * 函数名  : cm_idle_thread
@@ -63,19 +65,18 @@ cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *ar
     /* 栈大小必须4Bytes对齐 */
     if(0 != (stack_size & 0x00000003))
     {
-        return NULL;
+        return (cm_thread_id_t)NULL;
     }
 
+    /* TODO: 线程终止时释放 避免内存泄露 */
     ptr_tcb = mem_malloc_tcb();
+    if(NULL == ptr_tcb)
+    {
+        return (cm_thread_id_t)NULL;
+    }
+
     /* 初始化ptr_tcb */
-    ptr_tcb->pthread = thread_def->pthread;
-    ptr_tcb->argv = argv;
-    ptr_tcb->stack_size = stack_size;
-    ptr_tcb->psp = s_user_stack_base;
-    ptr_tcb->priority = thread_def->priority;
-    ptr_tcb->time_slice = thread_def->time_slice;
-    ptr_tcb->tick = thread_def->time_slice;
-    ptr_tcb->next = NULL;
+    tcb_init(ptr_tcb, thread_def, argv, s_user_stack_base);
 
     /* 初始化栈内容 */
     ptr_tcb->psp = thread_init_stack(ptr_tcb->psp, ptr_tcb->pthread, ptr_tcb->argv);
@@ -108,11 +109,6 @@ static void cm_idle_thread(void const *argument)
     }
 }
 
-cm_priority_t thread_get_priority(cm_tcb_t *ptr_tcb)
-{
-    return ptr_tcb->priority;
-}
-
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv)
 { 
     sp--;
@@ -122,7 +118,7 @@ static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, vo
     *sp = (cm_uint32_t)funcName; /* PC */
 
     sp--;
-    *sp = (cm_uint32_t )thread_exit_error; /* LR */
+    *sp = (cm_uint32_t )Error_Handler; /* LR */
 
     /* 保留寄存器 R12 R3 R2 R1 R0 的空间 */
 #if 0
@@ -181,9 +177,3 @@ static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, vo
     return sp;
 }
 
-static void thread_exit_error(void)
-{
-  while(1)
-  {
-  }
-}

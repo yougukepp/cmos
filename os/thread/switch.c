@@ -23,6 +23,7 @@
 #include "switch.h"
 #include "tcb_list.h"
 #include "thread.h"
+#include "tcb.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -250,7 +251,7 @@ void switch_init_first_tcb(cm_tcb_t *ptr_tcb)
 { 
     cm_priority_t priority = 0;
 
-    priority = thread_get_priority(ptr_tcb);
+    priority = tcb_get_priority(ptr_tcb);
     /* 跟新优先级位图索引 */
     s_priority_bitmap_index |= (1 << priority);
 
@@ -293,5 +294,4 @@ void switch_update_timeslice(void)
         }
     }
 }
-
 
