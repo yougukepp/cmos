@@ -61,9 +61,9 @@ void mem_init(void)
     do
     {
         *--u_ptr = 0x5553544B; /* 先减后赋值 ASCII "USTK" */
-    }while(u_ptr > thread_stack_limit);
-
-		/* 系统栈初始化为"SSTK" */
+    }while(u_ptr > thread_stack_limit); 
+    
+    /* 系统栈初始化为"SSTK" */
     cm_uint32_t *s_ptr = (cm_uint32_t *)get_heap_limit();
     cm_uint32_t *msp_now = (cm_uint32_t *)__get_MSP();
     do

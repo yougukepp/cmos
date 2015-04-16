@@ -82,7 +82,7 @@ static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, vo
 
     /* 保留寄存器 R12 R3 R2 R1 R0 的空间 */
 #if 0
-    sp -= 5;	/* R12, R3, R2 and R1. */
+    sp -= 5;    /* R12, R3, R2 and R1. */
     *sp = (cm_uint32_t )argv; /* R0 */
 #else /* 调试 */
     sp--;

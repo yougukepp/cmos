@@ -270,7 +270,7 @@ void switch_update_timeslice(void)
     higighest_tcb = switch_get_highest_tcb();
 
     higighest_tcb->tick--;
-	
+   
     /* 当前线程时间片结束 */
     if(0 == higighest_tcb->tick)
     {

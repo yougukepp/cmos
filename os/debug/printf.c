@@ -52,27 +52,40 @@
     return;
 }*/
 
-struct __FILE {
-int handle; /* Add whatever you need here */ };
+struct __FILE
+{
+    int handle; /* Add whatever you need here */ 
+};
+
 FILE __stdout;
-FILE __stdin;
+FILE __stdin; 
 
 int fputc(int ch, FILE *f)
-	{
-	return (ITM_SendChar(ch));
+{
+    return (ITM_SendChar(ch));
 }
 
-volatile int32_t ITM_RxBuffer=0x5AA55AA5; // Initialize as EMPTY
-int fgetc(FILE *f) {
-char tmp;
-while (ITM_CheckChar()==0); // Wait if buffer is empty
-tmp = ITM_ReceiveChar();
-if (tmp==13) tmp = 10;
-return (ITM_SendChar(tmp));
+volatile int32_t ITM_RxBuffer=0x5AA55AA5; // Initialize as EMPTY 
+
+int fgetc(FILE *f)
+{
+    char tmp;
+   
+    while (ITM_CheckChar()==0); // Wait if buffer is empty
+
+    tmp = ITM_ReceiveChar();
+   
+    if (tmp==13)
+    {
+        tmp = 10;
+    }
+   
+    return (ITM_SendChar(tmp));
 }
 
-void _sys_exit(int return_code) {
-label: goto label; /* endless loop */
-	
+void _sys_exit(int return_code) 
+{
+label:
+    goto label; /* endless loop */
 }
 

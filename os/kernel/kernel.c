@@ -65,7 +65,7 @@ static void SystemClock_Config(void);
 void syscall_kernel_initialize(void)
 {
     mem_init();
-	
+   
     HAL_Init(); 
   
     BSP_LED_Init(LED3);
