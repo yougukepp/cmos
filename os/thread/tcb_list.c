@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * 文件名  ： list.c
+ * 文件名  ： tcb_list.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20150416 
  * 版本号  ： v1.0
@@ -32,7 +32,7 @@
 
 
 /********************************** 函数实现区 *********************************/
-cm_tcb_t *thread_switch_goto_tail(cm_tcb_t *head)
+cm_tcb_t *tcb_list_goto_tail(cm_tcb_t *head)
 {
     cm_tcb_t *tail = NULL;
 
@@ -59,7 +59,7 @@ cm_tcb_t *thread_switch_goto_tail(cm_tcb_t *head)
     return tail;
 }
 
-void thread_switch_add_thread(cm_tcb_t *ptr_tcb)
+void tcb_list_add(cm_tcb_t *ptr_tcb)
 {
     cm_tcb_t *head = NULL;
     cm_tcb_t *tail = NULL;
@@ -74,7 +74,7 @@ void thread_switch_add_thread(cm_tcb_t *ptr_tcb)
     }
     else
     {
-        tail = thread_switch_goto_tail(head);
+        tail = tcb_list_goto_tail(head);
         tail->next = ptr_tcb;
     }
 }

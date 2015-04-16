@@ -281,7 +281,7 @@ void thread_switch_update_timeslice(void)
         {
             /* 获取表尾 */
             head = higighest_tcb;
-            tail = thread_switch_goto_tail(head);
+            tail = tcb_list_goto_tail(head);
            
             /* 后一线程前移 */ 
             tcb_table_index = s_priority_bitmap[s_priority_cur];
