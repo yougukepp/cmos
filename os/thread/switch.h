@@ -50,13 +50,13 @@
  ******************************************************************************/
 void *thread_switch(const void *cur_stack);
 
-void thread_switch_update_timeslice(void);
+void switch_update_timeslice(void);
 
-static cm_tcb_t *thread_switch_get_highest_tcb(void);
+static cm_tcb_t *switch_get_highest_tcb(void);
 
-cm_tcb_t *get_tcb_head(cm_priority_t priority);
+cm_tcb_t *switch_get_first_tcb(cm_priority_t priority);
 
-void thread_switch_init_one_tcb(cm_tcb_t *ptr_tcb);
+void switch_init_first_tcb(cm_tcb_t *ptr_tcb);
 
 #endif // #ifndef _SWITCH_H_
 

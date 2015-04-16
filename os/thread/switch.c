@@ -40,10 +40,10 @@
   osPriorityError        7
   sys_thread_create维护
   bit7不能为1
-  s_priority_cur不能为0x00
-  0x00 < s_priority_cur <= 0x7F
+  s_priority_bitmap_index不能为0x00
+  0x00 < s_priority_bitmap_index <= 0x7F
   */
-static cm_uint8_t s_priority_cur = 0x00;
+static cm_uint8_t s_priority_bitmap_index = 0x00;
 
 /* 优先级线程链表数组 
  * 每个元素指向某一优先级的线程链表
@@ -55,11 +55,11 @@ static cm_uint8_t s_priority_cur = 0x00;
  * 5 High
  * 6 Realtime
  * */
-static cm_tcb_t *s_priority_tcb_table[CMOS_PRIORITY_MAX] = {NULL};
+static cm_tcb_t *s_tcb_table_by_priority[CMOS_PRIORITY_MAX] = {NULL};
 
 /* 
- * 每个位置表示s_priority_cur的值
- * 每个值表示一个优先级 0-6 同时是s_priority_tcb_table中的索引
+ * 每个位置表示s_priority_bitmap_index的值
+ * 每个值表示一个优先级 0-6 同时是s_tcb_table_by_priority中的索引
  * tools/generate_bitmap.py生成
  * */
 static const cm_uint8_t s_priority_bitmap[] = {
@@ -195,7 +195,7 @@ static const cm_uint8_t s_priority_bitmap[] = {
 
 /********************************** 函数声明区 *********************************/
 /* O(1)算法 */
-static cm_tcb_t *thread_switch_get_highest_tcb(void);
+static cm_tcb_t *switch_get_highest_tcb(void);
 
 /********************************** 变量实现区 *********************************/
 
@@ -206,7 +206,7 @@ void *thread_switch(const void *cur_psp)
     cm_tcb_t *next_tcb = NULL;
 
     /* 查找最高优先级线程 */
-    next_tcb = thread_switch_get_highest_tcb();
+    next_tcb = switch_get_highest_tcb();
     if(NULL == next_tcb) /* 无合适的可以切换线程 */
     {
         next_psp = (cm_uint32_t *)cur_psp;
@@ -220,45 +220,45 @@ void *thread_switch(const void *cur_psp)
 } 
 
 /* O(1)算法 */
-static cm_tcb_t *thread_switch_get_highest_tcb(void)
+static cm_tcb_t *switch_get_highest_tcb(void)
 {
     cm_tcb_t *higighest_tcb = NULL;
 
     cm_uint8_t tcb_table_index = 0;
    
-    /* 正确的优先级 0x00 < s_priority_cur <= 0x7F */
-    if(! ((0x00 == s_priority_cur) || (0x80 & s_priority_cur)) )
+    /* 正确的优先级 0x00 < s_priority_bitmap_index <= 0x7F */
+    if(! ((0x00 == s_priority_bitmap_index) || (0x80 & s_priority_bitmap_index)) )
     {
-        tcb_table_index = s_priority_bitmap[s_priority_cur]; /* 查最高优先级 */
-        higighest_tcb = s_priority_tcb_table[tcb_table_index]; /* 获取最高优先级线程TCB */
+        tcb_table_index = s_priority_bitmap[s_priority_bitmap_index]; /* 查最高优先级 */
+        higighest_tcb = s_tcb_table_by_priority[tcb_table_index]; /* 获取最高优先级线程TCB */
     }
 
     /* 错误(或无线程)返回 NULL */
     return higighest_tcb;
 }
 
-cm_tcb_t *get_tcb_head(cm_priority_t priority)
+cm_tcb_t *switch_get_first_tcb(cm_priority_t priority)
 {
     cm_tcb_t *head = NULL;
 
-    head = s_priority_tcb_table[priority];
+    head = s_tcb_table_by_priority[priority];
 
     return head;
 } 
 
-void thread_switch_init_one_tcb(cm_tcb_t *ptr_tcb)
+void switch_init_first_tcb(cm_tcb_t *ptr_tcb)
 { 
     cm_priority_t priority = 0;
 
     priority = thread_get_priority(ptr_tcb);
     /* 跟新优先级位图索引 */
-    s_priority_cur |= (1 << priority);
+    s_priority_bitmap_index |= (1 << priority);
 
     /* 初始化该优先级TCB链表 */
-    s_priority_tcb_table[priority] = ptr_tcb;
+    s_tcb_table_by_priority[priority] = ptr_tcb;
 }
 
-void thread_switch_update_timeslice(void)
+void switch_update_timeslice(void)
 {
     cm_uint8_t tcb_table_index = 0;
     cm_tcb_t *higighest_tcb = NULL;
@@ -266,7 +266,7 @@ void thread_switch_update_timeslice(void)
     cm_tcb_t *tail = NULL;
 
     /* 查找最高优先级线程 */
-    higighest_tcb = thread_switch_get_highest_tcb();
+    higighest_tcb = switch_get_highest_tcb();
 
     higighest_tcb->tick--;
 	
@@ -284,8 +284,8 @@ void thread_switch_update_timeslice(void)
             tail = tcb_list_goto_tail(head);
            
             /* 后一线程前移 */ 
-            tcb_table_index = s_priority_bitmap[s_priority_cur];
-            s_priority_tcb_table[tcb_table_index] = higighest_tcb->next;
+            tcb_table_index = s_priority_bitmap[s_priority_bitmap_index];
+            s_tcb_table_by_priority[tcb_table_index] = higighest_tcb->next;
 
             /* higighest_tcb 加入到表尾巴 */
             tail->next = higighest_tcb;

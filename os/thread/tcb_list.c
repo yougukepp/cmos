@@ -67,10 +67,10 @@ void tcb_list_add(cm_tcb_t *ptr_tcb)
 
     priority = thread_get_priority(ptr_tcb);
 
-    head = get_tcb_head(priority);
+    head = switch_get_first_tcb(priority);
     if(NULL == head) /* ptr_tcb是头节点 */
     { 
-        thread_switch_init_one_tcb(ptr_tcb);
+        switch_init_first_tcb(ptr_tcb);
     }
     else
     {

@@ -62,7 +62,7 @@ void SysTick_Handler(void)
     s_tick++;
 
     /* 处理time_slice */
-    thread_switch_update_timeslice();
+    switch_update_timeslice();
 
     /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
