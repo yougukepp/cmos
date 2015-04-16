@@ -478,6 +478,11 @@
               <FileType>1</FileType>
               <FilePath>..\os\thread\tcb.c</FilePath>
             </File>
+            <File>
+              <FileName>idle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\thread\idle.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

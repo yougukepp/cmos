@@ -193,11 +193,11 @@ DebugMon_Handler\
 ; 系统调用
 ;*******************************************************************************
 kernel_initialize PROC
-                IMPORT thread_idle_create
+                IMPORT  idle_create
                 EXPORT  kernel_initialize          [WEAK]
-                SVC 0x00
+                SVC 0x00                           ; 1. 初始化
                 PUSH {LR}
-                LDR R0, =thread_idle_create        ; 创建idle线程
+                LDR R0, =idle_create               ; 2. 创建并启动idle线程
                 BLX R0
                 POP {LR}
                 BX  LR

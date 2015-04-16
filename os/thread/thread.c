@@ -17,7 +17,6 @@
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
 #include "cmos_config.h"
-#include "stm32f429i_discovery.h"
 #include "mem.h"
 #include "misc.h"
 #include "switch.h"
@@ -30,26 +29,6 @@
 
 /********************************** 函数声明区 *********************************/
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv);
-
-/*******************************************************************************
-*
-* 函数名  : cm_idle_thread
-* 负责人  : 彭鹏
-* 创建日期: 20150321
-* 函数功能: idle线程
-*
-* 输入参数: 无
-*
-* 输出参数: 无
-*
-* 返回值  : 无
-*
-* 调用关系: 无
-* 其 它   : 无
-*
-******************************************************************************/
-static void cm_idle_thread (void const *argv);
-osThreadDef(cm_idle_thread, osPriorityIdle, 1, 0x1000);
 
 /********************************** 变量实现区 *********************************/
 /* 空闲的任务栈顶 */
@@ -88,25 +67,6 @@ cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *ar
     tcb_list_add(ptr_tcb);
 
     return (cm_thread_id_t)ptr_tcb;
-}
-
-void thread_idle_create(void)
-{
-    osThreadCreate(osThread(cm_idle_thread), NULL);
-}
-
-static void cm_idle_thread(void const *argument)
-{
-    int32_t i = 0;
-    while (1)
-    {
-        while(i < 0x1fffff)
-        {
-            i++;
-        }
-        BSP_LED_Toggle(LED3);
-        i = 0;
-    }
 }
 
 static cm_uint32_t *thread_init_stack(cm_uint32_t *sp, cm_pthread_t funcName, void *argv)
