@@ -15,8 +15,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _SWITCH_H_
-#define _SWITCH_H_
+#ifndef _CM_SWITCH_H_
+#define _CM_SWITCH_H_
 
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
@@ -58,5 +58,5 @@ cm_tcb_t *switch_get_first_tcb(cm_priority_t priority);
 
 void switch_init_first_tcb(cm_tcb_t *ptr_tcb);
 
-#endif // #ifndef _SWITCH_H_
+#endif // #ifndef _CM_SWITCH_H_
 

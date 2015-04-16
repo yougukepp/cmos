@@ -61,7 +61,6 @@ static void SystemClock_Config(void);
 
 
 /********************************** 函数实现区 *********************************/
-
 void syscall_kernel_initialize(void)
 {
     mem_init();
@@ -101,7 +100,6 @@ void syscall_kernel_start(void)
     void first_thread_start();
     first_thread_start(CMOS_INITIAL_EXEC_RETURN);
 }
-
 
 static void SystemClock_Config(void)
 {

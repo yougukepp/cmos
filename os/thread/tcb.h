@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _TCB_H_
-#define _TCB_H_
+#ifndef _CM_TCB_H_
+#define _CM_TCB_H_
 
 /************************************ 头文件 ***********************************/
 
@@ -30,6 +30,6 @@
 cm_priority_t tcb_get_priority(cm_tcb_t *ptr_tcb);
 void tcb_init(cm_tcb_t *ptr_tcb, const cm_thread_def_t *thread_def, void *argv, cm_uint32_t *init_psp);
 
-#endif // #ifndef _TCB_H_
+#endif // #ifndef _CM_TCB_H_
 
 

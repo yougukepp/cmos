@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef __CMOS_H__
-#define __CMOS_H__
+#ifndef _CM_CMOS_H_
+#define _CM_CMOS_H_
 
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
@@ -75,6 +75,6 @@ cm_status_t kernel_start(void);
  ******************************************************************************/
 cm_thread_id_t thread_create(const cm_thread_def_t *thread_def, void *argv);
 
-#endif // #ifndef __CMOS_H__
+#endif // #ifndef _CMOS_H_
 
 

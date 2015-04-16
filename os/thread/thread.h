@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef __THREAD_H__
-#define __THREAD_H__
+#ifndef _CM_THREAD_H_
+#define _CM_THREAD_H_
 
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
@@ -30,6 +30,5 @@
 /*********************************** 接口函数 **********************************/
 cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *argv);
 
-#endif // #ifndef __THREAD_H__
-
+#endif // #ifndef _CM_THREAD_H_
 

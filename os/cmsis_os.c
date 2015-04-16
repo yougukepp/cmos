@@ -9,7 +9,7 @@
  * 其    他： cmsis_os.h中的API在该文件实现
  *            API的说明见CMSIS RTOS文档
  *            每个API都是用SVC的方式实现
- *            每个函数的return仅仅是哄编译器开心
+ *            每个函数的return仅仅是哄编译器开心(实际由R0返回)
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -118,6 +118,4 @@ static cm_priority_t osPriority2cmPriority(osPriority priority)
 
     return cm_priority;
 }
-
-
 

@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef __KERNEL_H__
-#define __KERNEL_H__
+#ifndef _CM_KERNEL_H_
+#define _CM_KERNEL_H_
 
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
@@ -31,6 +31,4 @@
 cm_uint32_t syscall_kernel_initialize(void);
 cm_uint32_t syscall_kernel_start(void);
 
-#endif // #ifndef __KERNEL_H__
-
-
+#endif // #ifndef _CM_KERNEL_H_

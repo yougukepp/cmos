@@ -134,20 +134,20 @@ used throughout the whole project.
 #define osCMSIS           0x10002      ///< API version (main [31:16] .sub [15:0])
 
 /// \note CAN BE CHANGED: \b osCMSIS_KERNEL identifies the underlying RTOS kernel and version number.
-#define osCMSIS_KERNEL    0x10000      ///< RTOS identification and version (main [31:16] .sub [15:0])
+#define osCMSIS_KERNEL    0x00001      ///< RTOS identification and version (main [31:16] .sub [15:0])
 
 /// \note MUST REMAIN UNCHANGED: \b osKernelSystemId shall be consistent in every CMSIS-RTOS.
-#define osKernelSystemId "KERNEL V1.00"   ///< RTOS identification string
+#define osKernelSystemId "KERNEL V0.01"   ///< RTOS identification string
 
 /// \note MUST REMAIN UNCHANGED: \b osFeature_xxx shall be consistent in every CMSIS-RTOS.
 #define osFeature_MainThread   0       ///< main thread      1=main can be thread, 0=not available
-#define osFeature_Pool         1       ///< Memory Pools:    1=available, 0=not available
-#define osFeature_MailQ        1       ///< Mail Queues:     1=available, 0=not available
-#define osFeature_MessageQ     1       ///< Message Queues:  1=available, 0=not available
+#define osFeature_Pool         0       ///< Memory Pools:    1=available, 0=not available
+#define osFeature_MailQ        0       ///< Mail Queues:     1=available, 0=not available
+#define osFeature_MessageQ     0       ///< Message Queues:  1=available, 0=not available
 #define osFeature_Signals      8       ///< maximum number of Signal Flags available per thread
 #define osFeature_Semaphore    30      ///< maximum count for \ref osSemaphoreCreate function
-#define osFeature_Wait         1       ///< osWait function: 1=available, 0=not available
-#define osFeature_SysTick      1       ///< osKernelSysTick functions: 1=available, 0=not available
+#define osFeature_Wait         0       ///< osWait function: 1=available, 0=not available
+#define osFeature_SysTick      0       ///< osKernelSysTick functions: 1=available, 0=not available
 
 #include <stdint.h>
 #include <stddef.h>
