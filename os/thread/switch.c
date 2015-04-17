@@ -297,6 +297,7 @@ void switch_update_tcb_time(void)
         /* 重置时间片 */
         tcb_tick_reset(higighest_tcb);
 
+        /* 包含next的线程全部移入tcb_list */
         /* 若有其他线程把本线程移动到链表尾部 */
         if(NULL != higighest_tcb->next)
         {
@@ -319,8 +320,7 @@ void switch_update_tcb_time(void)
 
 void switch_update(void)
 { 
-#if 0
-    cm_tcb_t *head = NULL;
+    cm_tcb_t *new_head = NULL;
     cm_tcb_t *cur = NULL;
     cm_priority_t priority = 0;
     
@@ -329,10 +329,15 @@ void switch_update(void)
     /* 将当前线程移入WAITING链表 */
     tcb_list_add(s_tcb_list_waiting, cur);
 
-    priority = tcb_get_priority(cur);
-    head = s_tcb_table_by_priority[priority];
-    tcb_list_del_head(head);
-#endif
+    /* 将当前线程移出就绪表 */
+    new_head = tcb_list_del_head(cur);
+    s_tcb_table_by_priority[priority] = new_head;
+    /* 已无该优先级线程 */
+    if(NULL == new_head)
+    {
+        /* 清掉相应位 */
+        s_priority_bitmap_index &= ~priority;
+    }
 }
 
 void switch_pend(void)

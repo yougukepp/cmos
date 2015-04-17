@@ -77,6 +77,18 @@ void tcb_list_add(cm_tcb_t *head, cm_tcb_t *ptr_tcb)
 
 }
 
+/* 去链表头 */
+cm_tcb_t *tcb_list_del_head(cm_tcb_t *head)
+{
+    cm_tcb_t *next = NULL;
+    if(NULL != head)
+    {
+        next = head->next;
+    }
+
+    return next;
+}
+
 /* 遍历 */
 void tcb_list_walk(cm_tcb_t *head, cm_tcb_list_walk_func_t func)
 {
