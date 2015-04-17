@@ -17,8 +17,6 @@
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
 #include "tcb_list.h"
-#include "switch.h"
-#include "thread.h"
 #include "tcb.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -60,24 +58,23 @@ cm_tcb_t *tcb_list_goto_tail(cm_tcb_t *head)
     return tail;
 }
 
-void tcb_list_add(cm_tcb_t *ptr_tcb)
+void tcb_list_add(cm_tcb_t *head, cm_tcb_t *ptr_tcb)
 {
-    cm_tcb_t *head = NULL;
     cm_tcb_t *tail = NULL;
-    cm_priority_t priority = 0;
 
-    priority = tcb_get_priority(ptr_tcb);
-
-    head = switch_get_first_tcb(priority);
-    if(NULL == head) /* ptr_tcb是头节点 */
-    { 
-        switch_init_first_tcb(ptr_tcb);
-    }
-    else
+    if(NULL == head)
     {
-        tail = tcb_list_goto_tail(head);
-        tail->next = ptr_tcb;
+        return;
     }
+
+    if(NULL == ptr_tcb)
+    {
+        return;
+    }
+
+    tail = tcb_list_goto_tail(head);
+    tail->next = ptr_tcb;
+
 }
 
 /* 遍历 */

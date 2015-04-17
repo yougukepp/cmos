@@ -20,8 +20,6 @@
 #include "mem.h"
 #include "misc.h"
 #include "switch.h"
-#include "tcb_list.h"
-#include "tcb.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -64,7 +62,7 @@ cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *ar
     s_user_stack_base -= (stack_size >> 2); /* 4Bytes对齐*/
 
     /* 通知线程切换模块有新线程 */ 
-    tcb_list_add(ptr_tcb);
+    switch_add(ptr_tcb);
 
     return (cm_thread_id_t)ptr_tcb;
 }

@@ -22,7 +22,6 @@
 #include "cmos_config.h"
 #include "switch.h"
 #include "tcb_list.h"
-#include "thread.h"
 #include "tcb.h"
 #include "stm32f4xx_hal.h"
 
@@ -47,7 +46,7 @@
   */
 static cm_uint8_t s_priority_bitmap_index = 0x00;
 
-/* 优先级线程链表数组 
+/* 优先级线程链表数组 RUNNIGN READY
  * 每个元素指向某一优先级的线程链表
  * 0 Idle
  * 1 Low
@@ -58,6 +57,9 @@ static cm_uint8_t s_priority_bitmap_index = 0x00;
  * 6 Realtime
  * */
 static cm_tcb_t *s_tcb_table_by_priority[CMOS_PRIORITY_MAX] = {NULL};
+
+/* WAITING */
+static cm_tcb_t *s_tcb_list_waiting = NULL;
 
 /* 
  * 每个位置表示s_priority_bitmap_index的值
@@ -196,6 +198,7 @@ static const cm_uint8_t s_priority_bitmap[] = {
 };
 
 /********************************** 函数声明区 *********************************/
+static void switch_init_first_tcb(cm_tcb_t *ptr_tcb);
 
 /********************************** 变量实现区 *********************************/
 
@@ -246,7 +249,25 @@ cm_tcb_t *switch_get_first_tcb(cm_priority_t priority)
     return head;
 } 
 
-void switch_init_first_tcb(cm_tcb_t *ptr_tcb)
+void switch_add(cm_tcb_t *ptr_tcb)
+{
+    cm_tcb_t *head = NULL;
+    cm_priority_t priority = 0;
+
+    priority = tcb_get_priority(ptr_tcb);
+
+    head = switch_get_first_tcb(priority);
+    if(NULL == head) /* ptr_tcb是头节点 */
+    {
+        switch_init_first_tcb(ptr_tcb);
+    }
+    else
+    {
+        tcb_list_add(head, ptr_tcb);
+    }
+}
+
+static void switch_init_first_tcb(cm_tcb_t *ptr_tcb)
 { 
     cm_priority_t priority = 0;
 
@@ -297,8 +318,21 @@ void switch_update_tcb_time(void)
 }
 
 void switch_update(void)
-{
-    ;
+{ 
+#if 0
+    cm_tcb_t *head = NULL;
+    cm_tcb_t *cur = NULL;
+    cm_priority_t priority = 0;
+    
+    cur = switch_get_highest_tcb();
+
+    /* 将当前线程移入WAITING链表 */
+    tcb_list_add(s_tcb_list_waiting, cur);
+
+    priority = tcb_get_priority(cur);
+    head = s_tcb_table_by_priority[priority];
+    tcb_list_del_head(head);
+#endif
 }
 
 void switch_pend(void)
