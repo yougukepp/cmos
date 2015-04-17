@@ -43,7 +43,7 @@ cm_status_t syscall_delay(cm_uint32_t m_sec)
     tcb_set_delay(cur, m_sec);
 
     /* TODO: 需要实现线程的多状态 调度模块更新内部结构切换出delay线程 */
-    switch_update();
+    switch_to_waiting(cur);
 
     /* 调度 */
     switch_pend();

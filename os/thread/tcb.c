@@ -30,7 +30,7 @@
 
 
 /********************************** 函数实现区 *********************************/
-cm_priority_t tcb_get_priority(cm_tcb_t *ptr_tcb)
+inline cm_priority_t tcb_get_priority(cm_tcb_t *ptr_tcb)
 {
     return ptr_tcb->priority;
 }
@@ -47,30 +47,33 @@ void tcb_init(cm_tcb_t *ptr_tcb, const cm_thread_def_t *thread_def, void *argv, 
     ptr_tcb->next = NULL;
 }
 
-void tcb_set_delay(cm_tcb_t *ptr_tcb, cm_uint32_t mil_sec)
+inline void tcb_set_delay(cm_tcb_t *ptr_tcb, cm_uint32_t mil_sec)
 {
     ptr_tcb->delay = mil_sec;
 }
 
-void tcb_tick_dec(cm_tcb_t *ptr_tcb)
+inline void tcb_tick_dec(cm_tcb_t *ptr_tcb)
 {
     ptr_tcb->tick--;
 }
 
-cm_bool_t tcb_tick_over(cm_tcb_t *ptr_tcb)
+inline cm_bool_t tcb_tick_over(cm_tcb_t *ptr_tcb)
 {
     return (0 == ptr_tcb->tick);
 }
 
-void tcb_tick_reset(cm_tcb_t *ptr_tcb)
+inline void tcb_tick_reset(cm_tcb_t *ptr_tcb)
 {
     ptr_tcb->tick = ptr_tcb->tick_total;
 }
 
-void tcb_delay_dec(cm_tcb_t *ptr_tcb)
+inline void tcb_delay_dec(cm_tcb_t *ptr_tcb)
 {
-    /* TODO: TCB 实现线程的多个状态 */
+    ptr_tcb->delay--;
+}
 
-    ptr_tcb->delay = 0;
+inline cm_uint32_t tcb_get_delay(cm_tcb_t *ptr_tcb)
+{
+    return ptr_tcb->delay;
 }
 

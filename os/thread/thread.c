@@ -20,6 +20,7 @@
 #include "mem.h"
 #include "misc.h"
 #include "switch.h"
+#include "tcb.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 

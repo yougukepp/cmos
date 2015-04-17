@@ -59,9 +59,11 @@ cm_tcb_t *switch_get_first_tcb(cm_priority_t priority);
 
 void switch_pend(void);
 
-void switch_update(void);
+void switch_to_waiting(cm_tcb_t *cur);
 
 void switch_add(cm_tcb_t *ptr_tcb);
+
+void switch_done(void);
 
 #endif // #ifndef _CM_SWITCH_H_
 

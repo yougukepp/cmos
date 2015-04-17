@@ -198,7 +198,8 @@ static const cm_uint8_t s_priority_bitmap[] = {
 };
 
 /********************************** 函数声明区 *********************************/
-static void switch_init_first_tcb(cm_tcb_t *ptr_tcb);
+static void switch_init_first_tcb(cm_tcb_t *ptr_tcb); 
+static void switch_to_ready(void);
 
 /********************************** 变量实现区 *********************************/
 
@@ -315,28 +316,66 @@ void switch_update_tcb_time(void)
         }
     } 
     
-    tcb_list_walk(higighest_tcb, tcb_delay_dec);
+    /* s_tcb_list_waiting中有就绪线程移入就绪表 */
+    tcb_list_walk(s_tcb_list_waiting, tcb_delay_dec);
+    switch_to_ready();
 }
 
-void switch_update(void)
+/* TODO:想办法使用链表的通用操作 */
+void switch_to_ready(void)
+{
+    cm_tcb_t *pre = NULL;
+    cm_tcb_t *go = NULL;
+
+    go = s_tcb_list_waiting;
+    if(NULL == go) /* 无等待线程 */
+    {
+        return;
+    }
+    else
+    {
+        do
+        { 
+            pre = go;
+            go = go->next;
+
+            if(0 == tcb_get_delay(pre)) /* 延迟到期移入就绪线程 */
+            {
+                switch_add(pre);
+                /* 移出wait链表 */
+                s_tcb_list_waiting = go;
+            }
+        }while(NULL != go);
+    }
+}
+
+void switch_to_waiting(cm_tcb_t *cur)
 { 
+    cm_uint8_t bit = 0;
     cm_tcb_t *new_head = NULL;
-    cm_tcb_t *cur = NULL;
     cm_priority_t priority = 0;
     
-    cur = switch_get_highest_tcb();
-
     /* 将当前线程移入WAITING链表 */
-    tcb_list_add(s_tcb_list_waiting, cur);
+    if(NULL == s_tcb_list_waiting)
+    {
+        s_tcb_list_waiting = cur;
+    }
+    else
+    {
+        tcb_list_add(s_tcb_list_waiting, cur);
+    }
 
     /* 将当前线程移出就绪表 */
+    priority = cur->priority;
     new_head = tcb_list_del_head(cur);
     s_tcb_table_by_priority[priority] = new_head;
     /* 已无该优先级线程 */
     if(NULL == new_head)
-    {
+    { 
+        bit = 1 << priority;
+			  bit = ~bit;
         /* 清掉相应位 */
-        s_priority_bitmap_index &= ~priority;
+        s_priority_bitmap_index &= bit;
     }
 }
 
@@ -344,5 +383,14 @@ void switch_pend(void)
 { 
     /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+}
+
+void switch_done(void)
+{
+    cm_uint32_t pendsv_set_bit = 0;
+    do 
+    {
+        pendsv_set_bit = SCB->ICSR & SCB_ICSR_PENDSVSET_Msk;
+    }while(pendsv_set_bit);
 }
 

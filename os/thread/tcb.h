@@ -40,6 +40,8 @@ void tcb_tick_reset(cm_tcb_t *ptr_tcb);
 
 void tcb_delay_dec(cm_tcb_t *ptr_tcb);
 
+cm_uint32_t tcb_get_delay(cm_tcb_t *ptr_tcb);
+
 
 #endif // #ifndef _CM_TCB_H_
 

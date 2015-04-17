@@ -217,7 +217,13 @@ thread_create   PROC
 
 delay           PROC 
                 EXPORT  delay                      [WEAK]
+                IMPORT  switch_done                [WEAK]
                 SVC 0x20
+                PUSH {LR}			
+                ;返回之前需要确保已经进行任务切换了
+                LDR R0, =switch_done
+                BLX R0
+                POP {LR}
                 BX  LR
                 ENDP
 
