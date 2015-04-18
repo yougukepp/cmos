@@ -34,7 +34,7 @@
 /********************************** 函数实现区 *********************************/
 static void cm_idle_thread(void const *argument)
 {
-    int32_t i = 0;
+    cm_int32_t i = 0;
     while (1)
     {
         while(i < 0x1fffff)

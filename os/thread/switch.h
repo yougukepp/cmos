@@ -65,5 +65,7 @@ void switch_add(cm_tcb_t *ptr_tcb);
 
 void switch_done(void);
 
+void switch_start(void);
+
 #endif // #ifndef _CM_SWITCH_H_
 

@@ -46,7 +46,7 @@
   */
 static cm_uint8_t s_priority_bitmap_index = 0x00;
 
-/* 优先级线程链表数组 RUNNIGN READY
+/* 优先级线程链表数组 READY
  * 每个元素指向某一优先级的线程链表
  * 0 Idle
  * 1 Low
@@ -57,6 +57,9 @@ static cm_uint8_t s_priority_bitmap_index = 0x00;
  * 6 Realtime
  * */
 static cm_tcb_t *s_tcb_table_by_priority[CMOS_PRIORITY_MAX] = {NULL};
+
+/* RUNNIGN */
+static cm_tcb_t *s_tcb_Running = NULL;
 
 /* WAITING */
 static cm_tcb_t *s_tcb_list_waiting = NULL;
@@ -392,5 +395,12 @@ void switch_done(void)
     {
         pendsv_set_bit = SCB->ICSR & SCB_ICSR_PENDSVSET_Msk;
     }while(pendsv_set_bit);
+}
+
+inline void switch_start(void)
+{
+    /* psp指向最先创建的任务(idle)栈顶 启动之 */
+    cm_uint32_t *psp_top = CMOS_FIRST_STACK_INIT_TOP;
+    __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */ 
 }
 

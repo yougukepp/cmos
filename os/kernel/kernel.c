@@ -19,6 +19,7 @@
 #include "stm32f429i_discovery.h"
 #include "misc.h"
 #include "mem.h"
+#include "switch.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -57,6 +58,10 @@
 *
 ******************************************************************************/
 static void SystemClock_Config(void);
+
+/* 汇编定义 */
+void first_thread_start(cm_uint32_t initial_exec_return);
+
 /********************************** 变量实现区 *********************************/
 
 
@@ -91,13 +96,11 @@ void syscall_kernel_initialize(void)
 
 void syscall_kernel_start(void)
 {
-    /* psp指向最先创建的任务(idle)栈顶 启动之 */
-    cm_uint32_t *psp_top = CMOS_FIRST_STACK_INIT_TOP;
-    __set_PSP((cm_uint32_t)psp_top); /* 初始化PSP */ 
+    switch_start();
     
     /* TODO:SVC中无法实现 不开浮点 使用PSP 非特权级 */ 
     __set_CONTROL(0x00000003);
-    void first_thread_start();
+
     first_thread_start(CMOS_INITIAL_EXEC_RETURN);
 }
 

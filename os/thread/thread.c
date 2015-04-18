@@ -56,6 +56,7 @@ cm_thread_id_t syscall_thread_create(const cm_thread_def_t *thread_def, void *ar
     /* 初始化ptr_tcb */
     tcb_init(ptr_tcb, thread_def, argv, s_user_stack_base);
 
+    /* TODO:使用tcb模块 */
     /* 初始化栈内容 */
     ptr_tcb->psp = thread_init_stack(ptr_tcb->psp, ptr_tcb->pthread, ptr_tcb->argv);
 
