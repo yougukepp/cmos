@@ -29,6 +29,8 @@
 
 /********************************** 变量声明区 *********************************/
 
+static cm_bool_t s_switch_running = FALSE;
+
 /* 优先级 */
 /*
   osPriorityIdle         0
@@ -205,6 +207,7 @@ static void switch_init_first_tcb(cm_tcb_t *ptr_tcb);
 static void switch_to_ready(void);
 static void *switch_tcb_delay_dec(cm_tcb_t *ptr_tcb);
 static void *switch_check_tcb_stack(cm_tcb_t *ptr_tcb);
+static cm_bool_t switch_running(void);
 
 /********************************** 变量实现区 *********************************/
 
@@ -297,6 +300,11 @@ void switch_update_tcb_time(void)
     cm_tcb_t *higighest_tcb = NULL;
     cm_tcb_t *head = NULL;
     cm_tcb_t *tail = NULL;
+
+    if(!switch_running())
+    {
+        return;
+    }
 
     /* 查找最高优先级线程 */
     higighest_tcb = switch_get_highest_tcb();
@@ -400,6 +408,12 @@ void switch_running_to_waiting(void)
 
 inline void switch_pend(void)
 { 
+    /* TODO:单独的变量指示系统是否初始化完成 */
+    if(!switch_running())
+    {
+        return;
+    }
+
     /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
@@ -416,6 +430,7 @@ inline void switch_start(void)
 
     /* 初始化PSP */ 
     __set_PSP((cm_uint32_t)psp); 
+    s_switch_running = TRUE;
 }
 
 inline cm_tcb_t *switch_get_running_tcb(void)
@@ -442,5 +457,10 @@ void switch_check_user_stack(void)
 static void *switch_check_tcb_stack(cm_tcb_t *ptr_tcb)
 {
     return NULL;
+}
+
+static cm_bool_t switch_running(void)
+{
+    return s_switch_running;
 }
 

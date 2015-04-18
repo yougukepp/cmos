@@ -25,7 +25,7 @@
 
 ; data + bbs + 4k系统栈 + 188k堆 = 192k 片内 SRAM
 ; 系统栈(MSP) 4kB
-Stack_Size      EQU     0x0001000
+Stack_Size      EQU     0x0004000
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
@@ -33,7 +33,7 @@ __initial_sp
 
 ; 堆 188kBytes - data - bss端
 ; 需要查看 .map文件中Execution Region RW_IRAM1
-Heap_Size       EQU     0x00001000
+Heap_Size       EQU     0x00004000
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
 __heap_base

@@ -72,3 +72,8 @@ cm_uint32_t systick_get(void)
     return s_tick;
 }
 
+/* HAL层函数重定义 避免出问题 */
+uint32_t HAL_GetTick(void)
+{
+    return systick_get();
+}
