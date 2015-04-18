@@ -396,15 +396,6 @@ void switch_pend(void)
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
 
-void switch_done(void)
-{
-    cm_uint32_t pendsv_set_bit = 0;
-    do 
-    {
-        pendsv_set_bit = SCB->ICSR & SCB_ICSR_PENDSVSET_Msk;
-    }while(pendsv_set_bit);
-}
-
 inline void switch_start(void)
 {
     cm_uint32_t *psp = NULL;

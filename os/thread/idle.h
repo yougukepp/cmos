@@ -47,7 +47,7 @@ void idle_create(void);
 *
 ******************************************************************************/
 static void cm_idle_thread (void const *argv);
-osThreadDef(cm_idle_thread, osPriorityNormal, 1, 0x1000);
+osThreadDef(cm_idle_thread, osPriorityIdle, 1, 0x1000);
 
 #endif // #ifndef _CM_IDLE_H_
 

@@ -63,8 +63,6 @@ void switch_running_to_waiting(void);
 
 void switch_add(cm_tcb_t *ptr_tcb);
 
-void switch_done(void);
-
 void switch_start(void);
 
 cm_tcb_t *switch_get_running_tcb(void);

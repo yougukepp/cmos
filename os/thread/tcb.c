@@ -44,6 +44,7 @@ void tcb_init(cm_tcb_t *ptr_tcb, const cm_thread_def_t *thread_def, void *argv, 
     ptr_tcb->priority = thread_def->priority;
     ptr_tcb->tick_total = thread_def->time_slice;
     ptr_tcb->tick = thread_def->time_slice;
+    ptr_tcb->delay = 0;
     ptr_tcb->next = NULL;
 }
 
