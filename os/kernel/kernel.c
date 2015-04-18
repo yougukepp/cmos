@@ -18,7 +18,6 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
-#include "misc.h"
 #include "mem.h"
 #include "switch.h"
 
@@ -33,7 +32,6 @@
 void first_thread_start(cm_uint32_t initial_exec_return);
 
 /********************************** 变量实现区 *********************************/
-
 
 /********************************** 函数实现区 *********************************/
 void syscall_kernel_initialize(void)

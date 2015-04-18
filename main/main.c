@@ -18,6 +18,7 @@
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
 #include "stlogo.h"
+#include "misc.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -25,6 +26,7 @@
 
 /********************************** 函数声明区 *********************************/
 static void Display_DemoDescription(void);
+static void HardWare_Init(void);
 
 /*******************************************************************************
 *
@@ -102,34 +104,9 @@ osThreadDef(job1, osPriorityNormal, 1, 0x1000);
 ******************************************************************************/
 int main(void)
 {
+    HardWare_Init();
 
-	   
-    HAL_Init(); 
-  
-    BSP_LED_Init(LED3);
-    BSP_LED_Init(LED4); 
-    
-    /* 系统时钟180 MHz */
-    SystemClock_Config(); 
-
-				  /* Configure USER Button */
-  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
-  
-  /*##-1- Initialize the LCD #################################################*/
-  /* Initialize the LCD */
-  BSP_LCD_Init();
-  
-  /* Initialize the LCD Layers */
-  BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
-	
-	
-    osKernelInitialize();
-
-
-	
-	 Display_DemoDescription();
-	
-
+    osKernelInitialize(); 
     osThreadCreate(osThread(job1), NULL);
     osKernelStart();
 	
@@ -217,3 +194,22 @@ static void SystemClock_Config(void)
     Error_Handler();
   }
 }
+
+static void HardWare_Init(void)
+{
+    HAL_Init(); 
+    BSP_LED_Init(LED3);
+    BSP_LED_Init(LED4); 
+    /* 系统时钟180 MHz */
+    SystemClock_Config(); 
+    /* Configure USER Button */
+    BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI); 
+    /*##-1- Initialize the LCD #################################################*/
+    /* Initialize the LCD */
+    BSP_LCD_Init(); 
+    /* Initialize the LCD Layers */
+    BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER); 
+
+    Display_DemoDescription();
+}
+

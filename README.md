@@ -4,7 +4,6 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 ## 目录结构
 
 ## 计划
-0. 调通液晶屏幕
 1. 参数尽可能使用const 所有函数参数检查 尽量使用inline汇编 整理TODO 完善注释汇编代码分离 
 2. Idle任务可以统计系统信息 检查任务堆栈 之后WFI处理器
 3. TCB链表操作使用双链表
