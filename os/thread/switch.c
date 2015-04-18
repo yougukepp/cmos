@@ -207,7 +207,7 @@ static void switch_to_ready(void);
 /********************************** 变量实现区 *********************************/
 
 /********************************** 函数实现区 *********************************/
-void *thread_switch(const void *cur_psp)
+void *thread_switch(const cm_uint32_t *cur_psp)
 {
     cm_uint32_t *next_psp = NULL;
     cm_tcb_t *next_tcb = NULL;
@@ -218,10 +218,16 @@ void *thread_switch(const void *cur_psp)
     {
         next_psp = (cm_uint32_t *)cur_psp;
     }
-    else 
-    {
+    else  /* 切换 */
+    { 
+        /* 保存 psp */
+        tcb_set_psp(s_tcb_Running, cur_psp);
+
+        /* 切换当前线程 */
+        s_tcb_Running = next_tcb;
         next_psp = next_tcb->psp;
     }
+
 
     return next_psp;
 } 
@@ -352,31 +358,33 @@ void switch_to_ready(void)
     }
 }
 
-void switch_to_waiting(cm_tcb_t *cur)
+void switch_running_to_waiting(void)
 { 
     cm_uint8_t bit = 0;
     cm_tcb_t *new_head = NULL;
+    cm_tcb_t *running = NULL;
     cm_priority_t priority = 0;
     
+    running = switch_get_running_tcb();
     /* 将当前线程移入WAITING链表 */
     if(NULL == s_tcb_list_waiting)
     {
-        s_tcb_list_waiting = cur;
+        s_tcb_list_waiting = running;
     }
     else
     {
-        tcb_list_add(s_tcb_list_waiting, cur);
+        tcb_list_add(s_tcb_list_waiting, running);
     }
 
     /* 将当前线程移出就绪表 */
-    priority = cur->priority;
-    new_head = tcb_list_del_head(cur);
+    priority = running->priority;
+    new_head = tcb_list_del_head(running);
     s_tcb_table_by_priority[priority] = new_head;
     /* 已无该优先级线程 */
     if(NULL == new_head)
     { 
         bit = 1 << priority;
-			  bit = ~bit;
+        bit = ~bit;
         /* 清掉相应位 */
         s_priority_bitmap_index &= bit;
     }
@@ -410,3 +418,9 @@ inline void switch_start(void)
     /* 初始化PSP */ 
     __set_PSP((cm_uint32_t)psp); 
 }
+
+inline cm_tcb_t *switch_get_running_tcb(void)
+{
+    return s_tcb_Running;
+}
+

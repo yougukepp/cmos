@@ -48,7 +48,7 @@
  * 其 它   : 无
  *
  ******************************************************************************/
-void *thread_switch(const void *cur_stack);
+void *thread_switch(const cm_uint32_t *cur_psp);
 
 void switch_update_tcb_time(void);
 
@@ -59,13 +59,15 @@ cm_tcb_t *switch_get_first_tcb(cm_priority_t priority);
 
 void switch_pend(void);
 
-void switch_to_waiting(cm_tcb_t *cur);
+void switch_running_to_waiting(void);
 
 void switch_add(cm_tcb_t *ptr_tcb);
 
 void switch_done(void);
 
 void switch_start(void);
+
+cm_tcb_t *switch_get_running_tcb(void);
 
 #endif // #ifndef _CM_SWITCH_H_
 

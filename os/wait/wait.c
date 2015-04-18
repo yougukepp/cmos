@@ -38,12 +38,12 @@ cm_status_t syscall_delay(cm_uint32_t m_sec)
     
     /* TODO: 判断是否在中断中 */
 
-    /* TODO: 是否需要switch模块记住当前运行的任务？ */
-    cur = switch_get_highest_tcb();
+    /* 获取当前线程 */
+    cur = switch_get_running_tcb();
     tcb_set_delay(cur, m_sec);
 
-    /* TODO: 需要实现线程的多状态 调度模块更新内部结构切换出delay线程 */
-    switch_to_waiting(cur);
+    /* 通知switch模块处理RUNNING线程 */
+    switch_running_to_waiting();
 
     /* 调度 */
     switch_pend();

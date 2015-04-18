@@ -44,6 +44,8 @@ cm_uint32_t tcb_get_delay(cm_tcb_t *ptr_tcb);
 
 cm_uint32_t *tcb_get_psp(cm_tcb_t *ptr_tcb);
 
+void tcb_set_psp(cm_tcb_t *ptr_tcb, const cm_uint32_t* psp);
+
 
 #endif // #ifndef _CM_TCB_H_
 

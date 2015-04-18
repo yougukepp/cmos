@@ -82,4 +82,9 @@ inline cm_uint32_t *tcb_get_psp(cm_tcb_t *ptr_tcb)
     return ptr_tcb->psp;
 }
 
+inline void tcb_set_psp(cm_tcb_t *ptr_tcb, const cm_uint32_t* psp)
+{
+    ptr_tcb->psp = (cm_uint32_t*)psp;
+}
+
 
