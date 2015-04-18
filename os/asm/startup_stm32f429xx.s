@@ -135,7 +135,7 @@ PendSV_Handler  PROC
                 ; r0此时已经是最新的psp值 
 
                 ; step 3
-                LDMIA.W R0!, {R4-R11,LR} ; /* 等效于 POP {R4-R11, LR} */
+step3           LDMIA.W R0!, {R4-R11,LR} ; /* 等效于 POP {R4-R11, LR} */
                 MSR PSP, R0
                 ISB 
                 
@@ -231,8 +231,9 @@ delay           PROC
 ; 初始启动线程
 first_thread_start PROC
                 EXPORT  first_thread_start
-                MOV LR, R0
-                BX LR
+                MRS R0, PSP
+                LDR R1, =step3
+                BX R1
                 ENDP
 
 ; 获取堆分布信息

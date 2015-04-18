@@ -407,27 +407,6 @@ inline void switch_start(void)
     /* 初始化psp */
     psp = tcb_get_psp(s_tcb_Running); 
 
-    /* 首次启动直接中断返回 故指针需要指向硬件负责入栈部分
-     * xPSR
-       PC
-       LR
-       R12
-       R3
-       R2
-       R1
-       R0             以上硬件负责入栈
-       ---------------------------------
-       LR(EXC_RETURN) 以下软件负责入栈
-       R11
-       R10
-       R9
-       R8
-       R7
-       R6
-       R5
-       R4             新PS指向      */
-    psp += 9; /* R4-R11, LR 现在指向R0 */
-
     /* 初始化PSP */ 
     __set_PSP((cm_uint32_t)psp); 
 }
