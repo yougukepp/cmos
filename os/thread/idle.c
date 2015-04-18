@@ -94,6 +94,8 @@ static void idle_check_cpu(void)
         rate = 0.0;
     }
 
+    //printf("cpu usage rate;%f\n", rate);
+
     total = 0;
 }
 
