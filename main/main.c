@@ -76,9 +76,15 @@ int main(void)
 
 static void job1 (void const *argument)
 {
+    int i = 0;
     while (1)
     {
-        osDelay(500); /* 延迟500ms */
+        while(i < 0xffffff)
+        {
+            i++;
+        }
+        //osDelay(500); /* 延迟500ms */
         BSP_LED_Toggle(LED4);
+        i = 0;
     }
 }
