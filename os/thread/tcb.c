@@ -77,3 +77,9 @@ inline cm_uint32_t tcb_get_delay(cm_tcb_t *ptr_tcb)
     return ptr_tcb->delay;
 }
 
+inline cm_uint32_t *tcb_get_psp(cm_tcb_t *ptr_tcb)
+{
+    return ptr_tcb->psp;
+}
+
+
