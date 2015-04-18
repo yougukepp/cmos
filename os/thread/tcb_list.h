@@ -65,7 +65,7 @@ cm_tcb_t *tcb_list_goto_tail(cm_tcb_t *head);
 
 cm_tcb_t *tcb_list_del_head(cm_tcb_t *head);
 
-void tcb_list_walk(cm_tcb_t *head, cm_tcb_list_walk_func_t func);
+void *tcb_list_walk(cm_tcb_t *head, cm_tcb_list_walk_func_t func);
 
 #endif // #ifndef _CM_TCB_LIST_H_
 

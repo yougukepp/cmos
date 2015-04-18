@@ -79,6 +79,6 @@ static void job1 (void const *argument)
     while (1)
     {
         BSP_LED_Toggle(LED4);
-        osDelay(500); /* 延迟500ms */
+        osDelay(300); /* 延迟300ms */
     }
 }

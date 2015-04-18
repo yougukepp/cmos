@@ -90,20 +90,27 @@ cm_tcb_t *tcb_list_del_head(cm_tcb_t *head)
 }
 
 /* 遍历 */
-void tcb_list_walk(cm_tcb_t *head, cm_tcb_list_walk_func_t func)
+void *tcb_list_walk(cm_tcb_t *head, cm_tcb_list_walk_func_t func)
 {
+    void *rst = NULL;
     cm_tcb_t *walker = NULL;
 
     walker = head;
 
     if(NULL == walker)
     {
-        return;
+        return NULL;
     }
 
     do{
-        func(walker);
+        rst = func(walker);
+        if(NULL != rst)
+        {
+            return rst;
+        }
+
         walker = walker->next;
     }while(NULL != walker->next);
+		return NULL;
 }
 

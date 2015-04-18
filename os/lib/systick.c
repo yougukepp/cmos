@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * 文件名  ： isr_stm32f429xx.c
+ * 文件名  ： systick.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20150321 
  * 版本号  ： v1.0
@@ -65,5 +65,10 @@ void SysTick_Handler(void)
     
     /* 调度 */
     switch_pend();
+}
+
+cm_uint32_t systick_get(void)
+{
+    return s_tick;
 }
 

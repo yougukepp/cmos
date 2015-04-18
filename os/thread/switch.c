@@ -59,7 +59,7 @@ static cm_uint8_t s_priority_bitmap_index = 0x00;
 static cm_tcb_t *s_tcb_table_by_priority[CMOS_PRIORITY_MAX] = {NULL};
 
 /* RUNNIGN */
-static cm_tcb_t *s_tcb_Running = NULL;
+static cm_tcb_t *s_tcb_running = NULL;
 
 /* WAITING */
 static cm_tcb_t *s_tcb_list_waiting = NULL;
@@ -203,6 +203,8 @@ static const cm_uint8_t s_priority_bitmap[] = {
 /********************************** 函数声明区 *********************************/
 static void switch_init_first_tcb(cm_tcb_t *ptr_tcb); 
 static void switch_to_ready(void);
+static void *switch_tcb_delay_dec(cm_tcb_t *ptr_tcb);
+static void *switch_check_tcb_stack(cm_tcb_t *ptr_tcb);
 
 /********************************** 变量实现区 *********************************/
 
@@ -221,10 +223,10 @@ void *thread_switch(const cm_uint32_t *cur_psp)
     else  /* 切换 */
     { 
         /* 保存 psp */
-        tcb_set_psp(s_tcb_Running, cur_psp);
+        tcb_set_psp(s_tcb_running, cur_psp);
 
         /* 切换当前线程 */
-        s_tcb_Running = next_tcb;
+        s_tcb_running = next_tcb;
         next_psp = next_tcb->psp;
     }
 
@@ -326,8 +328,14 @@ void switch_update_tcb_time(void)
     } 
     
     /* s_tcb_list_waiting中有就绪线程移入就绪表 */
-    tcb_list_walk(s_tcb_list_waiting, tcb_delay_dec);
+    tcb_list_walk(s_tcb_list_waiting, switch_tcb_delay_dec);
     switch_to_ready();
+}
+
+static inline void *switch_tcb_delay_dec(cm_tcb_t *ptr_tcb)
+{
+    tcb_delay_dec(ptr_tcb);
+    return NULL;
 }
 
 /* TODO:想办法使用链表的通用操作 */
@@ -401,10 +409,10 @@ inline void switch_start(void)
     cm_uint32_t *psp = NULL;
 
     /* 初始化当前线程 */
-    s_tcb_Running = switch_get_highest_tcb();
+    s_tcb_running = switch_get_highest_tcb();
 
     /* 初始化psp */
-    psp = tcb_get_psp(s_tcb_Running); 
+    psp = tcb_get_psp(s_tcb_running); 
 
     /* 初始化PSP */ 
     __set_PSP((cm_uint32_t)psp); 
@@ -412,6 +420,27 @@ inline void switch_start(void)
 
 inline cm_tcb_t *switch_get_running_tcb(void)
 {
-    return s_tcb_Running;
+    return s_tcb_running;
+}
+
+/* 堆栈检查等待实现 */ 
+void switch_check_user_stack(void)
+{
+    cm_tcb_t *head = NULL;
+
+    tcb_list_walk(s_tcb_running, switch_check_tcb_stack);
+    tcb_list_walk(s_tcb_list_waiting, switch_check_tcb_stack);
+
+    for(int i = 0; i < CMOS_PRIORITY_MAX; i++)
+    {
+        head = switch_get_first_tcb(i);
+        tcb_list_walk(head, switch_check_tcb_stack);
+    }
+
+}
+
+static void *switch_check_tcb_stack(cm_tcb_t *ptr_tcb)
+{
+    return NULL;
 }
 

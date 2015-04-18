@@ -43,6 +43,8 @@ typedef int                 cm_int32_t;
 typedef long long           cm_int64_t;
 typedef unsigned char       cm_bool_t;
 
+typedef float               cm_float_t;
+
 /* 函数入口地址 */
 typedef void                (*cm_func_t)(void);
 
@@ -89,7 +91,8 @@ typedef struct os_thread_cb
 }cm_tcb_t;
 
 /* TCB链表 回调函数 */
-typedef void                (*cm_tcb_list_walk_func_t)(cm_tcb_t *ptr_tcb);
+//typedef void                (*cm_tcb_list_walk_func_t)(cm_tcb_t *ptr_tcb);
+typedef void                *(*cm_tcb_list_walk_func_t)(cm_tcb_t *ptr_tcb);
 
 /* 事件类型 暂时未使用 */
 /*typedef osEvent             cm_event_t;*/

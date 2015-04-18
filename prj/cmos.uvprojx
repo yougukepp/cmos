@@ -434,11 +434,6 @@
               <FilePath>..\os\kernel\kernel.c</FilePath>
             </File>
             <File>
-              <FileName>isr_stm32f429xx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\os\lib\isr_stm32f429xx.c</FilePath>
-            </File>
-            <File>
               <FileName>misc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\os\lib\misc.c</FilePath>
@@ -487,6 +482,11 @@
               <FileName>wait.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\os\wait\wait.c</FilePath>
+            </File>
+            <File>
+              <FileName>systick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\lib\systick.c</FilePath>
             </File>
           </Files>
         </Group>

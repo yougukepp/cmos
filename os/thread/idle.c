@@ -17,6 +17,8 @@
 /************************************ 头文件 ***********************************/
 #include "typedef.h"
 #include "idle.h"
+#include "switch.h"
+#include "systick.h"
 #include "stm32f429i_discovery.h"
 
 
@@ -25,7 +27,9 @@
 /********************************** 变量声明区 *********************************/
 
 
-/********************************** 函数声明区 *********************************/
+/********************************** 函数声明区 *********************************/ 
+static void idle_check_user_stack(void);
+static void idle_check_cpu(void);
 
 
 /********************************** 变量实现区 *********************************/
@@ -34,15 +38,13 @@
 /********************************** 函数实现区 *********************************/
 static void cm_idle_thread(void const *argument)
 {
-    cm_int32_t i = 0;
     while (1)
     {
-        while(i < 0x1fffff)
-        {
-            i++;
-        }
+        idle_check_user_stack();
+        idle_check_cpu();
         BSP_LED_Toggle(LED3);
-        i = 0;
+
+        //__WFI();
     }
 }
 
@@ -51,5 +53,47 @@ void idle_create(void)
     osThreadCreate(osThread(cm_idle_thread), NULL);
 }
 
+static void idle_check_user_stack(void)
+{
+    switch_check_user_stack();
+}
 
+/* TODO:负载太轻不好测试 */ 
+static void idle_check_cpu(void)
+{
+    cm_uint32_t start = 0;
+    cm_uint32_t end = 0;
+    cm_uint32_t total = 0;
+    cm_uint32_t idle = 0;
+    cm_uint32_t user = 0;
+
+    cm_int32_t i = 0;
+    cm_float_t rate = 0;
+
+    
+    i = 0x2ffffff; /* 无负载 基准0x460ms */
+    idle = 0x460;
+
+    start = systick_get();
+    while(i>0)
+    {
+        i--;
+    }
+    end = systick_get();
+
+    /* TODO: tick溢出(49天)时会有一个错误 故循环减 */
+    total = end - start;
+
+    if(0 != total)
+    {
+        user = total - idle;
+        rate = 100.0 * user / total;
+    }
+    else
+    {
+        rate = 0.0;
+    }
+
+    total = 0;
+}
 

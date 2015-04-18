@@ -67,5 +67,7 @@ void switch_start(void);
 
 cm_tcb_t *switch_get_running_tcb(void);
 
+void switch_check_user_stack(void);
+
 #endif // #ifndef _CM_SWITCH_H_
 
