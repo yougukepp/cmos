@@ -111,6 +111,6 @@ void *tcb_list_walk(cm_tcb_t *head, cm_tcb_list_walk_func_t func)
 
         walker = walker->next;
     }while(NULL != walker->next);
-		return NULL;
+    return NULL;
 }
 

@@ -252,7 +252,7 @@ cm_tcb_t *switch_get_highest_tcb(void)
     return higighest_tcb;
 }
 
-cm_tcb_t *switch_get_first_tcb(cm_priority_t priority)
+inline cm_tcb_t *switch_get_first_tcb(cm_priority_t priority)
 {
     cm_tcb_t *head = NULL;
 
@@ -279,7 +279,7 @@ void switch_add(cm_tcb_t *ptr_tcb)
     }
 }
 
-static void switch_init_first_tcb(cm_tcb_t *ptr_tcb)
+inline static void switch_init_first_tcb(cm_tcb_t *ptr_tcb)
 { 
     cm_priority_t priority = 0;
 
@@ -398,7 +398,7 @@ void switch_running_to_waiting(void)
     }
 }
 
-void switch_pend(void)
+inline void switch_pend(void)
 { 
     /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
