@@ -445,7 +445,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>..\os;E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;..\os\lib</IncludePath>
+                  <IncludePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;..\os;..\os\lib</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>

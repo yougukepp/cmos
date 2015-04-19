@@ -58,6 +58,6 @@ cm_status_t syscall_delay(cm_uint32_t m_sec)
 
 static cm_bool_t in_isr(void)
 {
-    ;
+    return FALSE;
 }
 

@@ -17,7 +17,6 @@
 #include "cmsis_os.h"
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
-#include "stlogo.h"
 #include "misc.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -142,9 +141,6 @@ static void Display_DemoDescription(void)
   BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
   BSP_LCD_SetFont(&Font16);
   BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
-  
-  /* Draw Bitmap */
-  BSP_LCD_DrawBitmap((BSP_LCD_GetXSize() - 80)/2, 65, (uint8_t *)stlogo);
   
   BSP_LCD_SetFont(&Font8);
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 20, (uint8_t*)"Copyright (c) STMicroelectronics 2014", CENTER_MODE);
