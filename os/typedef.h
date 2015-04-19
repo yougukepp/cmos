@@ -50,10 +50,6 @@ typedef void                (*cm_func_t)(void);
 
 
 
-/* 函数状态 通常用于返回值 */
-typedef osStatus            cm_status_t;
-
-
 /* 优先级 osPriority 是枚举 cm_priority_t定义为uint32保持一定的兼容性 */ 
 typedef cm_uint32_t         cm_priority_t;
 
@@ -110,6 +106,14 @@ typedef struct cm_mem_block_tag
     cm_uint32_t data[CM_TCB_SIZE];
     struct cm_mem_block_tag *next;
 }cm_mem_block_t;
+
+/* 函数状态 通常用于返回值(与osStatus兼容) */
+typedef enum  {
+  cm_OK                 =     0,    /* 没有错误发生 */
+  cm_Error_ISR          =  0x82,    /* 该函数不允许在ISR中调用 */
+  cm_status_reserved    =  0x7FFFFFFF /* prevent from enum down-size compiler optimization*/
+} cm_status_t;
+
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

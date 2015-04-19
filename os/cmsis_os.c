@@ -35,14 +35,14 @@ static cm_priority_t osPriority2cmPriority(osPriority priority);
 
 /********************************** 函数实现区 *********************************/
 /*------------------------------- 内核信息与控制 ------------------------------*/
-osStatus osKernelInitialize(void)   
+inline osStatus osKernelInitialize(void)   
 {
-    return kernel_initialize();
+    return (osStatus)kernel_initialize();
 }
 
-osStatus osKernelStart(void)   
+inline osStatus osKernelStart(void)   
 {
-    return kernel_start();
+    return (osStatus)kernel_start();
 }
 
 /*---------------------------------- 线程管理 ---------------------------------*/
@@ -62,13 +62,13 @@ osThreadId osThreadCreate(const osThreadDef_t *thread_def, void *argv)
 }
 
 /*---------------------------------- 一般等待 ---------------------------------*/
-osStatus osDelay(uint32_t millisec)
+inline osStatus osDelay(uint32_t millisec)
 {
     cm_uint32_t mil_sec = 0;
 
     mil_sec = millisec;
 
-    return delay(mil_sec);
+    return (osStatus)delay(mil_sec);
 }
 
 

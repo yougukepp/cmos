@@ -26,6 +26,7 @@
 
 
 /********************************** 函数声明区 *********************************/
+static cm_bool_t in_isr(void);
 
 
 /********************************** 变量实现区 *********************************/
@@ -37,6 +38,10 @@ cm_status_t syscall_delay(cm_uint32_t m_sec)
     cm_tcb_t *cur = NULL; 
     
     /* TODO: 判断是否在中断中 */
+    if(in_isr())
+    {
+        return cm_Error_ISR;
+    }
 
     /* 获取当前线程 */
     cur = switch_get_running_tcb();
@@ -48,6 +53,11 @@ cm_status_t syscall_delay(cm_uint32_t m_sec)
     /* 调度 */
     switch_pend();
 
-    return (cm_status_t)0;
+    return cm_OK;
+}
+
+static cm_bool_t in_isr(void)
+{
+    ;
 }
 
