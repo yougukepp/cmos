@@ -4,7 +4,8 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 ## 目录结构
 
 ## 计划
-1. 参数尽可能使用const 所有函数参数检查 尽量使用inline汇编 整理TODO 完善注释汇编代码分离 
+0. 系统调用加用户空间运行部分
+1. 参数尽可能使用const 所有函数参数检查 尽量使用inline汇编 整理TODO 完善注释汇编代码分离 完善各函数接口
 2. Idle任务可以 检查任务堆栈 之后WFI处理器
 3. TCB链表操作使用双链表
 4. 实现CMSIS OS要求的系统调用
