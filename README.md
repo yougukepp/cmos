@@ -4,6 +4,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 ## 目录结构
 
 ## 计划
+0. 制定一个命名规则
 0. 系统调用加用户空间运行部分
 1. 实现CMSIS OS要求的系统调用(首先实现SignalManagement)
 2. 实现串口命令行
