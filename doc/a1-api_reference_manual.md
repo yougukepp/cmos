@@ -12,7 +12,7 @@
         * CmosOk         正常情况
         * CmosErrorIsr   该函数不能再ISR中调用
     1.1.2 CmosThreadId 
-      - 类  别:  线程入口的函数指针)
+      - 类  别:  线程控制块变量的指针
       - 作  用:  用于标识线程
       - 范  围:  CmosUint32
     1.1.3 CmosPriority
