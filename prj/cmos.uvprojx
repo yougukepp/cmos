@@ -14,7 +14,7 @@
         <TargetCommonOption>
           <Device>STM32F429ZITx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.3.0</PackID>
+          <PackID>Keil.STM32F4xx_DFP.2.4.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IROM(0x08000000,0x200000) IRAM(0x20000000,0x30000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -478,6 +478,11 @@
               <FileType>1</FileType>
               <FilePath>..\main\system_stm32f4xx.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main\stm32f4xx_hal_msp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -608,6 +613,11 @@
               <FileType>1</FileType>
               <FilePath>..\os\lib\systick.c</FilePath>
             </File>
+            <File>
+              <FileName>uartirq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\lib\uartirq.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -734,11 +744,6 @@
               <FilePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_dma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_hal_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.c</FilePath>
@@ -762,6 +767,16 @@
               <FileName>stm32f4xx_ll_fmc.c</FileName>
               <FileType>1</FileType>
               <FilePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_fmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_uart.c</FilePath>
             </File>
           </Files>
         </Group>

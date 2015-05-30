@@ -15,17 +15,20 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmsis_os.h"
+#include "stm32f4xx_hal_msp.h"
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
 #include "misc.h"
+
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static void Display_DemoDescription(void);
+static void LCD_Init_Show(void);
 static void HardWare_Init(void);
+static void UART_Init(void);
 
 /*******************************************************************************
 *
@@ -121,7 +124,69 @@ static void job1 (void const *argument)
     }
 }
 
-static void Display_DemoDescription(void)
+static void SystemClock_Config(void)
+{
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+
+  __HAL_RCC_PWR_CLK_ENABLE();
+  
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 360;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
+  if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  HAL_PWREx_EnableOverDrive();
+
+  RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK
+          | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
+  if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/* TODO: 以下 函数移入专门文件 */
+static void HardWare_Init(void)
+{
+    /* 初始化HAL */
+    HAL_Init(); 
+    /* 系统时钟180 MHz */
+    SystemClock_Config(); 
+
+    /* 初始化LED */
+    BSP_LED_Init(LED3);
+    BSP_LED_Init(LED4); 
+    
+    /* 开灯 */
+    BSP_LED_On(LED3);
+    BSP_LED_On(LED4);
+
+    /* LCD 初始化 */
+    BSP_LCD_Init(); 
+    BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER); 
+    /* LCD 显示 */
+    LCD_Init_Show();
+	
+	UART_Init();
+	
+}
+
+static void LCD_Init_Show(void)
 {
   uint8_t desc[50];
   
@@ -155,57 +220,59 @@ static void Display_DemoDescription(void)
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 45, (uint8_t *)desc, CENTER_MODE);   
 }
 
-static void SystemClock_Config(void)
-{
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-  RCC_OscInitTypeDef RCC_OscInitStruct;
+UART_HandleTypeDef UartHandle;
+__IO ITStatus UartReady = RESET;
 
-  __HAL_RCC_PWR_CLK_ENABLE();
-  
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 360;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
-  if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+static void UART_Init(void)
+{
+    UartHandle.Instance          = USARTx;
+
+    UartHandle.Init.BaudRate     = 9600;
+    UartHandle.Init.WordLength   = UART_WORDLENGTH_8B;
+    UartHandle.Init.StopBits     = UART_STOPBITS_1;
+    UartHandle.Init.Parity       = UART_PARITY_NONE;
+    UartHandle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+    UartHandle.Init.Mode         = UART_MODE_TX_RX;
+    UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+
+
+    if(HAL_UART_Init(&UartHandle) != HAL_OK)
+    {
+        Error_Handler();
+    }
+		
+		char txBuf[10] = "txabc123\n";
+		char rxBuf[3];
+#if 1	
+  if(HAL_UART_Transmit_IT(&UartHandle, (uint8_t*)txBuf, 10)!= HAL_OK)
   {
     Error_Handler();
   }
+  while (UartReady != SET)
+  {
+  }
+  UartReady = RESET;
+#endif
 
-  HAL_PWREx_EnableOverDrive();
- 
-  RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK
-          | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
-  if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+#if 1
+	if(HAL_UART_Receive_IT(&UartHandle, (uint8_t *)rxBuf, 1) != HAL_OK)
   {
     Error_Handler();
   }
+  while (UartReady != SET)
+  {
+  }
+  UartReady = RESET;
+#endif
 }
 
-static void HardWare_Init(void)
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-    HAL_Init(); 
-    BSP_LED_Init(LED3);
-    BSP_LED_Init(LED4); 
-    /* 系统时钟180 MHz */
-    SystemClock_Config(); 
-    /* Configure USER Button */
-    BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI); 
-    /*##-1- Initialize the LCD #################################################*/
-    /* Initialize the LCD */
-    BSP_LCD_Init(); 
-    /* Initialize the LCD Layers */
-    BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER); 
-
-    Display_DemoDescription();
+  UartReady = SET;
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
+{
+  UartReady = SET;
+
+}
