@@ -445,7 +445,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;..\os;..\os\lib</IncludePath>
+                  <IncludePath>E:\Keil_v5\STM32Cube_FW_F4\Drivers\BSP\STM32F429I-Discovery;..\os;..\os\lib;..\os\console</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -617,6 +617,11 @@
               <FileName>uartirq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\os\lib\uartirq.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\os\console\uart.c</FilePath>
             </File>
           </Files>
         </Group>

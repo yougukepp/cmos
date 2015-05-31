@@ -8,13 +8,15 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 ### 近期计划
 1. 制定一个命名规则
 2. 按照结构图修改目录结构
-2. 系统调用的所有代码整理入syscall.s syscall.c syscall.h 三个文件
-4. 修改main中的demo直接调用cmos\(后续准备实现飞行姿态控制\)
-5. 系统调用加用户空间运行部分
-6. 实现CMSIS OS要求SignalManagement
+3. 实现驱动层堆STM HAL层封装
+4. 实现串口命令行
+5. 系统调用的所有代码整理入syscall.s syscall.c syscall.h 三个文件
+7. 修改main中的demo直接调用cmos\(后续准备实现飞行姿态控制\)
+8. 系统调用加用户空间运行部分
+9. 实现CMSIS OS要求SignalManagement
 
 ### 远期计划
-1. 实现串口命令行
+1. 整理TODO
 2. Idle任务可以 检查任务堆栈 CPU占用率 之后WFI处理器
 3. 实现文件系统 类似Linux一切皆文件的框架
 4. 实现网络协议栈(TCP/IP)
@@ -22,7 +24,6 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 6. 清理对HAL层的调用 直接调用寄存器级别 工程仅依赖于 CMSIS BSP目录
 7. 所有函数参数检查
 8. 参数尽可能使用const
-9. 整理TODO
 
 ## 注意:
 1. 任务切换只会发生在 系统调用期间
