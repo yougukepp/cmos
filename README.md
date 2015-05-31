@@ -6,14 +6,13 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 近期计划
-1. 制定一个命名规则
-2. 按照结构图修改目录结构
+1. 按照结构图修改目录结构
+2. 系统调用的所有代码整理入syscall.s syscall.c syscall.h 三个文件
 3. 实现驱动层堆STM HAL层封装
 4. 实现串口命令行
-5. 系统调用的所有代码整理入syscall.s syscall.c syscall.h 三个文件
-7. 修改main中的demo直接调用cmos\(后续准备实现飞行姿态控制\)
-8. 系统调用加用户空间运行部分
-9. 实现CMSIS OS要求SignalManagement
+5. 修改main中的demo直接调用cmos\(后续准备实现飞行姿态控制\)
+6. 系统调用加用户空间运行部分
+7. 实现CMSIS OS要求SignalManagement
 
 ### 远期计划
 1. 整理TODO
