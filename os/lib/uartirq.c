@@ -24,11 +24,12 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-extern UART_HandleTypeDef UartHandle;
 
 /********************************** 函数声明区 *********************************/
 
 /********************************** 变量实现区 *********************************/
+UART_HandleTypeDef UartHandle;
+__IO ITStatus UartReady = RESET;
 
 /********************************** 函数实现区 *********************************/
 
@@ -51,12 +52,14 @@ extern UART_HandleTypeDef UartHandle;
  ******************************************************************************/
 void Console_Handler(void)
 {
-    /*HAL_UART_IRQHandler(& UartHandle);*/
-	void PP_UART_IRQHandler(UART_HandleTypeDef *huart);
-	PP_UART_IRQHandler(& UartHandle);
+    HAL_UART_IRQHandler(& UartHandle);
+#if 0
+    void PP_UART_IRQHandler(UART_HandleTypeDef *huart);
+    PP_UART_IRQHandler(& UartHandle);
+#endif
 }
 
-
+#if 0
 static HAL_StatusTypeDef UART_Transmit_IT(UART_HandleTypeDef *huart);
 static HAL_StatusTypeDef UART_EndTransmit_IT(UART_HandleTypeDef *huart);
 static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef *huart);
@@ -270,3 +273,15 @@ static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef *huart)
     return HAL_BUSY; 
   }
 }
+#endif
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
+{
+  UartReady = SET;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
+{
+  UartReady = SET;
+}
+

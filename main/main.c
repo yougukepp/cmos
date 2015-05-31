@@ -19,7 +19,7 @@
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
 #include "misc.h"
-
+#include "uart.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -220,9 +220,7 @@ static void LCD_Init_Show(void)
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 45, (uint8_t *)desc, CENTER_MODE);   
 }
 
-UART_HandleTypeDef UartHandle;
-__IO ITStatus UartReady = RESET;
-
+extern UART_HandleTypeDef UartHandle;
 static void UART_Init(void)
 {
     UartHandle.Instance          = USARTx;
@@ -234,45 +232,11 @@ static void UART_Init(void)
     UartHandle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
     UartHandle.Init.Mode         = UART_MODE_TX_RX;
     UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
-
-
+	
     if(HAL_UART_Init(&UartHandle) != HAL_OK)
     {
         Error_Handler();
     }
-		
-		char txBuf[10] = "txabc123\n";
-		char rxBuf[3];
-#if 1	
-  if(HAL_UART_Transmit_IT(&UartHandle, (uint8_t*)txBuf, 10)!= HAL_OK)
-  {
-    Error_Handler();
-  }
-  while (UartReady != SET)
-  {
-  }
-  UartReady = RESET;
-#endif
-
-#if 1
-	if(HAL_UART_Receive_IT(&UartHandle, (uint8_t *)rxBuf, 1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  while (UartReady != SET)
-  {
-  }
-  UartReady = RESET;
-#endif
-}
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
-{
-  UartReady = SET;
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
-{
-  UartReady = SET;
-
+    
+		uart_test();
 }
