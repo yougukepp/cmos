@@ -21,6 +21,10 @@
 #include "misc.h"
 #include "uart.h"
 
+#include "usbd_def.h"
+#include "usb2serial.h"
+#include "usbd_core.h"
+#include "usb2serial_desc.h"
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
@@ -176,11 +180,10 @@ static void HardWare_Init(void)
     BSP_LED_On(LED3);
     BSP_LED_On(LED4); 
     
-    UART_Init();
-	  /* uart_test();
-	  USB_Init();
-	  usb_test();
-	   */
+    //UART_Init();
+    /* uart_test(); */
+    USB_Init();
+    /* usb_test(); */
 }
 
 extern UART_HandleTypeDef UartHandle;
@@ -202,15 +205,13 @@ static void UART_Init(void)
     }
 }
 
-#if 0
-USBD_HandleTypeDef hUsbDeviceHS;
+USBD_HandleTypeDef UsbHandle;
 static void USB_Init(void)
 {
   /* Init Device Library,Add Supported Class and Start the library*/
-  USBD_Init(&hUsbDeviceHS, &HS_Desc, DEVICE_HS);
+  USBD_Init(&UsbHandle, &Usb2SerialDesc, DEVICE_HS);
 
-  USBD_RegisterClass(&hUsbDeviceHS, &USBD_HID);
+  USBD_RegisterClass(&UsbHandle, &Usb2Serial);
 
-  USBD_Start(&hUsbDeviceHS);
+  USBD_Start(&UsbHandle);
 }
-#endif

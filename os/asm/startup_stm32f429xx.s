@@ -25,7 +25,7 @@
 
 ; data + bbs + 4k系统栈 + 188k堆 = 192k 片内 SRAM
 ; 系统栈(MSP) 4kB
-Stack_Size      EQU     0x0004000
+Stack_Size      EQU     0x0000400
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
@@ -33,7 +33,7 @@ __initial_sp
 
 ; 堆 188kBytes - data - bss端
 ; 需要查看 .map文件中Execution Region RW_IRAM1
-Heap_Size       EQU     0x00004000
+Heap_Size       EQU     0x00000200
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
 __heap_base
@@ -144,7 +144,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; USB OTG HS End Point 1 Out
                 DCD     0                       ; USB OTG HS End Point 1 In
                 DCD     0                       ; USB OTG HS Wakeup through EXTI
-                DCD     0                       ; USB OTG HS
+                DCD     OTG_HS_IRQHandler       ; USB OTG HS
                 DCD     0                       ; DCMI
                 DCD     0                       ; Reserved
                 DCD     0                       ; Hash and Rng
@@ -185,6 +185,11 @@ SysTick_Handler PROC
 ; 串口控制台句柄
 Console_Handler PROC
                 EXPORT  Console_Handler            [WEAK]
+                B       .
+                ENDP
+					
+OTG_HS_IRQHandler PROC
+                EXPORT  OTG_HS_IRQHandler            [WEAK]
                 B       .
                 ENDP
 
