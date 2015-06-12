@@ -28,6 +28,7 @@
 /********************************** 函数声明区 *********************************/
 static void HardWare_Init(void);
 static void UART_Init(void);
+static void USB_Init(void);
 
 /*******************************************************************************
 *
@@ -176,7 +177,10 @@ static void HardWare_Init(void)
     BSP_LED_On(LED4); 
     
     UART_Init();
-	
+	  /* uart_test();
+	  USB_Init();
+	  usb_test();
+	   */
 }
 
 extern UART_HandleTypeDef UartHandle;
@@ -196,6 +200,17 @@ static void UART_Init(void)
     {
         Error_Handler();
     }
-    
-		uart_test();
 }
+
+#if 0
+USBD_HandleTypeDef hUsbDeviceHS;
+static void USB_Init(void)
+{
+  /* Init Device Library,Add Supported Class and Start the library*/
+  USBD_Init(&hUsbDeviceHS, &HS_Desc, DEVICE_HS);
+
+  USBD_RegisterClass(&hUsbDeviceHS, &USBD_HID);
+
+  USBD_Start(&hUsbDeviceHS);
+}
+#endif
