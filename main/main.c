@@ -26,7 +26,6 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static void LCD_Init_Show(void);
 static void HardWare_Init(void);
 static void UART_Init(void);
 
@@ -174,50 +173,10 @@ static void HardWare_Init(void)
     
     /* 开灯 */
     BSP_LED_On(LED3);
-    BSP_LED_On(LED4);
-
-    /* LCD 初始化 */
-    BSP_LCD_Init(); 
-    BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER); 
-    /* LCD 显示 */
-    LCD_Init_Show();
+    BSP_LED_On(LED4); 
+    
+    UART_Init();
 	
-	UART_Init();
-	
-}
-
-static void LCD_Init_Show(void)
-{
-  uint8_t desc[50];
-  
-  /* Set LCD Foreground Layer  */
-  BSP_LCD_SelectLayer(1);
-  
-  BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
-  
-  /* Clear the LCD */ 
-  BSP_LCD_SetBackColor(LCD_COLOR_BLACK); 
-  BSP_LCD_Clear(LCD_COLOR_BLACK);
-  
-  /* Set the LCD Text Color */
-  BSP_LCD_SetTextColor(LCD_COLOR_DARKGREEN);  
-  
-  /* Display LCD messages */
-  BSP_LCD_DisplayStringAt(0, 10, (uint8_t*)"STM32F429I BSP", CENTER_MODE);
-  BSP_LCD_SetFont(&Font16);
-  BSP_LCD_DisplayStringAt(0, 35, (uint8_t*)"Drivers examples", CENTER_MODE);
-  
-  BSP_LCD_SetFont(&Font8);
-  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 20, (uint8_t*)"Copyright (c) STMicroelectronics 2014", CENTER_MODE);
-  
-  BSP_LCD_SetFont(&Font12);
-  BSP_LCD_SetTextColor(LCD_COLOR_DARKGRAY);
-  BSP_LCD_FillRect(0, BSP_LCD_GetYSize()/2 + 15, BSP_LCD_GetXSize(), 60);
-  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-  BSP_LCD_SetBackColor(LCD_COLOR_DARKGRAY); 
-  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 30, (uint8_t*)"Press USER Button to start:", CENTER_MODE);
-  //sprintf((char *)desc,"%s example", BSP_examples[DemoIndex].DemoName);
-  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 45, (uint8_t *)desc, CENTER_MODE);   
 }
 
 extern UART_HandleTypeDef UartHandle;
