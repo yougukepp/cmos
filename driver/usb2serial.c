@@ -76,7 +76,8 @@ cm_uint8_t Usb2Serial_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] =
 cm_uint8_t  Usb2Serial_Init (USBD_HandleTypeDef *pdev, 
                                cm_uint8_t cfgidx)
 {
-  cm_uint8_t ret = 0;
+  cm_uint8_t ret = 0; 
+  USBD_DbgLog("%s", __func__);
   
 
   return ret;
@@ -93,6 +94,7 @@ cm_uint8_t  Usb2Serial_DeInit (USBD_HandleTypeDef *pdev,
                                  cm_uint8_t cfgidx)
 {
 
+  USBD_DbgLog("%s", __func__);
   return USBD_OK;
 }
 
@@ -107,6 +109,7 @@ cm_uint8_t  Usb2Serial_Setup (USBD_HandleTypeDef *pdev,
                                 USBD_SetupReqTypedef *req)
 {
  
+  USBD_DbgLog("%s", __func__);
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
   case USB_REQ_TYPE_CLASS :  
@@ -140,6 +143,7 @@ cm_uint8_t  Usb2Serial_Setup (USBD_HandleTypeDef *pdev,
   */
 cm_uint8_t  *Usb2Serial_GetCfgDesc (uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   *length = sizeof (Usb2Serial_CfgDesc);
   return Usb2Serial_CfgDesc;
 }
@@ -152,6 +156,7 @@ cm_uint8_t  *Usb2Serial_GetCfgDesc (uint16_t *length)
 */
 cm_uint8_t  *Usb2Serial_DeviceQualifierDescriptor (uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   *length = sizeof (Usb2Serial_DeviceQualifierDesc);
   return Usb2Serial_DeviceQualifierDesc;
 }
@@ -167,6 +172,7 @@ cm_uint8_t  *Usb2Serial_DeviceQualifierDescriptor (uint16_t *length)
 cm_uint8_t  Usb2Serial_DataIn (USBD_HandleTypeDef *pdev, 
                               cm_uint8_t epnum)
 {
+  USBD_DbgLog("%s", __func__);
 
   return USBD_OK;
 }
@@ -179,6 +185,7 @@ cm_uint8_t  Usb2Serial_DataIn (USBD_HandleTypeDef *pdev,
   */
 cm_uint8_t  Usb2Serial_EP0_RxReady (USBD_HandleTypeDef *pdev)
 {
+  USBD_DbgLog("%s", __func__);
 
   return USBD_OK;
 }
@@ -190,6 +197,7 @@ cm_uint8_t  Usb2Serial_EP0_RxReady (USBD_HandleTypeDef *pdev)
   */
 cm_uint8_t  Usb2Serial_EP0_TxReady (USBD_HandleTypeDef *pdev)
 {
+  USBD_DbgLog("%s", __func__);
 
   return USBD_OK;
 }
@@ -201,6 +209,7 @@ cm_uint8_t  Usb2Serial_EP0_TxReady (USBD_HandleTypeDef *pdev)
   */
 cm_uint8_t  Usb2Serial_SOF (USBD_HandleTypeDef *pdev)
 {
+  USBD_DbgLog("%s", __func__);
 
   return USBD_OK;
 }
@@ -213,6 +222,7 @@ cm_uint8_t  Usb2Serial_SOF (USBD_HandleTypeDef *pdev)
   */
 cm_uint8_t  Usb2Serial_IsoINIncomplete (USBD_HandleTypeDef *pdev, cm_uint8_t epnum)
 {
+  USBD_DbgLog("%s", __func__);
 
   return USBD_OK;
 }
@@ -225,6 +235,7 @@ cm_uint8_t  Usb2Serial_IsoINIncomplete (USBD_HandleTypeDef *pdev, cm_uint8_t epn
   */
 cm_uint8_t  Usb2Serial_IsoOutIncomplete (USBD_HandleTypeDef *pdev, cm_uint8_t epnum)
 {
+  USBD_DbgLog("%s", __func__);
 
   return USBD_OK;
 }
@@ -238,6 +249,7 @@ cm_uint8_t  Usb2Serial_IsoOutIncomplete (USBD_HandleTypeDef *pdev, cm_uint8_t ep
 cm_uint8_t  Usb2Serial_DataOut (USBD_HandleTypeDef *pdev, 
                               cm_uint8_t epnum)
 {
+  USBD_DbgLog("%s", __func__);
 
   return USBD_OK;
 }
@@ -250,6 +262,7 @@ cm_uint8_t  Usb2Serial_DataOut (USBD_HandleTypeDef *pdev,
 */
 cm_uint8_t  *Usb2Serial_GetDeviceQualifierDesc (uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   *length = sizeof (Usb2Serial_DeviceQualifierDesc);
   return Usb2Serial_DeviceQualifierDesc;
 }

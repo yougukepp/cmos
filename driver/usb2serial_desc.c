@@ -78,6 +78,7 @@ __ALIGN_BEGIN cm_uint8_t USBD_StrDesc[USBD_MAX_STR_DESC_SIZ] __ALIGN_END;
 */
 cm_uint8_t *  Usb2Serial_DeviceDescriptor( USBD_SpeedTypeDef speed , uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   *length = sizeof(Usb2Serial_DeviceDesc);
   return Usb2Serial_DeviceDesc;
 }
@@ -91,6 +92,7 @@ cm_uint8_t *  Usb2Serial_DeviceDescriptor( USBD_SpeedTypeDef speed , uint16_t *l
 */
 cm_uint8_t *  Usb2Serial_LangIDStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   *length =  sizeof(USBD_LangIDDesc);  
   return USBD_LangIDDesc;
 }
@@ -104,6 +106,7 @@ cm_uint8_t *  Usb2Serial_LangIDStrDescriptor( USBD_SpeedTypeDef speed , uint16_t
 */
 cm_uint8_t *  Usb2Serial_ProductStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   if(speed == 0)
   {   
     USBD_GetString ((cm_uint8_t *)USB2SERIAL_PRODUCT_STRING, USBD_StrDesc, length);
@@ -124,6 +127,7 @@ cm_uint8_t *  Usb2Serial_ProductStrDescriptor( USBD_SpeedTypeDef speed , uint16_
 */
 cm_uint8_t *  Usb2Serial_ManufacturerStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   USBD_GetString ((cm_uint8_t *)USB2SERIAL_MANUFACTURER_STRING, USBD_StrDesc, length);
   return USBD_StrDesc;
 }
@@ -137,6 +141,7 @@ cm_uint8_t *  Usb2Serial_ManufacturerStrDescriptor( USBD_SpeedTypeDef speed , ui
 */
 cm_uint8_t *  Usb2Serial_SerialStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   if(speed  == USBD_SPEED_HIGH)
   {    
     USBD_GetString ((cm_uint8_t *)USB2SERIAL_SERIALNUMBER_STRING, USBD_StrDesc, length);
@@ -157,6 +162,7 @@ cm_uint8_t *  Usb2Serial_SerialStrDescriptor( USBD_SpeedTypeDef speed , uint16_t
 */
 cm_uint8_t *  Usb2Serial_ConfigStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   if(speed  == USBD_SPEED_HIGH)
   {  
     USBD_GetString ((cm_uint8_t *)USB2SERIAL_CONFIGURATION_STRING, USBD_StrDesc, length);
@@ -177,6 +183,7 @@ cm_uint8_t *  Usb2Serial_ConfigStrDescriptor( USBD_SpeedTypeDef speed , uint16_t
 */
 cm_uint8_t *  Usb2Serial_InterfaceStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length)
 {
+  USBD_DbgLog("%s", __func__);
   if(speed == 0)
   {
     USBD_GetString ((cm_uint8_t *)USB2SERIAL_INTERFACE_STRING, USBD_StrDesc, length);

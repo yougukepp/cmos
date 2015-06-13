@@ -20,7 +20,7 @@
 #include "switch.h"
 #include "systick.h"
 #include "stm32f429i_discovery.h"
-
+#include "uart.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 

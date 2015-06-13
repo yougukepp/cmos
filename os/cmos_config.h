@@ -31,6 +31,11 @@
 /* */
 #define CMOS_IDLE_STACK_SIZE                (4096)
 
+/* */
+#define UART_PRINTF_BUF_LEN                 (128)
+#define UART_BUF_LEN                        (1024)
+#define UART_TIMEOUT_DIV                    (1)
+
 /* 优先级个数
  * 0 Idle
  * 1 Low

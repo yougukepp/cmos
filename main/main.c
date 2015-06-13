@@ -180,7 +180,7 @@ static void HardWare_Init(void)
     BSP_LED_On(LED3);
     BSP_LED_On(LED4); 
     
-    //UART_Init();
+    UART_Init();
     /* uart_test(); */
     USB_Init();
     /* usb_test(); */
@@ -205,7 +205,7 @@ static void UART_Init(void)
     }
 }
 
-USBD_HandleTypeDef UsbHandle;
+USBD_HandleTypeDef UsbHandle = {0};
 static void USB_Init(void)
 {
   /* Init Device Library,Add Supported Class and Start the library*/
