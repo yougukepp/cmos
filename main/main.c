@@ -112,9 +112,9 @@ int main(void)
 {
     HardWare_Init();
 
-    osKernelInitialize(); 
+    /*osKernelInitialize(); 
     osThreadCreate(osThread(job1), NULL);
-    osKernelStart();
+    osKernelStart();*/
 	
     while(1);
 }

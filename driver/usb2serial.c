@@ -33,11 +33,11 @@ USBD_ClassTypeDef Usb2Serial =
   Usb2Serial_GetDeviceQualifierDesc,
 };
 
-static cm_uint8_t Usb2Serial_CfgDesc[USB_TEMPLATE_CONFIG_DESC_SIZ] =
+static cm_uint8_t Usb2Serial_CfgDesc[USB2SERIAL_CONFIG_DESC_SIZ] =
 {
   0x09, /* bLength: Configuation Descriptor size */
   USB_DESC_TYPE_OTHER_SPEED_CONFIGURATION, /* bDescriptorType: Configuration */
-  USB_TEMPLATE_CONFIG_DESC_SIZ,
+  USB2SERIAL_CONFIG_DESC_SIZ,
   /* wTotalLength: Bytes returned */
   0x00,
   0x01,         /*bNumInterfaces: 1 interface*/

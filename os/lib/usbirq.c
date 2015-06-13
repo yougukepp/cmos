@@ -34,8 +34,8 @@ static void pp_PCD_IRQHandler(PCD_HandleTypeDef *hpcd);
 void OTG_HS_IRQHandler(void)
 {
   HAL_NVIC_ClearPendingIRQ(OTG_HS_IRQn);
-  HAL_PCD_IRQHandler(&hpcd_USB_OTG_HS);
-  //pp_PCD_IRQHandler(&hpcd_USB_OTG_HS);
+  //HAL_PCD_IRQHandler(&hpcd_USB_OTG_HS);
+  pp_PCD_IRQHandler(&hpcd_USB_OTG_HS);
 }
 
 static void pp_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
@@ -46,7 +46,15 @@ static void pp_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
   uint32_t fifoemptymsk = 0, temp = 0;
   USB_OTG_EPTypeDef *ep;
 	#endif
-    
+	
+  USB_OTG_GlobalTypeDef *USBx = NULL;
+
+	USBx = hpcd_USB_OTG_HS.Instance;
+
+  uint32_t v = 0;  
+  v = USBx->GINTSTS;
+  v &= USBx->GINTMSK;
+
   /* ensure that we are in device mode */
   if (USB_GetMode(hpcd->Instance) != USB_OTG_MODE_DEVICE)
   {
@@ -154,7 +162,10 @@ static void pp_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
   /* Handle Disconnection event Interrupt */
   if(__HAL_PCD_GET_FLAG(hpcd, USB_OTG_GINTSTS_OTGINT))
   {
+		  uint32_t temp = 0;
       USBD_DbgLog("16");
+		  temp = hpcd->Instance->GOTGINT;
+      hpcd->Instance->GOTGINT |= temp;
   }
 }
 
