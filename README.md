@@ -6,8 +6,8 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### debug\(重构\)计划
-1. 实现CMOS HAL测试框架
-2. 实现CMOS UART HAL驱动
+1. 实现CMOS HAL测试框架   OK
+2. 实现CMOS UART HAL驱动  修改stm32f4xx_hal_msp.c文件
 3. 实现控制台模块 用于调试
 4. 实现CMOS USB HAL驱动
 5. 实现近期计划

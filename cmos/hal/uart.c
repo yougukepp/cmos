@@ -1,37 +1,36 @@
 /******************************************************************************
  *
- * 文件名  ： main.c
+ * 文件名  ： uart.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20150321 
- * 版本号  ： 1.1
- * 文件描述： CMOS测试桩主文件
+ * 创建日期： 20150614 
+ * 版本号  ： 1.0
+ * 文件描述： uart cmos hal,用于支持cmos控制台模块
  * 版权说明： Copyright (c) GNU
  * 其    他： 无
- * 修改日志： 日期     操作人   操作
- *            20150321 pengpeng 创建
- *            20150614 pengpeng 修改为测试桩
+ * 修改日志： 无
  *
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include "cmos_config.h"
-#include "cmos_api.h"
+#include "uart.h"
+#include "stm32f4xx_hal_conf.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+UART_HandleTypeDef s_uart_handle;
 
 /********************************** 函数声明区 *********************************/
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
 *
-* 函数名  : main
+* 函数名  : uart_init
 * 负责人  : 彭鹏
-* 创建日期: 20150321
-* 函数功能: CMOS测试桩主函数
+* 创建日期: 20150614
+* 函数功能: uart中间层初始化
 *
 * 输入参数: 无
 *
@@ -43,20 +42,23 @@
 * 其 它   : 无
 *
 ******************************************************************************/
-int main(void)
+cmos_status_T uart_init(cmos_uint32_T uart_base_addr, cmos_int32_T baud_rate)
 {
-    cmos_status_T status = cmos_ERR_E;
-
-    status = cmos_init();
-    if(cmos_OK_E != status)
+    s_uart_handle.Instance          = (USART_TypeDef *)uart_base_addr;
+    s_uart_handle.Init.BaudRate     = baud_rate;
+    s_uart_handle.Init.WordLength   = UART_WORDLENGTH_8B;
+    s_uart_handle.Init.StopBits     = UART_STOPBITS_1;
+    s_uart_handle.Init.Parity       = UART_PARITY_NONE;
+    s_uart_handle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+    s_uart_handle.Init.Mode         = UART_MODE_TX_RX;
+    s_uart_handle.Init.OverSampling = UART_OVERSAMPLING_16;
+	
+    if(HAL_UART_Init(&s_uart_handle) != HAL_OK)
     {
         /* 初始化错误 */
         while(1);
     }
-
-    cmos_printf("hello:%d,%c,%d,0x%08x,%s,%f\r\n", 1, 'a', 20, 1024, "bcd", 7.9);
-    //cmos_printf("hello:%d,%c,%d,0x%08x,%s,%f\r\n", 2, 'b', 30, 2048, "cde", 9.7);
-
-    while(1);
+		
+    return cmos_OK_E;
 }
 
