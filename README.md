@@ -5,6 +5,13 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 待施工
 
 ## 计划
+### debug\(重构\)计划
+1. 实现CMOS HAL测试框架
+2. 实现CMOS UART HAL驱动
+3. 实现控制台模块 用于调试
+4. 实现CMOS USB HAL驱动
+5. 实现近期计划
+
 ### 近期计划
 1. 按照结构图修改目录结构
 2. 系统调用的所有代码整理入syscall.s syscall.c syscall.h 三个文件
