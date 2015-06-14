@@ -1,4 +1,5 @@
 # CMOS内核--API手册
+# 需要修改
 本文档按照CMOS内核api的功能分类描述api。CMOS内核可以理解为Cortex-M操作系统\(Cortex-M Operation System\)，所以目前大多数的API和CMSIS保持一致，在有些细节方面对CMSIS的做法不是很认同，所以有自己的改变。
 在CMOS成型时,如《CMOS结构框图.vsd》中绘制，上层接口有两套：一套是与CMSIS完全兼容的，另一套CMOS自己专用的API。在内部实现上CMSIS兼容的API调用了CMOS自己专用API。CMOS专用API用于新研发的应用，例如笔者后续想做的飞行控制；CMSIS兼容API用于其他项目(兼容CMSIS)移植。
 本文主要介绍CMOS专用API，目前只描述实现了的API，后面实现一个API加一个。
