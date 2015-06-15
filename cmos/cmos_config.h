@@ -26,10 +26,11 @@
 /* 0: 输出cmos_err_log */
 /* 1: 输出cmos_debug_log */
 #define CMOS_DEBUG_LEVEL                                        (1)
+
 /* printf缓存 */
 #define CMOS_PRINTF_BUF_SIZE                                    (128)
-/* 调试串口 */
-#define CMOS_CONSOLE_UART                                       ((cmos_uint32_T)USART1)
+
+/* 调试串口 波特率 */
 #define CMOS_CONSOLE_BAUDRATE                                   (9600)
 
 /*--------------------------------- 接口声明区 --------------------------------*/

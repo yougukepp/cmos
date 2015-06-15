@@ -1,39 +1,52 @@
-#ifndef __STM32F4XX_HAL_MSP_H__
-#define __STM32F4XX_HAL_MSP_H__
+/********************************************************************************
+*
+* 文件名  ： uart.h
+* 负责人  ： 彭鹏(pengpeng@fiberhome.com)
+* 创建日期： 20150615
+* 版本号  ： v1.0
+* 文件描述： stm32f4 cube hal 初始化回调头文件
+* 版权说明： Copyright (c) 2000-2020 GNU
+* 其 他   ： 无
+* 修改日志： 无
+*
+********************************************************************************/
+#ifndef _STM32F4XX_HAL_MSP_H_
+#define _STM32F4XX_HAL_MSP_H_
 
 #include "stm32f4xx_hal.h"
-#include "stm32f429i_discovery.h"
+//#include "stm32f429i_discovery.h"
 
-#define USARTx                           USART1
-#define USARTx_CLK_ENABLE()              __HAL_RCC_USART1_CLK_ENABLE();
-#define USARTx_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()
-#define USARTx_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE() 
+#define CONSOLE_UART                           USART1
+#define CONSOLE_UART_CLK_ENABLE()              __HAL_RCC_USART1_CLK_ENABLE()
+#define CONSOLE_UART_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()
+#define CONSOLE_UART_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()
 
-#define USARTx_FORCE_RESET()             __HAL_RCC_USART1_FORCE_RESET()
-#define USARTx_RELEASE_RESET()           __HAL_RCC_USART1_RELEASE_RESET()
+#define CONSOLE_UART_FORCE_RESET()             __HAL_RCC_USART1_FORCE_RESET()
+#define CONSOLE_UART_RELEASE_RESET()           __HAL_RCC_USART1_RELEASE_RESET()
 
-/* Definition for USARTx Pins */
-#define USARTx_TX_PIN                    GPIO_PIN_9
-#define USARTx_TX_GPIO_PORT              GPIOA  
-#define USARTx_TX_AF                     GPIO_AF7_USART1
-#define USARTx_RX_PIN                    GPIO_PIN_10
-#define USARTx_RX_GPIO_PORT              GPIOA 
-#define USARTx_RX_AF                     GPIO_AF7_USART1
+/* Definition for CONSOLE_UART Pins */
+#define CONSOLE_UART_TX_PIN                    GPIO_PIN_9
+#define CONSOLE_UART_TX_GPIO_PORT              GPIOA
+#define CONSOLE_UART_TX_AF                     GPIO_AF7_USART1
+#define CONSOLE_UART_RX_PIN                    GPIO_PIN_10
+#define CONSOLE_UART_RX_GPIO_PORT              GPIOA
+#define CONSOLE_UART_RX_AF                     GPIO_AF7_USART1
 
-/* Definition for USARTx's NVIC */
-#define USARTx_IRQn                      USART1_IRQn
-#define USARTx_IRQHandler                USART1_IRQHandler
+/* Definition for CONSOLE_UART's NVIC */
+#define CONSOLE_UART_IRQn                      USART1_IRQn
+#define CONSOLE_UART_IRQHandler                USART1_IRQHandler
 
-/* Size of Transmission buffer */
-#define TXBUFFERSIZE                      (COUNTOF(aTxBuffer) - 1)
-/* Size of Reception buffer */
-#define RXBUFFERSIZE                      TXBUFFERSIZE
+/*---------------------------------- 预处理区 ---------------------------------*/
 
-/* Exported macro ------------------------------------------------------------*/
-#define COUNTOF(__BUFFER__)   (sizeof(__BUFFER__) / sizeof(*(__BUFFER__)))
+/************************************ 头文件 ***********************************/
 
-/* Exported functions ------------------------------------------------------- */
+/************************************ 宏定义 ***********************************/
 
-#endif /* __MAIN_H */
+/*--------------------------------- 接口声明区 --------------------------------*/
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/*********************************** 全局变量 **********************************/
+
+/*********************************** 接口函数 **********************************/
+
+#endif /* _STM32F4XX_HAL_MSP_H_ */
+
