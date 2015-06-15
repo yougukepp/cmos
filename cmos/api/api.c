@@ -49,7 +49,7 @@ cmos_status_T cmos_init(void)
     hal_init();
 
     /* cmos 控制台初始化 */
-    console_init(CMOS_CONSOLE_UART, CMOS_CONSOLE_BAUDRATE);
+    console_init(CMOS_CONSOLE_BAUDRATE);
 
     return cmos_OK_E;
 }

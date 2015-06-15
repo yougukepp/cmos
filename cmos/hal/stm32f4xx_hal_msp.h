@@ -13,7 +13,8 @@
 #ifndef _STM32F4XX_HAL_MSP_H_
 #define _STM32F4XX_HAL_MSP_H_
 
-#include "stm32f4xx_hal.h"
+#include "cmos_config.h"
+#include "stm32f4xx_hal_conf.h"
 //#include "stm32f429i_discovery.h"
 
 #define CONSOLE_UART                           USART1

@@ -45,9 +45,9 @@ static char s_printf_buf[CMOS_PRINTF_BUF_SIZE] = {0};
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_int32_T console_init(cmos_uint32_T uart_base_addr, cmos_int32_T baud_rate)
+cmos_int32_T console_init(cmos_int32_T baud_rate)
 {
-    uart_init(uart_base_addr, baud_rate);
+    uart_init(CMOS_CONSOLE_UART, baud_rate);
     return cmos_OK_E;
 }
 

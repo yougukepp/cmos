@@ -36,7 +36,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_int32_T console_init(cmos_uint32_T uart_base_addr, cmos_int32_T baud_rate);
+cmos_int32_T console_init(cmos_int32_T baud_rate);
 cmos_int32_T printf_poll(char *fmt, ...);
 
 #endif /* _CMOS_HAL_UART_H_ */
