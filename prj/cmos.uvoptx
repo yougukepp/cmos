@@ -82,27 +82,27 @@
         <Book>
           <Number>0</Number>
           <Title>Getting Started (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00092920.pdf</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00092920.pdf</Path>
         </Book>
         <Book>
           <Number>1</Number>
           <Title>User Manual (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00093903.pdf</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00093903.pdf</Path>
         </Book>
         <Book>
           <Number>2</Number>
           <Title>Bill of Materials (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_bom.zip</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_bom.zip</Path>
         </Book>
         <Book>
           <Number>3</Number>
           <Title>Gerber Files (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_gerber.zip</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_gerber.zip</Path>
         </Book>
         <Book>
           <Number>4</Number>
           <Title>Schematics (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_sch.zip</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_sch.zip</Path>
         </Book>
         <Book>
           <Number>5</Number>
@@ -177,7 +177,31 @@
           <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F429ZITx$CMSIS/Flash/STM32F4xx_2048.FLM))</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>59</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134225904</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\app\test\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\cmos\../app/test/main.c\59</Expression>
+        </Bp>
+      </Breakpoint>
+      <WatchWindow1>
+        <Ww>
+          <count>0</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>s_printf_buf</ItemText>
+        </Ww>
+      </WatchWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
@@ -355,7 +379,7 @@
 
   <Group>
     <GroupName>hal</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -410,7 +434,7 @@
       <GroupNumber>5</GroupNumber>
       <FileNumber>13</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
@@ -458,6 +482,27 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\cmos\lib\lib_assert.c</PathWithFileName>
       <FilenameWithoutPath>lib_assert.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+  </Group>
+
+  <Group>
+    <GroupName>isr</GroupName>
+    <tvExp>0</tvExp>
+    <tvExpOptDlg>0</tvExpOptDlg>
+    <cbSel>0</cbSel>
+    <RteFlg>0</RteFlg>
+    <File>
+      <GroupNumber>8</GroupNumber>
+      <FileNumber>16</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\cmos\isr\systick.c</PathWithFileName>
+      <FilenameWithoutPath>systick.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

@@ -18,15 +18,15 @@
 #include "cmos_config.h"
 
 /************************************ 宏定义 ***********************************/
-#define  cmos_err_log(...)  cmos_printf_poll("ERR: ") ;\
-                            cmos_printf_poll(__VA_ARGS__);\
-                            cmos_printf_poll("\n");
+#define  cmos_err_log(...)  console_printf("ERR: ") ;\
+                            console_printf(__VA_ARGS__);\
+                            console_printf("\n");
 
 /* CMOS_DEBUG_LEVEL > 0 输出基础打印信息 */
 #if (CMOS_DEBUG_LEVEL > 0)
-#define cmos_debug_log(...) cmos_printf_poll("DEBUG : ") ;\
-                            cmos_printf_poll(__VA_ARGS__);\
-                            cmos_printf_poll("\n");
+#define cmos_debug_log(...) console_printf("DEBUG : ") ;\
+                            console_printf(__VA_ARGS__);\
+                            console_printf("\n");
 #else
 #define cmos_debug_log(...)                         
 #endif
@@ -36,8 +36,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_int32_T console_init(cmos_int32_T baud_rate);
-cmos_int32_T printf_poll(char *fmt, ...);
+cmos_status_T console_init(cmos_int32_T baud_rate);
+cmos_int32_T console_printf(char *fmt, ...);
 
 #endif /* _CMOS_HAL_UART_H_ */
 

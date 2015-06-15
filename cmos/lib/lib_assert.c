@@ -42,7 +42,7 @@
 ******************************************************************************/
 void assert_failed(cmos_uint8_T *file, cmos_uint32_T line)
 {
+    /* TODO:实现console打印 */
     while(1);
-    /* 实现console打印 */
 }
 

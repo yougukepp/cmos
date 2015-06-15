@@ -42,9 +42,24 @@ UART_HandleTypeDef s_uart_handle;
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T uart_init(cmos_uint32_T uart_base_addr, cmos_int32_T baud_rate)
+cmos_status_T uart_init(cmos_uint32_T uart_index, cmos_int32_T baud_rate)
 {
-    s_uart_handle.Instance          = (USART_TypeDef *)uart_base_addr;
+    /* 由索引赋值串口基地址 */
+    switch(uart_index)
+    {
+        case 1:
+            {
+                s_uart_handle.Instance = USART1;
+                break;
+            }
+        default:
+            {
+                assert_failed(__FILE__, __LINE__);
+                break;
+            }
+
+    }
+
     s_uart_handle.Init.BaudRate     = baud_rate;
     s_uart_handle.Init.WordLength   = UART_WORDLENGTH_8B;
     s_uart_handle.Init.StopBits     = UART_STOPBITS_1;
@@ -52,13 +67,42 @@ cmos_status_T uart_init(cmos_uint32_T uart_base_addr, cmos_int32_T baud_rate)
     s_uart_handle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
     s_uart_handle.Init.Mode         = UART_MODE_TX_RX;
     s_uart_handle.Init.OverSampling = UART_OVERSAMPLING_16;
-	
+
     if(HAL_UART_Init(&s_uart_handle) != HAL_OK)
     {
-        /* 初始化错误 */
-        while(1);
+        assert_failed(__FILE__, __LINE__);
     }
-		
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+*
+* 函数名  : uart_send_poll
+* 负责人  : 彭鹏
+* 创建日期: 20150614
+* 函数功能: uart轮询方式输出
+*
+* 输入参数: 无
+*
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : TODO:后面实现中断、DMA
+*
+******************************************************************************/
+cmos_status_T uart_send_poll(cmos_uint8_T *buf, cmos_int32_T len)
+{
+    HAL_StatusTypeDef status = HAL_ERROR;
+    /* 传完才退出 */
+    status= HAL_UART_Transmit(&s_uart_handle, (uint8_t*)buf, len, HAL_MAX_DELAY);
+    if(HAL_OK != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+
     return cmos_OK_E;
 }
 

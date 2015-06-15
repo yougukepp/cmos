@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "cmos_config.h"
+#include "lib.h"
 #include "uart.h"
 #include "console.h"
 
@@ -45,18 +46,25 @@ static char s_printf_buf[CMOS_PRINTF_BUF_SIZE] = {0};
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_int32_T console_init(cmos_int32_T baud_rate)
+cmos_status_T console_init(cmos_int32_T baud_rate)
 {
-    uart_init(CMOS_CONSOLE_UART, baud_rate);
+    cmos_status_T status = cmos_ERR_E;
+
+    status = uart_init(CMOS_CONSOLE_INDEX, baud_rate);
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+
     return cmos_OK_E;
 }
 
 /*******************************************************************************
 *
-* 函数名  : printf_poll
+* 函数名  : console_printf
 * 负责人  : 彭鹏
 * 创建日期: 20150614
-* 函数功能: uart轮询方式输出(与中断、DMA模式共存)
+* 函数功能: 控制台打印
 *
 * 输入参数: 无
 *
@@ -68,16 +76,22 @@ cmos_int32_T console_init(cmos_int32_T baud_rate)
 * 其 它   : 系统错误或调试打印需要第一时间输出 采用轮询uart方式
 *
 ******************************************************************************/
-cmos_int32_T printf_poll(char *fmt, ...)
+cmos_int32_T console_printf(char *fmt, ...)
 {
+    cmos_status_T status = cmos_ERR_E;
     va_list args;
     int n = 0;
    
     va_start(args, fmt);
     n = vsprintf(s_printf_buf, fmt, args);
     va_end(args);
-	
-    //uart_send(s_printf_buf, n);
+
+    /* 传输 */
+    status = uart_send_poll((cmos_uint8_T *)s_printf_buf, n);
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
 
     return n;
 }
