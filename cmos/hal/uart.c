@@ -39,7 +39,7 @@ UART_HandleTypeDef s_uart_handle;
 * 返回值  : 无
 *
 * 调用关系: 无
-* 其 它   : 无
+* 其 它   : TODO:以后通信串口也会使用
 *
 ******************************************************************************/
 cmos_status_T uart_init(cmos_uint32_T uart_index, cmos_int32_T baud_rate)
