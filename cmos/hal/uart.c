@@ -16,6 +16,7 @@
 /************************************ 头文件 ***********************************/
 #include "uart.h"
 #include "stm32f4xx_hal_conf.h"
+#include "stm32f4xx_hal_msp.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -32,14 +33,18 @@ UART_HandleTypeDef s_uart_handle;
 * 创建日期: 20150614
 * 函数功能: uart中间层初始化
 *
-* 输入参数: 无
+* 输入参数: uart_index 硬件串口编号
+*           baud_rate  串口波特率
 *
 * 输出参数: 无
 *
-* 返回值  : 无
+* 返回值  : 函数执行状态
 *
 * 调用关系: 无
-* 其 它   : TODO:以后通信串口也会使用
+* 其 它   : 
+*           TODO:以后通信串口也会使用
+*                本模块内部管理多串口的共享问题
+*                实现解初始化
 *
 ******************************************************************************/
 cmos_status_T uart_init(cmos_uint32_T uart_index, cmos_int32_T baud_rate)
@@ -49,7 +54,7 @@ cmos_status_T uart_init(cmos_uint32_T uart_index, cmos_int32_T baud_rate)
     {
         case 1:
             {
-                s_uart_handle.Instance = USART1;
+                s_uart_handle.Instance = CONSOLE_UART;
                 break;
             }
         default:
@@ -83,14 +88,15 @@ cmos_status_T uart_init(cmos_uint32_T uart_index, cmos_int32_T baud_rate)
 * 创建日期: 20150614
 * 函数功能: uart轮询方式输出
 *
-* 输入参数: 无
+* 输入参数: buf 欲输出的字节流
+*           len 字节流长度
 *
 * 输出参数: 无
 *
-* 返回值  : 无
+* 返回值  : 函数执行状态
 *
 * 调用关系: 无
-* 其 它   : TODO:后面实现中断、DMA
+* 其 它   : TODO:实现中断、DMA方式
 *
 ******************************************************************************/
 cmos_status_T uart_send_poll(cmos_uint8_T *buf, cmos_int32_T len)

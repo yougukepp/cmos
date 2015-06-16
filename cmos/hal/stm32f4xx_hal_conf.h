@@ -86,22 +86,19 @@
 #endif /* LSE_VALUE */
 
 /************************************ HAL配置 **********************************/
-#define  VDD_VALUE                    ((uint32_t)3300) /*!< Value of VDD in mv */
+#define  VDD_VALUE                    ((uint32_t)3300) /* VDD电压(mv) */
 #define  USE_RTOS                     0     
 #define  PREFETCH_ENABLE              1              
 #define  INSTRUCTION_CACHE_ENABLE     1
 #define  DATA_CACHE_ENABLE            1
 
 /* Fault 0 > SVC 0 > SysTick 1 > PendSV 15 */
-#define  TICK_INT_PRIORITY            ((uint32_t)0x01) /*!< SysTick 中断优先级 */           
-#define  MEM_INT_PRIORITY             ((uint32_t)0x00) /*!< Memory Management 中断优先级 */
-#define  BUS_INT_PRIORITY             ((uint32_t)0x00) /*!< Bus Fault 中断优先级 */
-#define  USAGE_INT_PRIORITY           ((uint32_t)0x00) /*!< Usage Fault 中断优先级 */
-#define  SVC_INT_PRIORITY             ((uint32_t)0x00) /*!< Usage Fault 中断优先级 */
-#define  PENDSV_INT_PRIORITY          ((uint32_t)0x15) /*!< Usage Fault 中断优先级 */
-
-/*********************************** 断言配置 **********************************/
-/* #define USE_FULL_ASSERT    1 */
+#define  TICK_INT_PRIORITY            ((uint32_t)0x01) /* SysTick 中断优先级 */           
+#define  MEM_INT_PRIORITY             ((uint32_t)0x00) /* Memory Management 中断优先级 */
+#define  BUS_INT_PRIORITY             ((uint32_t)0x00) /* Bus Fault 中断优先级 */
+#define  USAGE_INT_PRIORITY           ((uint32_t)0x00) /* Usage Fault 中断优先级 */
+#define  SVC_INT_PRIORITY             ((uint32_t)0x00) /* 系统调用中断优先级 */
+#define  PENDSV_INT_PRIORITY          ((uint32_t)0x15) /* 任务切换优先级 最低级别保证不会延迟其他中断 到时deadline违反 */
 
 /* include头文件 */
 #ifdef HAL_RCC_MODULE_ENABLED
@@ -255,7 +252,7 @@
 /* 向量表的偏移 必须为0x200 的倍数 */
 #define VECT_TAB_OFFSET  0x00 
 
-/* 断言 */
+/*********************************** 断言配置 **********************************/
 #define USE_FULL_ASSERT                         (1)
 /*******************************************************************************
  *
@@ -265,14 +262,14 @@
  * 函数功能: 用于函数做参数检查 HAL源码已经使用
  *
  * 输入参数: expr 
- *           - flase 该函数调用 assert_failed 报告源码文件及行数
  *           - true  啥也不干
+ *           - flase 该函数调用 assert_failed 报告源码文件及行数
  *
  * 输出参数: 无
  *
  * 返回值:   无
  *
- * 调用关系: HAL源码
+ * 调用关系: 无
  * 其 它:    无
  *
  *

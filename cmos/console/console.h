@@ -28,8 +28,18 @@
                             console_printf(__VA_ARGS__);\
                             console_printf("\n");
 #else
-#define cmos_debug_log(...)                         
+#define cmos_debug_log(...)
 #endif
+
+/* CMOS_DEBUG_LEVEL > 1 输出跟踪信息 */
+#if (CMOS_DEBUG_LEVEL > 1)
+#define cmos_trace_log(...) console_printf("TRACE : ") ;\
+                            console_printf(__VA_ARGS__);\
+                            console_printf("\n");
+#else
+#define cmos_trace_log(...)
+#endif
+
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

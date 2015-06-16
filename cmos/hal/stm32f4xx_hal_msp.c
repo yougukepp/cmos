@@ -29,7 +29,7 @@
 * 创建日期: 20150615
 * 函数功能: stm32f4 hal uart初始化回调
 *
-* 输入参数: 无
+* 输入参数: stm32 hal uart句柄
 *
 * 输出参数: 无
 *
@@ -72,7 +72,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 * 创建日期: 20150615
 * 函数功能: stm32f4 hal uart解初始化回调
 *
-* 输入参数: 无
+* 输入参数: stm32 hal uart句柄
 *
 * 输出参数: 无
 *

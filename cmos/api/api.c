@@ -37,7 +37,7 @@
 *
 * 输出参数: 无
 *
-* 返回值  : CMOS状态
+* 返回值  : 函数执行状态
 *
 * 调用关系: 无
 * 其 它   : 无
@@ -47,13 +47,14 @@ cmos_status_T cmos_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
 
+    /* cmos hal 初始化 */
     status = hal_init();
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
     }
 
-    /* cmos hal 初始化 */
+    /* console 初始化 */
     status = console_init(CMOS_CONSOLE_BAUDRATE);
     if(cmos_OK_E != status)
     {

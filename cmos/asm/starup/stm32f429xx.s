@@ -21,7 +21,6 @@
 ;*
 ;*******************************************************************************/
 
-; data + bbs + 1k系统栈 + 188k堆 = 192k 片内 SRAM
 ; 系统栈(MSP) 1kB
 Stack_Size      EQU     0x00000400
 
@@ -29,8 +28,8 @@ Stack_Size      EQU     0x00000400
 Stack_Mem       SPACE   Stack_Size
 __initial_sp
 
-; 堆 1kBytes - data - bss端
-; 需要查看.map文件中 Execution Region RW_IRAM1
+; 堆 1kB
+; 对比.map文件中
 Heap_Size       EQU     0x00000400
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
@@ -182,6 +181,7 @@ SysTick_Handler PROC
                 ENDP
 
 ; 未使用的异常 死循环
+; TODO: 加入异常处理
 NMI_Handler     PROC
                 EXPORT  NMI_Handler
                 B       .
