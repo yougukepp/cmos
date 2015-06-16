@@ -60,6 +60,8 @@ cmos_status_T cmos_init(void)
         assert_failed(__FILE__, __LINE__);
     }
 
+    /* 后面的初始化可以使用控制台输出了 */
+
     return cmos_OK_E;
 }
 
