@@ -1,12 +1,12 @@
 /******************************************************************************
  *
- * 文件名  ： systick.c
+ * 文件名  ： cortex.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20150321 
+ * 创建日期： 20150617
  * 版本号  ： v1.0
- * 文件描述： 系统时钟 中断服务(ISR)定义
+ * 文件描述： CMSIS 及 stam32fcube cortex hal封装
  * 版权说明： Copyright (c) 2000-2020 GNU
- * 其    他： 函数名需要与startup/stm32f429xx.s保持一致,定义格式如下：
+ * 其    他： 无
  *
  * 修改日志： 无
  *
@@ -15,7 +15,8 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "hal.h"
+#include "stm32f4xx_hal_conf.h"
+#include "stm32f4xx_hal.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -47,14 +48,6 @@
 void SysTick_Handler(void)
 {
     /* tick自增 */
-    hal_inc_tick();
-
-#if 0
-    /* 处理 time_slice delay等时间信息 */
-    switch_update_tcb_time(); 
-    
-    /* 调度 */
-    switch_pend();
-#endif
+    HAL_IncTick();
 }
 

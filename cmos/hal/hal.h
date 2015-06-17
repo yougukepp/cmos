@@ -25,7 +25,6 @@
 
 /*********************************** 接口函数 **********************************/
 cmos_status_T hal_init(void);
-void hal_inc_tick(void);
 
 #endif /* _CMOS_HAL_HAL_H_ */
 
