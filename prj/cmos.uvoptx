@@ -82,27 +82,27 @@
         <Book>
           <Number>0</Number>
           <Title>Getting Started (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00092920.pdf</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00092920.pdf</Path>
         </Book>
         <Book>
           <Number>1</Number>
           <Title>User Manual (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00093903.pdf</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00093903.pdf</Path>
         </Book>
         <Book>
           <Number>2</Number>
           <Title>Bill of Materials (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_bom.zip</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_bom.zip</Path>
         </Book>
         <Book>
           <Number>3</Number>
           <Title>Gerber Files (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_gerber.zip</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_gerber.zip</Path>
         </Book>
         <Book>
           <Number>4</Number>
           <Title>Schematics (STM32F429I-Discovery)</Title>
-          <Path>D:\Program Files\keilv5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_sch.zip</Path>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_sch.zip</Path>
         </Book>
         <Book>
           <Number>5</Number>
@@ -177,24 +177,7 @@
           <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F429ZITx$CMSIS/Flash/STM32F4xx_2048.FLM))</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>59</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134225904</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\app\test\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\cmos\../app/test/main.c\59</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -333,6 +316,45 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>8</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>E:\Keil_v5\STM32Cube_FW_F4\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.c</PathWithFileName>
+      <FilenameWithoutPath>usbd_core.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>9</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>E:\Keil_v5\STM32Cube_FW_F4\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.c</PathWithFileName>
+      <FilenameWithoutPath>usbd_ctlreq.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>10</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>E:\Keil_v5\STM32Cube_FW_F4\Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.c</PathWithFileName>
+      <FilenameWithoutPath>usbd_ioreq.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -343,7 +365,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>8</FileNumber>
+      <FileNumber>11</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -364,7 +386,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>3</GroupNumber>
-      <FileNumber>9</FileNumber>
+      <FileNumber>12</FileNumber>
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -379,13 +401,13 @@
 
   <Group>
     <GroupName>hal</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>4</GroupNumber>
-      <FileNumber>10</FileNumber>
+      <FileNumber>13</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -398,7 +420,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-      <FileNumber>11</FileNumber>
+      <FileNumber>14</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -411,7 +433,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-      <FileNumber>12</FileNumber>
+      <FileNumber>15</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -424,7 +446,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-      <FileNumber>13</FileNumber>
+      <FileNumber>16</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -432,6 +454,58 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\cmos\hal\cortex.c</PathWithFileName>
       <FilenameWithoutPath>cortex.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>4</GroupNumber>
+      <FileNumber>17</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\cmos\hal\usb.c</PathWithFileName>
+      <FilenameWithoutPath>usb.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>4</GroupNumber>
+      <FileNumber>18</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\cmos\hal\usb_descriptor.c</PathWithFileName>
+      <FilenameWithoutPath>usb_descriptor.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>4</GroupNumber>
+      <FileNumber>19</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\cmos\hal\usb_device.c</PathWithFileName>
+      <FilenameWithoutPath>usb_device.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>4</GroupNumber>
+      <FileNumber>20</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\cmos\hal\usbd_conf.c</PathWithFileName>
+      <FilenameWithoutPath>usbd_conf.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -445,7 +519,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>14</FileNumber>
+      <FileNumber>21</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -466,7 +540,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>6</GroupNumber>
-      <FileNumber>15</FileNumber>
+      <FileNumber>22</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -487,7 +561,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>16</FileNumber>
+      <FileNumber>23</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>

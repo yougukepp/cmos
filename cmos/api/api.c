@@ -16,7 +16,6 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cmos_api.h"
-#include "console.h"
 #include "hal.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -54,15 +53,7 @@ cmos_status_T cmos_init(void)
         assert_failed(__FILE__, __LINE__);
     }
 
-    /* console 初始化 */
-    status = console_init(CMOS_CONSOLE_BAUDRATE);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
-
     /* 后面的初始化可以使用控制台输出了 */
-
     return cmos_OK_E;
 }
 
