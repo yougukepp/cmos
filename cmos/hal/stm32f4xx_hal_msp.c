@@ -14,6 +14,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "stm32f4xx_hal_msp.h"
+#include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -94,5 +95,49 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
     HAL_NVIC_DisableIRQ(CONSOLE_UART_IRQn);
 
     /*************************** 其他串口解初始化 ***************************/
+}
+
+/* TODO: 完善注释 */
+void HAL_PCD_MspInit(PCD_HandleTypeDef *s_pcd_handle)
+{
+    GPIO_InitTypeDef  GPIO_InitStruct;
+    cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    /*Configure GPIO for HS on FS mode*/
+    GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_14 |GPIO_PIN_15;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* Configure VBUS Pin */
+    GPIO_InitStruct.Pin = GPIO_PIN_13;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+    /* Enable USB HS Clocks */
+    __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
+
+    /* Set USBHS Interrupt to the lowest priority */
+    HAL_NVIC_SetPriority(OTG_HS_IRQn, 4, 0);
+
+    /* Enable USBHS Interrupt */
+    HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
+
+    cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
+}
+
+void HAL_PCD_MspDeInit(PCD_HandleTypeDef *s_pcd_handle)
+{
+    cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
+    /* Disable USB FS Clocks */
+    __HAL_RCC_USB_OTG_HS_CLK_DISABLE();
+    __HAL_RCC_SYSCFG_CLK_DISABLE();
+    cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
 }
 
