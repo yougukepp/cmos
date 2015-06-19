@@ -6,6 +6,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### debug\(重构\)计划
+0. USB\_HID原样搬入后修改
 1. 实现CMOS USB HAL驱动 msp层移入宏
 2. 实现近期计划
 
