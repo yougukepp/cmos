@@ -142,7 +142,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; USB OTG HS End Point 1 Out
                 DCD     0                       ; USB OTG HS End Point 1 In
                 DCD     0                       ; USB OTG HS Wakeup through EXTI
-                DCD     0                       ; USB OTG HS
+                DCD     USB_OTG_HS_Handler      ; USB OTG HS
                 DCD     0                       ; DCMI
                 DCD     0                       ; Reserved
                 DCD     0                       ; Hash and Rng
@@ -179,6 +179,12 @@ SysTick_Handler PROC
                 EXPORT  SysTick_Handler            [WEAK]
                 B       .
                 ENDP
+
+USB_OTG_HS_Handler PROC
+                EXPORT  USB_OTG_HS_Handler         [WEAK]
+                B       .
+                ENDP
+
 
 ; 未使用的异常 死循环
 ; TODO: 加入异常处理

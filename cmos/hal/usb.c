@@ -72,3 +72,27 @@ cmos_status_T usb_init(void)
     return cmos_OK_E;
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : USB_OTG_HS_Handler
+ * 负责人  : 彭鹏
+ * 创建日期：20150619
+ * 函数功能: USB OTG HS ISR
+ *
+ * 输入参数: 无
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : USB OTG HS中断调用
+ *
+ ******************************************************************************/
+void USB_OTG_HS_Handler(void)
+{
+    cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
+    cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
+}
+
+

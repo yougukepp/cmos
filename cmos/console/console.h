@@ -20,13 +20,13 @@
 /************************************ 宏定义 ***********************************/
 #define  cmos_err_log(...)  console_printf("ERR: ") ;\
                             console_printf(__VA_ARGS__);\
-                            console_printf("\n");
+                            console_printf("\r\n");
 
 /* CMOS_DEBUG_LEVEL > 0 输出基础打印信息 */
 #if (CMOS_DEBUG_LEVEL > 0)
 #define cmos_debug_log(...) console_printf("DEBUG : ") ;\
                             console_printf(__VA_ARGS__);\
-                            console_printf("\n");
+                            console_printf("\r\n");
 #else
 #define cmos_debug_log(...)
 #endif
@@ -35,7 +35,7 @@
 #if (CMOS_DEBUG_LEVEL > 1)
 #define cmos_trace_log(...) console_printf("TRACE : ") ;\
                             console_printf(__VA_ARGS__);\
-                            console_printf("\n");
+                            console_printf("\r\n");
 #else
 #define cmos_trace_log(...)
 #endif
