@@ -62,8 +62,8 @@ static cmos_uint8_T usb_hs_device_init (USBD_HandleTypeDef *pdev, cmos_uint8_T c
 
 static cmos_uint8_T usb_hs_device_deInit (USBD_HandleTypeDef *pdev, cmos_uint8_T cfgidx)
 {
-    cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
-    cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
+    //cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
+    //cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
     return USBD_OK;
 }
 

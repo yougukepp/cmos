@@ -50,7 +50,7 @@ USBD_DescriptorsTypeDef g_usb_hs_descriptor ={
 cmos_uint8_T *usb_hs_descriptor_get_device_descriptor(USBD_SpeedTypeDef speed, cmos_uint16_T *length)
 {
     cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
-    cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
+    //cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
     return USBD_OK;
 }
 

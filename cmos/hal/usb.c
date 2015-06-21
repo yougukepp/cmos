@@ -15,6 +15,8 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "stm32f4xx_hal_conf.h"
+#include "stm32f4xx_hal.h"
 #include "lib.h"
 #include "usb.h"
 #include "usbd_core.h"
@@ -91,8 +93,43 @@ cmos_status_T usb_init(void)
  ******************************************************************************/
 void USB_OTG_HS_Handler(void)
 {
+    cmos_uint8_T val = 0;
+    cmos_int32_T i = 0;
+    cmos_int32_T j = 0;
+    cmos_int32_T k = 0;
+    cmos_uint32_T *addr = NULL;
+    cmos_uint32_T int_val = 0;
+	
     cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
+
+    int_val = (g_pcd_handle.Instance->GINTSTS) & (g_pcd_handle.Instance->GINTMSK);
+    console_printf("int_val=0x%08x:", int_val);
+
+    HAL_NVIC_ClearPendingIRQ(OTG_HS_IRQn);
+    HAL_PCD_IRQHandler(&g_pcd_handle);
+
+    addr = g_pcd_handle.Setup;
+    if(0 != addr[0])
+    {
+        i = 0;
+        j = 0;
+        k = 0;
+
+        for(i=0;i<8;i++)
+        {
+            j = i / 4;
+            k = i % 4 * 8;
+            val = 0xff & (addr[j] >> k);
+            console_printf("0x%02x,", val);
+        }
+        for(i=0;i<2;i++)
+        {
+            addr[i] = 0;
+        }
+
+    }
+    console_printf("\r\n");
+
     cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
 }
-
 
