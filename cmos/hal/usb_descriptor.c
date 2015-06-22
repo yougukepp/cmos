@@ -19,6 +19,8 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+
+
 /* 结构体中有回调 故申明需要提前 */
 cmos_uint8_T *usb_hs_descriptor_get_device_descriptor(USBD_SpeedTypeDef speed, cmos_uint16_T *length);  
 cmos_uint8_T *usb_hs_descriptor_get_lang_id_str_descriptor(USBD_SpeedTypeDef speed, cmos_uint16_T *length); 
@@ -50,7 +52,7 @@ USBD_DescriptorsTypeDef g_usb_hs_descriptor ={
 cmos_uint8_T *usb_hs_descriptor_get_device_descriptor(USBD_SpeedTypeDef speed, cmos_uint16_T *length)
 {
     cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
-    //cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
+    cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
     return USBD_OK;
 }
 
