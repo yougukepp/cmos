@@ -19,11 +19,29 @@
 #include "usbd_def.h"
 
 /************************************ 宏定义 ***********************************/
-extern USBD_DescriptorsTypeDef g_usb_hs_descriptor;
+/* 设备描述符长度 */
+#define CMOS_USB_HS_DEVICE_DESCRIPTOR_SIZE      (18)
+/* 描述符类型 */
+#define CMOS_USB_HS_DEVICE_TYPE                 (USB_DESC_TYPE_DEVICE)
+/* bMaxPacketSize EP0最大包长 */
+#define CMOS_USB_HS_MAX_EP0_SIZE                (USB_MAX_EP0_SIZE)
+/* bcdUSB USB版本 USB2.0 小端 */
+#define CMOS_HS_BCD_USB                         (0x0200)
+/* idVender 厂商id  临时一用 */
+#define CMOS_HS_VID                             (0x1234)
+/* idProduct 产品id 0.1 */
+#define CMOS_HS_PID                             (0x0001)
+/* bcdDevice rel 0.1 */
+#define CMOS_HS_BCD_DEVICE                      (0x0001)
+/* 字符串索引 */
+#define CMOS_USB_HS_IMANUFACTURER               (0x01)
+#define CMOS_USB_HS_IPRODUCT                    (CMOS_USB_HS_IMANUFACTURER + 1)
+#define CMOS_USB_HS_ISERIALNUMBER               (CMOS_USB_HS_IPRODUCT + 1)
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/
+extern USBD_DescriptorsTypeDef g_usb_hs_descriptor;
 
 /*********************************** 接口函数 **********************************/
 

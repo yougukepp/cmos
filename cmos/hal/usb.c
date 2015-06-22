@@ -93,42 +93,84 @@ cmos_status_T usb_init(void)
  ******************************************************************************/
 void USB_OTG_HS_Handler(void)
 {
+#define PRINTF_OTG_HS_ISR
+	
+    cmos_uint32_T *addr = NULL;
+  	cmos_uint8_T byte1 = 0;
+	  cmos_uint8_T byte2 = 0;
+	  cmos_uint8_T byte3 = 0;
+	  cmos_uint8_T byte4 = 0;	
+#if 0
     cmos_uint8_T val = 0;
     cmos_int32_T i = 0;
     cmos_int32_T j = 0;
     cmos_int32_T k = 0;
-    cmos_uint32_T *addr = NULL;
     cmos_uint32_T int_val = 0;
 	
-    cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
-
     int_val = (g_pcd_handle.Instance->GINTSTS) & (g_pcd_handle.Instance->GINTMSK);
     console_printf("int_val=0x%08x:", int_val);
+#endif
+	
+    cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
 
     HAL_NVIC_ClearPendingIRQ(OTG_HS_IRQn);
     HAL_PCD_IRQHandler(&g_pcd_handle);
 
+#ifdef PRINTF_OTG_HS_ISR
     addr = g_pcd_handle.Setup;
-    if(0 != addr[0])
+    if(!(addr[0] | addr[1]))
     {
-        i = 0;
-        j = 0;
-        k = 0;
-
-        for(i=0;i<8;i++)
-        {
-            j = i / 4;
-            k = i % 4 * 8;
-            val = 0xff & (addr[j] >> k);
-            console_printf("0x%02x,", val);
-        }
-        for(i=0;i<2;i++)
-        {
-            addr[i] = 0;
-        }
-
+        goto END;
     }
+
+    byte1 = (cmos_uint8_T)((addr[0] & 0x000000FF));
+    byte2 = (cmos_uint8_T)((addr[0] & 0x0000FF00) >> 8);
+    byte3 = (cmos_uint8_T)((addr[0] & 0x00FF0000) >> 16);
+    byte4 = (cmos_uint8_T)((addr[0] & 0xFF000000) >> 24);
+
+    console_printf("0x%02x,0x%02x:", byte1, byte2);
+    if(0x80 & byte1)
+    {
+        console_printf("主机=>设备,");
+    }
+    else
+    {
+        console_printf("设备=>主机,");
+    }
+
+    if(0x06 == byte2)
+    {
+        if(0x01 == byte4)
+        {
+            console_printf("请求设备描述符.");
+        }
+        else if(0x02 == byte4)
+        {
+            console_printf("请求配置描述符.");
+        }
+        else if(0x03 == byte4)
+        {
+            console_printf("请求字符串描述符.");
+        }
+        else
+        {
+            console_printf("byte4=0x%02x未实现.", byte4);
+        }
+    }
+    else if(0x05 == byte2)
+    {
+        console_printf("设置地址.");
+    }
+    else
+    {
+        console_printf("byte2=0x%02x未实现.", byte2);
+    }
+
+    console_printf("0x%08x,0x%08x.", addr[0], addr[1]);
     console_printf("\r\n");
+
+END:
+#endif
 
     cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
 }

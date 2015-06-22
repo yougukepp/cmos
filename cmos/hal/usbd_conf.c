@@ -254,7 +254,7 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev,
     cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
     HAL_PCD_EP_Transmit(pdev->pData, ep_addr, pbuf, size);
 
-    cmos_debug_log("%s,data:0x%02x, %d: ", __func__, ep_addr, size);
+	  cmos_debug_log("DEBUG:%s,data:0x%02x, %d: ", __func__, ep_addr, size);
     for(i=0;i<size;i++)
     {
         cmos_debug_log("0x%02x,", pbuf[i]);

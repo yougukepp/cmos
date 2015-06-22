@@ -24,9 +24,7 @@
 
 /* CMOS_DEBUG_LEVEL > 0 输出基础打印信息 */
 #if (CMOS_DEBUG_LEVEL > 0)
-#define cmos_debug_log(...) console_printf("DEBUG : ") ;\
-                            console_printf(__VA_ARGS__);\
-                            console_printf("\r\n");
+#define cmos_debug_log(...) console_printf(__VA_ARGS__);                            
 #else
 #define cmos_debug_log(...)
 #endif
