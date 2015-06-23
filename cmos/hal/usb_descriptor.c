@@ -17,7 +17,7 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-const cmos_uint8_T s_usb_hs_device_descriptor[CMOS_USB_HS_DEVICE_DESCRIPTOR_SIZE] = /* 设备描述符 18 字节 */
+const cmos_uint8_T s_usb_hs_device_descriptor[CMOS_USB_HS_DEVICE_DESCRIPTOR_SIZE] =
 {
     CMOS_USB_HS_DEVICE_DESCRIPTOR_SIZE,     /* bLength 设备描述符长度 */
     CMOS_USB_HS_DEVICE_TYPE,                /* bDescriptorType 类型为设备描述符 */
