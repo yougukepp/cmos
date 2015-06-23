@@ -33,9 +33,9 @@ const cmos_uint8_T s_usb_hs_device_descriptor[CMOS_USB_HS_DEVICE_DESCRIPTOR_SIZE
     HIBYTE(CMOS_HS_PID),
     LOBYTE(CMOS_HS_BCD_DEVICE),             /* bcdDevice rel 0.1 */
     HIBYTE(CMOS_HS_BCD_DEVICE),
-    0x01,                                   /* iManufacturer 厂商字符串索引 */
-    0x02,                                   /* iProduct 产品字符串索引 */
-    0x03,                                   /* iSerialNumber 序列号字符串索引 */
+    CMOS_USB_HS_IMANUFACTURER,              /* iManufacturer 厂商字符串索引 */
+    CMOS_USB_HS_IPRODUCT,                   /* iProduct 产品字符串索引 */
+    CMOS_USB_HS_ISERIALNUMBER,              /* iSerialNumber 序列号字符串索引 */
     0x01                                    /* bNumConfigurations 设备具有的配置数 */
 };
 
