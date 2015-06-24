@@ -23,7 +23,7 @@ const cmos_uint8_T s_usb_hs_config_descriptor[CMOS_USB_HS_CONFIG_DESCRIPTOR_TOTA
 {
     /* 配置描述符 */
     CMOS_USB_HS_CONFIG_DESCRIPTOR_SIZE,         /* bLength 配置描述符 */
-    CMOS_USB_HS_CONFIG_TYPE,                    /* bDescriptorType 配置描述符类型 */
+    CMOS_USB_HS_CONFIG_DESCRIPTOR_TYPE,         /* bDescriptorType 配置描述符类型 */
     LOBYTE(CMOS_USB_HS_CONFIG_DESCRIPTOR_TOTAL_SIZE), /* wTotalLength 配置描述符集合总长 */
     HIBYTE(CMOS_USB_HS_CONFIG_DESCRIPTOR_TOTAL_SIZE),
     1,                                          /* bNumIntergace 该配置支持的接口数 */
@@ -34,7 +34,7 @@ const cmos_uint8_T s_usb_hs_config_descriptor[CMOS_USB_HS_CONFIG_DESCRIPTOR_TOTA
 
     /* 接口描述符 */
     CMOS_USB_HS_INTERFACE_DESCRIPTOR_SIZE,      /* bLength 接口描述符 */
-    CMOS_USB_HS_INTERFACE_TYPE,                 /* bDescriptorType 接口描述符类型 */
+    CMOS_USB_HS_INTERFACE_DESCRIPTOR_TYPE,      /* bDescriptorType 接口描述符类型 */
     0,                                          /* bInterfaceNumber 该接口的编号 从0开始 */
     0,                                          /* bAlternateSetting 该接口备用编号 */
     CMOS_USB_HS_ENDPOINTS_NUM,                  /* bNumEndpoints 非零端点数目 1输入+1输出*/
@@ -45,7 +45,7 @@ const cmos_uint8_T s_usb_hs_config_descriptor[CMOS_USB_HS_CONFIG_DESCRIPTOR_TOTA
 
     /* 输入端点描述符 */
     CMOS_USB_HS_ENDPOINT_DESCRIPTOR_SIZE,       /* bLength 端点描述符 */
-    CMOS_USB_HS_ENDPOINT_TYPE,                  /* bDescriptorType 端点描述符类型 */
+    CMOS_USB_HS_ENDPOINT_DESCRIPTOR_TYPE,       /* bDescriptorType 端点描述符类型 */
     CMOS_USB_HS_ENDPOINT_IN_ADDRESS,            /* bEndpointAddress 端点地址 */
     CMOS_USB_HS_ENDPOINT_IN_ATTRIBUTES,         /* bmAttributes 端点属性 */
     LOBYTE(CMOS_USB_HS_ENDPOINT_IN_MAX_PACKET_SIZE),/* wMaxPacketSize 端点最大包长 */
@@ -54,7 +54,7 @@ const cmos_uint8_T s_usb_hs_config_descriptor[CMOS_USB_HS_CONFIG_DESCRIPTOR_TOTA
 
     /* 输出端点描述符 */
     CMOS_USB_HS_ENDPOINT_DESCRIPTOR_SIZE,       /* bLength 端点描述符 */
-    CMOS_USB_HS_ENDPOINT_TYPE,                  /* bDescriptorType 端点描述符类型 */
+    CMOS_USB_HS_ENDPOINT_DESCRIPTOR_TYPE,       /* bDescriptorType 端点描述符类型 */
     CMOS_USB_HS_ENDPOINT_OUT_ADDRESS,           /* bEndpointAddress 端点地址 */
     CMOS_USB_HS_ENDPOINT_OUT_ATTRIBUTES,        /* bmAttributes 端点属性 */
     LOBYTE(CMOS_USB_HS_ENDPOINT_OUT_MAX_PACKET_SIZE),/* wMaxPacketSize 端点最大包长 */

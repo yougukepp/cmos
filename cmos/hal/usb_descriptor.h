@@ -22,7 +22,7 @@
 /* 设备描述符长度 */
 #define CMOS_USB_HS_DEVICE_DESCRIPTOR_SIZE      (18)
 /* 描述符类型 */
-#define CMOS_USB_HS_DEVICE_TYPE                 (USB_DESC_TYPE_DEVICE)
+#define CMOS_USB_HS_DEVICE_DESCRIPTOR_TYPE      (USB_DESC_TYPE_DEVICE)
 /* bMaxPacketSize EP0最大包长 */
 #define CMOS_USB_HS_MAX_EP0_SIZE                (USB_MAX_EP0_SIZE)
 /* bcdUSB USB版本 USB2.0 小端 */
@@ -36,7 +36,14 @@
 /* 字符串索引 */
 #define CMOS_USB_HS_IMANUFACTURER               (0x01)
 #define CMOS_USB_HS_IPRODUCT                    (CMOS_USB_HS_IMANUFACTURER + 1)
-#define CMOS_USB_HS_ISERIALNUMBER               (CMOS_USB_HS_IPRODUCT + 1)
+#define CMOS_USB_HS_ISERIALNUMBER               (0)
+
+/* 语言ID描述符长度 */
+#define CMOS_USB_HS_LANG_ID_DESCRIPTOR_SIZE     (4)
+/* 字符串描述符类型 */
+#define CMOS_USB_HS_STRING_DESCRIPTOR_TYPE      (USB_DESC_TYPE_STRING)
+/* 语言ID 美式英语 0x0409 */
+#define CMOS_USB_HS_LANG_ID                     (0x0409)
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

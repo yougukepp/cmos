@@ -23,7 +23,7 @@
 /* 配置描述符长度 */
 #define CMOS_USB_HS_CONFIG_DESCRIPTOR_SIZE      (9)
 /* 描述符类型 */
-#define CMOS_USB_HS_CONFIG_TYPE                 (USB_DESC_TYPE_CONFIGURATION)
+#define CMOS_USB_HS_CONFIG_DESCRIPTOR_TYPE      (USB_DESC_TYPE_CONFIGURATION)
 /*****************************
  * 设备属性
  * bit7 必须为1
@@ -42,7 +42,7 @@
 /* 接口描述符长度 */
 #define CMOS_USB_HS_INTERFACE_DESCRIPTOR_SIZE   (9)
 /* 接口描述符类型 */
-#define CMOS_USB_HS_INTERFACE_TYPE              (USB_DESC_TYPE_INTERFACE)
+#define CMOS_USB_HS_INTERFACE_DESCRIPTOR_TYPE   (USB_DESC_TYPE_INTERFACE)
 /* bNumEndpoints 非零端点数目 1输入+1输出*/
 #define CMOS_USB_HS_ENDPOINTS_NUM               (2)
 
@@ -51,7 +51,7 @@
 /* 端点描述符长度 */
 #define CMOS_USB_HS_ENDPOINT_DESCRIPTOR_SIZE    (7)
 /* 端点描述符类型 */
-#define CMOS_USB_HS_ENDPOINT_TYPE               (USB_DESC_TYPE_ENDPOINT)
+#define CMOS_USB_HS_ENDPOINT_DESCRIPTOR_TYPE    (USB_DESC_TYPE_ENDPOINT)
 
 /* 输入端点 */
 /********************
