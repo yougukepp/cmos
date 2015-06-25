@@ -120,21 +120,24 @@ static cmos_uint8_T usb_hs_device_setup (USBD_HandleTypeDef *pdev, USBD_SetupReq
 
 static cmos_uint8_T *usb_hs_device_get_cfg_desc(cmos_uint16_T *length)
 {
+    cmos_uint8_T *ptr_descriptor = NULL;
     cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
 
-
-
-
+    ptr_descriptor = (cmos_uint8_T *)s_usb_hs_config_descriptor;
+    *length = CMOS_USB_HS_CONFIG_DESCRIPTOR_TOTAL_SIZE;
 
     cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
-    return USBD_OK;
+    return ptr_descriptor;
 }
 
 static cmos_uint8_T *usb_hs_device_get_device_qualifier_desc(cmos_uint16_T *length)
 {
     cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
+
+    *length = 0;
+
     cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
-    return USBD_OK;
+    return NULL;
 }
 
 static cmos_uint8_T usb_hs_device_data_in(USBD_HandleTypeDef *pdev, cmos_uint8_T epnum)
