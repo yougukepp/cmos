@@ -94,23 +94,23 @@ cmos_status_T usb_init(void)
 void USB_OTG_HS_Handler(void)
 {
 #define PRINTF_OTG_HS_ISR
-	
+
     cmos_uint32_T *addr = NULL;
-  	cmos_uint8_T byte1 = 0;
-	  cmos_uint8_T byte2 = 0;
-	  cmos_uint8_T byte3 = 0;
-	  cmos_uint8_T byte4 = 0;	
+    cmos_uint8_T byte1 = 0;
+    cmos_uint8_T byte2 = 0;
+    cmos_uint8_T byte3 = 0;
+    cmos_uint8_T byte4 = 0;	
 #if 0
     cmos_uint8_T val = 0;
     cmos_int32_T i = 0;
     cmos_int32_T j = 0;
     cmos_int32_T k = 0;
     cmos_uint32_T int_val = 0;
-	
+
     int_val = (g_pcd_handle.Instance->GINTSTS) & (g_pcd_handle.Instance->GINTMSK);
     console_printf("int_val=0x%08x:", int_val);
 #endif
-	
+
     cmos_trace_log("IN %s,%d,%s", __FILE__, __LINE__, __func__);
 
     HAL_NVIC_ClearPendingIRQ(OTG_HS_IRQn);
