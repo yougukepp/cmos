@@ -735,7 +735,7 @@
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\app\test\main.c</FilePath>
+              <FilePath>..\app\flyer\main.c</FilePath>
             </File>
           </Files>
         </Group>
