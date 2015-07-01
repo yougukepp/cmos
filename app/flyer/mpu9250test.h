@@ -1,10 +1,10 @@
 #ifndef _CMOS_MPU9250_TEST_H_
 #define _CMOS_MPU9250_TEST_H_
 
-#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_conf.h"
    
-#define IO_I2C_ADDRESS                      0x82 
 #define TS_I2C_ADDRESS                      0x82
+#define MPU9250_I2C_ADDRESS                 0xD0
 
 /*############################### I2Cx #######################################*/
 /* User can use this section to tailor I2Cx instance used and associated 
