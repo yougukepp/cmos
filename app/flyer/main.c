@@ -46,8 +46,9 @@ int main(void)
     I2Cx_Init();
     I2Cx_ITConfig();
 
-    //val = I2Cx_ReadData(TS_I2C_ADDRESS, Reg);
-    val = I2Cx_ReadData(MPU9250_I2C_ADDRESS, 0x75);
+    val = I2Cx_ReadData(TS_I2C_ADDRESS, 0x02); // val == 0x01
+    val = I2Cx_ReadData(MPU9250_I2C_ADDRESS, 0x75); // val == 0x68
+
     while(1);
 }
 
