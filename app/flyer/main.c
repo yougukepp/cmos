@@ -42,12 +42,13 @@
 ******************************************************************************/
 static uint8_t val = 0;
 int main(void)
-{ 
+{
     I2Cx_Init();
     I2Cx_ITConfig();
 
-    val = I2Cx_ReadData(TS_I2C_ADDRESS, 0x02); // val == 0x01
-    val = I2Cx_ReadData(MPU9250_I2C_ADDRESS, 0x75); // val == 0x68
+    val = I2Cx_ReadData(TS_I2C_ADDRESS, 0x00); // val == 0x11
+    val = I2Cx_ReadData(TS_I2C_ADDRESS, 0x01); // val == 0x08
+    val = I2Cx_ReadData(MPU9250_I2C_ADDRESS, 0x75); // val == 0x71
 
     while(1);
 }
