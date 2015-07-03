@@ -14,6 +14,8 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include "inv_mpu.h"
+#include "mltypes.h"
 #include "mpu9250.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -39,7 +41,35 @@
 ******************************************************************************/
 void mpu9250_init(void)
 {
+    inv_error_t result;
+    unsigned char accel_fsr,  new_temp = 0;
+    unsigned short gyro_rate, gyro_fsr;
+    unsigned long timestamp;
+    struct int_param_s int_param;
+
+#ifdef COMPASS_ENABLED
+    unsigned char new_compass = 0;
+    unsigned short compass_fsr;
+#endif
+
+	
+	
+    /* I2C 初始化 */
     cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
+
+#if 1
+	  static uint8_t val = 0;
+    /* 测试I2C是否OK? */
+    val = mpu9250_read(0x75); // val == 0x71
+		cmos_printf("mpu9250 id:0x%02x\r\n", val);
+#endif
+
+	  result = mpu_init(&int_param);
+    if(result) 
+		{
+        console_printf("Could not initialize gyro.\n");
+    }
+	
 }
 
 /*******************************************************************************

@@ -8,15 +8,7 @@
  */
  
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx.h"
 #include "stdio.h"
-
-#include "stm32f4xx_usart.h" 
-#include "uart.h"
-#include "i2c.h"
-#include "gpio.h"
-#include "main.h"
-#include "board-st_discovery.h"
     
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
@@ -651,6 +643,9 @@ void gyro_data_ready_cb(void)
 {
     hal.new_gyro = 1;
 }
+
+/* pp rewrite new main function */
+#if 1
 /*******************************************************************************/
 
 /**

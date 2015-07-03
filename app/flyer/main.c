@@ -42,7 +42,6 @@
 * 其 它   : 无
 *
 ******************************************************************************/
-static uint8_t val = 0;
 int main(void)
 { 
     cmos_status_T status = cmos_ERR_E;
@@ -53,12 +52,7 @@ int main(void)
     }
 
     mpu9250_init();
-#if 1
-    /* 测试I2C是否OK? */
-    val = mpu9250_read(0x75); // val == 0x71
-#endif 
 
-		cmos_printf("mpu9250 id:0x%02x\r\n", val);
     while(1);
 }
 
