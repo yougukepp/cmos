@@ -713,17 +713,31 @@ int mpu_init(struct int_param_s *int_param)
 {
     unsigned char data[6];
 
+	
+#if 1
+	  static uint8_t val = 0;
+    /* 测试I2C是否OK? */
+    val = mpu9250_read(0x75); // val == 0x71
+    //cmos_printf("mpu9250 id:0x%02x\r\n", val);
+#endif 
+	
     /* Reset device. */
     data[0] = BIT_RESET;
     if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
         return -1;
     delay_ms(100);
-
+		
     /* Wake up chip. */
     data[0] = 0x00;
     if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
         return -1;
 
+#if 1
+	  val = 0;
+    /* 测试I2C是否OK? */
+    val = mpu9250_read(0x75); // val == 0x71
+    //cmos_printf("mpu9250 id:0x%02x\r\n", val);
+#endif 
    st.chip_cfg.accel_half = 0;
 
 #ifdef MPU6500

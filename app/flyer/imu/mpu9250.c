@@ -56,15 +56,8 @@ void mpu9250_init(void)
 	
     /* I2C 初始化 */
     cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
-
-#if 1
-	  static uint8_t val = 0;
-    /* 测试I2C是否OK? */
-    val = mpu9250_read(0x75); // val == 0x71
-		cmos_printf("mpu9250 id:0x%02x\r\n", val);
-#endif
-
-	  result = mpu_init(&int_param);
+    
+    result = mpu_init(&int_param);
     if(result) 
 		{
         console_printf("Could not initialize gyro.\n");
@@ -113,4 +106,38 @@ void mpu9250_write(unsigned char reg_addr, unsigned char data)
     cmos_i2c_write_byte(MPU9250_DEV_ADDR, reg_addr, data);
 }
 
+/* TODO: 完善注释 */
+int Sensors_I2C_WriteRegister(unsigned char slave_addr,
+        unsigned char reg_addr,
+        unsigned short len, 
+        const unsigned char *ptr_data)
+{
+	  slave_addr <<= 1;
+    if((1 != len)
+     ||(slave_addr != MPU9250_DEV_ADDR))
+    {
+      assert_failed(__FILE__, __LINE__);
+    }
+
+    mpu9250_write(reg_addr, *ptr_data);
+
+    return 0;
+}
+
+int Sensors_I2C_ReadRegister(unsigned char slave_addr,
+        unsigned char reg_addr,
+        unsigned short len, 
+        unsigned char *ptr_data)
+{
+		slave_addr <<= 1;
+    if((1 != len)
+     ||(slave_addr != MPU9250_DEV_ADDR))
+    {
+      assert_failed(__FILE__, __LINE__);
+    }
+
+    *ptr_data = mpu9250_read(reg_addr);
+
+    return 0;
+}
 

@@ -32,5 +32,15 @@
 void mpu9250_init(void);
 unsigned char mpu9250_read(unsigned char reg_addr);
 void mpu9250_write(unsigned char reg_addr, unsigned char data);
+
+
+int Sensors_I2C_WriteRegister(unsigned char slave_addr,
+        unsigned char reg_addr,
+        unsigned short len, 
+        const unsigned char *data_ptr);
+int Sensors_I2C_ReadRegister(unsigned char slave_addr,
+        unsigned char reg_addr,
+        unsigned short len, 
+        unsigned char *data_ptr);
 #endif /* _MPU9250_H_ */
 
