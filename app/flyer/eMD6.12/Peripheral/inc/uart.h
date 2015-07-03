@@ -9,7 +9,7 @@ Purpose :
 /****************************** Defines *******************************/
 /***************************** Prototypes *****************************/
 void USART_Config(void);
-int fputc ( int ch );      // Primary UART for QUAT/ACCEL/GYRO data
+int uart_send_char ( int ch );      // Primary UART for QUAT/ACCEL/GYRO data
 
 #endif // __UART_H__
 

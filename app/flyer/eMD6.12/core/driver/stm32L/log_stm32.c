@@ -94,7 +94,7 @@ int _MLPrintLog (int priority, const char* tag, const char* fmt, ...)
         memset(out+3, 0, 18);
         memcpy(out+3, buf+ii, this_length);
         for (i=0; i<PACKET_LENGTH; i++) {
-          fputc(out[i]);
+          uart_send_char(out[i]);
         }
     }
     
@@ -133,7 +133,7 @@ void eMPL_send_quat(long *quat)
     out[22] = '\n';
     
     for (i=0; i<PACKET_LENGTH; i++) {
-      fputc(out[i]);
+      uart_send_char(out[i]);
     }
 }
 
@@ -206,7 +206,7 @@ void eMPL_send_data(unsigned char type, long *data)
         return;
     }
     for (i=0; i<PACKET_LENGTH; i++) {
-      fputc(out[i]);
+      uart_send_char(out[i]);
     }
 }
 

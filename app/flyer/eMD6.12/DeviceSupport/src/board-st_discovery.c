@@ -1,10 +1,12 @@
 #include "stm32f4xx.h"
-#include "stm32f4xx_usart.h" 
+#include "stm32f4xx_usart.h"
 #include "stm32f4xx_rcc.h"
 #include "i2c.h"
 #include "uart.h"
 #include "gpio.h"
 #include "board-st_discovery.h"
+//#include "stm32f429xx.h"
+
 
 #define TICK_FREQ (1000u)
 
@@ -13,7 +15,7 @@ static volatile uint32_t TimingDelay=0;
 unsigned long idle_time=0;
 extern uint32_t SystemCoreClock; //168000000=168Mhz (original value)
 
-void board_init() 
+void board_init(void) 
 {
 	SystemCoreClockUpdate();                               // Update the system clock variable (might not have been set before)
                                                            // With this call, the core clock gets set to 56MHz

@@ -405,7 +405,7 @@ void Set_I2C_Retry(unsigned short ml_sec)
   RETRY_IN_MLSEC = ml_sec;
 }
 
-unsigned short Get_I2C_Retry()
+unsigned short Get_I2C_Retry(void)
 {
   return RETRY_IN_MLSEC;
 }

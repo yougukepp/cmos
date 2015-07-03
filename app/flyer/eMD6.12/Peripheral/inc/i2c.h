@@ -15,7 +15,7 @@ Purpose :
 
 void I2cMaster_Init(void);
 void Set_I2C_Retry(unsigned short ml_sec);
-unsigned short Get_I2C_Retry();
+unsigned short Get_I2C_Retry(void);
 
 int Sensors_I2C_ReadRegister(unsigned char Address, unsigned char RegisterAddr, 
                                           unsigned short RegisterLen, unsigned char *RegisterValue);

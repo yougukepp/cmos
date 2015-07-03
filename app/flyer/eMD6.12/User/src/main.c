@@ -11,6 +11,7 @@
 #include "stm32f4xx.h"
 #include "stdio.h"
 
+#include "stm32f4xx_usart.h" 
 #include "uart.h"
 #include "i2c.h"
 #include "gpio.h"
@@ -124,6 +125,11 @@ static struct platform_data_s compass_pdata = {
 };
 #define COMPASS_ENABLED 1
 #endif
+
+void assert_failed(unsigned char *file, unsigned int line)
+{
+    while(1);
+}
 
 
 /* Private define ------------------------------------------------------------*/
@@ -397,7 +403,8 @@ static inline void run_self_test(void)
 
 static void handle_input(void)
 {
-  
+/* pp for compile pass */
+#if 1
     char c = USART_ReceiveData(USART2);
 
     switch (c) {
@@ -632,6 +639,8 @@ static void handle_input(void)
         break;
     }
     hal.rx.cmd = 0;
+		
+#endif
 }
 
 /* Every time new gyro data is available, this function is called in an
@@ -862,6 +871,9 @@ int main(void)
     
     unsigned long sensor_timestamp;
     int new_data = 0;
+		
+/* pp for compile pass */
+		#if 1
     if (USART_GetITStatus(USART2, USART_IT_RXNE)) {
         /* A byte has been received via USART. See handle_input for a list of
          * valid commands.
@@ -869,6 +881,7 @@ int main(void)
         USART_ClearITPendingBit(USART2, USART_IT_RXNE);
         handle_input();
     }
+		#endif
     get_tick_count(&timestamp);
 
 #ifdef COMPASS_ENABLED

@@ -81,9 +81,9 @@ void USART_Config(void)
   USART_Cmd(USARTx, ENABLE);
 }
 
-int fputc(int ch )
+int uart_send_char(int ch )
 {
-  //* Place your implementation of fputc here 
+  //* Place your implementation of uart_send_char here 
   //* e.g. write a character to the USART 
   USART_SendData(USARTx, (uint8_t) ch);
 
