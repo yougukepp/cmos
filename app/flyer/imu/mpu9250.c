@@ -1,4 +1,4 @@
-#include "mpu9250test.h"
+#include "mpu9250.h"
 
 I2C_HandleTypeDef I2cHandle;
 uint32_t I2cxTimeout = I2Cx_TIMEOUT_MAX; /*<! Value of Timeout when I2C communication fails */ 

@@ -1,5 +1,5 @@
-#ifndef _CMOS_MPU9250_TEST_H_
-#define _CMOS_MPU9250_TEST_H_
+#ifndef _CMOS_MPU9250_H_
+#define _CMOS_MPU9250_H_
 
 #include "stm32f4xx_hal_conf.h"
    
@@ -49,5 +49,5 @@ void    I2Cx_WriteBuffer(uint8_t Addr, uint8_t Reg,  uint8_t *pBuffer, uint16_t 
 uint8_t I2Cx_ReadData(uint8_t Addr, uint8_t Reg);
 uint8_t I2Cx_ReadBuffer(uint8_t Addr, uint8_t Reg, uint8_t *pBuffer, uint16_t Length);
 
-#endif /* _CMOS_MPU9250_TEST_H_ */
+#endif /* _CMOS_MPU9250_H_ */
 
