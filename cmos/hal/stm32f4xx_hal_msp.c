@@ -98,6 +98,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 }
 
 /* TODO: 完善注释 */
+/* TODO: USB MSP定义移入h文件 */
 void HAL_PCD_MspInit(PCD_HandleTypeDef *s_pcd_handle)
 {
     GPIO_InitTypeDef  GPIO_InitStruct;
@@ -139,5 +140,45 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef *s_pcd_handle)
     __HAL_RCC_USB_OTG_HS_CLK_DISABLE();
     __HAL_RCC_SYSCFG_CLK_DISABLE();
     cmos_trace_log("OUT %s,%d,%s", __FILE__, __LINE__, __func__);
+}
+
+void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
+{
+    GPIO_InitTypeDef  GPIO_InitStruct; 
+
+    /* Configure the GPIOs ---------------------------------------------------*/ 
+    /* Enable GPIO clock */
+    IMU_I2C_SDA_GPIO_CLK_ENABLE();
+    IMU_I2C_SCL_GPIO_CLK_ENABLE();
+
+    /* Configure I2C Tx as alternate function  */
+    GPIO_InitStruct.Pin       = IMU_I2C_SCL_PIN;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+    GPIO_InitStruct.Alternate = IMU_I2C_SCL_SDA_AF;
+    HAL_GPIO_Init(IMU_I2C_SCL_GPIO_PORT, &GPIO_InitStruct);
+
+    /* Configure I2C Rx as alternate function  */
+    GPIO_InitStruct.Pin = IMU_I2C_SDA_PIN;
+    HAL_GPIO_Init(IMU_I2C_SDA_GPIO_PORT, &GPIO_InitStruct);
+
+    /* Configure the Discovery I2Cx peripheral -------------------------------*/ 
+    /* Enable I2C3 clock */
+    IMU_I2C_CLOCK_ENABLE();
+
+    /* Force the I2C Peripheral Clock Reset */  
+    IMU_I2C_FORCE_RESET();
+
+    /* Release the I2C Peripheral Clock Reset */  
+    IMU_I2C_RELEASE_RESET(); 
+    
+    /* Enable and set Discovery I2Cx Interrupt to the highest priority */
+    HAL_NVIC_SetPriority(IMU_I2C_EV_IRQn, 0x00, 0);
+    HAL_NVIC_EnableIRQ(IMU_I2C_EV_IRQn);
+    
+    /* Enable and set Discovery I2Cx Interrupt to the highest priority */
+    HAL_NVIC_SetPriority(IMU_I2C_ER_IRQn, 0x00, 0);
+    HAL_NVIC_EnableIRQ(IMU_I2C_ER_IRQn);  
 }
 

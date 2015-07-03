@@ -565,7 +565,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>..\cmos\console;..\cmos\lib;..\cmos\hal;..\app\flyer\imu;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
+                  <IncludePath>..\cmos\console;..\cmos\lib;..\cmos\hal;..\cmos\hal\i2c;..\app\flyer\imu;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -592,11 +592,6 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\flyer\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>mpu9250.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\flyer\imu\mpu9250.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -736,6 +731,11 @@
               <FileType>1</FileType>
               <FilePath>..\cmos\hal\uart\uart.c</FilePath>
             </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\hal\i2c\i2c.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -836,7 +836,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\console;..\cmos\hal;..\cmos\lib</IncludePath>
+                      <IncludePath>..\cmos\console;..\cmos\hal;..\cmos\lib;..\cmos\hal\i2c</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -890,6 +890,59 @@
                       <Define></Define>
                       <Undefine></Undefine>
                       <IncludePath>..\cmos;..\cmos\console</IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>imu</GroupName>
+          <Files>
+            <File>
+              <FileName>mpu9250.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\flyer\imu\mpu9250.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>2</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath>..\cmos;..\cmos\hal;..\cmos\hal\i2c</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

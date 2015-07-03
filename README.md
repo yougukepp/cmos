@@ -6,8 +6,9 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### debug\(重构\)计划
-1. 准备实现CMOS I2C HAL供MPU9250官方库使用
+1. 准备实现CMOS I2C HAL供MPU9250官方库使用 OK
 2. 完善UART HAL实现
+3. 完善USB HAL实现
 
 ### 姿态算法验证计划
 1. 加入MPU9250官方库

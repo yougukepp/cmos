@@ -14,6 +14,8 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include "cmos_config.h"
+#include "cmos_api.h"
 #include "mpu9250.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -42,15 +44,21 @@
 ******************************************************************************/
 static uint8_t val = 0;
 int main(void)
-{
-    I2Cx_Init();
-    I2Cx_ITConfig();
+{ 
+    cmos_status_T status = cmos_ERR_E;
+    status = cmos_init();
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
 
+    mpu9250_init();
 #if 1
     /* 测试I2C是否OK? */
-    val = I2Cx_ReadData(MPU9250_I2C_ADDRESS, 0x75); // val == 0x71
+    val = mpu9250_read(0x75); // val == 0x71
 #endif 
 
+		cmos_printf("mpu9250 id:0x%02x\r\n", val);
     while(1);
 }
 

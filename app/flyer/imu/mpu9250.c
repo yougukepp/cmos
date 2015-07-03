@@ -1,213 +1,86 @@
+/******************************************************************************
+ *
+ * 文件名  ： mpu9250.c
+ * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
+ * 创建日期： 20150703 
+ * 版本号  ： 1.0
+ * 文件描述： mpu9250驱动
+ * 版权说明： Copyright (c) GNU
+ * 其    他： 无
+ * 修改日志： 无
+ *
+ *******************************************************************************/
+
+/*---------------------------------- 预处理区 ---------------------------------*/
+
+/************************************ 头文件 ***********************************/
 #include "mpu9250.h"
 
-I2C_HandleTypeDef I2cHandle;
-uint32_t I2cxTimeout = I2Cx_TIMEOUT_MAX; /*<! Value of Timeout when I2C communication fails */ 
+/*----------------------------------- 声明区 ----------------------------------*/
 
-static void    I2Cx_MspInit(I2C_HandleTypeDef *hi2c); 
-static void    I2Cx_Error(void);
+/********************************** 变量声明区 *********************************/
 
-/******************************* I2C Routines *********************************/
-/**
-  * @brief  I2Cx MSP Initialization
-  * @param  hi2c: I2C handle
-  * @retval None
-  */
-static void I2Cx_MspInit(I2C_HandleTypeDef *hi2c)
+/********************************** 函数声明区 *********************************/
+
+/********************************** 函数实现区 *********************************/
+/*******************************************************************************
+*
+* 函数名  : mpu9250_init
+* 负责人  : 彭鹏
+* 创建日期: 20150603
+* 函数功能: mpu9250初始化
+*
+* 输入参数: 无
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void mpu9250_init(void)
 {
-    GPIO_InitTypeDef  GPIO_InitStruct; 
-
-    /* Configure the GPIOs ---------------------------------------------------*/ 
-    /* Enable GPIO clock */
-    DISCOVERY_I2Cx_SDA_GPIO_CLK_ENABLE();
-    DISCOVERY_I2Cx_SCL_GPIO_CLK_ENABLE();
-
-    /* Configure I2C Tx as alternate function  */
-    GPIO_InitStruct.Pin       = DISCOVERY_I2Cx_SCL_PIN;
-    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Pull      = GPIO_NOPULL;
-    GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
-    GPIO_InitStruct.Alternate = DISCOVERY_I2Cx_SCL_SDA_AF;
-    HAL_GPIO_Init(DISCOVERY_I2Cx_SCL_GPIO_PORT, &GPIO_InitStruct);
-
-    /* Configure I2C Rx as alternate function  */
-    GPIO_InitStruct.Pin = DISCOVERY_I2Cx_SDA_PIN;
-    HAL_GPIO_Init(DISCOVERY_I2Cx_SDA_GPIO_PORT, &GPIO_InitStruct);
-
-    /* Configure the Discovery I2Cx peripheral -------------------------------*/ 
-    /* Enable I2C3 clock */
-    DISCOVERY_I2Cx_CLOCK_ENABLE();
-
-    /* Force the I2C Peripheral Clock Reset */  
-    DISCOVERY_I2Cx_FORCE_RESET();
-
-    /* Release the I2C Peripheral Clock Reset */  
-    DISCOVERY_I2Cx_RELEASE_RESET(); 
-    
-    /* Enable and set Discovery I2Cx Interrupt to the highest priority */
-    HAL_NVIC_SetPriority(DISCOVERY_I2Cx_EV_IRQn, 0x00, 0);
-    HAL_NVIC_EnableIRQ(DISCOVERY_I2Cx_EV_IRQn);
-    
-    /* Enable and set Discovery I2Cx Interrupt to the highest priority */
-    HAL_NVIC_SetPriority(DISCOVERY_I2Cx_ER_IRQn, 0x00, 0);
-    HAL_NVIC_EnableIRQ(DISCOVERY_I2Cx_ER_IRQn);  
+    cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
 }
 
-/**
-  * @brief  I2Cx Bus initialization.
-  * @param  None
-  * @retval None
-  */
-void I2Cx_Init(void)
-{
-  if(HAL_I2C_GetState(&I2cHandle) == HAL_I2C_STATE_RESET)
-  {
-    I2cHandle.Instance              = DISCOVERY_I2Cx;
-    I2cHandle.Init.ClockSpeed       = BSP_I2C_SPEED;
-    I2cHandle.Init.DutyCycle        = I2C_DUTYCYCLE_2;
-    I2cHandle.Init.OwnAddress1      = 0;
-    I2cHandle.Init.AddressingMode   = I2C_ADDRESSINGMODE_7BIT;
-    I2cHandle.Init.DualAddressMode  = I2C_DUALADDRESS_DISABLE;
-    I2cHandle.Init.OwnAddress2      = 0;
-    I2cHandle.Init.GeneralCallMode  = I2C_GENERALCALL_DISABLE;
-    I2cHandle.Init.NoStretchMode    = I2C_NOSTRETCH_DISABLE;  
-    
-    /* Init the I2C */
-    I2Cx_MspInit(&I2cHandle);
-    HAL_I2C_Init(&I2cHandle);
-  }
+/*******************************************************************************
+*
+* 函数名  : mpu9250_read
+* 负责人  : 彭鹏
+* 创建日期: 20150703
+* 函数功能: mpu9250读取字节
+*
+* 输入参数: reg_addr mpu9250寄存器地址
+* 输出参数: 无
+* 返回值  : 读出的值
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+unsigned char mpu9250_read(unsigned char reg_addr)
+{ 
+    unsigned char val = 0xff;
+    cmos_i2c_read_byte(MPU9250_DEV_ADDR, reg_addr, &val);
+    return val;
 }
 
-/**
-  * @brief  Configures Interruption pin for I2C communication.
-  * @param  None
-  * @retval None
-  */
-void I2Cx_ITConfig(void)
-{
-  GPIO_InitTypeDef  GPIO_InitStruct;
-    
-  /* Enable the GPIO EXTI Clock */
-  STMPE811_INT_CLK_ENABLE();
-  
-  GPIO_InitStruct.Pin   = STMPE811_INT_PIN;
-  GPIO_InitStruct.Pull  = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
-  GPIO_InitStruct.Mode  = GPIO_MODE_IT_FALLING;
-  HAL_GPIO_Init(STMPE811_INT_GPIO_PORT, &GPIO_InitStruct);
-    
-  /* Enable and set GPIO EXTI Interrupt to the highest priority */
-  HAL_NVIC_SetPriority((IRQn_Type)(STMPE811_INT_EXTI), 0x00, 0x00);
-  HAL_NVIC_EnableIRQ((IRQn_Type)(STMPE811_INT_EXTI));
+/*******************************************************************************
+*
+* 函数名  : mpu9250_write
+* 负责人  : 彭鹏
+* 创建日期: 20150703
+* 函数功能: mpu9250写入字节
+*
+* 输入参数: reg_addr mpu9250寄存器地址
+*           data 待写入的值
+* 输出参数: 无
+* 返回值  : 读出的值
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void mpu9250_write(unsigned char reg_addr, unsigned char data)
+{ 
+    cmos_i2c_write_byte(MPU9250_DEV_ADDR, reg_addr, data);
 }
 
-/**
-  * @brief  Writes a value in a register of the device through BUS.
-  * @param  Addr: Device address on BUS Bus.  
-  * @param  Reg: The target register address to write
-  * @param  Value: The target register value to be written 
-  * @retval None
-  */
-void I2Cx_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-  
-  status = HAL_I2C_Mem_Write(&I2cHandle, Addr, (uint16_t)Reg,
-          I2C_MEMADD_SIZE_8BIT, &Value, 1, I2cxTimeout);
-  
-  /* Check the communication status */
-  if(status != HAL_OK)
-  {
-    /* Re-Initialize the BUS */
-    I2Cx_Error();
-  }        
-}
-
-/**
-  * @brief  Writes a value in a register of the device through BUS.
-  * @param  Addr: Device address on BUS Bus.  
-  * @param  Reg: The target register address to write
-  * @param  pBuffer: The target register value to be written 
-  * @param  Length: buffer size to be written
-  * @retval None
-  */
-void I2Cx_WriteBuffer(uint8_t Addr, uint8_t Reg,  uint8_t *pBuffer, uint16_t Length)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-  
-  status = HAL_I2C_Mem_Write(&I2cHandle, Addr, (uint16_t)Reg,
-          I2C_MEMADD_SIZE_8BIT, pBuffer, Length, I2cxTimeout); 
-
-  /* Check the communication status */
-  if(status != HAL_OK)
-  {
-    /* Re-Initialize the BUS */
-    I2Cx_Error();
-  }        
-}
-
-/**
-  * @brief  Reads a register of the device through BUS.
-  * @param  Addr: Device address on BUS Bus.  
-  * @param  Reg: The target register address to write
-  * @retval Data read at register address
-  */
-uint8_t I2Cx_ReadData(uint8_t Addr, uint8_t Reg)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-  uint8_t value = 0;
-  
-  status = HAL_I2C_Mem_Read(&I2cHandle, Addr, Reg, I2C_MEMADD_SIZE_8BIT, &value, 1, I2cxTimeout);
- 
-  /* Check the communication status */
-  if(status != HAL_OK)
-  {
-    /* Re-Initialize the BUS */
-    I2Cx_Error();
-  
-  }
-  return value;
-}
-
-/**
-  * @brief  Reads multiple data on the BUS.
-  * @param  Addr: I2C Address
-  * @param  Reg: Reg Address 
-  * @param  pBuffer: pointer to read data buffer
-  * @param  Length: length of the data
-  * @retval 0 if no problems to read multiple data
-  */
-uint8_t I2Cx_ReadBuffer(uint8_t Addr, uint8_t Reg, uint8_t *pBuffer, uint16_t Length)
-{
-  HAL_StatusTypeDef status = HAL_OK;
-
-  status = HAL_I2C_Mem_Read(&I2cHandle, Addr, (uint16_t)Reg,
-          I2C_MEMADD_SIZE_8BIT, pBuffer, Length, I2cxTimeout);
-  
-  /* Check the communication status */
-  if(status == HAL_OK)
-  {
-    return 0;
-  }
-  else
-  {
-    /* Re-Initialize the BUS */
-    I2Cx_Error();
-
-    return 1;
-  }
-}
-
-/**
-  * @brief  I2Cx error treatment function
-  * @param  None
-  * @retval None
-  */
-static void I2Cx_Error(void)
-{
-  /* De-initialize the SPI communication BUS */
-  HAL_I2C_DeInit(&I2cHandle);
-  
-  /* Re-Initialize the SPI communication BUS */
-  I2Cx_Init();
-}
 

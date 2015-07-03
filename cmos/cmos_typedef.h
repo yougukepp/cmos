@@ -47,7 +47,8 @@ typedef unsigned char       cmos_bool_T;
 typedef enum{
   cmos_OK_E             =  0,
 
-  cmos_DEVICE_ERR_E     =  0x7FFFFFFD,
+  cmos_DEV_BUSY_E       =  0x7FFFFFFC,
+  cmos_DEV_ERR_E        =  0x7FFFFFFD,
   cmos_ERR_E            =  0x7FFFFFFE,
   cmos_RESERVED_E       =  0x7FFFFFFF  /* int正数 最高位为 0 */
 }cmos_status_T;
