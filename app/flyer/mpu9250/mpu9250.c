@@ -22,7 +22,13 @@
 
 /********************************** 函数声明区 *********************************/
 static unsigned char addr_convert(unsigned char addr);
-
+static unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr);
+static void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned char write_byte);
+static int mpu9250_read(unsigned char dev_addr, unsigned char reg_addr,
+        unsigned short buf_len, unsigned char *ptr_read_buf);
+static int mpu9250_write(unsigned char dev_addr, unsigned char reg_addr, 
+        unsigned short buf_len, const unsigned char *ptr_write_buf);
+				
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
 *
@@ -46,21 +52,15 @@ void mpu9250_init(void)
 
     unsigned char mpu9250_init_data[][2] = {
         {0x80, MPU9250_PWR_MGMT_1_REG},     // Reset Device
-        {0x01, MPU9250_PWR_MGMT_1_REG},     // Clock Source
+        {0x00, MPU9250_PWR_MGMT_1_REG},     // Clock Source
         {0x00, MPU9250_PWR_MGMT_2_REG},     // Enable Acc & Gyro
-        {0x07, MPU9250_CONFIG_REG},         // 
+				{0x07, MPU9250_SMPLRT_DIV_REG},     //
+        {0x06, MPU9250_CONFIG_REG},         // 
         {0x18, MPU9250_GYRO_CONFIG_REG},    // +-2000dps
         {0x08, MPU9250_ACCEL_CONFIG_REG},   // +-4G
-        {0x00, MPU9250_ACCEL_CONFIG_2_REG}, // Set Acc Data Rates
-        {0x30, MPU9250_INT_PIN_CFG_REG},    // 
-        {0x40, MPU9250_I2C_MST_CTRL_REG},   // I2C Speed 348 kHz
-        {0x20, MPU9250_USER_CTRL_REG},      // Enable AUX
-
-        // Set Slave to Read AK8963
-        {0x8C, MPU9250_I2C_SLV0_ADDR_REG},  // AK8963_I2C_ADDR ( 7'b000_1100 )
-        {0x00, MPU9250_I2C_SLV0_REG_REG},   // AK8963_WIA ( 0x00 )
-        {0x81, MPU9250_I2C_SLV0_CTRL_REG},  // Enable
-        {0x01, MPU9250_I2C_MST_DELAY_CTRL_REG}
+       
+        /* 将磁力计I2C挂接与STM32F4 的I2C总线 */
+        {0x02, MPU9250_INT_PIN_CFG_REG},
     };
 
     /* I2C 初始化 */
@@ -80,6 +80,13 @@ void mpu9250_init(void)
         mpu9250_write_byte(MPU9250_DEV_ADDR, mpu9250_init_data[i][1], mpu9250_init_data[i][0]);
         cmos_delay_ms(1);
     }
+
+    /* 确认磁力计正常工作 */
+    do{
+        val = mpu9250_read_byte(AK8963_I2C_ADDR, AK8963_WIA_REG);
+        cmos_delay_ms(100);
+    }while(AK8963_DEV_ID != val);
+
 }
 
 /*******************************************************************************
@@ -102,7 +109,7 @@ void mpu9250_init(void)
 * 其 它   : buf_len过大(需要的数据过多会卡死)
 *
 ******************************************************************************/
-int mpu9250_read(unsigned char dev_addr,
+static int mpu9250_read(unsigned char dev_addr,
         unsigned char reg_addr,
         unsigned short buf_len, 
         unsigned char *ptr_read_buf)
@@ -139,7 +146,7 @@ int mpu9250_read(unsigned char dev_addr,
 * 其 它   : 无
 *
 ******************************************************************************/
-int mpu9250_write(unsigned char dev_addr,
+static int mpu9250_write(unsigned char dev_addr,
         unsigned char reg_addr,
         unsigned short buf_len, 
         const unsigned char *ptr_write_buf)
@@ -172,7 +179,7 @@ int mpu9250_write(unsigned char dev_addr,
 * 其 它   : 无
 *
 ******************************************************************************/
-unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr)
+static unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr)
 {
     int rst = 0; 
     unsigned char val = 0xff;
@@ -203,7 +210,7 @@ unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr)
 * 其 它   : 无
 *
 ******************************************************************************/
-void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned char write_byte)
+static void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned char write_byte)
 {
     int rst = 0;
 
@@ -234,5 +241,79 @@ void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned
 inline static unsigned char addr_convert(unsigned char addr)
 {
     return (addr << 1);
+}
+
+/* TODO:优化性能 mpu9250_read读 */
+void mpu9250_read_accel(accel_T *ptr_accel)
+{
+    unsigned short val = 0xffff;
+
+    val = mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_ACCEL_XOUT_H_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_ACCEL_XOUT_L_REG); 
+    ptr_accel->x = val;
+
+    val = mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_ACCEL_YOUT_H_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_ACCEL_YOUT_L_REG); 
+    ptr_accel->y = val;
+
+    val = mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_ACCEL_ZOUT_H_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_ACCEL_ZOUT_L_REG); 
+    ptr_accel->z = val;
+}
+
+void mpu9250_read_gyro(gyro_T *ptr_gyro)
+{
+    unsigned short val = 0xffff;
+
+    val = mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_GYRO_XOUT_H_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_GYRO_XOUT_L_REG); 
+    ptr_gyro->x = val;
+
+    val = mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_GYRO_YOUT_H_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_GYRO_YOUT_L_REG); 
+    ptr_gyro->y = val;
+
+    val = mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_GYRO_ZOUT_H_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_GYRO_ZOUT_L_REG); 
+    ptr_gyro->z = val;
+}
+
+void mpu9250_read_mag(mag_T *ptr_mag)
+{
+    unsigned short val = 0xffff;
+
+    /* TODO:优化性能 */
+    mpu9250_write_byte(AK8963_I2C_ADDR, AK8963_CNTL1_REG, 0x02);
+    cmos_delay_ms(10);
+
+    val = mpu9250_read_byte(AK8963_I2C_ADDR, AK8963_HXH_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(AK8963_I2C_ADDR, AK8963_HXL_REG); 
+    ptr_mag->x = val;
+
+    val = mpu9250_read_byte(AK8963_I2C_ADDR, AK8963_HYH_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(AK8963_I2C_ADDR, AK8963_HYL_REG); 
+    ptr_mag->y = val;
+
+    val = mpu9250_read_byte(AK8963_I2C_ADDR, AK8963_HZH_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(AK8963_I2C_ADDR, AK8963_HZL_REG); 
+    ptr_mag->z = val;
+}
+
+void mpu9250_read_tem(unsigned short *ptr_temp)
+{
+    unsigned short val = 0xffff;
+    val = mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_TEMP_OUT_H_REG);
+    val <<= 8;
+    val |= mpu9250_read_byte(MPU9250_DEV_ADDR, MPU9250_TEMP_OUT_L_REG); 
+    *ptr_temp = val;
 }
 

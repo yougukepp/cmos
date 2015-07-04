@@ -21,6 +21,9 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+accel_T s_accel;
+gyro_T s_gyro;
+mag_T s_mag;
 
 /********************************** 函数声明区 *********************************/
 
@@ -44,6 +47,7 @@
 ******************************************************************************/
 int main(void)
 { 
+    unsigned short temp = 0xffff;
     cmos_status_T status = cmos_ERR_E;
     status = cmos_init();
     if(cmos_OK_E != status)
@@ -53,6 +57,19 @@ int main(void)
 
     mpu9250_init();
 
-    while(1);
+    while(TRUE)
+    {
+        mpu9250_read_accel(&s_accel);
+        mpu9250_read_gyro(&s_gyro);
+        mpu9250_read_mag(&s_mag);
+        mpu9250_read_tem(&temp);
+
+        cmos_printf("accel:0x%04x,0x%04x,0x%04x,gyro:0x%04x,0x%04x,0x%04x,mag:0x%04x,0x%04x,0x%04x,temp:0x%04x\r\n",
+                s_accel.x, s_accel.y, s_accel.z,
+                s_gyro.x, s_gyro.y, s_gyro.z,
+                s_mag.x, s_mag.y, s_mag.z,
+                temp);
+        cmos_delay_ms(1000);
+    }
 }
 

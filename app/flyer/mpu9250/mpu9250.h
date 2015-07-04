@@ -24,7 +24,7 @@
 
 /*********************************** MPU9250 ***********************************/
 #define MPU9250_DEV_ID                      (0x71)  /* MPU9250 id */
-#define MPU9250_DEV_ADDR                    (0x68)  /* b1101000x */
+#define MPU9250_DEV_ADDR                    (0x68)  /* 7'b1101000 */
 #define MPU9250_SELF_TEST_XG_REG            (0x00)
 #define MPU9250_SELF_TEST_YG_REG            (0x01)
 #define MPU9250_SELF_TEST_ZG_REG            (0x02)
@@ -118,7 +118,7 @@
 #define MPU9250_FIFO_COUNTH_REG             (0x72)
 #define MPU9250_FIFO_COUNTL_REG             (0x73)
 #define MPU9250_FIFO_R_W_REG                (0x74)
-#define MPU9250_WHO_AM_I_REG                (0x75)      /* ID = 0x71 In MPU9250 */
+#define MPU9250_WHO_AM_I_REG                (0x75)  /* ID = 0x71 In MPU9250 */
 #define MPU9250_XA_OFFSET_H_REG             (0x77)
 #define MPU9250_XA_OFFSET_L_REG             (0x78)
 #define MPU9250_YA_OFFSET_H_REG             (0x7A)
@@ -126,8 +126,8 @@
 #define MPU9250_ZA_OFFSET_H_REG             (0x7D)
 #define MPU9250_ZA_OFFSET_L_REG             (0x7E)
 /************************************ AK8963 ***********************************/
-#define AK8963_I2C_ADDR                     (0x18)
-#define AK8963_Device_ID                    (0x48)
+#define AK8963_I2C_ADDR                     (0x0C)  /* 7'b0001100 */
+#define AK8963_DEV_ID                       (0x48)
 /* Read-only Reg */
 #define AK8963_WIA_REG                      (0x00)
 #define AK8963_INFO_REG                     (0x01)
@@ -156,16 +156,29 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+typedef struct accel_tag{
+    unsigned short x;
+    unsigned short y;
+    unsigned short z;
+}accel_T;
+
+typedef struct gyro_tag{
+    unsigned short x;
+    unsigned short y;
+    unsigned short z;
+}gyro_T;
+
+typedef struct mag_tag{
+    unsigned short x;
+    unsigned short y;
+    unsigned short z;
+}mag_T;
+
 void mpu9250_init(void);
-unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr);
-void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned char write_byte);
-int mpu9250_read(unsigned char dev_addr,
-        unsigned char reg_addr,
-        unsigned short buf_len, 
-        unsigned char *ptr_read_buf);
-int mpu9250_write(unsigned char dev_addr,
-        unsigned char reg_addr,
-        unsigned short buf_len, 
-        const unsigned char *ptr_write_buf);
+void mpu9250_read_accel(accel_T *ptr_accel);
+void mpu9250_read_gyro(gyro_T *ptr_gyro);
+void mpu9250_read_mag(mag_T *ptr_mag);
+void mpu9250_read_tem(unsigned short *ptr_temp);
+
 #endif /* _MPU9250_H_ */
 
