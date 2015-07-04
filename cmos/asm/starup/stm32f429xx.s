@@ -71,11 +71,11 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; RTC Wakeup through the EXTI line
                 DCD     0                       ; FLASH
                 DCD     0                       ; RCC
-                DCD     0                       ; EXTI Line0
-                DCD     0                       ; EXTI Line1
-                DCD     0                       ; EXTI Line2
-                DCD     0                       ; EXTI Line3
-                DCD     0                       ; EXTI Line4
+                DCD     EXTI_LINE0_Handle       ; EXTI Line0
+                DCD     EXTI_LINE1_Handle       ; EXTI Line1
+                DCD     EXTI_LINE2_Handle       ; EXTI Line2
+                DCD     EXTI_LINE3_Handle       ; EXTI Line3
+                DCD     EXTI_LINE4_Handle       ; EXTI Line4
                 DCD     0                       ; DMA1 Stream 0
                 DCD     0                       ; DMA1 Stream 1
                 DCD     0                       ; DMA1 Stream 2
@@ -88,7 +88,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; CAN1 RX0
                 DCD     0                       ; CAN1 RX1
                 DCD     0                       ; CAN1 SCE
-                DCD     0                       ; External Line[9:5]s
+                DCD     EXTI_LINE_9_5_Handle    ; External Line[9:5]s
                 DCD     0                       ; TIM1 Break and TIM9
                 DCD     0                       ; TIM1 Update and TIM10
                 DCD     0                       ; TIM1 Trigger and Commutation and TIM11
@@ -105,7 +105,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; USART1
                 DCD     0                       ; USART2
                 DCD     0                       ; USART3
-                DCD     0                       ; External Line[15:10]s
+                DCD     EXTI_LINE_15_10_Handle  ; External Line[15:10]s
                 DCD     0                       ; RTC Alarm (A and B) through EXTI Line
                 DCD     0                       ; USB OTG FS Wakeup through EXTI line
                 DCD     0                       ; TIM8 Break and TIM12
@@ -182,6 +182,41 @@ SysTick_Handler PROC
 
 USB_OTG_HS_Handler PROC
                 EXPORT  USB_OTG_HS_Handler         [WEAK]
+                B       .
+                ENDP
+
+EXTI_LINE0_Handle PROC
+                EXPORT  EXTI_LINE0_Handle           [WEAK]
+                B       .
+                ENDP
+
+EXTI_LINE1_Handle PROC
+                EXPORT  EXTI_LINE1_Handle           [WEAK]
+                B       .
+                ENDP
+
+EXTI_LINE2_Handle PROC
+                EXPORT  EXTI_LINE2_Handle           [WEAK]
+                B       .
+                ENDP
+
+EXTI_LINE3_Handle PROC
+                EXPORT  EXTI_LINE3_Handle           [WEAK]
+                B       .
+                ENDP
+
+EXTI_LINE4_Handle PROC
+                EXPORT  EXTI_LINE4_Handle           [WEAK]
+                B       .
+                ENDP
+
+EXTI_LINE_9_5_Handle PROC
+                EXPORT  EXTI_LINE_9_5_Handle        [WEAK]
+                B       .
+                ENDP
+
+EXTI_LINE_15_10_Handle PROC
+                EXPORT  EXTI_LINE_15_10_Handle      [WEAK]
                 B       .
                 ENDP
 

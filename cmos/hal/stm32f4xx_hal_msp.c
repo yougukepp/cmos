@@ -179,6 +179,20 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
     
     /* Enable and set Discovery I2Cx Interrupt to the highest priority */
     HAL_NVIC_SetPriority(IMU_I2C_ER_IRQn, 0x00, 0);
-    HAL_NVIC_EnableIRQ(IMU_I2C_ER_IRQn);  
+    HAL_NVIC_EnableIRQ(IMU_I2C_ER_IRQn); 
+    
+    /* IRQ */
+    /* Enable the GPIO EXTI Clock */
+    IMU_INT_CLK_ENABLE();
+
+    GPIO_InitStruct.Pin   = IMU_INT_PIN;
+    GPIO_InitStruct.Pull  = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStruct.Mode  = GPIO_MODE_IT_RISING;
+    HAL_GPIO_Init(IMU_INT_GPIO_PORT, &GPIO_InitStruct);
+
+    /* Enable and set GPIO EXTI Interrupt to the highest priority */
+    HAL_NVIC_SetPriority((IRQn_Type)(IMU_INT_EXTI), 0x00, 0x00);
+    HAL_NVIC_EnableIRQ((IRQn_Type)(IMU_INT_EXTI));
 }
 

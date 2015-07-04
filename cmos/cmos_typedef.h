@@ -47,6 +47,7 @@ typedef unsigned char       cmos_bool_T;
 typedef enum{
   cmos_OK_E             =  0,
 
+  cmos_DEV_TIMEOUT_E    =  0x7FFFFFFB,
   cmos_DEV_BUSY_E       =  0x7FFFFFFC,
   cmos_DEV_ERR_E        =  0x7FFFFFFD,
   cmos_ERR_E            =  0x7FFFFFFE,

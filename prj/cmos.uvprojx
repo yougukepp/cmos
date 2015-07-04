@@ -555,7 +555,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>..\cmos\console;..\cmos\lib;..\cmos\hal;..\cmos\hal\i2c;..\app\flyer\port;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
+                  <IncludePath>..\cmos\console;..\cmos\lib;..\cmos\hal;..\cmos\hal\i2c;..\cmos\hal\uart;..\app\flyer\port;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -826,7 +826,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\console;..\cmos\hal;..\cmos\lib;..\cmos\hal\i2c</IncludePath>
+                      <IncludePath>..\cmos\console;..\cmos\hal;..\cmos\lib;..\cmos\hal\i2c;..\cmos\hal\uart</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -927,7 +927,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>..\cmos\hal\i2c;..\app\flyer\eMD6.12\core\driver\include;..\app\flyer\eMD6.12\core\driver\eMPL;..\app\flyer\eMD6.12\core\driver\stm32L;..\app\flyer\eMD6.12\core\eMPL-hal</IncludePath>
+                  <IncludePath>..\cmos\hal\i2c;..\app\flyer\eMD6.12\core\driver\include;..\app\flyer\eMD6.12\core\driver\eMPL;..\app\flyer\eMD6.12\core\driver\stm32L;..\app\flyer\eMD6.12\core\eMPL-hal;..\cmos\hal\uart</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -1040,7 +1040,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>..\app\flyer\eMD6.12\core\driver\include;..\cmos;..\app\flyer\port;..\cmos\hal;..\cmos\hal\i2c;..\app\flyer\eMD6.12\core\mllite</IncludePath>
+                  <IncludePath>..\app\flyer\eMD6.12\core\driver\include;..\cmos;..\app\flyer\port;..\cmos\hal;..\cmos\hal\i2c;..\app\flyer\eMD6.12\core\mllite;..\cmos\hal\uart</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>

@@ -51,7 +51,11 @@
 #define IMU_I2C_SDA_GPIO_PORT                   GPIOC
 #define IMU_I2C_EV_IRQn                         I2C3_EV_IRQn
 #define IMU_I2C_ER_IRQn                         I2C3_ER_IRQn
-
+#define IMU_INT_PIN                             GPIO_PIN_15
+#define IMU_INT_GPIO_PORT                       GPIOA
+#define IMU_INT_CLK_ENABLE()                    __GPIOA_CLK_ENABLE()
+#define IMU_INT_CLK_DISABLE()                   __GPIOA_CLK_DISABLE()
+#define IMU_INT_EXTI                            EXTI15_10_IRQn
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

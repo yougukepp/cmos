@@ -112,3 +112,37 @@ cmos_status_T uart_send_poll(cmos_uint8_T *buf, cmos_int32_T len)
     return cmos_OK_E;
 }
 
+/*******************************************************************************
+*
+* 函数名  : uart_send_poll
+* 负责人  : 彭鹏
+* 创建日期: 20150614
+* 函数功能: uart轮询方式输出
+*
+* 输入参数: buf 欲读取的字节流
+*           buf_len 字节流长度
+*
+* 输出参数: 无
+*
+* 返回值  : 读出的字节流长度
+*
+* 调用关系: 无
+* 其 它   : TODO:实现中断、DMA方式
+*
+******************************************************************************/
+cmos_uint32_T uart_recv_poll(cmos_uint8_T *buf, cmos_uint32_T buf_len)
+{
+    HAL_StatusTypeDef status = HAL_ERROR;
+	
+	/* 使参数timeout为，等效于立即(1ms)返回 */
+    status = HAL_UART_Receive(&s_uart_handle, (uint8_t *)buf, buf_len, 1);
+    if(HAL_OK != status)
+    {
+        if(HAL_TIMEOUT == status)
+        {
+            return 0;
+        }
+        assert_failed(__FILE__, __LINE__);
+    }
+    return buf_len;
+}

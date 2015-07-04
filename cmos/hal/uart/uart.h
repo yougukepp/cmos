@@ -26,6 +26,7 @@
 /*********************************** 接口函数 **********************************/
 cmos_status_T uart_init(cmos_uint32_T uart_base_addr, cmos_int32_T baud_rate);
 cmos_status_T uart_send_poll(cmos_uint8_T *buf, cmos_int32_T len);
+cmos_uint32_T uart_recv_poll(cmos_uint8_T *buf, cmos_uint32_T buf_len);
 
 #endif /* _CMOS_HAL_UART_H_ */
 
