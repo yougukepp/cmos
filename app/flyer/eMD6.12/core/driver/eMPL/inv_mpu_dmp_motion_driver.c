@@ -33,13 +33,12 @@
  * get_ms(unsigned long *count)
  */
 #if defined EMPL_TARGET_STM32F4
-#include "i2c.h"   
-#include "main.h"
-#include "board-st_discovery.h"
-   
-#define i2c_write   Sensors_I2C_WriteRegister
-#define i2c_read    Sensors_I2C_ReadRegister
-#define get_ms      get_tick_count
+#include "port.h"
+#include "console.h"
+#define i2c_write   port_write
+#define i2c_read    port_read 
+#define get_ms      port_get_ms
+#define __no_operation() __nop()
 
 #elif defined MOTION_DRIVER_TARGET_MSP430
 #include "msp430.h"
@@ -635,11 +634,7 @@ int dmp_set_accel_bias(long *bias)
 
     mpu_get_accel_sens(&accel_sens);
     accel_sf = (long long)accel_sens << 15;
-
-	// pp change it for compile
-	//__no_operation();
-    int i = 0;
-    i = 1;
+	  __no_operation();
 
     accel_bias_body[0] = bias[dmp.orient & 3];
     if (dmp.orient & 4)

@@ -56,3 +56,12 @@ cmos_status_T cmos_init(void)
     return cmos_OK_E;
 }
 
+inline void cmos_delay_ms(cmos_uint32_T ms)
+{
+	delay_ms(ms);
+}
+
+inline cmos_uint32_T cmos_get_ms(void)
+{
+	return get_ms();
+}

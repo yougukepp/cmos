@@ -28,7 +28,7 @@ I2C_HandleTypeDef s_i2c_handle;
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
 *
-* 函数名  : i2c_init
+* 函数名  : cmos_i2c_init
 * 负责人  : 彭鹏
 * 创建日期: 20150703
 * 函数功能: i2c中间层初始化
@@ -88,7 +88,7 @@ cmos_status_T cmos_i2c_init(cmos_uint32_T i2c_index, cmos_int32_T bit_rate)
 
 /*******************************************************************************
 *
-* 函数名  : i2c_read_byte
+* 函数名  : cmos_i2c_read_byte
 * 负责人  : 彭鹏
 * 创建日期: 20150703
 * 函数功能: i2c 读取字节
@@ -116,15 +116,16 @@ cmos_status_T cmos_i2c_read_byte(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr, 
 
 /*******************************************************************************
 *
-* 函数名  : i2c_write_byte
+* 函数名  : cmos_i2c_write_byte
 * 负责人  : 彭鹏
 * 创建日期: 20150703
 * 函数功能: i2c 写入字节
 *
 * 输入参数: dev_addr 设备地址
 *           reg_addr 寄存器地址
+*           write_byte 写入的字节
 *
-* 输出参数: ptr_read_byte 读取的结果缓存
+* 输出参数: 无
 * 返回值  : 函数执行状态
 *
 * 调用关系: 无
@@ -139,5 +140,71 @@ cmos_status_T cmos_i2c_write_byte(cmos_uint8_T dev_addr, cmos_uint8_T reg_addr, 
       assert_failed(__FILE__, __LINE__);
   }
   return cmos_OK_E;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_i2c_read_buf
+* 负责人  : 彭鹏
+* 创建日期: 20150704
+* 函数功能: i2c 读取多字节
+*
+* 输入参数: dev_addr 设备地址
+*           reg_addr 寄存器启始地址
+*           ptr_read_buf 读取的缓存
+*           buf_len 缓存大小
+*
+* 输出参数: 无
+*
+* 返回值  : 读取的字节数
+*           0    无数据读出
+*           其他 读取的字节数
+*
+* 调用关系: 无
+* 其 它   : buf_len过大(需要的数据过多会卡死)
+*
+******************************************************************************/
+cmos_uint32_T cmos_i2c_read_buf(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr,
+        cmos_uint8_T *ptr_read_buf, cmos_uint32_T buf_len)
+{
+  if(HAL_OK != HAL_I2C_Mem_Read(&s_i2c_handle, dev_addr, reg_addr,
+              I2C_MEMADD_SIZE_8BIT, ptr_read_buf, (cmos_uint16_T)(buf_len), HAL_MAX_DELAY))
+  {
+      assert_failed(__FILE__, __LINE__);
+  }
+
+  return buf_len;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_i2c_write_buf
+* 负责人  : 彭鹏
+* 创建日期: 20150704
+* 函数功能: i2c 读取多字节
+*
+* 输入参数: dev_addr 设备地址
+*           reg_addr 寄存器启始地址
+*           ptr_read_buf 写入的缓存
+*           buf_len 缓存大小
+*
+* 输出参数: 无
+*
+* 返回值  : 写入的字节数
+*
+* 调用关系: 无
+* 其 它   : buf_len过大(写入的数据过多会卡死)
+*
+******************************************************************************/
+cmos_uint32_T cmos_i2c_write_buf(cmos_uint8_T dev_addr, cmos_uint8_T reg_addr,
+        const cmos_uint8_T *ptr_write_buf, cmos_uint32_T buf_len)
+{
+  if(HAL_OK != HAL_I2C_Mem_Write(&s_i2c_handle, dev_addr, reg_addr,
+              I2C_MEMADD_SIZE_8BIT, (cmos_uint8_T *)ptr_write_buf, (cmos_uint16_T)(buf_len), HAL_MAX_DELAY))
+  {
+      assert_failed(__FILE__, __LINE__);
+  }
+
+  return buf_len;
 }
 

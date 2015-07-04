@@ -81,7 +81,7 @@
 #include <errno.h>
 #endif
 #include <limits.h>
-
+#include <stdlib.h>
 #ifndef REMOVE_INV_ERROR_T
 /*---------------------------
  *    ML Types

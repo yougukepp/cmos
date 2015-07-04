@@ -39,12 +39,13 @@
 #if defined EMPL_TARGET_STM32F4
 #include "log.h"
 
+#include "port.h"
 #include "console.h"
-#define i2c_write   Sensors_I2C_WriteRegister
-#define i2c_read    Sensors_I2C_ReadRegister 
-#define delay_ms    HAL_Delay
-#define get_ms      HAL_GetTick
-#define log_i       console_printf
+#define i2c_write   port_write
+#define i2c_read    port_read 
+#define delay_ms    cmos_delay_ms
+#define get_ms      port_get_ms
+#define log_i       cmos_printf
 #define log_e       cmos_err_log
 #define min(a,b)    ((a<b)?a:b)
    
@@ -713,14 +714,6 @@ int mpu_init(struct int_param_s *int_param)
 {
     unsigned char data[6];
 
-	
-#if 1
-	  static uint8_t val = 0;
-    /* 测试I2C是否OK? */
-    val = mpu9250_read(0x75); // val == 0x71
-    //cmos_printf("mpu9250 id:0x%02x\r\n", val);
-#endif 
-	
     /* Reset device. */
     data[0] = BIT_RESET;
     if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
@@ -732,12 +725,6 @@ int mpu_init(struct int_param_s *int_param)
     if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
         return -1;
 
-#if 1
-	  val = 0;
-    /* 测试I2C是否OK? */
-    val = mpu9250_read(0x75); // val == 0x71
-    //cmos_printf("mpu9250 id:0x%02x\r\n", val);
-#endif 
    st.chip_cfg.accel_half = 0;
 
 #ifdef MPU6500

@@ -27,5 +27,8 @@
 /*********************************** 接口函数 **********************************/
 cmos_status_T hal_init(void);
 
+void delay_ms(cmos_uint32_T ms);
+cmos_uint32_T get_ms(void);
+
 #endif /* _CMOS_HAL_HAL_H_ */
 

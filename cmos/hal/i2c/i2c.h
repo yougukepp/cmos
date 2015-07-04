@@ -28,5 +28,10 @@ cmos_status_T cmos_i2c_init(cmos_uint32_T i2c_index, cmos_int32_T bit_rate);
 cmos_status_T cmos_i2c_read_byte(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr, cmos_uint8_T *ptr_read_byte);
 cmos_status_T cmos_i2c_write_byte(cmos_uint8_T dev_addr, cmos_uint8_T reg_addr, cmos_uint8_T write_byte);
 
+cmos_uint32_T cmos_i2c_read_buf(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr,
+        cmos_uint8_T *ptr_read_buf, cmos_uint32_T buf_len);
+cmos_uint32_T cmos_i2c_write_buf(cmos_uint8_T dev_addr, cmos_uint8_T reg_addr,
+        const cmos_uint8_T *ptr_write_buf, cmos_uint32_T buf_len);
+
 #endif /* _CMOS_HAL_I2C_H_ */
 

@@ -16,7 +16,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cmos_api.h"
-#include "mpu9250.h"
+#include "port.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -51,7 +51,7 @@ int main(void)
         assert_failed(__FILE__, __LINE__);
     }
 
-    mpu9250_init();
+    port_init();
 
     while(1);
 }
