@@ -88,62 +88,6 @@ cmos_status_T cmos_i2c_init(cmos_uint32_T i2c_index, cmos_int32_T bit_rate)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_i2c_read_byte
-* 负责人  : 彭鹏
-* 创建日期: 20150703
-* 函数功能: i2c 读取字节
-*
-* 输入参数: dev_addr 设备地址
-*           reg_addr 寄存器地址
-*
-* 输出参数: ptr_read_byte 读取的结果缓存
-* 返回值  : 函数执行状态
-*
-* 调用关系: 无
-* 其 它   : 无
-*
-******************************************************************************/
-cmos_status_T cmos_i2c_read_byte(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr, cmos_uint8_T *ptr_read_byte)
-{
-  if(HAL_OK != HAL_I2C_Mem_Read(&s_i2c_handle, dev_addr, reg_addr,
-              I2C_MEMADD_SIZE_8BIT, ptr_read_byte, 1, HAL_MAX_DELAY))
-  {
-      assert_failed(__FILE__, __LINE__);
-  }
-
-  return cmos_OK_E;
-}
-
-/*******************************************************************************
-*
-* 函数名  : cmos_i2c_write_byte
-* 负责人  : 彭鹏
-* 创建日期: 20150703
-* 函数功能: i2c 写入字节
-*
-* 输入参数: dev_addr 设备地址
-*           reg_addr 寄存器地址
-*           write_byte 写入的字节
-*
-* 输出参数: 无
-* 返回值  : 函数执行状态
-*
-* 调用关系: 无
-* 其 它   : 无
-*
-******************************************************************************/
-cmos_status_T cmos_i2c_write_byte(cmos_uint8_T dev_addr, cmos_uint8_T reg_addr, cmos_uint8_T write_byte)
-{
-  if(HAL_OK != HAL_I2C_Mem_Write(&s_i2c_handle, dev_addr, reg_addr,
-          I2C_MEMADD_SIZE_8BIT, &write_byte, 1, HAL_MAX_DELAY))
-  {
-      assert_failed(__FILE__, __LINE__);
-  }
-  return cmos_OK_E;
-}
-
-/*******************************************************************************
-*
 * 函数名  : cmos_i2c_read_buf
 * 负责人  : 彭鹏
 * 创建日期: 20150704

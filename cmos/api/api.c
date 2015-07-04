@@ -59,12 +59,12 @@ cmos_status_T cmos_init(void)
 
 inline void cmos_delay_ms(cmos_uint32_T ms)
 {
-	delay_ms(ms);
+    delay_ms(ms);
 }
 
 inline cmos_uint32_T cmos_get_ms(void)
 {
-	return get_ms();
+    return get_ms();
 }
 
 cmos_int32_T cmos_get_char(void)
@@ -73,10 +73,10 @@ cmos_int32_T cmos_get_char(void)
     cmos_uint32_T rst = 0;
 
     rst = uart_recv_poll(&c, 1);
-	  if(1 != rst)
-		{
+    if(1 != rst)
+    {
         return cmos_DEV_ERR_E;
-		}
-		return c;
+    }
+    return c;
 }
 
