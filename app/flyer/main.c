@@ -48,6 +48,7 @@ mag_T s_mag;
 int main(void)
 { 
     unsigned short temp = 0xffff;
+    unsigned int now = 0;
     cmos_status_T status = cmos_ERR_E;
     status = cmos_init();
     if(cmos_OK_E != status)
@@ -59,19 +60,23 @@ int main(void)
 
     while(TRUE)
     {
-        mpu9250_read_accel(&s_accel);
-        mpu9250_read_gyro(&s_gyro);
-        mpu9250_read_mag(&s_mag);
-        mpu9250_read_tem(&temp);
+        now = cmos_get_ms();
+        cmos_printf("%5.2fs:\r\n",   now / 1000.0);
 
-        cmos_printf("accel(+-4g):%5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x),"
-                 "gyro(+-200dps):%5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x),"
-                 "mag(0.15):     %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x),"
-                 "temp:          %5.2f(0x%04x),",
-                s_accel.x/8192.0, s_accel.x, s_accel.y/8192.0, s_accel.y, s_accel.z/8192.0, s_accel.z,
-                s_gyro.x/16.4,    s_gyro.x,  s_gyro.y/16.4,    s_gyro.y,  s_gyro.z/16.4,    s_gyro.z,
-                s_mag.x*0.15,     s_mag.x,   s_mag.y*0.15,     s_mag.y,   s_mag.z*0.15,     s_mag.z,
-                21 + temp/338.3, temp);
+        mpu9250_read_accel(&s_accel);
+        cmos_printf("accel(+-4g):    %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
+                s_accel.x/8192.0, s_accel.x, s_accel.y/8192.0, s_accel.y, s_accel.z/8192.0, s_accel.z);
+
+        mpu9250_read_gyro(&s_gyro);
+        cmos_printf("gyro(+-2000dps):%5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
+                s_gyro.x/16.4, s_gyro.x, s_gyro.y/16.4, s_gyro.y, s_gyro.z/16.4, s_gyro.z);
+
+        mpu9250_read_mag(&s_mag);
+        cmos_printf("mag(0.15):      %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
+                s_mag.x*0.15, s_mag.x, s_mag.y*0.15, s_mag.y, s_mag.z*0.15, s_mag.z);
+
+        mpu9250_read_tem(&temp);
+        cmos_printf("temp:           %5.2f(0x%04x)\r\n\r\n", 21 + temp/338.3, temp);
 
         cmos_delay_ms(1000);
     }
