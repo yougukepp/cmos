@@ -6,7 +6,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### debug\(重构\)计划
-1. 实现I2C多字节读写
+1. 移植eMPL
 2. 姿态算法验证
 
 ### 姿态算法验证计划
