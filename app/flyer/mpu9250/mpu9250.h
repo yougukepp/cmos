@@ -156,22 +156,23 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+/* 补码 */
 typedef struct accel_tag{
-    unsigned short x;
-    unsigned short y;
-    unsigned short z;
+    short x;
+    short y;
+    short z;
 }accel_T;
 
 typedef struct gyro_tag{
-    unsigned short x;
-    unsigned short y;
-    unsigned short z;
+    short x;
+    short y;
+    short z;
 }gyro_T;
 
 typedef struct mag_tag{
-    unsigned short x;
-    unsigned short y;
-    unsigned short z;
+    short x;
+    short y;
+    short z;
 }mag_T;
 
 void mpu9250_init(void);

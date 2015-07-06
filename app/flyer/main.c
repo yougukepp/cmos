@@ -64,11 +64,15 @@ int main(void)
         mpu9250_read_mag(&s_mag);
         mpu9250_read_tem(&temp);
 
-        cmos_printf("accel:0x%04x,0x%04x,0x%04x,gyro:0x%04x,0x%04x,0x%04x,mag:0x%04x,0x%04x,0x%04x,temp:0x%04x\r\n",
-                s_accel.x, s_accel.y, s_accel.z,
-                s_gyro.x, s_gyro.y, s_gyro.z,
-                s_mag.x, s_mag.y, s_mag.z,
-                temp);
+        cmos_printf("accel(+-4g):%5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x),"
+                 "gyro(+-200dps):%5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x),"
+                 "mag(0.15):     %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x),"
+                 "temp:          %5.2f(0x%04x),",
+                s_accel.x/8192.0, s_accel.x, s_accel.y/8192.0, s_accel.y, s_accel.z/8192.0, s_accel.z,
+                s_gyro.x/16.4,    s_gyro.x,  s_gyro.y/16.4,    s_gyro.y,  s_gyro.z/16.4,    s_gyro.z,
+                s_mag.x*0.15,     s_mag.x,   s_mag.y*0.15,     s_mag.y,   s_mag.z*0.15,     s_mag.z,
+                21 + temp/338.3, temp);
+
         cmos_delay_ms(1000);
     }
 }

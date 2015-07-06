@@ -26,7 +26,7 @@
 #define CMOS_DEBUG_LEVEL                                        (2)
 
 /* printf缓存 */
-#define CMOS_PRINTF_BUF_SIZE                                    (128)
+#define CMOS_PRINTF_BUF_SIZE                                    (1024)
 
 /* 调试串口 */
 /* 串口号 UART1 => 1*/
