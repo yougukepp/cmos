@@ -33,13 +33,13 @@
  * get_ms(unsigned long *count)
  */
 #if defined EMPL_TARGET_STM32F4
-#include "i2c.h"   
-#include "main.h"
-#include "board-st_discovery.h"
+
+#include "mpu9250.h"
    
-#define i2c_write   Sensors_I2C_WriteRegister
-#define i2c_read    Sensors_I2C_ReadRegister
-#define get_ms      get_tick_count
+#define i2c_write   mpu9250_write_buf
+#define i2c_read    mpu9250_read_buf 
+#define get_ms      mpu9250_get_ms
+#define __no_operation()  __nop();
 
 #elif defined MOTION_DRIVER_TARGET_MSP430
 #include "msp430.h"

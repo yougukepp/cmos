@@ -17,13 +17,12 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 #include "mpu9250.h"
+#include "inv_mpu.h"
+#include "inv_mpu_dmp_motion_driver.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-accel_T s_accel;
-gyro_T s_gyro;
-mag_T s_mag;
 
 /********************************** 函数声明区 *********************************/
 
@@ -47,15 +46,60 @@ mag_T s_mag;
 ******************************************************************************/
 int main(void)
 { 
-    unsigned short temp = 0xffff;
-    unsigned int now = 0;
-    cmos_status_T status = cmos_ERR_E;
-    status = cmos_init();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
+    struct int_param_s int_param;
+    short data[3] = {0}; /* 0x, 1y, 2z*/
+    long temperature = 0; /* 温度 */
+    unsigned long time_ms = 0;
 
+    unsigned char accel_fsr = 0;
+    unsigned short accel_sens = 0;
+
+    unsigned short gyro_rate = 0;
+    unsigned short gyro_fsr = 0;
+    float gyro_sens = 0;
+
+    unsigned short compass_fsr = 0;
+
+    cmos_init();
+    cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
+
+    mpu_init(&int_param);
+    mpu_set_sensors(INV_XYZ_GYRO | INV_XYZ_ACCEL | INV_XYZ_COMPASS);
+    mpu_set_sample_rate(MPU9250_DEFAULT_HZ);
+    mpu_set_compass_sample_rate(AK8963_DEFAULT_HZ);
+
+    mpu_get_sample_rate(&gyro_rate);
+
+    mpu_get_gyro_fsr(&gyro_fsr);
+    mpu_get_gyro_sens(&gyro_sens);
+    mpu_get_accel_fsr(&accel_fsr);
+    mpu_get_accel_sens(&accel_sens);
+    mpu_get_compass_fsr(&compass_fsr);
+
+    while(TRUE)
+    {
+        mpu_get_gyro_reg(&data[0], &time_ms);
+        cmos_printf("time:%5.2fms: gyro(+-%d):   %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
+                time_ms/1000.0, gyro_fsr,
+                data[0]/gyro_sens, data[0], data[1]/gyro_sens, data[1], data[2]/gyro_sens, data[2]);
+
+        mpu_get_accel_reg(&data[0], &time_ms);
+        cmos_printf("time:%5.2fms: accel(+-%d):     %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
+                time_ms/1000.0, accel_fsr,
+                data[0]/accel_sens, data[0], data[1]/accel_sens, data[1], data[2]/accel_sens, data[2]);
+
+        mpu_get_compass_reg(&data[0], &time_ms);
+        cmos_printf("time:%5.2fms: cmopass(+-%d): %d(0x%04x), %d(0x%04x),%d(0x%04x)\r\n",
+                time_ms/1000.0, compass_fsr,
+                data[0], data[0], data[1], data[1], data[2], data[2]);
+
+        mpu_get_temperature(&temperature, &time_ms);
+        cmos_printf("time:%5.2fms: tempera:        %5.2f(0x%04x)\r\n\r\n",
+                time_ms/1000.0, temperature, temperature);
+
+			cmos_delay_ms(1000);
+    }
+#if 0
     mpu9250_init();
 
     while(TRUE)
@@ -80,5 +124,6 @@ int main(void)
 
         cmos_delay_ms(1000);
     }
+#endif
 }
 

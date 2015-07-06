@@ -37,18 +37,16 @@
  * min(int a, int b)
  */
 #if defined EMPL_TARGET_STM32F4
-#include "i2c.h"   
-#include "main.h"
-#include "log.h"
-#include "board-st_discovery.h"
-   
-#define i2c_write   Sensors_I2C_WriteRegister
-#define i2c_read    Sensors_I2C_ReadRegister 
-#define delay_ms    mdelay
-#define get_ms      get_tick_count
-#define log_i       MPL_LOGI
-#define log_e       MPL_LOGE
-#define min(a,b) ((a<b)?a:b)
+
+#include "mpu9250.h"
+
+#define i2c_write   mpu9250_write_buf
+#define i2c_read    mpu9250_read_buf 
+#define delay_ms    mpu9250_delay_ms
+#define get_ms      mpu9250_get_ms
+#define log_i       mpu9250_log_i
+#define log_e       mpu9250_log_e
+#define min(a,b)    ((a<b)?a:b)
    
 #elif defined MOTION_DRIVER_TARGET_MSP430
 #include "msp430.h"
