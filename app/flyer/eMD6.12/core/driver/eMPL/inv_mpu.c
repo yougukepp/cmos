@@ -37,17 +37,18 @@
  * min(int a, int b)
  */
 #if defined EMPL_TARGET_STM32F4
+#include "i2c.h"   
+#include "main.h"
 #include "log.h"
-
-#include "port.h"
-#include "console.h"
-#define i2c_write   port_write
-#define i2c_read    port_read 
-#define delay_ms    cmos_delay_ms
-#define get_ms      port_get_ms
-#define log_i       cmos_printf
-#define log_e       cmos_err_log
-#define min(a,b)    ((a<b)?a:b)
+#include "board-st_discovery.h"
+   
+#define i2c_write   Sensors_I2C_WriteRegister
+#define i2c_read    Sensors_I2C_ReadRegister 
+#define delay_ms    mdelay
+#define get_ms      get_tick_count
+#define log_i       MPL_LOGI
+#define log_e       MPL_LOGE
+#define min(a,b) ((a<b)?a:b)
    
 #elif defined MOTION_DRIVER_TARGET_MSP430
 #include "msp430.h"
@@ -719,7 +720,7 @@ int mpu_init(struct int_param_s *int_param)
     if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
         return -1;
     delay_ms(100);
-		
+
     /* Wake up chip. */
     data[0] = 0x00;
     if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
