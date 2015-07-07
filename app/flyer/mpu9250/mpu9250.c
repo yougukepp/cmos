@@ -44,7 +44,7 @@ static unsigned char addr_convert(unsigned char addr);
 * 其 它   : buf_len过大(需要的数据过多会卡死)
 *
 ******************************************************************************/
-int mpu9250_read_buf(unsigned char dev_addr,
+inline int mpu9250_read_buf(unsigned char dev_addr,
         unsigned char reg_addr,
         unsigned short buf_len, 
         unsigned char *ptr_read_buf)
@@ -81,7 +81,7 @@ int mpu9250_read_buf(unsigned char dev_addr,
 * 其 它   : 无
 *
 ******************************************************************************/
-int mpu9250_write_buf(unsigned char dev_addr,
+inline int mpu9250_write_buf(unsigned char dev_addr,
         unsigned char reg_addr,
         unsigned short buf_len, 
         const unsigned char *ptr_write_buf)
@@ -114,7 +114,7 @@ int mpu9250_write_buf(unsigned char dev_addr,
 * 其 它   : 无
 *
 ******************************************************************************/
-unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr)
+inline unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr)
 {
     int rst = 0; 
     unsigned char val = 0xff;
@@ -145,7 +145,7 @@ unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr)
 * 其 它   : 无
 *
 ******************************************************************************/
-void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned char write_byte)
+inline void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned char write_byte)
 {
     int rst = 0;
 
@@ -161,7 +161,7 @@ void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned
 * 函数名  : mpu9250_get_ms
 * 负责人  : 彭鹏
 * 创建日期: 20150703
-* 函数功能: i2c读取
+* 函数功能: 获取系统启动后的时间ms为单位
 *
 * 输入参数: 无
 * 输出参数: count 当前ms值地址
@@ -171,7 +171,7 @@ void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned
 * 其 它   : 无
 *
 ******************************************************************************/
-int mpu9250_get_ms(unsigned long *count)
+inline int mpu9250_get_ms(unsigned long *count)
 {
     unsigned long val = 0;
     val = cmos_get_ms();
@@ -179,6 +179,21 @@ int mpu9250_get_ms(unsigned long *count)
     return 0;
 }
 
+/*******************************************************************************
+*
+* 函数名  : mpu9250_delay_ms
+* 负责人  : 彭鹏
+* 创建日期: 20150707
+* 函数功能: 延迟 ms作为单位
+*
+* 输入参数: 无
+* 输出参数: count 当前ms值地址
+* 返回值  : 0 正确
+*           1 出错
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
 inline void mpu9250_delay_ms(unsigned int ms)
 {
     cmos_delay_ms(ms);
