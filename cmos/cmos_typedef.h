@@ -32,6 +32,10 @@
 #define NUL ('\0')
 #endif
 
+#ifndef NULL
+#define NULL ((void*) 0)
+#endif
+
 /*********************************** 类型定义 **********************************/
 typedef unsigned char       cmos_uint8_T;
 typedef unsigned short      cmos_uint16_T;

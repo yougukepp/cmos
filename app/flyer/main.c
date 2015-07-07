@@ -12,6 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
+/* 消除中文打印警告 */
+#pragma  diag_suppress 870
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
@@ -23,8 +25,17 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+    short accel[3] = {0};           /* 加速度 x y z*/
+    short gyro[3] = {0};            /* 陀螺仪 x y z*/
+    long quat[4] = {0};             /* 四元数 */
+    unsigned long time = 0;         /* 时间 */
+    short sensors = 0;              /* FIFO中数据的掩码 */
+    unsigned char fifo_count = 0;   /* FIFO中数据字节数 */
+    unsigned char rst = 0;          /* 函数返回值 */
 
 /********************************** 函数声明区 *********************************/
+static int init(void);
+static void update(void);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -46,6 +57,17 @@
 ******************************************************************************/
 int main(void)
 { 
+    init(); 
+    /*
+    do{
+        update();
+        printf("yaw = %2.1f\tpitch = %2.1f\troll = %2.1f\ttemperature = %2.1f\tcompass = %2.1f, %2.1f, %2.1f\n",
+                ypr[YAW], ypr[PITCH], ypr[ROLL],temp,compass[0],compass[1],compass[2]);
+        mpu9250_delay_ms(5);
+    }while(TRUE);*/
+
+#if 0
+
     struct int_param_s int_param;
     short data[3] = {0}; /* 0x, 1y, 2z*/
     long temperature = 0; /* 温度 */
@@ -125,5 +147,133 @@ int main(void)
         cmos_delay_ms(1000);
     }
 #endif
+#endif
+}
+
+/*******************************************************************************
+*
+* 函数名  : init
+* 负责人  : 彭鹏
+* 创建日期: 20150707
+* 函数功能: 主初始化
+*
+* 输入参数: 无
+*
+* 输出参数: 无
+*
+* 返回值  : 0       成功
+*           其他    失败
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static int init(void)
+{
+    unsigned char dev_status = 0;
+
+    /* 系统初始化 */
+    cmos_init();
+    cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
+
+    /* invensence 初始化 */
+    cmos_printf("初始化MPU...\n");
+    if (mpu_init(NULL) != 0)
+    {
+        cmos_printf("初始化MPU失败!\r\n");
+        return -1;
+    }
+    cmos_printf("打开传感器...\r\n");
+    if (mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL)!=0) 
+    {
+        cmos_printf("打开传感器失败.\r\n");
+        return -1;
+    }
+    cmos_printf("设置陀螺仪量程...\n");
+    if (mpu_set_gyro_fsr(2000)!=0)
+    {
+        cmos_printf("设置陀螺仪量程失败.\r\n");
+        return -1;
+    }
+    cmos_printf("设置加速度计量程...\r\n");
+    if (mpu_set_accel_fsr(2)!=0)
+    {
+        cmos_printf("设置加速度计量程失败.\r\n");
+        return -1;
+    }
+    cmos_printf("MPU上电...\r\n");
+    mpu_get_power_state(&dev_status);
+    cmos_printf("MPU9250 上电:%d, %s", dev_status, dev_status? "successful!\r\n" : "failed\r\n");
+    cmos_printf("设置MPU FIFO...\r\n");
+    if (mpu_configure_fifo(INV_XYZ_GYRO|INV_XYZ_ACCEL)!=0)
+    {
+        cmos_printf("设置MPU FIFO失败.\r\n");
+        return -1;
+    }
+    cmos_printf("下载DMP固件...\r\n");
+    if (dmp_load_motion_driver_firmware()!=0)
+    {
+        cmos_printf("下载DMP固件失败.\r\n");
+        return -1;
+    }
+    cmos_printf("启动DMP...\r\n");
+    if (mpu_set_dmp_state(1)!=0) 
+    {
+        cmos_printf("启动DMP失败r\n");
+        return -1;
+    }
+    cmos_printf("使能DMP...\r\n");
+    if(0 != dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT
+                | DMP_FEATURE_SEND_RAW_ACCEL
+                | DMP_FEATURE_SEND_CAL_GYRO
+                | DMP_FEATURE_GYRO_CAL)) 
+    {
+        cmos_printf("使能DMP失败.\r\n");
+        return -1;
+    } 
+    cmos_printf("设置DMP FIFO速率...\r\n");
+    if (dmp_set_fifo_rate(MPU9250_DMP_FIFO_RATE)!=0)
+    {
+        cmos_printf("设置DMP FIFO速率失败.\r\n");
+        return -1;
+    }
+    cmos_printf("复位FIFO队列...\r\n");
+    if (mpu_reset_fifo()!=0)
+    {
+        cmos_printf("复位FIFO队列失败.\r\n");
+        return -1;
+    }
+
+    /* 加入MPU自检 */
+    cmos_printf("自检...\r\n");
+    do
+    {
+        mpu9250_delay_ms(1000/MPU9250_DMP_FIFO_RATE);  /* dmp will habve 4 (5-1) packets based on the fifo_rate */
+        rst = dmp_read_fifo(gyro, accel, quat, &time, &sensors, &fifo_count);
+    } while (0 != rst || fifo_count < 5); /* packtets!!! */
+    cmos_printf("初始化完成.\r\n");
+
+    return 0;
+}
+
+/*******************************************************************************
+*
+* 函数名  : update
+* 负责人  : 彭鹏
+* 创建日期: 20150707
+* 函数功能: 更新数据
+*
+* 输入参数: 无
+*
+* 输出参数: 无
+*
+* 返回值  : 0       成功
+*           其他    失败
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static void update(void)
+{
+    ;
 }
 
