@@ -64,16 +64,23 @@ int main(void)
     float gyro[MAIN_DIM] = {0};     /* 陀螺仪 x y z*/
     float compass[MAIN_DIM] = {0};  /* 磁力计 x y z*/
 
-    init(); 
+    int times = 0;                  /* 用于控制打印 */
+
+    init();
     do{
         update(&time, &temper, ypr, accel, gyro, compass);
-
-        cmos_printf("attitude(%5.2fs,%5.2fC) :%5.2f,%5.2f,%5.2f.\r\n",
-                time / 1000.0, temper, ypr[MAIN_YAW], ypr[MAIN_PITCH], ypr[MAIN_ROLL]);
-        cmos_printf("accel                   :%5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
-        cmos_printf("gyro                    :%5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
-        cmos_printf("compass                 :%5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
-        cmos_printf("\r\n");
+        if( (0 != time)
+         && (times >= 0) ) /* 控制打印 */
+        {
+            cmos_printf("attitude(%5.2fs,%5.2fC) :%5.2f,%5.2f,%5.2f.\r\n",
+                    time / 1000.0, temper, ypr[MAIN_YAW], ypr[MAIN_PITCH], ypr[MAIN_ROLL]);
+            cmos_printf("accel                   :%5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
+            cmos_printf("gyro                    :%5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
+            cmos_printf("compass                 :%5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
+            cmos_printf("\r\n");
+            times = 0;
+        }
+        times++;
 
         mpu9250_delay_ms(5);
     }while(TRUE);
@@ -196,7 +203,7 @@ static int init(void)
     cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
 
     /* invensence 初始化 */
-    cmos_printf("初始化MPU...\n");
+    cmos_printf("初始化MPU...\r\n");
     if (mpu_init(NULL) != 0)
     {
         cmos_printf("初始化MPU失败!\r\n");
@@ -208,7 +215,7 @@ static int init(void)
         cmos_printf("打开传感器失败.\r\n");
         return -1;
     }
-    cmos_printf("设置陀螺仪量程...\n");
+    cmos_printf("设置陀螺仪量程...\r\n");
     if (mpu_set_gyro_fsr(2000)!=0)
     {
         cmos_printf("设置陀螺仪量程失败.\r\n");
@@ -222,7 +229,7 @@ static int init(void)
     }
     cmos_printf("MPU上电...\r\n");
     mpu_get_power_state(&dev_status);
-    cmos_printf("MPU9250 上电:%d, %s", dev_status, dev_status? "successful!\r\n" : "failed\r\n");
+    cmos_printf("MPU9250 上电%s", dev_status? "成功!\r\n" : "失败!\r\n");
     cmos_printf("设置MPU FIFO...\r\n");
     if (mpu_configure_fifo(INV_XYZ_GYRO|INV_XYZ_ACCEL)!=0)
     {
@@ -307,15 +314,25 @@ static void update(unsigned long *time, float *temper, float *ypr, float *accel,
     rst = dmp_read_fifo(gyro_i, accel_i, quat, time, &sensors, &fifo_count); 
     if(0 != rst)
     {
-        cmos_printf("dmp_read_fifo 失败.\r\n");
+        /* cmos_printf("dmp_read_fifo 失败.\r\n"); */
+        *time = 0;
+        *temper = 0;
+        ypr[0] = 0;
+        ypr[1] = 0;
+        ypr[2] = 0;
+        accel[0] = 0;
+        accel[1] = 0;
+        accel[2] = 0;
+        gyro[0] = 0;
+        gyro[1] = 0;
+        gyro[2] = 0;
+        compass[0] = 0;
+        compass[1] = 0;
+        compass[2] = 0;
+        return;
     }
     
     compute_yaw_pitch_roll(ypr, quat);
-
-#if 0
-    GetGravity(&gravity, &q);
-    GetYawPitchRoll(ypr, &q, &gravity);
-#endif 
     
     /* 温度 */
     mpu_get_temperature(&temper_i, NULL);
@@ -324,13 +341,14 @@ static void update(unsigned long *time, float *temper, float *ypr, float *accel,
     /* 磁场 */
     mpu_get_compass_reg(compass_i, NULL); 
     
-#if 0
-    /* 转换为弧度 */
+
+    /* 转换为角度 */
     for(int i=0;i<MAIN_DIM;i++)
     {
         ypr[i] *= (180 / MAIN_PI);
     }
-   
+		
+ #if 0  
     ypr[0] = wrap_180(ypr[0]);
 #endif 
 
