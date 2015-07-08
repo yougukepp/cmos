@@ -6,7 +6,7 @@
  * 版本号  ： 1.0
  * 文件描述： MPU9250传感器 I2C读取
  * 版权说明： Copyright (c) GNU
- * 其    他： 无 
+ * 其    他： TODO:研究清楚算法
  * 修改日志： 无 
  *
  *******************************************************************************/
@@ -16,6 +16,7 @@
 #pragma  diag_suppress 870
 
 /************************************ 头文件 ***********************************/
+#include <math.h>
 #include "cmos_config.h"
 #include "cmos_api.h"
 #include "mpu9250.h"
@@ -23,19 +24,18 @@
 #include "inv_mpu_dmp_motion_driver.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
+#define MAIN_DIM        (3)
+#define MAIN_YAW        (0)
+#define MAIN_PITCH      (1)
+#define MAIN_ROLL       (2)
+#define MAIN_PI         (3.1415926)
 
 /********************************** 变量声明区 *********************************/
-    short accel[3] = {0};           /* 加速度 x y z*/
-    short gyro[3] = {0};            /* 陀螺仪 x y z*/
-    long quat[4] = {0};             /* 四元数 */
-    unsigned long time = 0;         /* 时间 */
-    short sensors = 0;              /* FIFO中数据的掩码 */
-    unsigned char fifo_count = 0;   /* FIFO中数据字节数 */
-    unsigned char rst = 0;          /* 函数返回值 */
 
 /********************************** 函数声明区 *********************************/
 static int init(void);
-static void update(void);
+static void update(unsigned long *time, float *temper, float *ypr, float *accel, float *gyro, float *compass);
+static void compute_yaw_pitch_roll(float *ypr, long *quat);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -57,14 +57,26 @@ static void update(void);
 ******************************************************************************/
 int main(void)
 { 
+    unsigned long time = 0;         /* 时间 */
+    float temper = 0;               /* 温度 */
+    float ypr[MAIN_DIM] = {0};      /* yaw pitch roll */
+    float accel[MAIN_DIM] = {0};    /* 加速度 x y z*/
+    float gyro[MAIN_DIM] = {0};     /* 陀螺仪 x y z*/
+    float compass[MAIN_DIM] = {0};  /* 磁力计 x y z*/
+
     init(); 
-    /*
     do{
-        update();
-        printf("yaw = %2.1f\tpitch = %2.1f\troll = %2.1f\ttemperature = %2.1f\tcompass = %2.1f, %2.1f, %2.1f\n",
-                ypr[YAW], ypr[PITCH], ypr[ROLL],temp,compass[0],compass[1],compass[2]);
+        update(&time, &temper, ypr, accel, gyro, compass);
+
+        cmos_printf("attitude(%5.2fs,%5.2fC) :%5.2f,%5.2f,%5.2f.\r\n",
+                time / 1000.0, temper, ypr[MAIN_YAW], ypr[MAIN_PITCH], ypr[MAIN_ROLL]);
+        cmos_printf("accel                   :%5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
+        cmos_printf("gyro                    :%5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
+        cmos_printf("compass                 :%5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
+        cmos_printf("\r\n");
+
         mpu9250_delay_ms(5);
-    }while(TRUE);*/
+    }while(TRUE);
 
 #if 0
 
@@ -171,6 +183,14 @@ static int init(void)
 {
     unsigned char dev_status = 0;
 
+    short accel[MAIN_DIM] = {0};    /* 加速度 x y z*/
+    short gyro[MAIN_DIM] = {0};     /* 陀螺仪 x y z*/
+    long quat[4] = {0};             /* 四元数 */
+    unsigned long time = 0;         /* 时间 */
+    short sensors = 0;              /* FIFO中数据的掩码 */
+    unsigned char fifo_count = 0;   /* FIFO中数据字节数 */
+    unsigned char rst = 0;          /* 函数返回值 */
+
     /* 系统初始化 */
     cmos_init();
     cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
@@ -264,7 +284,7 @@ static int init(void)
 *
 * 输入参数: 无
 *
-* 输出参数: 无
+* 输出参数: (unsigned long *time, float *temper, float *ypr, float *accel, float *gyro, float *compass)
 *
 * 返回值  : 0       成功
 *           其他    失败
@@ -272,8 +292,87 @@ static int init(void)
 * 其 它   : 无
 *
 ******************************************************************************/
-static void update(void)
+static void update(unsigned long *time, float *temper, float *ypr, float *accel, float *gyro, float *compass)
 {
-    ;
+    short accel_i[MAIN_DIM] = {0};  /* 加速度 x y z*/
+    short gyro_i[MAIN_DIM] = {0};   /* 陀螺仪 x y z*/
+    long  quat[4] = {0};            /* 四元数 */
+    short sensors = 0;              /* FIFO中数据的掩码 */
+    unsigned char fifo_count = 0;   /* FIFO中数据字节数 */
+    unsigned char rst = 0;          /* 函数返回值 */
+
+    long temper_i = 0;               /* 温度 */
+    short compass_i[MAIN_DIM] = {0};/* 磁力计 x y z*/ 
+    
+    rst = dmp_read_fifo(gyro_i, accel_i, quat, time, &sensors, &fifo_count); 
+    if(0 != rst)
+    {
+        cmos_printf("dmp_read_fifo 失败.\r\n");
+    }
+    
+    compute_yaw_pitch_roll(ypr, quat);
+
+#if 0
+    GetGravity(&gravity, &q);
+    GetYawPitchRoll(ypr, &q, &gravity);
+#endif 
+    
+    /* 温度 */
+    mpu_get_temperature(&temper_i, NULL);
+    *temper = (float)temper_i/65536L; 
+    
+    /* 磁场 */
+    mpu_get_compass_reg(compass_i, NULL); 
+    
+#if 0
+    /* 转换为弧度 */
+    for(int i=0;i<MAIN_DIM;i++)
+    {
+        ypr[i] *= (180 / MAIN_PI);
+    }
+   
+    ypr[0] = wrap_180(ypr[0]);
+#endif 
+
+    /* MPU与标准pitch定义反向 */
+    ypr[1]*=-1.0;
+
+    /* x 0, y 1, z 2
+     * 转换 MPU xyz 与yaw pitch roll一致 */
+    for (int i=0;i<MAIN_DIM;i++)
+    {
+        gyro[i]   = (float)(gyro_i[MAIN_DIM-i-1]);
+        accel[i]   = (float)(accel_i[MAIN_DIM-i-1]);
+        compass[i] = (float)(compass_i[MAIN_DIM-i-1]);
+    }
+
+}
+
+/* TODO:补充注释 */
+static void compute_yaw_pitch_roll(float *ypr, long *quat)
+{
+    /* 四元数 */
+    float w = 0;
+    float x = 0;
+    float y = 0;
+    float z = 0;
+
+    float gravity[MAIN_DIM] = {0}; /* 重力场 */
+
+    w = (float)quat[0] / 16384.0f;
+    x = (float)quat[1] / 16384.0f;
+    y = (float)quat[2] / 16384.0f;
+    z = (float)quat[3] / 16384.0f;
+
+    gravity[0] = 2 * (x*z - w*y);
+    gravity[1] = 2 * (w*x + y*z);
+    gravity[2] = w*w - x*x - y*y + z*z; 
+    
+    /* yaw:   (Z 轴) */
+    ypr[0] = atan2(2*x*y - 2*w*z, 2*w*w + 2*x*x - 1);
+    /* pitch: (y 轴) */
+    ypr[1] = atan(gravity[0]/ sqrt(gravity[1]*gravity[1] + gravity[2]*gravity[2]));
+    /* roll:  (X 轴) */
+    ypr[2] = atan(gravity[1]/ sqrt(gravity[0]*gravity[0] + gravity[2]*gravity[2]));
 }
 
