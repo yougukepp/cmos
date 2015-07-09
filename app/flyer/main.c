@@ -210,7 +210,7 @@ static int init(void)
         return -1;
     }
     cmos_printf("打开传感器...\r\n");
-    if (mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL)!=0) 
+    if (mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL|INV_XYZ_COMPASS)!=0)
     {
         cmos_printf("打开传感器失败.\r\n");
         return -1;
