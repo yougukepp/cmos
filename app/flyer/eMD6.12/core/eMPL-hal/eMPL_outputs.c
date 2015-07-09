@@ -14,14 +14,12 @@
  *       @file eMPL_outputs.c
  *       @brief Embedded MPL outputs.
  */
-#include <string.h>
 #include "eMPL_outputs.h"
 #include "ml_math_func.h"
 #include "mlmath.h"
 #include "start_manager.h"
 #include "data_builder.h"
 #include "results_holder.h"
-
 
 struct eMPL_output_s {
     long quat[4];
