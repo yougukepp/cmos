@@ -36,6 +36,7 @@
 static int init(void);
 static void update(unsigned long *time, float *temper, float *ypr, float *accel, float *gyro, float *compass);
 static void compute_yaw_pitch_roll(float *ypr, long *quat);
+static void run_self_test(void);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -84,89 +85,6 @@ int main(void)
 
         mpu9250_delay_ms(5);
     }while(TRUE);
-
-#if 0
-
-    struct int_param_s int_param;
-    short data[3] = {0}; /* 0x, 1y, 2z*/
-    long temperature = 0; /* 温度 */
-    unsigned long time_ms = 0;
-
-    unsigned char accel_fsr = 0;
-    unsigned short accel_sens = 0;
-
-    unsigned short gyro_rate = 0;
-    unsigned short gyro_fsr = 0;
-    float gyro_sens = 0;
-
-    unsigned short compass_fsr = 0;
-
-    cmos_init();
-    cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
-
-    mpu_init(&int_param);
-    mpu_set_sensors(INV_XYZ_GYRO | INV_XYZ_ACCEL | INV_XYZ_COMPASS);
-    mpu_set_sample_rate(MPU9250_DEFAULT_HZ);
-    mpu_set_compass_sample_rate(AK8963_DEFAULT_HZ);
-
-    mpu_get_sample_rate(&gyro_rate);
-
-    mpu_get_gyro_fsr(&gyro_fsr);
-    mpu_get_gyro_sens(&gyro_sens);
-    mpu_get_accel_fsr(&accel_fsr);
-    mpu_get_accel_sens(&accel_sens);
-    mpu_get_compass_fsr(&compass_fsr);
-
-    while(TRUE)
-    {
-        mpu_get_gyro_reg(&data[0], &time_ms);
-        cmos_printf("time:%5.2fms: gyro(+-%d):   %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
-                time_ms/1000.0, gyro_fsr,
-                data[0]/gyro_sens, data[0], data[1]/gyro_sens, data[1], data[2]/gyro_sens, data[2]);
-
-        mpu_get_accel_reg(&data[0], &time_ms);
-        cmos_printf("time:%5.2fms: accel(+-%d):     %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
-                time_ms/1000.0, accel_fsr,
-                data[0]/accel_sens, data[0], data[1]/accel_sens, data[1], data[2]/accel_sens, data[2]);
-
-        mpu_get_compass_reg(&data[0], &time_ms);
-        cmos_printf("time:%5.2fms: cmopass(+-%d): %d(0x%04x), %d(0x%04x),%d(0x%04x)\r\n",
-                time_ms/1000.0, compass_fsr,
-                data[0], data[0], data[1], data[1], data[2], data[2]);
-
-        mpu_get_temperature(&temperature, &time_ms);
-        cmos_printf("time:%5.2fms: tempera:        %5.2f(0x%04x)\r\n\r\n",
-                time_ms/1000.0, temperature, temperature);
-
-			cmos_delay_ms(1000);
-    }
-#if 0
-    mpu9250_init();
-
-    while(TRUE)
-    {
-        now = cmos_get_ms();
-        cmos_printf("%5.2fs:\r\n",   now / 1000.0);
-
-        mpu9250_read_accel(&s_accel);
-        cmos_printf("accel(+-4g):    %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
-                s_accel.x/8192.0, s_accel.x, s_accel.y/8192.0, s_accel.y, s_accel.z/8192.0, s_accel.z);
-
-        mpu9250_read_gyro(&s_gyro);
-        cmos_printf("gyro(+-2000dps):%5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
-                s_gyro.x/16.4, s_gyro.x, s_gyro.y/16.4, s_gyro.y, s_gyro.z/16.4, s_gyro.z);
-
-        mpu9250_read_mag(&s_mag);
-        cmos_printf("mag(0.15):      %5.2f(0x%04x),%5.2f(0x%04x),%5.2f(0x%04x)\r\n",
-                s_mag.x*0.15, s_mag.x, s_mag.y*0.15, s_mag.y, s_mag.z*0.15, s_mag.z);
-
-        mpu9250_read_tem(&temp);
-        cmos_printf("temp:           %5.2f(0x%04x)\r\n\r\n", 21 + temp/338.3, temp);
-
-        cmos_delay_ms(1000);
-    }
-#endif
-#endif
 }
 
 /*******************************************************************************
@@ -271,7 +189,8 @@ static int init(void)
     }
 
     /* 加入MPU自检 */
-    cmos_printf("自检...\r\n");
+    cmos_printf("自检...\r\n"); 
+    run_self_test();
     do
     {
         mpu9250_delay_ms(1000/MPU9250_DMP_FIFO_RATE);  /* dmp will habve 4 (5-1) packets based on the fifo_rate */
@@ -393,4 +312,56 @@ static void compute_yaw_pitch_roll(float *ypr, long *quat)
     /* roll:  (X 轴) */
     ypr[2] = atan(gravity[1]/ sqrt(gravity[0]*gravity[0] + gravity[2]*gravity[2]));
 }
+
+static void run_self_test(void)
+{
+    int result = 0;
+    long gyro[3] = {0};
+    long accel[3] = {0};
+
+    result = mpu_run_6500_self_test(gyro, accel, 0);
+    if (result == 0x7)
+    {
+        cmos_printf("通过!\r\n");
+        cmos_printf("accel: %7.4f %7.4f %7.4f\r\n",
+                accel[0]/65536.f,
+                accel[1]/65536.f,
+                accel[2]/65536.f);
+        cmos_printf("gyro: %7.4f %7.4f %7.4f\n",
+                gyro[0]/65536.f,
+                gyro[1]/65536.f,
+                gyro[2]/65536.f);
+
+        /* 自检测试通过 我们需要更新校准数据 与offset寄存器 */
+        unsigned char i = 0;
+        for(i = 0; i<3; i++)
+        {
+            gyro[i] = (long)(gyro[i] * 32.8f); /* 运用量程 +-1000dps */
+            accel[i] *= 2048.f; /* 运用量程convert to +-16G */
+            accel[i] = accel[i] >> 16;
+            gyro[i] = (long)(gyro[i] >> 16);
+        }
+
+        mpu_set_gyro_bias_reg(gyro);
+        mpu_set_accel_bias_6500_reg(accel);
+    }
+    else
+    {
+        if (!(result & 0x1))
+        {
+            cmos_printf("Gyro failed.\r\n");
+        }
+        if (!(result & 0x2))
+        {
+            cmos_printf("Accel failed.\r\n");
+        }
+        if (!(result & 0x4))
+        {
+            cmos_printf("Compass failed.\r\n");
+        }
+    }
+
+    return;
+}
+
 
