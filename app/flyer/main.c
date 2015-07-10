@@ -21,7 +21,6 @@
 #include "cmos_api.h"
 #include "mpu9250.h"
 #include "inv_mpu.h"
-#include "inv_mpu_dmp_motion_driver.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 #define MAIN_DIM        (3)
@@ -34,9 +33,11 @@
 
 /********************************** 函数声明区 *********************************/
 static int init(void);
-static void update(unsigned long *time, float *temper, float *ypr, float *accel, float *gyro, float *compass);
-static void compute_yaw_pitch_roll(float *ypr, long *quat);
 static void run_self_test(void);
+static void get_temperature(float *temperature, unsigned long *time_stamp);
+static void get_gyro(float *gyro, unsigned long *time_stamp);
+static void get_accel(float *accel, unsigned long *time_stamp);
+static void get_compass(float *compass, unsigned long *time_stamp);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -58,32 +59,31 @@ static void run_self_test(void);
 ******************************************************************************/
 int main(void)
 { 
-    unsigned long time = 0;         /* 时间 */
-    float temper = 0;               /* 温度 */
-    float ypr[MAIN_DIM] = {0};      /* yaw pitch roll */
+    unsigned long time_stamp = 0;   /* 时间 */
+    float temperature = 0;          /* 温度 */
     float accel[MAIN_DIM] = {0};    /* 加速度 x y z*/
     float gyro[MAIN_DIM] = {0};     /* 陀螺仪 x y z*/
     float compass[MAIN_DIM] = {0};  /* 磁力计 x y z*/
 
-    int times = 0;                  /* 用于控制打印 */
+    float ypr[MAIN_DIM] = {0};      /* yaw pitch roll */
 
     init();
     do{
-        update(&time, &temper, ypr, accel, gyro, compass);
-        if( (0 != time)
-         && (times >= 0) ) /* 控制打印 */
-        {
-            cmos_printf("attitude(%5.2fs,%5.2fC) :%5.2f,%5.2f,%5.2f.\r\n",
-                    time / 1000.0, temper, ypr[MAIN_YAW], ypr[MAIN_PITCH], ypr[MAIN_ROLL]);
-            cmos_printf("accel                   :%5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
-            cmos_printf("gyro                    :%5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
-            cmos_printf("compass                 :%5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
-            cmos_printf("\r\n");
-            times = 0;
-        }
-        times++;
+        get_temperature(&temperature, &time_stamp);
+        cmos_printf("attitude(%5.2fs,%5.2fC):%5.2f,%5.2f,%5.2f.\r\n",
+                time_stamp / 1000.0, temperature, ypr[MAIN_YAW], ypr[MAIN_PITCH], ypr[MAIN_ROLL]);
 
-        mpu9250_delay_ms(5);
+        get_accel(accel, &time_stamp); 
+        cmos_printf("accel(%5.2fs):     %5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
+
+        get_gyro(gyro, &time_stamp); 
+        cmos_printf("gyro(%5.2fs):      %5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
+
+        get_compass(compass, &time_stamp);
+        cmos_printf("compass(%5.2f):    %5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
+        cmos_printf("\r\n");
+
+        mpu9250_delay_ms(1000); /* 1s 打印一次 */
     }while(TRUE);
 }
 
@@ -107,14 +107,6 @@ int main(void)
 static int init(void)
 {
     unsigned char dev_status = 0;
-
-    short accel[MAIN_DIM] = {0};    /* 加速度 x y z*/
-    short gyro[MAIN_DIM] = {0};     /* 陀螺仪 x y z*/
-    long quat[4] = {0};             /* 四元数 */
-    unsigned long time = 0;         /* 时间 */
-    short sensors = 0;              /* FIFO中数据的掩码 */
-    unsigned char fifo_count = 0;   /* FIFO中数据字节数 */
-    unsigned char rst = 0;          /* 函数返回值 */
 
     /* 系统初始化 */
     cmos_init();
@@ -154,33 +146,7 @@ static int init(void)
         cmos_printf("设置MPU FIFO失败.\r\n");
         return -1;
     }
-    cmos_printf("下载DMP固件...\r\n");
-    if (dmp_load_motion_driver_firmware()!=0)
-    {
-        cmos_printf("下载DMP固件失败.\r\n");
-        return -1;
-    }
-    cmos_printf("启动DMP...\r\n");
-    if (mpu_set_dmp_state(1)!=0) 
-    {
-        cmos_printf("启动DMP失败r\n");
-        return -1;
-    }
-    cmos_printf("使能DMP...\r\n");
-    if(0 != dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT
-                | DMP_FEATURE_SEND_RAW_ACCEL
-                | DMP_FEATURE_SEND_CAL_GYRO
-                | DMP_FEATURE_GYRO_CAL)) 
-    {
-        cmos_printf("使能DMP失败.\r\n");
-        return -1;
-    } 
-    cmos_printf("设置DMP FIFO速率...\r\n");
-    if (dmp_set_fifo_rate(MPU9250_DMP_FIFO_RATE)!=0)
-    {
-        cmos_printf("设置DMP FIFO速率失败.\r\n");
-        return -1;
-    }
+
     cmos_printf("复位FIFO队列...\r\n");
     if (mpu_reset_fifo()!=0)
     {
@@ -188,14 +154,8 @@ static int init(void)
         return -1;
     }
 
-    /* 加入MPU自检 */
     cmos_printf("自检...\r\n"); 
     run_self_test();
-    do
-    {
-        mpu9250_delay_ms(1000/MPU9250_DMP_FIFO_RATE);  /* dmp will habve 4 (5-1) packets based on the fifo_rate */
-        rst = dmp_read_fifo(gyro, accel, quat, &time, &sensors, &fifo_count);
-    } while (0 != rst || fifo_count < 5); /* packtets!!! */
     cmos_printf("初始化完成.\r\n");
 
     return 0;
@@ -218,101 +178,62 @@ static int init(void)
 * 其 它   : 无
 *
 ******************************************************************************/
-static void update(unsigned long *time, float *temper, float *ypr, float *accel, float *gyro, float *compass)
+static void get_temperature(float *temperature, unsigned long *time_stamp)
 {
-    short accel_i[MAIN_DIM] = {0};  /* 加速度 x y z*/
-    short gyro_i[MAIN_DIM] = {0};   /* 陀螺仪 x y z*/
-    long  quat[4] = {0};            /* 四元数 */
-    short sensors = 0;              /* FIFO中数据的掩码 */
-    unsigned char fifo_count = 0;   /* FIFO中数据字节数 */
-    unsigned char rst = 0;          /* 函数返回值 */
+    long temperature_l = 0;
 
-    long temper_i = 0;               /* 温度 */
-    short compass_i[MAIN_DIM] = {0};/* 磁力计 x y z*/ 
-    
-    rst = dmp_read_fifo(gyro_i, accel_i, quat, time, &sensors, &fifo_count); 
-    if(0 != rst)
-    {
-        /* cmos_printf("dmp_read_fifo 失败.\r\n"); */
-        *time = 0;
-        *temper = 0;
-        ypr[0] = 0;
-        ypr[1] = 0;
-        ypr[2] = 0;
-        accel[0] = 0;
-        accel[1] = 0;
-        accel[2] = 0;
-        gyro[0] = 0;
-        gyro[1] = 0;
-        gyro[2] = 0;
-        compass[0] = 0;
-        compass[1] = 0;
-        compass[2] = 0;
-        return;
-    }
-    
-    compute_yaw_pitch_roll(ypr, quat);
-    
-    /* 温度 */
-    mpu_get_temperature(&temper_i, NULL);
-    *temper = (float)temper_i/65536L; 
-    
-    /* 磁场 */
-    mpu_get_compass_reg(compass_i, NULL); 
-    
+    mpu_get_temperature(&temperature_l, time_stamp);
+    *temperature = (float)temperature_l/65536L; 
+}
 
-    /* 转换为角度 */
+static void get_gyro(float *gyro, unsigned long *time_stamp)
+{ 
+    short gyro_i[3] = {0};
+    float sens = 0;
+
+    mpu_get_gyro_reg(gyro_i, time_stamp);
+    mpu_get_gyro_sens(&sens);
     for(int i=0;i<MAIN_DIM;i++)
     {
-        ypr[i] *= (180 / MAIN_PI);
+        gyro[i] = gyro_i[i] / sens;
     }
-		
- #if 0  
-    ypr[0] = wrap_180(ypr[0]);
-#endif 
+}
 
-    /* MPU与标准pitch定义反向 */
-    ypr[1]*=-1.0;
+static void get_accel(float *accel, unsigned long *time_stamp)
+{
+    short accel_i[3] = {0};
+    unsigned short sens = 0;
 
-    /* x 0, y 1, z 2
-     * 转换 MPU xyz 与yaw pitch roll一致 */
-    for (int i=0;i<MAIN_DIM;i++)
+    mpu_get_accel_reg(accel_i, time_stamp);
+    mpu_get_accel_sens(&sens);
+    for(int i=0;i<MAIN_DIM;i++)
     {
-        gyro[i]   = (float)(gyro_i[MAIN_DIM-i-1]);
-        accel[i]   = (float)(accel_i[MAIN_DIM-i-1]);
-        compass[i] = (float)(compass_i[MAIN_DIM-i-1]);
+        accel[i] = 1.0 * accel_i[i] / sens;
     }
+}
 
+static void get_compass(float *compass, unsigned long *time_stamp)
+{ 
+    short compass_i[3] = {0};
+
+    mpu_get_compass_reg(compass_i, time_stamp); 
+
+#if 0
+    unsigned short fsr = 0;
+    mpu_get_compass_fsr(&fsr);
+    for(int i=0;i<MAIN_DIM;i++)
+    {
+        compass[i] = 1.0 * compass_i[i] / fsr;
+    }
+#else
+    for(int i=0;i<MAIN_DIM;i++)
+    {
+        compass[i] = 1.0 * compass_i[i];
+    }
+#endif
 }
 
 /* TODO:补充注释 */
-static void compute_yaw_pitch_roll(float *ypr, long *quat)
-{
-    /* 四元数 */
-    float w = 0;
-    float x = 0;
-    float y = 0;
-    float z = 0;
-
-    float gravity[MAIN_DIM] = {0}; /* 重力场 */
-
-    w = (float)quat[0] / 16384.0f;
-    x = (float)quat[1] / 16384.0f;
-    y = (float)quat[2] / 16384.0f;
-    z = (float)quat[3] / 16384.0f;
-
-    gravity[0] = 2 * (x*z - w*y);
-    gravity[1] = 2 * (w*x + y*z);
-    gravity[2] = w*w - x*x - y*y + z*z; 
-    
-    /* yaw:   (Z 轴) */
-    ypr[0] = atan2(2*x*y - 2*w*z, 2*w*w + 2*x*x - 1);
-    /* pitch: (y 轴) */
-    ypr[1] = atan(gravity[0]/ sqrt(gravity[1]*gravity[1] + gravity[2]*gravity[2]));
-    /* roll:  (X 轴) */
-    ypr[2] = atan(gravity[1]/ sqrt(gravity[0]*gravity[0] + gravity[2]*gravity[2]));
-}
-
 static void run_self_test(void)
 {
     int result = 0;
