@@ -40,7 +40,8 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 2. CUBE4 在 E:\Keil\_v5\STM32Cube\_FW\_F4
 3. HAL层对RTOS的支持有风险 inc/stm32f4xx\_hal\_conf.h USE\_RTOS
 4. 参考FreeRtos RT-Thread实现
-5. 文档的编写使用[md编辑器][1]
+5. DMP无法9轴融合
+6. 文档的编写使用[md编辑器][1]
 
 ---------
 
