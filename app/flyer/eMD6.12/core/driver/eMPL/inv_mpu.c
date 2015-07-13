@@ -2469,7 +2469,7 @@ static int get_st_6500_biases(long *gyro, long *accel, unsigned char hw_test, in
     accel[0] = accel[1] = accel[2] = 0;
 
     if(debug)
-    	log_i("Starting Bias Loop Reads\n");
+    	log_i("Starting Bias Loop Reads\r\n");
 
     //start reading samples
     while (s < test.packet_thresh) {
@@ -2506,7 +2506,7 @@ static int get_st_6500_biases(long *gyro, long *accel, unsigned char hw_test, in
     }
 
     if(debug)
-    	log_i("Samples: %d\n", s);
+    	log_i("Samples: %d\r\n", s);
 
     //stop FIFO
     data[0] = 0;
@@ -2594,14 +2594,14 @@ int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
          * We'll just report an error for all three sensors.
          */
         if(debug)
-        	log_i("Retrieving Biases Error - possible I2C error\n");
+        	log_i("Retrieving Biases Error - possible I2C error\r\n");
 
         result = 0;
         goto restore;
     }
 
     if(debug)
-    	log_i("Retrieving ST Biases\n");
+    	log_i("Retrieving ST Biases\r\n");
 
     for (ii = 0; ii < tries; ii++)
         if (!get_st_6500_biases(gyro_st, accel_st, 1, debug))
@@ -2609,7 +2609,7 @@ int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
     if (ii == tries) {
 
         if(debug)
-        	log_i("Retrieving ST Biases Error - possible I2C error\n");
+        	log_i("Retrieving ST Biases Error - possible I2C error\r\n");
 
         /* Again, probably an I2C error. */
         result = 0;
@@ -2618,11 +2618,11 @@ int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
 
     accel_result = accel_6500_self_test(accel, accel_st, debug);
     if(debug)
-    	log_i("Accel Self Test Results: %d\n", accel_result);
+    	log_i("Accel Self Test Results: %d\r\n", accel_result);
 
     gyro_result = gyro_6500_self_test(gyro, gyro_st, debug);
     if(debug)
-    	log_i("Gyro Self Test Results: %d\n", gyro_result);
+    	log_i("Gyro Self Test Results: %d\r\n", gyro_result);
 
     result = 0;
     if (!gyro_result)
@@ -2633,7 +2633,7 @@ int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
 #ifdef AK89xx_SECONDARY
     compass_result = compass_self_test();
     if(debug)
-    	log_i("Compass Self Test Results: %d\n", compass_result);
+    	log_i("Compass Self Test Results: %d\r\n", compass_result);
     if (!compass_result)
         result |= 0x04;
 #else
@@ -2641,7 +2641,7 @@ int mpu_run_6500_self_test(long *gyro, long *accel, unsigned char debug)
 #endif
 restore:
 	if(debug)
-		log_i("Exiting HWST\n");
+		log_i("Exiting HWST\r\n");
 	/* Set to invalid values to ensure no I2C writes are skipped. */
 	st.chip_cfg.gyro_fsr = 0xFF;
 	st.chip_cfg.accel_fsr = 0xFF;
