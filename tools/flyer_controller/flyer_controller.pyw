@@ -91,7 +91,7 @@ class GLWidget(QtOpenGL.QGLWidget):
     def initializeGL(self):
         self.PrintGLInfo()
         self.qglClearColor(QtCore.Qt.black)
-        self.mObj = GLObject()
+        self.mObj = GLAxis()
 
         self.mPaintTimer = QtCore.QTimer();
         self.mPaintTimer.timeout.connect(self.Update);
@@ -124,7 +124,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         GL.glEnableClientState( GL.GL_VERTEX_ARRAY )
         GL.glColorPointer(4, GL.GL_FLOAT, 0, self.mObj.GetColors())
         GL.glVertexPointer(4, GL.GL_FLOAT, 0, self.mObj.GetVertices())
-        for i in range(0, 3):
+        for i in range(0, 5):
             GL.glDrawElements(GL.GL_LINES, 2, GL.GL_UNSIGNED_BYTE, self.mObj.GetIndices(i))
 
         GL.glDisableClientState( GL.GL_COLOR_ARRAY )
@@ -163,29 +163,40 @@ class GLWidget(QtOpenGL.QGLWidget):
         print("着色语言版本 ", end=":")
         print(GL.glGetString(GL.GL_SHADING_LANGUAGE_VERSION))
 
-class GLObject():
-    def __init__(self):
+class GLAxis():
+    def __init__(self, arrowScale=0.05, axisScale=1.1): 
+        self.mArrowScale = arrowScale
+        self.mAxisScale = axisScale
+
         # 顶点 位置
         self.mVertices = array.array('f',
-                [ 0.0,  0.0,  0.0,  1.0,
-                  0.9,  0.0,  0.0,  1.0,
-                  0.0,  0.9,  0.0,  1.0,
-                  0.0,  0.0,  0.9,  1.0]) 
+                [-1.0,                    0.0,               0.0,               self.mAxisScale,
+                  1.0,                    0.0,               0.0,               self.mAxisScale,
+                  1.0 - self.mArrowScale, self.mArrowScale,  0.0,               self.mAxisScale,
+                  1.0 - self.mArrowScale, -self.mArrowScale, 0.0,               self.mAxisScale,
+                  1.0 - self.mArrowScale, 0.0,               self.mArrowScale,  self.mAxisScale,
+                  1.0 - self.mArrowScale, 0.0,               -self.mArrowScale, self.mAxisScale]) 
 
         # 顶点 颜色
         self.mColors = array.array('f',
-                [ 1.0,  1.0,  1.0,  1.0,
+                [ 1.0,  0.0,  0.0,  1.0,
                   1.0,  0.0,  0.0,  1.0,
-                  0.0,  1.0,  0.0,  1.0,
-                  0.0,  0.0,  1.0,  1.0] ) 
+                  1.0,  0.0,  0.0,  1.0,
+                  1.0,  0.0,  0.0,  1.0,
+                  1.0,  0.0,  0.0,  1.0,
+                  1.0,  0.0,  0.0,  1.0] ) 
 
         # 顶点索引
         self.mIndices = []
         index = array.array('B', [0, 1])
         self.mIndices.append(index)
-        index = array.array('B', [0, 2])
+        index = array.array('B', [1, 2])
         self.mIndices.append(index)
-        index = array.array('B', [0, 3])
+        index = array.array('B', [1, 3])
+        self.mIndices.append(index)
+        index = array.array('B', [1, 4])
+        self.mIndices.append(index)
+        index = array.array('B', [1, 5])
         self.mIndices.append(index)
 
     def GetVertices(self):
