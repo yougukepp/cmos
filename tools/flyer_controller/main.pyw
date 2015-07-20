@@ -14,7 +14,7 @@ from fc_widgets import FCWindow
 
 app = QtGui.QApplication(sys.argv)
 win= FCWindow()
-win.showMaximized()
+win.show()
 sys.exit(app.exec_())
 
 
