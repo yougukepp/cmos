@@ -5,6 +5,7 @@ import array
 import json
 
 from PyQt4 import QtGui
+from fc_json_paser import FCJsonPaser
 try:
     from OpenGL import GL
 except ImportError: 
@@ -13,40 +14,11 @@ except ImportError:
             "需要安装PyOpenGL(使用pip installed PyOpenGL).\n")
     sys.exit(1) 
 
-class FCJsonPaser():
-    def __init__(self, jsonName):
-        f = open(jsonName, "r")
-        dataStr = f.read()
-
-        """
-        for l in dataStr:
-            print(l, end='')
-        """
-
-        self.mJson = json.loads(dataStr)
-
-        """
-        print(self.mJson.keys())
-        print(self.mJson["Axis"]["Scale"])
-        print(self.mJson["Axis"]["ArrowScale"])
-        """
-
-    def GetValue(self, keyList):
-        v = self.mJson[keyList[0]]
-        #print(v)
-
-        maxIndex = len(keyList)
-        for i in range(1, maxIndex):
-            #print(keyList[i])
-            v = v[keyList[i]]
-
-        return v
-
 class FCAxis():
-    def __init__(self, jsonName = 'glObjs.json'):
+    def __init__(self, jsonName = 'axis.json'):
         self.mJsonPaser = FCJsonPaser(jsonName)
-        self.mAxisScale = self.mJsonPaser.GetValue(("Axis", "Scale"))
-        self.mArrowScale = self.mJsonPaser.GetValue(("Axis", "ArrowScale"))
+        self.mAxisScale = self.mJsonPaser.GetValue(("Configs", "Scale"))
+        self.mArrowScale = self.mJsonPaser.GetValue(("Configs", "ArrowScale"))
 
         # X 北 红
         # X轴顶点 位置
@@ -169,8 +141,8 @@ class FCAxis():
 
 if __name__ == '__main__': 
     axis = FCAxis()
-    axis.GetVertices()
-    axis.GetColors()
+    axis.GetVertices('x')
+    axis.GetColors('x')
     axis.GetIndices('x', 0)
     print('测试通过')
 

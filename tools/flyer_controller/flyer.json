@@ -1,0 +1,26 @@
+{
+    "Configs":
+    {
+        "Scale": 1.2,
+    }
+
+    "Propeller":
+    {
+        "Vertices": [],
+        "Colors":   [],
+        "indices":  []
+    }
+    "Bracket"
+    {
+        "Vertices": [],
+        "Colors":   [],
+        "indices":  []
+    }
+    "Pivot"
+    {
+        "Vertices": [],
+        "Colors":   [],
+        "indices":  []
+    }
+}
+
