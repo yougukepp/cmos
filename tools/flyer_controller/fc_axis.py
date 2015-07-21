@@ -48,15 +48,15 @@ class FCAxis():
         self.mAxisScale = self.mJsonPaser.GetValue(("Axis", "Scale"))
         self.mArrowScale = self.mJsonPaser.GetValue(("Axis", "ArrowScale"))
 
-        # X
+        # X 北 红
         # X轴顶点 位置
         self.mXVertices = array.array('f',
-                [-1.0,                    0.0,               0.0,               self.mAxisScale,
-                  1.0,                    0.0,               0.0,               self.mAxisScale,
-                  1.0 - self.mArrowScale, self.mArrowScale,  0.0,               self.mAxisScale,
-                  1.0 - self.mArrowScale, -self.mArrowScale, 0.0,               self.mAxisScale,
-                  1.0 - self.mArrowScale, 0.0,               self.mArrowScale,  self.mAxisScale,
-                  1.0 - self.mArrowScale, 0.0,               -self.mArrowScale, self.mAxisScale]) 
+                [0.0,               0.0,             -1.0,                    self.mAxisScale,
+                 0.0,               0.0,              1.0,                    self.mAxisScale,
+                 self.mArrowScale,  0.0,              1.0 - self.mArrowScale, self.mAxisScale,
+                 -self.mArrowScale, 0.0,              1.0 - self.mArrowScale, self.mAxisScale,
+                 0.0,               self.mArrowScale, 1.0 - self.mArrowScale, self.mAxisScale,
+                 0.0,              -self.mArrowScale, 1.0 - self.mArrowScale, self.mAxisScale])
         # X轴顶点 颜色
         self.mXColors = array.array('f',
                 [ 1.0,  0.0,  0.0,  1.0,
@@ -73,15 +73,15 @@ class FCAxis():
                 array.array('B', [1, 4]),
                 array.array('B', [1, 5])]
 
-        # Y
+        # Y 东 绿
         # Y轴顶点 位置
         self.mYVertices = array.array('f',
-                [0.0,              -1.0,                    0.0,              self.mAxisScale,
-                 0.0,               1.0,                    0.0,              self.mAxisScale,
-                 self.mArrowScale,  1.0 - self.mArrowScale, 0.0,              self.mAxisScale,
-                 -self.mArrowScale, 1.0 - self.mArrowScale, 0.0,              self.mAxisScale,
-                 0.0,               1.0 - self.mArrowScale, self.mArrowScale, self.mAxisScale,
-                 0.0,               1.0 - self.mArrowScale, self.mArrowScale, self.mAxisScale,])
+                [-1.0,                    0.0,               0.0,               self.mAxisScale,
+                  1.0,                    0.0,               0.0,               self.mAxisScale,
+                  1.0 - self.mArrowScale, self.mArrowScale,  0.0,               self.mAxisScale,
+                  1.0 - self.mArrowScale, -self.mArrowScale, 0.0,               self.mAxisScale,
+                  1.0 - self.mArrowScale, 0.0,               self.mArrowScale,  self.mAxisScale,
+                  1.0 - self.mArrowScale, 0.0,               -self.mArrowScale, self.mAxisScale]) 
         # Y轴顶点 颜色
         self.mYColors = array.array('f',
                 [ 0.0,  1.0,  0.0,  1.0,
@@ -98,15 +98,15 @@ class FCAxis():
                 array.array('B', [1, 4]),
                 array.array('B', [1, 5])]
 
-        # Z
+        # Z 天 蓝
         # Z轴顶点 位置
         self.mZVertices = array.array('f',
-                [0.0,               0.0,             -1.0,                    self.mAxisScale,
-                 0.0,               0.0,              1.0,                    self.mAxisScale,
-                 self.mArrowScale,  0.0,              1.0 - self.mArrowScale, self.mAxisScale,
-                 -self.mArrowScale, 0.0,              1.0 - self.mArrowScale, self.mAxisScale,
-                 0.0,               self.mArrowScale, 1.0 - self.mArrowScale, self.mAxisScale,
-                 0.0,              -self.mArrowScale, 1.0 - self.mArrowScale, self.mAxisScale])
+                [0.0,              -1.0,                    0.0,              self.mAxisScale,
+                 0.0,               1.0,                    0.0,              self.mAxisScale,
+                 self.mArrowScale,  1.0 - self.mArrowScale, 0.0,              self.mAxisScale,
+                 -self.mArrowScale, 1.0 - self.mArrowScale, 0.0,              self.mAxisScale,
+                 0.0,               1.0 - self.mArrowScale, self.mArrowScale, self.mAxisScale,
+                 0.0,               1.0 - self.mArrowScale, self.mArrowScale, self.mAxisScale,])
         # Z轴顶点 颜色
         self.mZColors = array.array('f',
                 [ 0.0,  0.0,  1.0,  1.0,
@@ -122,6 +122,9 @@ class FCAxis():
                 array.array('B', [1, 3]),
                 array.array('B', [1, 4]),
                 array.array('B', [1, 5])]
+
+
+        # 三轴汇总
 
     def PaintGL(self):
         for axis in ('x', 'y', 'z'): 

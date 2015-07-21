@@ -14,6 +14,7 @@ from fc_widgets import FCWindow
 
 app = QtGui.QApplication(sys.argv)
 win= FCWindow()
+win.move(0,0)
 win.show()
 sys.exit(app.exec_())
 
