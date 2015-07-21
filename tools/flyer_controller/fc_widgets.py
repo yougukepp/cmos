@@ -15,9 +15,11 @@ except ImportError:
     QtGui.QMessageBox.critical(None, "飞控板控制",
             "需要安装PyOpenGL(使用pip installed PyOpenGL).\n")
     sys.exit(1) 
+ 
+from fc_flyerWidget import FlyerWidget 
 
-FCWindowUIClass = loadUiType("fc_window.ui")
 gGLSize = 600
+FCWindowUIClass = loadUiType("fc_window.ui")
 
 class FCWindow(QtGui.QWidget):
     def __init__(self):
@@ -37,10 +39,11 @@ class FCWindow(QtGui.QWidget):
 
         # 飞行器 加载OpenGL控件
         self.mFlyerWidget = FlyerWidget()
-        self.mFlyerGroupBox = self.mUi.flyerGroupBox
+        self.mFlyerGroupBox = self.mUi.flyerGroupBox 
+        
+        self.mFlyerGroupBox.setFixedSize(gGLSize, gGLSize)
 
         # 保持方形
-        self.mFlyerGroupBox.setFixedSize(gGLSize, gGLSize)
         vbox = QtGui.QVBoxLayout()
         vbox.addWidget(self.mFlyerWidget)
         self.mFlyerGroupBox.setLayout(vbox)
@@ -84,34 +87,6 @@ class FCPostWidget(QtGui.QWidget):
 class FCCtrlWidget(QtGui.QWidget):
     def __init__(self):
         super(FCCtrlWidget, self).__init__()
-
-class FlyerWidget(QtOpenGL.QGLWidget):
-    def __init__(self, parent=None):
-        super(FlyerWidget, self).__init__(parent)
-
-        # 三维物体 及其初始角度
-        self.mObj = None
-
-    def initializeGL(self):
-        self.PrintGLInfo()
-        self.qglClearColor(QtCore.Qt.black)
-
-    def paintGL(self):
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT ) 
-        GL.glViewport(0, 0, self.width(), self.height())
-
-    def PrintGLInfo(self):
-        print("生产商       ", end=":")
-        print(GL.glGetString(GL.GL_VENDOR))
-
-        print("渲染器       ", end=":")
-        print(GL.glGetString(GL.GL_RENDERER))
-
-        print("OpenGL版本   ", end=":")
-        print(GL.glGetString(GL.GL_VERSION))
-
-        print("着色语言版本 ", end=":")
-        print(GL.glGetString(GL.GL_SHADING_LANGUAGE_VERSION))
 
 if __name__ == '__main__': 
     app = QtGui.QApplication(sys.argv)
