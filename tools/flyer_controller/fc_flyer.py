@@ -18,6 +18,12 @@ class FCFlyer():
     def __init__(self, jsonName = 'flyer.json'):
         self.mJsonPaser = FCJsonPaser(jsonName)
 
+        self.mPropellerVertices = self.mJsonPaser.GetValue(("Propeller", "Vertices"))
+        self.mPropellerColors = self.mJsonPaser.GetValue(("Propeller", "Colors"))
+        self.mPropellerIndices = self.mJsonPaser.GetValue(("Propeller", "Indices"))
+        self.mPropellerDrawType = self.mJsonPaser.GetValue(("Propeller", "Indices"))
+
+
     def PaintGL(self):
         pass
         """
@@ -41,5 +47,6 @@ class FCFlyer():
         pass
 
 if __name__ == '__main__': 
-    print('待实现测试')
+    flyer = FCFlyer()
+    print('测试通过')
 
