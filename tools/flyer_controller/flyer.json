@@ -88,14 +88,14 @@
         "Pivot":
         {
             "Vertices": [
-                0, 0, 0,
-                0, 0, -10],
+                0, 0,  0,
+                0, 0, -1],
             "Colors":   [
                 1, 0, 1,
                 1, 0, 1 ],
             "Indices":  [0, 1],
             "DrawType": "Lines",
-            "LineWidth": 10
+            "LineWidth": 1
         },
 
         "Bracket":
@@ -104,7 +104,7 @@
             "Colors":   [],
             "Indices":  [],
             "DrawType": "Lines",
-            "LineWidth": 10
+            "LineWidth": 1
         }
     }
 }

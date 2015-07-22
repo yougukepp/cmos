@@ -22,9 +22,8 @@ class FCFlyer():
         self.ParserJson(jsonName)
         self.MakeFlyer()
         self.ApplyConfigs() 
-        print(self.mObjs["Propeller"])
+        #print(self.mObjs["Propeller"])
         self.DataToGlFormat()
-        print(self.mObjs["Propeller"])
 
     def PaintGL(self):
         objsDict = self.mObjs
@@ -49,20 +48,22 @@ class FCFlyer():
         drawType = objDict['DrawType']
         lineWidth = objDict['LineWidth']
 
+        #print(objName)
+        #print(verticesData)
+        #print(colorsData)
+        #print(indicesData)
+
         if 0 == len(indicesData) or 0 == len(colorsData) or 0 == len(verticesData):
             #print('%s无数据可绘制' % objName)
             return
 
-        #print(objName)
-        #print(indicesData)
-
-        GL.glColorPointer(4, GL.GL_FLOAT, 0, colorsData)
         GL.glVertexPointer(4, GL.GL_FLOAT, 0, verticesData)
+        GL.glColorPointer(4,  GL.GL_FLOAT, 0, colorsData)
         GL.glLineWidth(lineWidth)
         if 'TringleFan' == drawType:
             GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
         elif 'Lines' == drawType:
-            GL.glDrawElements(GL.GL_LINES, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
+            GL.glDrawElements(GL.GL_LINES,        len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
         else:
             print('绘制类型%s错误.' % DrawType)
 
@@ -110,6 +111,7 @@ class FCFlyer():
             objData = objsDict[objName]
             oldData = objData[attributeName]
             newData = self.UpdateAConfig(oldData, para)
+            self.mObjs[objName][attributeName] = newData
 
     def UpdateAConfig(self, oldData, config): 
         i = 0
