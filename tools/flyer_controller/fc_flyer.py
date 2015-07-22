@@ -18,8 +18,10 @@ class FCFlyer():
     def __init__(self, jsonName = 'flyer.json'):
         self.mData = None
         self.ParserJson(jsonName)
+        self.ApplyConfigs()
 
     def PaintGL(self):
+        """
         colorsData = self.GetData(("Propeller", "Colors")).tostring()
         verticesData = self.GetData(("Propeller", "Vertices")).tostring()
         indicesData = self.GetData(("Propeller", "Indices")).tostring()
@@ -33,28 +35,27 @@ class FCFlyer():
         GL.glLineWidth(lineWidth)
         if "TringleFan" == drawType:
             GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
-            #GL.glDrawElements(GL.GL_TRIANGLES, 3, GL.GL_UNSIGNED_BYTE, indicesData)
         else:
             print('绘制类型错误.')
 
         GL.glDisableClientState( GL.GL_COLOR_ARRAY )
         GL.glDisableClientState( GL.GL_VERTEX_ARRAY ) 
+        """
+        pass
 
     def ParserJson(self, jsonName):
         self.mData = {}
         jsonPaser = FCJsonPaser(jsonName)
+        self.mData = jsonPaser.ToDict()
 
-        self.mData["Propeller"] = {}
-        self.mData["Propeller"]["Vertices"] = jsonPaser.GetValue(("Propeller", "Vertices"))
-        self.mData["Propeller"]["Colors"]   = jsonPaser.GetValue(("Propeller", "Colors"))
-        self.mData["Propeller"]["Indices"]  = jsonPaser.GetValue(("Propeller", "Indices"))
-        self.mData["Propeller"]["DrawType"] = jsonPaser.GetValue(("Propeller", "DrawType"))
-        self.mData["Propeller"]["LineWidth"] = jsonPaser.GetValue(("Propeller", "LineWidth"))
+    def ApplyConfigs(self):
+        scale = self.GetData("Configs", "Scale")
+        alpha = self.GetData("Configs", "Alpha")
 
-        # 根据配置修改数据
-        scale = jsonPaser.GetValue(("Configs", "Scale"))
-        alpha = jsonPaser.GetValue(("Configs", "Alpha"))
+        self.UpdateScale()
+        self.UpdateAlpha()
 
+        """
         # 顶点
         i = 0
         tempVetices = self.mData["Propeller"]["Vertices"]
@@ -81,7 +82,6 @@ class FCFlyer():
         # 最后一个
         self.mData["Propeller"]["Colors"].append(alpha)
 
-        """
         # 调试
         i = 0
         for d in self.mData["Propeller"]["Vertices"]:
@@ -101,8 +101,6 @@ class FCFlyer():
                 print()
             i += 1
         print()
-        """
-
         # 转换为OpenGL可以接受的格式
         tempData = self.mData["Propeller"]["Vertices"]
         self.mData["Propeller"]["Vertices"] = None
@@ -115,8 +113,6 @@ class FCFlyer():
         tempData = self.mData["Propeller"]["Indices"]
         self.mData["Propeller"]["Indices"]  = None
         self.mData["Propeller"]["Indices"]  = array.array('B', tempData)
-
-
         # 调试
         pp = self.GetData(("Propeller", "Vertices"))
         print(pp)
@@ -126,8 +122,30 @@ class FCFlyer():
 
         pp = self.GetData(("Propeller", "Indices"))
         print(pp)
+        """
 
-    def GetData(self, keyTuple):
+    def UpdateScale(self):
+        """
+        # 顶点
+        i = 0
+        tempVetices = self.mData["Propeller"]["Vertices"]
+        self.mData["Propeller"]["Vertices"] = []
+        for d in tempVetices:
+            if 0 == i%3 and 0 != i:
+                self.mData["Propeller"]["Vertices"].append(scale)
+
+            self.mData["Propeller"]["Vertices"].append(d) 
+            i+=1 
+        # 最后一个
+        self.mData["Propeller"]["Vertices"].append(scale)
+        """
+
+        pass
+    
+    def UpdateAlpha(self):
+        pass
+
+    def GetData(self, *keyTuple):
         mainKey = keyTuple[0]
         #print(mainKey)
         v = self.mData[mainKey]
@@ -140,8 +158,6 @@ class FCFlyer():
             v = v[k]
 
         return v
-
-
 
 if __name__ == '__main__': 
     flyer = FCFlyer()
