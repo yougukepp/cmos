@@ -32,6 +32,9 @@ class FCJsonPaser():
 
         return v
 
+    def ToDict(self):
+        return self.mJson
+
 if __name__ == '__main__': 
     gJsonName = 'axis.json'
     jsonPaser = FCJsonPaser(gJsonName)

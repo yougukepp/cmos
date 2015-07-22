@@ -20,8 +20,8 @@ if __name__ == '__main__':
         print("./mk_circle_vertiuce.py <x|y|z> <pointCounts>")
         exit(1)
 
-    # 小于8 不像元
-    if pointCounts < 8:
+    # 小于3 无法生成
+    if pointCounts < 3:
         print("./mk_circle_vertiuce.py <x|y|z> <pointCounts>")
         print("pointCounts(%d) 太小不像圆." % pointCounts)
         exit(1)

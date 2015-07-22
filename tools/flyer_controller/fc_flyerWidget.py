@@ -8,6 +8,7 @@ from PyQt4 import QtCore
 from PyQt4 import QtOpenGL
 
 from fc_axis import FCAxis
+from fc_flyer import FCFlyer
 
 try:
     from OpenGL import GL
@@ -24,6 +25,7 @@ class FlyerWidget(QtOpenGL.QGLWidget):
 
         # 三维物体 及其初始角度
         self.mAxis = FCAxis() 
+        self.mFlyer = FCFlyer()
 
         # 拖拽起点
         self.mDragStart = None
@@ -67,6 +69,7 @@ class FlyerWidget(QtOpenGL.QGLWidget):
         GL.glRotated(self.mZRot, 0.0, 1.0, 0.0) # 天 opengl y
 
         self.mAxis.PaintGL()
+        self.mFlyer.PaintGL()
         #GL.glFinish()
 
         print("frame:%d" % self.mFrameCount, end='')
