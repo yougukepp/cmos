@@ -16,148 +16,141 @@ except ImportError:
 
 class FCFlyer():
     def __init__(self, jsonName = 'flyer.json'):
-        self.mData = None
+        self.mConfigs = None
+        self.mObjs = None
+
         self.ParserJson(jsonName)
-        self.ApplyConfigs()
+        self.MakeFlyer()
+        self.ApplyConfigs() 
+        print(self.mObjs["Propeller"])
+        self.DataToGlFormat()
+        print(self.mObjs["Propeller"])
 
     def PaintGL(self):
-        """
-        colorsData = self.GetData(("Propeller", "Colors")).tostring()
-        verticesData = self.GetData(("Propeller", "Vertices")).tostring()
-        indicesData = self.GetData(("Propeller", "Indices")).tostring()
-        drawType = self.GetData(("Propeller", "DrawType"))
-        lineWidth = self.GetData(("Propeller", "LineWidth"))
+        objsDict = self.mObjs
 
         GL.glEnableClientState( GL.GL_COLOR_ARRAY )
         GL.glEnableClientState( GL.GL_VERTEX_ARRAY )
-        GL.glColorPointer(4, GL.GL_FLOAT, 0, colorsData)
-        GL.glVertexPointer(4, GL.GL_FLOAT, 0, verticesData)
-        GL.glLineWidth(lineWidth)
-        if "TringleFan" == drawType:
-            GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
-        else:
-            print('绘制类型错误.')
+
+        # 逐个obj
+        for objName in objsDict:
+            self.AObjPaintGL(objName)
 
         GL.glDisableClientState( GL.GL_COLOR_ARRAY )
         GL.glDisableClientState( GL.GL_VERTEX_ARRAY ) 
-        """
-        pass
+
+    def AObjPaintGL(self, objName):
+        # 图形数据
+        objDict = self.mObjs[objName]
+
+        colorsData = objDict['Colors']
+        verticesData = objDict['Vertices']
+        indicesData = objDict['Indices']
+        drawType = objDict['DrawType']
+        lineWidth = objDict['LineWidth']
+
+        if 0 == len(indicesData) or 0 == len(colorsData) or 0 == len(verticesData):
+            #print('%s无数据可绘制' % objName)
+            return
+
+        #print(objName)
+        #print(indicesData)
+
+        GL.glColorPointer(4, GL.GL_FLOAT, 0, colorsData)
+        GL.glVertexPointer(4, GL.GL_FLOAT, 0, verticesData)
+        GL.glLineWidth(lineWidth)
+        if 'TringleFan' == drawType:
+            GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
+        elif 'Lines' == drawType:
+            GL.glDrawElements(GL.GL_LINES, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
+        else:
+            print('绘制类型%s错误.' % DrawType)
 
     def ParserJson(self, jsonName):
-        self.mData = {}
+        self.mConfigs = {}
+        self.mObjs = {}
+
         jsonPaser = FCJsonPaser(jsonName)
-        self.mData = jsonPaser.ToDict()
+
+        data = jsonPaser.ToDict()
+
+        self.mConfigs = data['Configs']
+        self.mObjs = data['Objs']
 
     def ApplyConfigs(self):
-        scale = self.GetData("Configs", "Scale")
-        alpha = self.GetData("Configs", "Alpha")
+        scale = self.mConfigs["Scale"]
+        alpha = self.mConfigs["Alpha"]
 
-        self.UpdateScale()
-        self.UpdateAlpha()
+        self.UpdateScale(scale)
+        self.UpdateAlpha(alpha)
 
+    def UpdateScale(self, scale):
+        self.UpdateAAttribute(scale, 'Vertices')
+
+    def UpdateAlpha(self, alpha):
+        self.UpdateAAttribute(alpha, 'Colors')
+
+    def UpdateAAttribute(self, para, attributeName):
         """
-        # 顶点
+        更新某一个参数 的配置
+
+        para 参数值 :
+        scale 缩放
+        alpha 透明度
+
+        attributeName 文件属性名字:
+        Vertices 顶点
+        Colors 颜色
+        """
+        objsDict = self.mObjs
+
+        # 逐个obj
+        for objName in objsDict:
+            #print(objName)
+            objData = objsDict[objName]
+            oldData = objData[attributeName]
+            newData = self.UpdateAConfig(oldData, para)
+
+    def UpdateAConfig(self, oldData, config): 
         i = 0
-        tempVetices = self.mData["Propeller"]["Vertices"]
-        self.mData["Propeller"]["Vertices"] = []
-        for d in tempVetices:
+        newData = []
+        for aData in oldData:
             if 0 == i%3 and 0 != i:
-                self.mData["Propeller"]["Vertices"].append(scale)
-
-            self.mData["Propeller"]["Vertices"].append(d) 
-            i+=1 
-        # 最后一个
-        self.mData["Propeller"]["Vertices"].append(scale)
-
-        # 颜色
-        i = 0
-        tempColors  = self.mData["Propeller"]["Colors"]
-        self.mData["Propeller"]["Colors"] = []
-        for d in tempColors:
-            if 0 == i%3 and 0 != i:
-                self.mData["Propeller"]["Colors"].append(alpha)
-
-            self.mData["Propeller"]["Colors"].append(d)
-            i+=1 
-        # 最后一个
-        self.mData["Propeller"]["Colors"].append(alpha)
-
-        # 调试
-        i = 0
-        for d in self.mData["Propeller"]["Vertices"]:
-            print("%7.4f" % d, end=',')
-
-            #if 0 == (i+1)%3:
-            if 0 == (i+1)%4:
-                print()
+                newData.append(config)
+            newData.append(aData)
             i += 1
-        print()
-        i = 0
-        for d in self.mData["Propeller"]["Colors"]:
-            print("%7.4f" % d, end=',')
+        newData.append(config) 
+        #print('old:')
+        #print(oldData) 
+        #print('new:')
+        #print(newData)
 
-            #if 0 == (i+1)%3:
-            if 0 == (i+1)%4:
-                print()
-            i += 1
-        print()
-        # 转换为OpenGL可以接受的格式
-        tempData = self.mData["Propeller"]["Vertices"]
-        self.mData["Propeller"]["Vertices"] = None
-        self.mData["Propeller"]["Vertices"] = array.array('f', tempData)
+        return newData
 
-        tempData = self.mData["Propeller"]["Colors"]
-        self.mData["Propeller"]["Colors"] = None
-        self.mData["Propeller"]["Colors"] = array.array('f', tempData)
+    def DataToGlFormat(self):
+        objsDict = self.mObjs
 
-        tempData = self.mData["Propeller"]["Indices"]
-        self.mData["Propeller"]["Indices"]  = None
-        self.mData["Propeller"]["Indices"]  = array.array('B', tempData)
-        # 调试
-        pp = self.GetData(("Propeller", "Vertices"))
-        print(pp)
+        # 逐个obj
+        for objName in objsDict:
+            print(objName)
+            objData = objsDict[objName]
+            for attributeName in objData: 
+                listData = objData[attributeName]
+                if 'Vertices' == attributeName or 'Colors' == attributeName:
+                    arrayData = array.array('f', listData)
+                elif 'Indices' == attributeName:
+                    arrayData = array.array('B', listData)
+                else: # 其他属性不转换
+                    continue
+                self.mObjs[objName][attributeName] = arrayData.tostring()
+                #print(self.mObjs[objName][attributeName])
 
-        pp = self.GetData(("Propeller", "Colors"))
-        print(pp)
-
-        pp = self.GetData(("Propeller", "Indices"))
-        print(pp)
+    def MakeFlyer(self):
         """
-
-    def UpdateScale(self):
+        平移出一个部分
+        旋转出三个对称的部分
         """
-        # 顶点
-        i = 0
-        tempVetices = self.mData["Propeller"]["Vertices"]
-        self.mData["Propeller"]["Vertices"] = []
-        for d in tempVetices:
-            if 0 == i%3 and 0 != i:
-                self.mData["Propeller"]["Vertices"].append(scale)
-
-            self.mData["Propeller"]["Vertices"].append(d) 
-            i+=1 
-        # 最后一个
-        self.mData["Propeller"]["Vertices"].append(scale)
-        """
-
         pass
-    
-    def UpdateAlpha(self):
-        pass
-
-    def GetData(self, *keyTuple):
-        mainKey = keyTuple[0]
-        #print(mainKey)
-        v = self.mData[mainKey]
-        #print(v)
-
-        maxIndex = len(keyTuple)
-        for i in range(1, maxIndex):
-            k = keyTuple[i]
-            #print(k)
-            v = v[k]
-
-        return v
 
 if __name__ == '__main__': 
     flyer = FCFlyer()
