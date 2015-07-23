@@ -103,7 +103,8 @@ class FCAxis():
             GL.glEnableClientState( GL.GL_COLOR_ARRAY )
             GL.glEnableClientState( GL.GL_VERTEX_ARRAY )
             GL.glColorPointer(4, GL.GL_FLOAT, 0, self.GetColors(axis))
-            GL.glVertexPointer(4, GL.GL_FLOAT, 0, self.GetVertices(axis))
+            GL.glVertexPointer(4, GL.GL_FLOAT, 0, self.GetVertices(axis)) 
+            GL.glLineWidth(1)
             for i in range(0, 5):
                 GL.glDrawElements(GL.GL_LINES, 2, GL.GL_UNSIGNED_BYTE, self.GetIndices(axis, i))
             GL.glDisableClientState( GL.GL_COLOR_ARRAY )

@@ -67,6 +67,12 @@ class FCFlyer():
                     continue
                 GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indiceItem), GL.GL_UNSIGNED_BYTE, indiceItem.tostring())
 
+        elif 'Tringles' == drawType:
+            for indiceItem in indicesData:
+                if len(indiceItem) < 3: # 不是三角形
+                    continue
+                GL.glDrawElements(GL.GL_TRIANGLES, len(indiceItem), GL.GL_UNSIGNED_BYTE, indiceItem.tostring())
+
         elif 'Lines' == drawType:
             for indiceItem in indicesData:
                 if len(indiceItem) < 2: # 不是线
