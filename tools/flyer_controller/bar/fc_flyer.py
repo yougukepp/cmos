@@ -44,7 +44,7 @@ class FCFlyer():
 
         colorsData = objDict['Colors'].tostring()
         verticesData = objDict['Vertices'].tostring()
-        indicesData = objDict['Indices'].tostring()
+        indicesData = objDict['Indices']
         drawType = objDict['DrawType']
         lineWidth = objDict['LineWidth']
 
@@ -61,9 +61,15 @@ class FCFlyer():
         GL.glColorPointer(4,  GL.GL_FLOAT, 0, colorsData)
         GL.glLineWidth(lineWidth)
         if 'TringleFan' == drawType:
-            GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
+            for indiceItem in indicesData:
+                if len(indiceItem) < 3: # 不是三角形
+                    continue
+                GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indicesData), GL.GL_UNSIGNED_BYTE, indiceItem.tostring())
         elif 'Lines' == drawType:
-            GL.glDrawElements(GL.GL_LINES,        len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
+            for indiceItem in indicesData:
+                if len(indiceItem) < 2: # 不是线
+                    continue
+                GL.glDrawElements(GL.GL_LINES,        len(indicesData), GL.GL_UNSIGNED_BYTE, indiceItem.tostring())
         else:
             print('绘制类型%s错误.' % DrawType)
 
@@ -141,7 +147,14 @@ class FCFlyer():
                 if 'Vertices' == attributeName or 'Colors' == attributeName:
                     arrayData = array.array('f', listData)
                 elif 'Indices' == attributeName:
-                    arrayData = array.array('B', listData)
+                    """
+                    Indices 是二维数组
+                    """ 
+                    arrayData = []
+                    for aIndicesItem in listData:
+                        aIndicesItemArray = array.array('B', aIndicesItem)
+                        arrayData.append(aIndicesItemArray)
+                    arrayData.append([])
                 else: # 其他属性不转换
                     continue
                 self.mObjs[objName][attributeName] = arrayData
