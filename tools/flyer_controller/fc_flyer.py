@@ -171,7 +171,38 @@ class FCFlyer():
         平移出一个部分
         旋转出三个对称的部分
         """
+        config = self.mConfigs
+        objsDict = self.mObjs
+        armLength = config['ArmLength']
+        # 旋转
+        angleList = config['AngleList']
+        # print(armLength)
+        # print(angleList)
+
+        # 平移 所有顶点y-armLength
+        for objName in objsDict:
+            #print(objName)
+            objData = objsDict[objName]
+            for attributeName in objData:
+                if 'Vertices' == attributeName:
+                    vertices = objData[attributeName]
+                    iMax = len(vertices)
+                    #print(vertices)
+                    #print(iMax)
+                    for i in range(0, iMax):
+                        if 0 == (i+2)%3:
+                            value = vertices[i]
+                            self.mObjs[objName][attributeName][i] = value - armLength
+                else:
+                    continue
+
+    # 用于重构代码的遍历
+    def WalkObjs(objsDict, funcToObj):
         pass
+
+    def WalkAttribute(objDict, funcToAttribute):
+        pass
+
 
 if __name__ == '__main__': 
     flyer = FCFlyer()

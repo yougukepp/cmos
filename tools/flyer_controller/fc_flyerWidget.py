@@ -40,6 +40,7 @@ class FlyerWidget(QtOpenGL.QGLWidget):
     def initializeGL(self):
         self.PrintGLInfo()
         self.qglClearColor(QtCore.Qt.black)
+        GL.glEnable(GL.GL_DEPTH_TEST | GL.GL_LINE_SMOOTH)
 
         self.mPaintTimer = QtCore.QTimer();
         self.mPaintTimer.timeout.connect(self.updateGL);
