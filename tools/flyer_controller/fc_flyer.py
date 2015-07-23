@@ -21,7 +21,6 @@ class FCFlyer():
         self.mObjs = None
 
         self.Parse(jsonName)
-        self.MakeFlyer()
         self.ObjNESToGLXYZ()
         self.ApplyConfigs() 
         self.DataToArray()
@@ -39,6 +38,40 @@ class FCFlyer():
         objsDict = data['Objs']
         for objName in objsDict:
             self.mObjs[objName] = FCObj(objsDict, objName)
+
+
+
+
+
+        # TODO:优化
+        # 以下部分分离为独立函数 并且目前的逻辑可读性太差
+        # 制作飞行器
+        """
+        平移出一个部分
+        旋转出三个对称的部分
+        """
+        objsDict = self.mObjs
+        config = self.mConfigs
+        angleList = config['AngleList']
+        armLength = config['ArmLength']
+
+        # 平移 所有顶点E-armLength
+        # print(armLength)
+        for obj in self.mObjs:
+            #print(objName)
+            self.mObjs[obj].Translate(0, armLength, 0)
+
+        #print(angleList)
+        # 旋转 
+        newObjs = {}
+        for obj in self.mObjs:
+            for angle in angleList:
+                objName = obj + str(angle) 
+                #print(objName)
+                newObjs[objName] = FCObj(objsDict, obj) # 使用原始数据初始化
+                newVertices = self.mObjs[obj].GetMirrorVertices(angle)
+                newObjs[objName].UpdateVertices(newVertices)
+        # TODO:合并所有obj 字典
 
     def PaintGL(self):
         objsDict = self.mObjs
@@ -71,33 +104,6 @@ class FCFlyer():
         for obj in self.mObjs:
             #print(objName)
             self.mObjs[obj].NESToGLXYZ()
-
-    def MakeFlyer(self):
-        """
-        平移出一个部分
-        旋转出三个对称的部分
-        """
-        config = self.mConfigs
-        objsDict = self.mObjs
-        armLength = config['ArmLength']
-        angleList = config['AngleList']
-
-        # print(armLength)
-        # 平移 所有顶点y-armLength
-        for obj in self.mObjs:
-            #print(objName)
-            self.mObjs[obj].Translate(0, armLength, 0)
-
-        #print(angleList)
-        # 旋转 
-        newObjs = {}
-        angleList
-        for obj in self.mObjs:
-            for angle in angleList:
-                objName = obj + str(angle)
-                #print(objName)
-                newObjs[objName] = self.mObjs[obj].MakeMirrorObj(angle)
-        # 合并所有obj 字典
 
 
 class FCObj():
@@ -237,26 +243,29 @@ class FCObj():
 
         #print(self.mData['Vertices'])
 
+    def UpdateVertices(self, vertices):
+        pass
+        #print(self.mData)
 
-    def MakeMirrorObj(self, angleS):
+    def GetMirrorVertices(self, angleS):
         """
         N * cosA
         E * sinA
         S * 1
         """
-        data = self.mData['Vertices']
+        oldData = self.mData['Vertices']
+        newData = []
         i = 0
         step = 3
-        iMax = len(data) 
+        iMax = len(oldData) 
         radianS = math.radians(angleS)
         #print("%s MakeMirrorObj:" % self.mName) 
-        #print(data)
+        #print(oldData)
         for i in range(0, iMax, step):
-            self.mData['Vertices'][i] = math.cos(radianS) * data[i]
-            self.mData['Vertices'][i+1] = math.sin(radianS) * data[i+1]
-            self.mData['Vertices'][i+2] = data[i+2]
-        #print(self.mData['Vertices'])
-        return self
+            newData.append(math.cos(radianS) * oldData[i])
+            newData.append(math.sin(radianS) * oldData[i+1])
+            newData.append(oldData[i+2])
+        return newData
 
 if __name__ == '__main__': 
     flyer = FCFlyer()
