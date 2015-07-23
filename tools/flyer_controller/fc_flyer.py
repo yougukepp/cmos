@@ -21,8 +21,8 @@ class FCFlyer():
 
         self.Parse(jsonName)
         self.MakeFlyer()
+        self.ObjNESToGLXYZ()
         self.ApplyConfigs() 
-        self.ModelNESToGLXYZ()
         self.DataToArray()
 
     def Parse(self, jsonName):
@@ -85,8 +85,10 @@ class FCFlyer():
         # 旋转
 
     # 转换到 模型:北N东E天S => GL:XYZ
-    def ModelNESToGLXYZ(self):
-        pass
+    def ObjNESToGLXYZ(self):
+        for obj in self.mObjs:
+            #print(objName)
+            self.mObjs[obj].NESToGLXYZ()
 
 class FCObj():
     def __init__(self, jsonDict, objName):
@@ -201,6 +203,32 @@ class FCObj():
             #print(oldData)
             #print(newData)
             self.mData[attributeName] = newData
+
+    def NESToGLXYZ(self):
+        """
+        N => Z    0 => 2
+        E => X    1 => 0
+        S => Y    2 => 1
+        """
+        #print("%s NESToGLXYZ:" % self.mName) 
+        data = self.mData['Vertices']
+        i = 0
+        step = 3
+        iMax = len(data) 
+        #print(data)
+        for i in range(0, iMax, step):
+            print(i)
+            newPoint = []
+            newPoint.append(data[i+1])
+            newPoint.append(data[i+2])
+            newPoint.append(data[i])
+            self.mData['Vertices'][i] = newPoint[0]
+            self.mData['Vertices'][i+1] = newPoint[1]
+            self.mData['Vertices'][i+2] = newPoint[2]
+
+        #print(self.mData['Vertices'])
+
+        pass
 
 if __name__ == '__main__': 
     flyer = FCFlyer()
