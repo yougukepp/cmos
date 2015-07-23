@@ -3,7 +3,7 @@
     {
         "Scale": 5.0,
         "Alpha": 1.0,
-        "ArmLength": 2.0,
+        "ArmLength": -2.0,
         "AngleList": [90, 180, 270]
     },
 
