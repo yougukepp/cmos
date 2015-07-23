@@ -44,7 +44,7 @@
                 1, 0, 1 ],
             "Indices":[[0, 1]],
             "DrawType": "Lines",
-            "LineWidth": 10
+            "LineWidth": 1
         },
 
         "Bracket":
@@ -57,9 +57,8 @@
                 0, 1, 1],
             "Indices":[[0, 1]],
             "DrawType": "Lines",
-            "LineWidth": 10
+            "LineWidth": 1
         }
     }
 }
-
 

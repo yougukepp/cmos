@@ -24,6 +24,7 @@ class FCFlyer():
         self.ApplyConfigs() 
         #print(self.mObjs["Propeller"])
         self.DataToArray()
+        self.ModelNESToGLXYZ()
 
     def PaintGL(self):
         objsDict = self.mObjs
@@ -174,11 +175,9 @@ class FCFlyer():
         config = self.mConfigs
         objsDict = self.mObjs
         armLength = config['ArmLength']
-        # 旋转
         angleList = config['AngleList']
-        # print(armLength)
-        # print(angleList)
 
+        # print(armLength)
         # 平移 所有顶点y-armLength
         for objName in objsDict:
             #print(objName)
@@ -196,11 +195,33 @@ class FCFlyer():
                 else:
                     continue
 
+        print(angleList)
+        # 旋转
+
     # 用于重构代码的遍历
-    def WalkObjs(objsDict, funcToObj):
+    def WalkObjs(self, objsDict, funcToObj):
+        """
+        遍历对象实施操作
+        """
+        for obj in objsDict:
+            funcToObj(obj)
+
+    def WalkAttribute(self, objDict, funcToAttribute):
         pass
 
-    def WalkAttribute(objDict, funcToAttribute):
+    # 转换到 模型:北N东E天S => GL:XYZ
+    def ModelNESToGLXYZ(self):
+        objsDict = self.mObjs
+
+        # 遍历所有对象
+        for objName in objsDict:
+            #print(objName)
+            objData = objsDict[objName]
+            for attributeName in objData:
+                pass
+
+class FCObj():
+    def __init__(self, jsonName, objName):
         pass
 
 
