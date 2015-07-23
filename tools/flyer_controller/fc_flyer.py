@@ -3,6 +3,7 @@
 
 import array
 import json
+import math
 
 from PyQt4 import QtGui
 from fc_json_paser import FCJsonPaser
@@ -65,6 +66,12 @@ class FCFlyer():
         for obj in self.mObjs:
             self.mObjs[obj].DataToArray()
 
+    # 转换到 模型:北N东E天S => GL:XYZ
+    def ObjNESToGLXYZ(self):
+        for obj in self.mObjs:
+            #print(objName)
+            self.mObjs[obj].NESToGLXYZ()
+
     def MakeFlyer(self):
         """
         平移出一个部分
@@ -82,13 +89,16 @@ class FCFlyer():
             self.mObjs[obj].Translate(0, armLength, 0)
 
         #print(angleList)
-        # 旋转
-
-    # 转换到 模型:北N东E天S => GL:XYZ
-    def ObjNESToGLXYZ(self):
+        # 旋转 
+        newObjs = {}
+        angleList
         for obj in self.mObjs:
-            #print(objName)
-            self.mObjs[obj].NESToGLXYZ()
+            for angle in angleList:
+                objName = obj + str(angle)
+                #print(objName)
+                newObjs[objName] = self.mObjs[obj].MakeMirrorObj(angle)
+        # 合并所有obj 字典
+
 
 class FCObj():
     def __init__(self, jsonDict, objName):
@@ -217,7 +227,6 @@ class FCObj():
         iMax = len(data) 
         #print(data)
         for i in range(0, iMax, step):
-            print(i)
             newPoint = []
             newPoint.append(data[i+1])
             newPoint.append(data[i+2])
@@ -228,7 +237,26 @@ class FCObj():
 
         #print(self.mData['Vertices'])
 
-        pass
+
+    def MakeMirrorObj(self, angleS):
+        """
+        N * cosA
+        E * sinA
+        S * 1
+        """
+        data = self.mData['Vertices']
+        i = 0
+        step = 3
+        iMax = len(data) 
+        radianS = math.radians(angleS)
+        #print("%s MakeMirrorObj:" % self.mName) 
+        #print(data)
+        for i in range(0, iMax, step):
+            self.mData['Vertices'][i] = math.cos(radianS) * data[i]
+            self.mData['Vertices'][i+1] = math.sin(radianS) * data[i+1]
+            self.mData['Vertices'][i+2] = data[i+2]
+        #print(self.mData['Vertices'])
+        return self
 
 if __name__ == '__main__': 
     flyer = FCFlyer()
