@@ -72,10 +72,10 @@ class FlyerWidget(QtOpenGL.QGLWidget):
         self.mFlyer.PaintGL()
         #GL.glFinish()
 
-        print("frame:%d" % self.mFrameCount, end='')
-        print("xRot:%f," % self.mXRot, end='')
-        print("yRot:%f," % self.mYRot, end='')
-        print("zRot:%f." % self.mZRot)
+        #print("frame:%d" % self.mFrameCount, end='')
+        #print("xRot:%f," % self.mXRot, end='')
+        #print("yRot:%f," % self.mYRot, end='')
+        #print("zRot:%f." % self.mZRot)
         self.mFrameCount += 1
 
     def PrintGLInfo(self):

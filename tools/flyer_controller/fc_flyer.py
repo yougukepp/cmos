@@ -42,9 +42,9 @@ class FCFlyer():
         # 图形数据
         objDict = self.mObjs[objName]
 
-        colorsData = objDict['Colors'].tostring()
-        verticesData = objDict['Vertices'].tostring()
-        indicesData = objDict['Indices'].tostring()
+        colorsData = objDict['Colors']
+        verticesData = objDict['Vertices']
+        indicesData = objDict['Indices']
         drawType = objDict['DrawType']
         lineWidth = objDict['LineWidth']
 
@@ -57,13 +57,22 @@ class FCFlyer():
             #print('%s无数据可绘制' % objName)
             return
 
-        GL.glVertexPointer(4, GL.GL_FLOAT, 0, verticesData)
-        GL.glColorPointer(4,  GL.GL_FLOAT, 0, colorsData)
+        GL.glVertexPointer(4, GL.GL_FLOAT, 0, verticesData.tostring())
+        GL.glColorPointer(4,  GL.GL_FLOAT, 0, colorsData.tostring())
         GL.glLineWidth(lineWidth)
+
         if 'TringleFan' == drawType:
-            GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
+            for indiceItem in indicesData:
+                if len(indiceItem) < 3: # 不是三角形
+                    continue
+                GL.glDrawElements(GL.GL_TRIANGLE_FAN, len(indiceItem), GL.GL_UNSIGNED_BYTE, indiceItem.tostring())
+
         elif 'Lines' == drawType:
-            GL.glDrawElements(GL.GL_LINES,        len(indicesData), GL.GL_UNSIGNED_BYTE, indicesData)
+            for indiceItem in indicesData:
+                if len(indiceItem) < 2: # 不是线
+                    continue
+                GL.glDrawElements(GL.GL_LINES,        len(indiceItem), GL.GL_UNSIGNED_BYTE, indiceItem.tostring())
+
         else:
             print('绘制类型%s错误.' % DrawType)
 
@@ -141,7 +150,11 @@ class FCFlyer():
                 if 'Vertices' == attributeName or 'Colors' == attributeName:
                     arrayData = array.array('f', listData)
                 elif 'Indices' == attributeName:
-                    arrayData = array.array('B', listData)
+                    arrayData = []
+                    for aIndiceItem in listData:
+                        aIndiceArrayItem = array.array('B', aIndiceItem)
+                        arrayData.append(aIndiceArrayItem)
+                    arrayData.append([]) # 保证一维也对
                 else: # 其他属性不转换
                     continue
                 self.mObjs[objName][attributeName] = arrayData
