@@ -19,7 +19,7 @@ except ImportError:
  
 from fc_flyerWidget import FlyerWidget 
 
-gGLSize = 700
+gGLSize = 680
 FCWindowUIClass = loadUiType("fc_window.ui")
 
 class FCWindow(QtGui.QWidget):
