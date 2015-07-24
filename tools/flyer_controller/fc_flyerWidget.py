@@ -38,7 +38,7 @@ class FlyerWidget(QtOpenGL.QGLWidget):
         self.mFrameCount = 1
 
     def initializeGL(self):
-        self.PrintGLInfo()
+        #self.PrintGLInfo()
         self.qglClearColor(QtCore.Qt.black)
         GL.glEnable(GL.GL_DEPTH_TEST | GL.GL_LINE_SMOOTH)
 

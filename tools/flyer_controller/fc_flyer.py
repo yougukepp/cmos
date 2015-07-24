@@ -17,7 +17,8 @@ except ImportError:
 
 class FCFlyer():
     def __init__(self, jsonName = 'flyer.json'):
-        self.mConfigs = None
+        self.mJsonConfigs = None
+        self.mJsonData = None
         self.mObjs = None
 
         self.Parse(jsonName)
@@ -30,48 +31,21 @@ class FCFlyer():
         data = jsonPaser.ToDict()
 
         # 配置
-        self.mConfigs = {}
-        self.mConfigs = data['Configs']
+        self.mJsonConfigs = {}
+        self.mJsonConfigs = data['Configs']
 
         # obj对象
         self.mObjs = {}
-        objsDict = data['Objs']
-        for objName in objsDict:
-            self.mObjs[objName] = FCObj(objsDict, objName)
+        self.mJsonData = data['Objs']
+        for objName in self.mJsonData:
+            self.mObjs[objName] = FCObj(objName, self.mJsonData[objName])
 
-
-
-
-
-        # TODO:优化
-        # 以下部分分离为独立函数 并且目前的逻辑可读性太差
-        # 制作飞行器
-        """
-        平移出一个部分
-        旋转出三个对称的部分
-        """
-        objsDict = self.mObjs
-        config = self.mConfigs
-        angleList = config['AngleList']
-        armLength = config['ArmLength']
-
-        # 平移 所有顶点E-armLength
-        # print(armLength)
+    def DebugPrint(self):
         for obj in self.mObjs:
-            #print(objName)
-            self.mObjs[obj].Translate(0, armLength, 0)
-
-        #print(angleList)
-        # 旋转 
-        newObjs = {}
-        for obj in self.mObjs:
-            for angle in angleList:
-                objName = obj + str(angle) 
-                #print(objName)
-                newObjs[objName] = FCObj(objsDict, obj) # 使用原始数据初始化
-                newVertices = self.mObjs[obj].GetMirrorVertices(angle)
-                newObjs[objName].UpdateVertices(newVertices)
-        # TODO:合并所有obj 字典
+            print(obj)
+            self.mObjs[obj].DebugPrint()
+            print()
+        print()
 
     def PaintGL(self):
         objsDict = self.mObjs
@@ -87,8 +61,8 @@ class FCFlyer():
         GL.glDisableClientState( GL.GL_VERTEX_ARRAY ) 
 
     def ApplyConfigs(self):
-        scale = self.mConfigs["Scale"]
-        alpha = self.mConfigs["Alpha"]
+        scale = self.mJsonConfigs["Scale"]
+        alpha = self.mJsonConfigs["Alpha"]
 
         for obj in self.mObjs:
             #print(obj)
@@ -107,10 +81,11 @@ class FCFlyer():
 
 
 class FCObj():
-    def __init__(self, jsonDict, objName):
+    def __init__(self, objName, objData):
         #print(objName)
+        #print(type(objData))
         self.mName = objName
-        self.mData = jsonDict[objName]
+        self.mData = objData
 
     def PaintGL(self):
         # 图形数据
@@ -243,11 +218,7 @@ class FCObj():
 
         #print(self.mData['Vertices'])
 
-    def UpdateVertices(self, vertices):
-        pass
-        #print(self.mData)
-
-    def GetMirrorVertices(self, angleS):
+    def Rotate(self, angleS):
         """
         N * cosA
         E * sinA
@@ -259,13 +230,22 @@ class FCObj():
         step = 3
         iMax = len(oldData) 
         radianS = math.radians(angleS)
-        #print("%s MakeMirrorObj:" % self.mName) 
+        #print("%s Rotate:" % self.mName) 
         #print(oldData)
         for i in range(0, iMax, step):
             newData.append(math.cos(radianS) * oldData[i])
             newData.append(math.sin(radianS) * oldData[i+1])
             newData.append(oldData[i+2])
-        return newData
+        #print(newData)
+        #self.mData['Vertices'] = []
+        self.mData['Vertices'] = newData
+
+    def DebugPrint(self):
+        data = self.mData
+        for attributeName in data:
+            print(attributeName, end=':')
+            print(data[attributeName])
+
 
 if __name__ == '__main__': 
     flyer = FCFlyer()
