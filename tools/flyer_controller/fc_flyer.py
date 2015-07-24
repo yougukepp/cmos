@@ -22,6 +22,7 @@ class FCFlyer():
         self.mObjs = None
 
         self.Parse(jsonName)
+        self.MakeFlyer()
         self.ObjNESToGLXYZ()
         self.ApplyConfigs() 
         self.DataToArray()
@@ -29,20 +30,31 @@ class FCFlyer():
     def Parse(self, jsonName):
         jsonPaser = FCJsonPaser(jsonName)
         data = jsonPaser.ToDict()
-
         # 配置
-        self.mJsonConfigs = {}
         self.mJsonConfigs = data['Configs']
-
-        # obj对象
-        self.mObjs = {}
+        # obj对象 json字典
         self.mJsonData = data['Objs']
-        for objName in self.mJsonData:
-            self.mObjs[objName] = FCObj(objName, self.mJsonData[objName])
+
+    def MakeFlyer(self):
+        """
+        平移 + 旋转 复制
+        """
+        """
+        armLength = self.mJsonConfigs['ArmLength']
+        for objName in self.mObjs:
+            self.mObjs[objName].Translate(0, armLength, 0)
+        """
+        self.mObjs = {}
+        angleList = self.mJsonConfigs['AngleList']
+        for jsonObjName in self.mJsonData:
+            for angle in angleList:
+                rotatedObjName = jsonObjName + str(angle)
+                #print(rotatedObjName)
+                self.mObjs[rotatedObjName] = FCObj(rotatedObjName, self.mJsonData[jsonObjName])
+                #self.mObjs[rotatedObjName].Rotate(0, 0, angle)
 
     def DebugPrint(self):
         for obj in self.mObjs:
-            print(obj)
             self.mObjs[obj].DebugPrint()
             print()
         print()
@@ -68,6 +80,7 @@ class FCFlyer():
             #print(obj)
             self.mObjs[obj].UpdateScaleOrAlpha('Vertices', scale)
             self.mObjs[obj].UpdateScaleOrAlpha('Colors', alpha)
+        #self.DebugPrint()
 
     def DataToArray(self):
         for obj in self.mObjs:
@@ -77,7 +90,8 @@ class FCFlyer():
     def ObjNESToGLXYZ(self):
         for obj in self.mObjs:
             #print(objName)
-            self.mObjs[obj].NESToGLXYZ()
+            self.mObjs[obj].NESToGLXYZ() 
+        #self.DebugPrint()
 
 
 class FCObj():
@@ -218,37 +232,66 @@ class FCObj():
 
         #print(self.mData['Vertices'])
 
-    def Rotate(self, angleS):
+    def Rotate(self, angleN, angleE, angleS):
         """
-        N * cosA
-        E * sinA
+        N * cosA - E * sinA
+        E * sinA + e * cosA
         S * 1
         """
+        if 0 != angleN or 0 != angleE:
+            print('暂不支持以 北 东两轴旋转')
+            exit(1)
+
+        # 不旋转
+        if 0 == angleS: 
+            return
+
         oldData = self.mData['Vertices']
         newData = []
         i = 0
         step = 3
         iMax = len(oldData) 
         radianS = math.radians(angleS)
-        #print("%s Rotate:" % self.mName) 
+        #print("%s Rotate %d:" % (self.mName, angleS)) 
         #print(oldData)
         for i in range(0, iMax, step):
-            newData.append(math.cos(radianS) * oldData[i])
-            newData.append(math.sin(radianS) * oldData[i+1])
-            newData.append(oldData[i+2])
+            n = oldData[i]
+            e = oldData[i+1]
+            s = oldData[i+2]
+            newN = math.cos(radianS) * n - math.sin(radianS) * e
+            newE = math.sin(radianS) * n + math.cos(radianS) * e
+            newS = s 
+            newData.append(newN)
+            newData.append(newE)
+            newData.append(newS)
         #print(newData)
-        #self.mData['Vertices'] = []
         self.mData['Vertices'] = newData
 
     def DebugPrint(self):
         data = self.mData
+        print(self.mName)
         for attributeName in data:
             print(attributeName, end=':')
             print(data[attributeName])
 
-
 if __name__ == '__main__': 
-    flyer = FCFlyer()
+    jsonPaser = FCJsonPaser('flyer.json')
+    data = jsonPaser.ToDict()
+    jsonData = data['Objs']
+
+    fcobj1 = FCObj('1', jsonData["Bracket"])
+    fcobj2 = FCObj('2', jsonData["Bracket"])
+
+    fcobj1.DebugPrint()
+    fcobj2.DebugPrint() 
+    
+    fcobj1.UpdateScaleOrAlpha('Vertices', 9)
+    print()
+    print()
+    print()
+    fcobj1.DebugPrint()
+    fcobj2.DebugPrint() 
+
     print('测试通过')
 
 
