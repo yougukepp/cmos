@@ -4,6 +4,7 @@
 import array
 import json
 import math
+import copy
 
 from PyQt4 import QtGui
 from fc_json_paser import FCJsonPaser
@@ -39,11 +40,7 @@ class FCFlyer():
         """
         平移 + 旋转 复制
         """
-        """
-        armLength = self.mJsonConfigs['ArmLength']
-        for objName in self.mObjs:
-            self.mObjs[objName].Translate(0, armLength, 0)
-        """
+        # 创建对象
         self.mObjs = {}
         angleList = self.mJsonConfigs['AngleList']
         for jsonObjName in self.mJsonData:
@@ -51,7 +48,7 @@ class FCFlyer():
                 rotatedObjName = jsonObjName + str(angle)
                 #print(rotatedObjName)
                 self.mObjs[rotatedObjName] = FCObj(rotatedObjName, self.mJsonData[jsonObjName])
-                #self.mObjs[rotatedObjName].Rotate(0, 0, angle)
+                self.mObjs[rotatedObjName].Rotate(0, 0, angle)
 
     def DebugPrint(self):
         for obj in self.mObjs:
@@ -99,7 +96,7 @@ class FCObj():
         #print(objName)
         #print(type(objData))
         self.mName = objName
-        self.mData = objData
+        self.mData = copy.copy(objData) # 使用深复制
 
     def PaintGL(self):
         # 图形数据
