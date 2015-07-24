@@ -38,7 +38,7 @@ class FCFlyer():
 
     def MakeFlyer(self):
         """
-        平移 + 旋转 复制
+        旋转 复制
         """
         # 创建对象
         self.mObjs = {}
@@ -49,6 +49,13 @@ class FCFlyer():
                 #print(rotatedObjName)
                 self.mObjs[rotatedObjName] = FCObj(rotatedObjName, self.mJsonData[jsonObjName])
                 self.mObjs[rotatedObjName].Rotate(0, 0, angle)
+
+        """
+        向天空平移
+        """
+        height = self.mJsonConfigs['Height']
+        for obj in self.mObjs:
+            self.mObjs[obj].Translate(0, 0, height)
 
     def DebugPrint(self):
         for obj in self.mObjs:

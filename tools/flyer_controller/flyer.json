@@ -3,7 +3,8 @@
     {
         "Scale": 5.0,
         "Alpha": 1.0,
-        "AngleList": [0, 90, 180, 270]
+        "AngleList": [0, 90, 180, 270],
+        "Height": 0.5
     },
 
     "Objs" :
