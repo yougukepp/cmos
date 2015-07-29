@@ -15,7 +15,11 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include <stdlib.h>
 #include <stdio.h>
+
+#include <unistd.h>
+
 #include "algorithm.h"
 
 
@@ -26,6 +30,7 @@
 
 
 /********************************** 函数声明区 *********************************/
+static float rand_range(float min, float max);
 
 
 /********************************** 变量实现区 *********************************/
@@ -53,15 +58,39 @@
 int main(int argc, char *argv[])
 {
     int i = 0;
+    float gyro[3] = {0.0f};
+    float attitude[3] = {0.0f};
 
-    for(i=0; i<10; i++)
+    while(1)
     {
-        printf("% 2d, %7.5f\n", i, inv_sqrt(i));
+        gyro[0] = rand_range(-1.0f, 1.0f);
+        gyro[1] = rand_range(-1.0f, 1.0f);
+        gyro[2] = rand_range(-1.0f, 1.0f); 
+
+        imu_update(gyro);
+        get_attitude(attitude);
+
+        printf("gyrox:%7.4f, gyroy:%7.4f, gyroz:%7.4f,", gyro[0], gyro[1], gyro[2]);
+        printf("pitch:%7.4f, roll:%7.4f, yaw:%7.4f\n", 
+                arc2angle(attitude[0]),
+                arc2angle(attitude[1]),
+                arc2angle(attitude[2]));
+        sleep(1);
+        i++;
     }
 
     printf("test done!\n");
     return 0;
-
 }
 
+static float rand_range(float min, float max)
+{ 
+    float value = 0.0f;
+    float range = 0.0f;
+
+    range = max - min;
+    value = min + range * rand() / RAND_MAX;
+
+    return value;
+}
 

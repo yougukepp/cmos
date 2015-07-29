@@ -8,14 +8,17 @@ RM=rm -rf
 MAKE=make
 CP=cp -rvf
 
-all:test
+all:clean test
 
-test:math.o
+test:math.o imu.o
 	$(CC) test.c -o test.o
-	$(LD) test.o math.o -o test
+	$(LD) -lm test.o math.o imu.o -o test
 
 math.o:
 	$(CC) -fno-strict-aliasing math.c -o math.o
+
+imu.o:
+	$(CC) -fno-strict-aliasing imu.c -o imu.o
 
 clean:
 	rm -rf *.o
