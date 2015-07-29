@@ -16,6 +16,7 @@
 
 /************************************ 头文件 ***********************************/
 #include <math.h>
+#include <stdio.h>
 #include "algorithm.h"
 
 
@@ -85,10 +86,10 @@ int imu_update(const float *gyro)
      *     = 0.5 |                | * |         |
      *  q2       | wy -wz   0  wx |   | q2_last |
      *  q3       | wz  wy -wx   0 |   | q3_last | */
-    q0 = -0.5 * (q1_last * wx + q2_last * wy + q3_last * wz);
-    q1 =  0.5 * (q0_last * wx + q2_last * wz - q3_last * wy);
-    q2 =  0.5 * (q0_last * wy - q1_last * wz + q3_last * wx);
-    q3 =  0.5 * (q0_last * wz + q1_last * wy - q2_last * wx);
+    q0 += (-0.5 * (q1_last * wx + q2_last * wy + q3_last * wz));
+    q1 += ( 0.5 * (q0_last * wx + q2_last * wz - q3_last * wy));
+    q2 += ( 0.5 * (q0_last * wy - q1_last * wz + q3_last * wx));
+    q3 += ( 0.5 * (q0_last * wz + q1_last * wy - q2_last * wx));
 
     /* 归1化 只旋转不拉伸 */
     q_norm = inv_sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
@@ -244,3 +245,9 @@ int get_attitude(float *attitude)
     return 0;
 }
 
+void print_quaternion(void)
+{
+    quaternion_lock(); 
+    printf("w:%7.4f, x:%7.4f, y:%7.4f, z:%7.4f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
+    quaternion_unlock(); 
+}

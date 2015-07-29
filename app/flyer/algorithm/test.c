@@ -67,7 +67,15 @@ int main(int argc, char *argv[])
         gyro[1] = rand_range(-1.0f, 1.0f);
         gyro[2] = rand_range(-1.0f, 1.0f); 
 
-        imu_update(gyro);
+        if(i>2)
+        {
+            gyro[0] = 0;
+            gyro[1] = 0;
+            gyro[2] = 0;
+        }
+
+        imu_update(gyro); 
+        print_quaternion();
         get_attitude(attitude);
 
         printf("gyrox:%7.4f, gyroy:%7.4f, gyroz:%7.4f,", gyro[0], gyro[1], gyro[2]);
