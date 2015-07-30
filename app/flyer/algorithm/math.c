@@ -31,7 +31,7 @@
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
  *
- * 函数名  : inv_sqrt
+ * 函数名  : math_inv_sqrt
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 求平方根倒数 
@@ -45,7 +45,7 @@
  * 其 它:    http://www.matrix67.com/data/InvSqrt.pdf
  *
  ******************************************************************************/
-float inv_sqrt(float x)
+inline float math_inv_sqrt(float x)
 {
     if(0 == x) /* 不得为零 */
     {
@@ -62,7 +62,7 @@ float inv_sqrt(float x)
 
 /*******************************************************************************
  *
- * 函数名  : angle2arc
+ * 函数名  : math_angle2arc
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 角度转弧度
@@ -75,14 +75,14 @@ float inv_sqrt(float x)
  * 其 它:    无
  *
  ******************************************************************************/
-inline float angle2arc(float x)
+inline float math_angle2arc(float x)
 {
-    return CMOS_ANGLE_ARC_RATE * x;
+    return ALGO_ANGLE2ARC_RATE * x;
 }
 
 /*******************************************************************************
  *
- * 函数名  : arc2angle
+ * 函数名  : math_arc2angle
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 弧度转角度
@@ -95,8 +95,8 @@ inline float angle2arc(float x)
  * 其 它:    无
  *
  ******************************************************************************/
-inline float arc2angle(float x)
+inline float math_arc2angle(float x)
 {
-    return CMOS_ARC_ANGLE_RATE * x;
+    return ALGO_ARC2ANGLE_RATE * x;
 }
 

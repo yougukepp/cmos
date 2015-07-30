@@ -75,9 +75,9 @@ int imu_update(const float *gyro)
     float q_norm = 0.0f;
 
     /* 角度转弧度 */
-    wx = angle2arc(wx);
-    wy = angle2arc(wy);
-    wz = angle2arc(wz);
+    wx = math_angle2arc(wx);
+    wy = math_angle2arc(wy);
+    wz = math_angle2arc(wz);
 
     quaternion_lock();
 
@@ -104,10 +104,10 @@ int imu_update(const float *gyro)
 #endif
 
     /* 归1化 只旋转不拉伸 */
-    q_norm = inv_sqrt( s_quaternion[0] * s_quaternion[0]
-                     + s_quaternion[1] * s_quaternion[1]
-                     + s_quaternion[2] * s_quaternion[2]
-                     + s_quaternion[3] * s_quaternion[3]);
+    q_norm = math_inv_sqrt( s_quaternion[0] * s_quaternion[0]
+                          + s_quaternion[1] * s_quaternion[1]
+                          + s_quaternion[2] * s_quaternion[2]
+                          + s_quaternion[3] * s_quaternion[3]);
 
     s_quaternion[0] *= q_norm;
     s_quaternion[1] *= q_norm;
@@ -127,7 +127,7 @@ int imu_update(const float *gyro)
 
 /*******************************************************************************
  *
- * 函数名  : fusion6aq1is
+ * 函数名  : imu_fusion6aq1is
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 6轴融合
@@ -143,14 +143,14 @@ int imu_update(const float *gyro)
  * 其 它:    6轴融合使用加速度计获取重力场修正陀螺仪积分误差(无法确定偏航角)
  *
  ******************************************************************************/
-int fusion6aq1is(const float *gyro, const float *accel)
+int imu_fusion6aq1is(const float *gyro, const float *accel)
 {
     return 0;
 }
 
 /*******************************************************************************
  *
- * 函数名  : fusion9aq1is
+ * 函数名  : imu_fusion9aq1is
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 9轴融合
@@ -167,7 +167,7 @@ int fusion6aq1is(const float *gyro, const float *accel)
  * 其 它:    9轴融合使用加速度计获取重力场、地磁场修正陀螺仪积分误差(可以纠正偏航角)
  *
  ******************************************************************************/
-int fusion9aq1is(const float *gyro, const float *accel, const float *mag)
+int imu_fusion9aq1is(const float *gyro, const float *accel, const float *mag)
 {
     return 0;
 }
@@ -216,7 +216,7 @@ inline static int quaternion_unlock(void)
 
 /*******************************************************************************
  *
- * 函数名  : get_attitude
+ * 函数名  : imu_get_attitude
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 获取当前针对参考坐标系的姿态
@@ -233,7 +233,7 @@ inline static int quaternion_unlock(void)
  * 其 它:    求证公式出处(欧拉角与旋转顺序有关)
  *
  ******************************************************************************/
-int get_attitude(float *attitude)
+int imu_get_attitude(float *attitude)
 {
     float pitch = 0.0f;
     float roll = 0.0f;

@@ -12,15 +12,15 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_ALGORITHM_H_
-#define _CMOS_ALGORITHM_H_
+#ifndef _ALGORITHM_H_
+#define _ALGORITHM_H_
 
 /************************************ 头文件 ***********************************/
 
 /************************************ 宏定义 ***********************************/
-#define CMOS_PI                 (3.1415926f)
-#define CMOS_ANGLE_ARC_RATE     (CMOS_PI/180)
-#define CMOS_ARC_ANGLE_RATE     (180/CMOS_PI)
+#define ALGO_PI                 (3.1415926f)
+#define ALGO_ANGLE2ARC_RATE     (ALGO_PI/180)
+#define ALGO_ARC2ANGLE_RATE     (180/ALGO_PI)
 
 /*********************************** 类型定义 **********************************/
 
@@ -30,16 +30,16 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-float inv_sqrt(float x);
-float angle2arc(float x);
-float arc2angle(float x);
+float math_inv_sqrt(float x);
+float math_angle2arc(float x);
+float math_arc2angle(float x);
 
 int imu_update(const float *gyro);
-int fusion6axis(const float *gyro, const float *accel);
-int fusion9axis(const float *gyro, const float *accel, const float *mag);
-int get_attitude(float *attitude);
+int imu_fusion6axis(const float *gyro, const float *accel);
+int imu_fusion9axis(const float *gyro, const float *accel, const float *mag);
+int imu_get_attitude(float *attitude);
 
-int pwm_pid(const float *expect_attitude);
+int pid_pwm(const float *expect_attitude);
 
 #endif // #ifndef _CMOS_ALGORITHM_H_
 
