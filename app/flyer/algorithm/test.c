@@ -58,6 +58,7 @@ static float rand_range(float min, float max);
 int main(int argc, char *argv[])
 {
     int i = 0;
+#if 1
     float gyro[3] = {0.0f};
     float attitude[3] = {0.0f};
 
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
         gyro[1] = rand_range(-1.0f, 1.0f);
         gyro[2] = rand_range(-1.0f, 1.0f); 
 
-        if(i>2)
+        if(i>10)
         {
             gyro[0] = 0;
             gyro[1] = 0;
@@ -75,19 +76,29 @@ int main(int argc, char *argv[])
         }
 
         imu_update(gyro); 
-        print_quaternion();
         get_attitude(attitude);
-
-        printf("gyrox:%7.4f, gyroy:%7.4f, gyroz:%7.4f,", gyro[0], gyro[1], gyro[2]);
+        printf("wx:%7.4f, wy:%7.4f, wz:%7.4f => ", 
+                gyro[0], gyro[1], gyro[2]);
         printf("pitch:%7.4f, roll:%7.4f, yaw:%7.4f\n", 
-                arc2angle(attitude[0]),
-                arc2angle(attitude[1]),
-                arc2angle(attitude[2]));
+                arc2angle(attitude[0]), arc2angle(attitude[1]), arc2angle(attitude[2]));
         sleep(1);
         i++;
     }
 
     printf("test done!\n");
+#else
+    for(i=0;i<=360;i+=10)
+    {
+        float arc = angle2arc(i);
+        printf("%d=>%7.4f,", i, arc);
+        printf("%7.4f=>%7.4f\n", arc, arc2angle(arc));
+    }
+
+    for(i=0;i<20;i++)
+    {
+        printf("%d:rand_range(-1,1) = %7.4f\n", i, rand_range(-1,1));
+    }
+#endif
     return 0;
 }
 

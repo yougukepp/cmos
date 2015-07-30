@@ -41,8 +41,5 @@ int get_attitude(float *attitude);
 
 int pwm_pid(const float *expect_attitude);
 
-/* 调试 */
-void print_quaternion(void);
-
 #endif // #ifndef _CMOS_ALGORITHM_H_
 

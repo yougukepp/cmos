@@ -9,6 +9,7 @@ MAKE=make
 CP=cp -rvf
 
 all:clean test
+	./test
 
 test:math.o imu.o
 	$(CC) test.c -o test.o

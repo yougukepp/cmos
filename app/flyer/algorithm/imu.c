@@ -24,7 +24,18 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static float s_quaternion[4] = {1.0f, 0.0f, 0.0f, 0.0f}; /* 四元数 w x y z*/
+/*
+ * 欧拉角度转四元数
+ * 欧拉角度 旋转顺序 z(a) - y(b) - x(c)
+ *
+ * q0 = cos(c/2)cos(b/2)cos(a/2) + sin(c/2)sin(b/2)sin(a/2)
+ * q1 = sin(c/2)cos(b/2)cos(a/2) - cos(c/2)sin(b/2)sin(a/2)
+ * q2 = cos(c/2)sin(b/2)cos(a/2) + sin(c/2)cos(b/2)sin(a/2)
+ * q3 = cos(c/2)cos(b/2)sin(a/2) + sin(c/2)sin(b/2)cos(a/2)
+ *
+ * 初始化时 a b c 都为0带入上公式 所以初始化为 s_quaternion[4] = {1,0,0,0}
+ * */
+static float s_quaternion[4] = {1.0f, 0.0f, 0.0f, 0.0f}; /* 四元数 q0 q1 q2 q3*/
 
 /********************************** 函数声明区 *********************************/
 static int quaternion_lock(void);
@@ -61,11 +72,6 @@ int imu_update(const float *gyro)
     float q2_last = 0.0f;
     float q3_last = 0.0f;
 
-    float q0 = 0.0f;
-    float q1 = 0.0f;
-    float q2 = 0.0f;
-    float q3 = 0.0f;
-
     float q_norm = 0.0f;
 
     /* 角度转弧度 */
@@ -86,31 +92,42 @@ int imu_update(const float *gyro)
      *     = 0.5 |                | * |         |
      *  q2       | wy -wz   0  wx |   | q2_last |
      *  q3       | wz  wy -wx   0 |   | q3_last | */
-    q0 += (-0.5 * (q1_last * wx + q2_last * wy + q3_last * wz));
-    q1 += ( 0.5 * (q0_last * wx + q2_last * wz - q3_last * wy));
-    q2 += ( 0.5 * (q0_last * wy - q1_last * wz + q3_last * wx));
-    q3 += ( 0.5 * (q0_last * wz + q1_last * wy - q2_last * wx));
+    s_quaternion[0] += (-0.5 * (q1_last * wx + q2_last * wy + q3_last * wz));
+    s_quaternion[1] += ( 0.5 * (q0_last * wx + q2_last * wz - q3_last * wy));
+    s_quaternion[2] += ( 0.5 * (q0_last * wy - q1_last * wz + q3_last * wx));
+    s_quaternion[3] += ( 0.5 * (q0_last * wz + q1_last * wy - q2_last * wx));
+
+#if 0
+    printf("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
+            q0_last, q1_last, q2_last, q3_last,
+            s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
+#endif
 
     /* 归1化 只旋转不拉伸 */
-    q_norm = inv_sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
-    q0 *= q_norm;
-    q1 *= q_norm;
-    q2 *= q_norm;
-    q3 *= q_norm;
+    q_norm = inv_sqrt( s_quaternion[0] * s_quaternion[0]
+                     + s_quaternion[1] * s_quaternion[1]
+                     + s_quaternion[2] * s_quaternion[2]
+                     + s_quaternion[3] * s_quaternion[3]);
 
-    s_quaternion[0] = q0;
-    s_quaternion[1] = q1;
-    s_quaternion[2] = q2;
-    s_quaternion[3] = q3;
+    s_quaternion[0] *= q_norm;
+    s_quaternion[1] *= q_norm;
+    s_quaternion[2] *= q_norm;
+    s_quaternion[3] *= q_norm;
 
     quaternion_unlock();
+
+#if 0
+    printf("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
+            q0_last, q1_last, q2_last, q3_last,
+            s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
+#endif
 
     return 0;
 }
 
 /*******************************************************************************
  *
- * 函数名  : fusion6axis
+ * 函数名  : fusion6aq1is
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 6轴融合
@@ -126,14 +143,14 @@ int imu_update(const float *gyro)
  * 其 它:    6轴融合使用加速度计获取重力场修正陀螺仪积分误差(无法确定偏航角)
  *
  ******************************************************************************/
-int fusion6axis(const float *gyro, const float *accel)
+int fusion6aq1is(const float *gyro, const float *accel)
 {
     return 0;
 }
 
 /*******************************************************************************
  *
- * 函数名  : fusion9axis
+ * 函数名  : fusion9aq1is
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 9轴融合
@@ -150,7 +167,7 @@ int fusion6axis(const float *gyro, const float *accel)
  * 其 它:    9轴融合使用加速度计获取重力场、地磁场修正陀螺仪积分误差(可以纠正偏航角)
  *
  ******************************************************************************/
-int fusion9axis(const float *gyro, const float *accel, const float *mag)
+int fusion9aq1is(const float *gyro, const float *accel, const float *mag)
 {
     return 0;
 }
@@ -221,7 +238,7 @@ int get_attitude(float *attitude)
     float pitch = 0.0f;
     float roll = 0.0f;
     float yaw = 0.0f;
-    
+
     float q0 = 0.0f;
     float q1 = 0.0f;
     float q2 = 0.0f;
@@ -233,10 +250,10 @@ int get_attitude(float *attitude)
     q2 = s_quaternion[2];
     q3 = s_quaternion[3];
     quaternion_unlock();
-    
-    yaw = atan2(2 * q1 * q2 + 2 * q0 * q3, q1 * q1 + q0 * q0 - q3 * q3 - q2 * q2);
-    roll = asin(-2 * q1 * q3 + 2 * q0* q2);
-    pitch = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2* q2 + 1);
+
+    roll = atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q3 * q3 + q1 * q1));
+    pitch = asin(2 * (q0 * q1 - q2 * q3));
+    yaw = atan2(2 * (q0 * q2 + q3 * q1), 1 - 2 * (q1 * q1 + q2 * q2));
 
     attitude[0] = pitch;
     attitude[1] = roll;
@@ -245,9 +262,3 @@ int get_attitude(float *attitude)
     return 0;
 }
 
-void print_quaternion(void)
-{
-    quaternion_lock(); 
-    printf("w:%7.4f, x:%7.4f, y:%7.4f, z:%7.4f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
-    quaternion_unlock(); 
-}
