@@ -33,6 +33,7 @@
 float math_inv_sqrt(float x);
 float math_angle2arc(float x);
 float math_arc2angle(float x);
+int math_vector_product(float *product, const float *a, const float *b);
 
 int imu_update(const float *gyro);
 int imu_fusion6axis(const float *gyro, const float *accel);

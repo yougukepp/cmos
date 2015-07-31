@@ -103,7 +103,7 @@ int imu_update(const float *gyro)
             s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
 #endif
 
-    /* 归1化 只旋转不拉伸 */
+    /* 四元数归一化 */
     q_norm = math_inv_sqrt( s_quaternion[0] * s_quaternion[0]
                           + s_quaternion[1] * s_quaternion[1]
                           + s_quaternion[2] * s_quaternion[2]
@@ -169,6 +169,16 @@ int imu_fusion6aq1is(const float *gyro, const float *accel)
  ******************************************************************************/
 int imu_fusion9aq1is(const float *gyro, const float *accel, const float *mag)
 {
+    /* 重力场叉乘地磁场 求解正东单位向量在载体坐标系的值 
+     *
+     * 重力场 叉 地磁场 = 正东
+     * 地磁场 叉 重力场 = 正西
+     * 此处使用正东
+     *
+     * */ 
+    float product[3] = {0.0f};
+    math_vector_product(product, accel, mag);
+
     return 0;
 }
 
