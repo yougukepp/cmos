@@ -243,16 +243,6 @@ static void run_self_test(void)
     result = mpu_run_6500_self_test(gyro, accel, 0);
     if (result == 0x7)
     {
-        cmos_printf("通过!\r\n");
-        cmos_printf("accel: %7.4f %7.4f %7.4f\r\n",
-                accel[0]/65536.f,
-                accel[1]/65536.f,
-                accel[2]/65536.f);
-        cmos_printf("gyro: %7.4f %7.4f %7.4f\n",
-                gyro[0]/65536.f,
-                gyro[1]/65536.f,
-                gyro[2]/65536.f);
-
         /* 自检测试通过 我们需要更新校准数据 与offset寄存器 */
         unsigned char i = 0;
         for(i = 0; i<3; i++)
@@ -265,6 +255,16 @@ static void run_self_test(void)
 
         mpu_set_gyro_bias_reg(gyro);
         mpu_set_accel_bias_6500_reg(accel);
+
+        cmos_printf("测试通过,设置偏移.\r\n");
+        cmos_printf("accel offset: %7.4f %7.4f %7.4f\r\n",
+                accel[0]/65536.f,
+                accel[1]/65536.f,
+                accel[2]/65536.f);
+        cmos_printf("gyro  offset: %7.4f %7.4f %7.4f\r\n",
+                gyro[0]/65536.f,
+                gyro[1]/65536.f,
+                gyro[2]/65536.f);
     }
     else
     {
@@ -284,5 +284,4 @@ static void run_self_test(void)
 
     return;
 }
-
 

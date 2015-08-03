@@ -2407,9 +2407,10 @@ static int gyro_6500_self_test(long *bias_regular, long *bias_st, int debug)
     return result;
 }
 
+/* 大型 的数组 放在堆中 */
+static unsigned char data[HWST_MAX_PACKET_LENGTH];
 static int get_st_6500_biases(long *gyro, long *accel, unsigned char hw_test, int debug)
 {
-    unsigned char data[HWST_MAX_PACKET_LENGTH];
     unsigned char packet_count, ii;
     unsigned short fifo_count;
     int s = 0, read_size = 0, ind;
