@@ -116,12 +116,15 @@
 \right]
 \end{eqnarray}
 
-其中$^S\omega$表示在传感器坐标系中陀螺仪测到的角速度,$x,y,z$表示S系的前、右、上。
+按照相关资料的说法用四元数表示表示向量，将其标量部分插入零即可.公式中$^S\omega$表示在传感器坐标系中陀螺仪测到的角速度.
+$\omega_{x},\omega_{y},\omega_{z}$分别表示飞行器绕S系的前、右、上轴的角速度.
 
 四元数微分方程为:
 \begin{eqnarray}
     ^S_N\dot{q}=\frac{1}{2}{^S_N\hat{q}}\,\otimes^S\omega
 \end{eqnarray}
+
+四元数微分方程使用就行，这里不推导了，笔者也不会.相关符号含义 未完待续
 
 \newpage
 以下是模板
