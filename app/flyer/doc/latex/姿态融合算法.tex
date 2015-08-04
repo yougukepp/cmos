@@ -1,0 +1,194 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{xeCJK}
+\usepackage{makeidx}
+\usepackage[colorlinks,linkcolor=red]{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{numbers=left,
+    numberstyle=\tiny,
+    keywordstyle=\color{blue!70}, commentstyle=\color{red!50!green!50!blue!50},
+    frame=shadowbox,
+    rulesepcolor=\color{red!20!green!20!blue!20}
+}
+\usepackage{multirow}
+
+%中文断行
+\XeTeXlinebreaklocale "zh"
+%段首缩进
+\parindent 2em
+\usepackage{indentfirst}
+%文泉驿 字体
+\setCJKmainfont{文泉驿等宽微米黑:style=Regular}
+%\setCJKmainfont{文泉驿等宽正黑}
+%楷体
+%\setCJKmainfont{AR PL UKai CN}
+
+% 将日期变为中文格式
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%制作索引
+\makeindex
+\printindex
+\setcounter{secnumdepth}{5}
+
+\title{姿态融合算法}
+\author{彭鹏}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{概述}
+姿态算法是四轴飞行器的核心算法，姿态算法的核心器件是陀螺仪。陀螺仪可以测量自身旋转的角速度，理论上只要精度足够三轴陀螺仪就可以结合初始姿态通过积分就可以的到飞行器任意时刻的姿态。然并卵，现实是残酷的，MEMS陀螺仪有较大的漂移，在长时间的积分过程中会导致较大的积分误差，导致姿态随着时间累计而变得不可接受。
+
+怎么办呢？联想轮船,陀螺仪器类似与舵手,舵手长时间工作后可能会将船带偏，这个时候需要了望手来不断的纠偏.通常四轴中由加速度计来充当了望手，纠偏远洋船的方向.普通的四轴飞行器使用陀螺仪和加速度计就可以完成姿态解算。三轴加速度计测量重力场的方向纠正陀螺仪积分得到的姿态,但是这会带来一个问题。重力场数值向下可以纠正飞行器的水平倾斜，但是绕重力场方向的旋转没法纠正。所以禁用6轴(陀螺仪3轴，加速度计3轴)融合的姿态只能保证飞行器的平衡，无法保证其方向，也就是飞行器会找不到北。
+
+类似与加速度计的思路，传感器组合中加入一个测量地磁的传感器，就可以纠正飞行器的方向了，这就是通常所说的9轴字体融合。
+
+\section{术语表} 
+以下是术语表\ref{术语表}
+\begin{table}[!hbp]
+\begin{center}
+    \begin{tabular}{|l|l|}
+        \hline
+        术语名 & 含义 \\
+        \hline
+        四元数 & 表示姿态或者旋转 \\
+        \hline
+        估计姿态 & 陀螺仪积分计算后的值 \\
+        \hline
+        S系 & 传感器坐标系 前右上 \\
+        \hline
+        N系 & 导航坐标系 北东天 \\
+        \hline
+    \end{tabular}
+    \caption{术语表\label{术语表}}
+\end{center}
+\end{table}
+
+以下是符号示例表\ref{符号示例表}
+\begin{table}[!hbp]
+\begin{center}
+    \begin{tabular}{|c|l|}
+        \hline
+        符号 & 含义 \\
+        \hline
+        q & 基本四元数,表示姿态或者旋转 \\
+        \hline
+        $\hat{q}$ & 陀螺仪积分算出的估计姿态 \\
+        \hline
+    \end{tabular}
+    \caption{术语表\label{符号示例表}}
+\end{center}
+\end{table}
+
+
+\section{算法}
+本文采用四元数表示姿态，这里不讲基础(网上都有)只介绍算法思路和推导，为后面的顺利编码做铺垫。
+
+融合算法主要分为三个函数实现
+\begin{enumerate}
+    \item 短期融合
+
+        使用陀螺仪的数据和四元数微分方程 用积分法获取估计姿态
+    \item 6轴融合
+
+        使用陀螺仪、加速度计的数据和梯度下降算法
+    \item 9轴融合
+
+        使用陀螺仪、加速度计的数据和梯度下降算法
+\end{enumerate}
+下面对三个算法分别阐述.
+
+\subsection{短期融合}
+陀螺仪提供的数据为:
+\begin{eqnarray}
+^S\omega
+=
+\left[\begin{array}{c} 
+    0 \\
+    \omega_{x} \\
+    \omega_{y} \\
+    \omega_{z}
+\end{array}
+\right]
+\end{eqnarray}
+
+其中$^S\omega$表示在传感器坐标系中陀螺仪测到的角速度,$x,y,z$表示S系的前、右、上。
+
+四元数微分方程为:
+\begin{eqnarray}
+    ^S_N\dot{q}=\frac{1}{2}{^S_N\hat{q}}\,\otimes^S\omega
+\end{eqnarray}
+
+\newpage
+以下是模板
+\section{概述}
+概述第一段
+
+概述第二段
+%\newpage
+\section{源码} 
+枚举例子:
+
+\begin{enumerate}
+    \item 元素1
+        内容1
+    \item 元素2
+        内容2
+\end{enumerate}
+
+\section{超链接} 
+超链接:\href{http://ftp.kernel.org/pub/linux/kernel/v3.x/}{内核url}
+
+\section{脚注} 
+我是日期脚注\footnote{\today}
+
+我是脚注\footnote{脚注内容}
+
+\section{引用} 
+我是一个位置\label{标签1}
+
+制作空白页用于观察跳转
+\newpage
+
+我要引用第\pageref{标签1}页。
+
+\section{表格} 
+表格例子\ref{表格例子}
+\begin{table}[!hbp]
+\begin{center}
+    \begin{tabular}{|l|l|}
+        \hline
+        表头列1 & 表头列2 \\
+        \hline
+        1行1列 & 1行2列 \\
+        \hline
+        2行1列 & 2行2列 \\
+        \hline
+        3行1列 & 3行2列 \\
+        \hline
+    \end{tabular}
+    \caption{表格例子\label{表格例子}}
+\end{center}
+\end{table}
+
+\section{原样引用}
+使用目录树作为例子
+\setlength{\unitlength}{1mm}
+\begin{figure}[!hbp]
+\begin{verbatim}
+                         ppcc
+                         |-- tar
+                         |-- build
+                         |   |-- src
+                         |   `-- work
+                         `-- tools
+\end{verbatim}
+\caption{目录树\label{目录树}}
+\end{figure}
+
+\end{document}
+
