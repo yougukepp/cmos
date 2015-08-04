@@ -127,7 +127,7 @@ int imu_update(const float *gyro)
 
 /*******************************************************************************
  *
- * 函数名  : imu_fusion6aq1is
+ * 函数名  : imu_fusion6axis
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 6轴融合
@@ -143,14 +143,14 @@ int imu_update(const float *gyro)
  * 其 它:    6轴融合使用加速度计获取重力场修正陀螺仪积分误差(无法确定偏航角)
  *
  ******************************************************************************/
-int imu_fusion6aq1is(const float *gyro, const float *accel)
+int imu_fusion6axis(const float *gyro, const float *accel);
 {
     return 0;
 }
 
 /*******************************************************************************
  *
- * 函数名  : imu_fusion9aq1is
+ * 函数名  : imu_fusion9axis
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 9轴融合
@@ -167,7 +167,7 @@ int imu_fusion6aq1is(const float *gyro, const float *accel)
  * 其 它:    9轴融合使用加速度计获取重力场、地磁场修正陀螺仪积分误差(可以纠正偏航角)
  *
  ******************************************************************************/
-int imu_fusion9aq1is(const float *gyro, const float *accel, const float *mag)
+int imu_fusion9axis(const float *gyro, const float *accel, const float *mag)
 {
     /* 重力场叉乘地磁场 求解正东单位向量在载体坐标系的值 
      *
