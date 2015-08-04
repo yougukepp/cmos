@@ -59,6 +59,25 @@ static void get_compass(float *compass, unsigned long *time_stamp);
 ******************************************************************************/
 int main(void)
 { 
+
+#if 1
+    unsigned char val = 0;
+    int read_num = 0;
+    /* 初始化硬件 */
+    cmos_init();
+    cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
+
+    cmos_printf("读取BMP180 ID:");
+    read_num = cmos_i2c_read_buf(0xEF, 0xD0, &val, 1);
+    if(read_num != 1)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+    cmos_printf("0x%02x.\r\n", val);
+
+    while(TRUE);
+
+#else
     unsigned long time_stamp = 0;   /* 时间 */
     float temperature = 0;          /* 温度 */
     float accel[MAIN_DIM] = {0};    /* 加速度 x y z*/
@@ -85,6 +104,7 @@ int main(void)
 
         mpu9250_delay_ms(1000); /* 1s 打印一次 */
     }while(TRUE);
+#endif
 }
 
 /*******************************************************************************
