@@ -13,6 +13,9 @@
 }
 \usepackage{multirow}
 
+% 数学公式
+\usepackage{amsmath}
+
 %中文断行
 \XeTeXlinebreaklocale "zh"
 %段首缩进
@@ -110,7 +113,7 @@
 
 姿态融合算法主要分为三个函数实现
 \begin{enumerate}
-    \item 短期融合
+    \item 3轴姿态
 
         使用陀螺仪的数据和四元数微分方程 用积分法获取估计姿态
     \item 6轴融合
@@ -122,8 +125,8 @@
 \end{enumerate}
 下面对三个算法分别阐述。
 
-\subsection{短期融合}
-用四元数表示表示向量，将其标量部分插入零即可。所以陀螺仪提供的数据为:
+\subsection{3轴姿态}
+3轴姿态使用陀螺仪的数据\footnote{角速度}计算姿态的微分，然后利用微分求积分获取当前姿态。用四元数表示表示向量，将其标量部分插入零即可。所以陀螺仪提供的数据为:
 \begin{eqnarray}
     ^s\omega=[0\quad\omega_{x}\quad\omega_{y}\quad\omega_{z}] \label{陀螺仪数据}
 \end{eqnarray}
@@ -144,17 +147,134 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
     \hat{q}=[\hat{q}_0\quad \hat{q}_1\quad \hat{q}_2\quad \hat{q}_3] \label{分量四元数}
 \end{eqnarray}
 
-将式\ref{陀螺仪数据}和式\ref{分量四元数}带入\ref{四元数微分方程},应用四元数乘法定义\cite{捷联惯导航},可得微分方程分量形式:
+在进行四元数微分方程分量化前定义虚数运算公式:
 \begin{eqnarray}
-    ^s_n\dot{q}_{\omega,t}=\frac{1}{2}
+    i^2 = j^2 = k^2 = -1
 \end{eqnarray}
+\begin{eqnarray}
+    ij = -ji = k
+\end{eqnarray}
+\begin{eqnarray}
+    jk = -kj = i
+\end{eqnarray}
+\begin{eqnarray}
+    ki = -ik = j
+\end{eqnarray}
+
+四元数微分方程分量化:
+\begin{equation} \label{微分方程分量化}
+    \begin{aligned}
+        {^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t
+        &= [\hat{q}_0\quad i\hat{q}_1\quad j\hat{q}_2\quad k\hat{q}_3] \otimes [0\quad i\omega_{x}\quad j\omega_{y}\quad k\omega_{z}] \\
+        &= \hat{q}_0 \cdot 0 + i    \hat{q}_0 \omega_x + j    \hat{q}_0 \omega_y + k    \hat{q}_0 \omega_z \\
+      &+ i \hat{q}_1 \cdot 0 + (ii) \hat{q}_1 \omega_x + (ij) \hat{q}_1 \omega_y + (ik) \hat{q}_1 \omega_z \\
+      &+ j \hat{q}_2 \cdot 0 + (ji) \hat{q}_2 \omega_x + (jj) \hat{q}_2 \omega_y + (jk) \hat{q}_2 \omega_z \\
+      &+ k \hat{q}_3 \cdot 0 + (ki) \hat{q}_3 \omega_x + (kj) \hat{q}_3 \omega_y + (kk) \hat{q}_3 \omega_z \\
+        &=   i \hat{q}_0 \omega_x + j \hat{q}_0 \omega_y + k \hat{q}_0 \omega_z \\
+        &  -   \hat{q}_1 \omega_x + k \hat{q}_1 \omega_y - j \hat{q}_1 \omega_z \\
+        &  - k \hat{q}_2 \omega_x -   \hat{q}_2 \omega_y + i \hat{q}_2 \omega_z \\
+        &  + j \hat{q}_3 \omega_x - i \hat{q}_3 \omega_y -   \hat{q}_3 \omega_z \\
+        &= -(\hat{q}_1 \omega_x + \hat{q}_2 \omega_y + \hat{q}_3 \omega_z) \\
+        &+ i(\hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y) \\
+        &+ j(\hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x) \\
+        &+ k(\hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x) \\ 
+        =\left[\begin{array}{c}
+                \dot{q}_{0} \\
+                \dot{q}_{1} \\
+                \dot{q}_{2} \\
+                \dot{q}_{3}
+        \end{array}\right]
+        &=\left[\begin{array}{c}
+        - \hat{q}_1 \omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
+          \hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
+          \hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
+          \hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x
+        \end{array}\right]
+    \end{aligned}
+\end{equation}
+
+整理式\ref{四元数微分方程}和式\ref{微分方程分量化},可得微分方程分量形式:
+\begin{eqnarray}
+    \begin{aligned}
+    ^s_n\dot{q}_{\omega,t}&=\frac{1}{2}{^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t
+    =\frac{1}{2}
+    \left[\begin{array}{c}
+        - \hat{q}_1 \omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
+          \hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
+          \hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
+          \hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x
+    \end{array}\right] \\
+    &=\frac{1}{2}
+    \left[ \begin{array}{rrr}
+            -\hat{q}_{1,t-1} & -\hat{q}_{2,t-1} & -\hat{q}_{3,t-1} \\
+             \hat{q}_{0,t-1} & -\hat{q}_{3,t-1} &  \hat{q}_{2,t-1} \\
+             \hat{q}_{3,t-1} &  \hat{q}_{0,t-1} & -\hat{q}_{1,t-1} \\
+            -\hat{q}_{2,t-1} &  \hat{q}_{1,t-1} &  \hat{q}_{0,t-1}
+    \end{array} \right]
+    \left[\begin{array}{c}
+            \omega_{x} \\
+            \omega_{y} \\
+            \omega_{z}
+    \end{array}\right] \label{微分最终式}
+    \end{aligned}
+\end{eqnarray}
+
+式\ref{微分最终式}中四元数上方的三角表示估计值，上方点表示微分,下标t表示当前迭代时刻,下标t-1表示上次迭代时刻，下标0、1、2、3表示四元数分量编号。
 
 四元数积分方程为:
-\begin{eqnarray}
-    aaa \label{四元数积分方程}
+\begin{eqnarray}\label{四元数积分方程}
+    ^s_n\hat{q}_{\omega,t}&={^s_n\hat{q}_{est,t-1}}+^s_n\dot{q}_{\omega,t}\Delta t
 \end{eqnarray}
 
+式\ref{四元数积分方程}中$\Delta t$表示迭代周期。
 
+整理上文的推导，可以的出三轴姿态算法的步骤:
+\begin{enumerate}
+    \item 姿态初始化
+
+        算法启动时使s系前右上与n系北东天分别重合。所以欧拉角:
+        \begin{equation}\label{初始欧拉角}
+            \psi = \theta = \phi = 0
+        \end{equation}
+        %
+        % q0 = cos(c/2)cos(b/2)cos(a/2) + sin(c/2)sin(b/2)sin(a/2)
+        % q1 = sin(c/2)cos(b/2)cos(a/2) - cos(c/2)sin(b/2)sin(a/2)
+        % q2 = cos(c/2)sin(b/2)cos(a/2) + sin(c/2)cos(b/2)sin(a/2) 
+        % q3 = cos(c/2)cos(b/2)sin(a/2) + sin(c/2)sin(b/2)cos(a/2)
+        % 初始化时 a b c 都为0带入上公式 所以初始化为 s_quaternion[4] = {1,0,0,0}
+        %利用式\ref{初始欧拉角}和式\ref{欧拉角转四元数},得出四元数初始值为\footnote{研究推导}:
+        利用式\ref{初始欧拉角}和式,得出四元数初始值为\footnote{推导欧拉角转四元数公式}:
+        \begin{equation}
+            q=[1\quad 0\quad 0\quad 0] \label{分量四元数}
+        \end{equation}
+    \item 微分
+
+        整理式\ref{微分最终式},得出微分迭代方程:
+
+        \begin{equation} \label{微分迭代方程}
+            \begin{aligned} 
+                &\dot{q}_{0,t} = -\hat{q}_{1,t-1} \omega_x - \hat{q}_{2,t-1} \omega_y - \hat{q}_{3,t-1} \omega_z \\
+                &\dot{q}_{1,t} =  \hat{q}_{0,t-1} \omega_x - \hat{q}_{3,t-1} \omega_y + \hat{q}_{2,t-1} \omega_z \\
+                &\dot{q}_{2,t} =  \hat{q}_{3,t-1} \omega_x + \hat{q}_{0,t-1} \omega_y - \hat{q}_{1,t-1} \omega_z \\
+                &\dot{q}_{3,t} = -\hat{q}_{2,t-1} \omega_x + \hat{q}_{1,t-1} \omega_y + \hat{q}_{0,t-1} \omega_z
+            \end{aligned}
+        \end{equation} 
+        式\ref{微分迭代方程}中四元数上方的点表示四元数微分\footnote{当前迭代想对于上次迭代时的变化量},下标t表示当前迭代时刻,下标t-1表示上次迭代时刻，下标0、1、2、3表示四元数分量编号,$x,y,z$代表s系前右上
+    \item 积分
+
+        整理式\ref{四元数积分方程}和\ref{微分迭代方程},积分即可求得当前姿态。
+        \begin{equation} \label{积分迭代方程}
+            \begin{aligned} 
+                &\dot{q}_{0,t} = \hat{q}_{0,t-1} + \dot{q}_{0,t} \Delta t \\
+                &\dot{q}_{1,t} = \hat{q}_{1,t-1} + \dot{q}_{1,t} \Delta t \\
+                &\dot{q}_{2,t} = \hat{q}_{2,t-1} + \dot{q}_{2,t} \Delta t \\
+                &\dot{q}_{3,t} = \hat{q}_{3,t-1} + \dot{q}_{3,t} \Delta t
+            \end{aligned}
+        \end{equation} 
+        式\ref{积分迭代方程}中上下标含义与式\ref{微分迭代方程}相同
+\end{enumerate}
+
+由以上三步即可利用陀螺仪完成3轴姿态算法。
 
 \section{后续工作}
 \begin{enumerate}
