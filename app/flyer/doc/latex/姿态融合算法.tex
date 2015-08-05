@@ -139,7 +139,7 @@ $\omega_{x},\omega_{y},\omega_{z}$分别表示飞行器绕s系的前、右、上
     ^s_n\dot{q}_{\omega,t}=\frac{1}{2}{^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t \label{四元数微分方程}
 \end{eqnarray}
 
-四元数微分方程使用就行，这里不推导了，笔者也不会。
+四元数微分方程使用就行，这里不推导了，笔者也不会。由于C语言没有复数概念，所以需要将微分方程写为分量形式。
 $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{可以理解为四元数是一个时间的函数$^s_n{q}=func(t)$,$^s_n\dot{q}=func'(t)$}微分\footnote{下标$\omega$表示该值通过陀螺仪输出的角速度算出}，${^s_n\hat{q}_{est,t-1}}$表示t-1\footnote{上次迭代的时刻}时刻姿态的估计值,也就是s系到n系四元数的估计值\footnote{est是estimation缩写}。$\otimes$表示四元数乘法
 
 四元数写为分量形式:
@@ -162,29 +162,35 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
 \end{eqnarray}
 
 四元数微分方程分量化:
-\begin{equation} \label{微分方程分量化}
+\begin{equation} \label{微分方程分量推导}
     \begin{aligned}
         {^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t
-        &= [\hat{q}_0\quad i\hat{q}_1\quad j\hat{q}_2\quad k\hat{q}_3] \otimes [0\quad i\omega_{x}\quad j\omega_{y}\quad k\omega_{z}] \\
-        &= \hat{q}_0 \cdot 0 + i    \hat{q}_0 \omega_x + j    \hat{q}_0 \omega_y + k    \hat{q}_0 \omega_z \\
-      &+ i \hat{q}_1 \cdot 0 + (ii) \hat{q}_1 \omega_x + (ij) \hat{q}_1 \omega_y + (ik) \hat{q}_1 \omega_z \\
-      &+ j \hat{q}_2 \cdot 0 + (ji) \hat{q}_2 \omega_x + (jj) \hat{q}_2 \omega_y + (jk) \hat{q}_2 \omega_z \\
-      &+ k \hat{q}_3 \cdot 0 + (ki) \hat{q}_3 \omega_x + (kj) \hat{q}_3 \omega_y + (kk) \hat{q}_3 \omega_z \\
-        &=   i \hat{q}_0 \omega_x + j \hat{q}_0 \omega_y + k \hat{q}_0 \omega_z \\
-        &  -   \hat{q}_1 \omega_x + k \hat{q}_1 \omega_y - j \hat{q}_1 \omega_z \\
-        &  - k \hat{q}_2 \omega_x -   \hat{q}_2 \omega_y + i \hat{q}_2 \omega_z \\
-        &  + j \hat{q}_3 \omega_x - i \hat{q}_3 \omega_y -   \hat{q}_3 \omega_z \\
-        &= -(\hat{q}_1 \omega_x + \hat{q}_2 \omega_y + \hat{q}_3 \omega_z) \\
-        &+ i(\hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y) \\
-        &+ j(\hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x) \\
-        &+ k(\hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x) \\ 
-        =\left[\begin{array}{c}
+        = &[\hat{q}_0\quad i\hat{q}_1\quad j\hat{q}_2\quad k\hat{q}_3] \otimes [0\quad i\omega_{x}\quad j\omega_{y}\quad k\omega_{z}] \\
+        = & \hat{q}_0 \cdot 0 + i    \hat{q}_0 \omega_x + j    \hat{q}_0 \omega_y + k    \hat{q}_0 \omega_z \\
+      + i & \hat{q}_1 \cdot 0 + (ii) \hat{q}_1 \omega_x + (ij) \hat{q}_1 \omega_y + (ik) \hat{q}_1 \omega_z \\
+      + j & \hat{q}_2 \cdot 0 + (ji) \hat{q}_2 \omega_x + (jj) \hat{q}_2 \omega_y + (jk) \hat{q}_2 \omega_z \\
+      + k & \hat{q}_3 \cdot 0 + (ki) \hat{q}_3 \omega_x + (kj) \hat{q}_3 \omega_y + (kk) \hat{q}_3 \omega_z \\
+    =   i & \hat{q}_0 \omega_x + j \hat{q}_0 \omega_y + k \hat{q}_0 \omega_z \\
+        - & \hat{q}_1 \omega_x + k \hat{q}_1 \omega_y - j \hat{q}_1 \omega_z \\
+      - k & \hat{q}_2 \omega_x -   \hat{q}_2 \omega_y + i \hat{q}_2 \omega_z \\
+        + j & \hat{q}_3 \omega_x - i \hat{q}_3 \omega_y -   \hat{q}_3 \omega_z \\
+        = - & (\hat{q}_1 \omega_x + \hat{q}_2 \omega_y + \hat{q}_3 \omega_z) \\
+        + i &(\hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y) \\
+        + j & (\hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x) \\
+        + k & (\hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x)
+    \end{aligned}
+\end{equation}
+
+式\ref{微分方程分量推导}使用分量形式表示为:
+\begin{equation} \label{微分方程分量化}
+    \begin{aligned}
+        \left[\begin{array}{c}
                 \dot{q}_{0} \\
                 \dot{q}_{1} \\
                 \dot{q}_{2} \\
                 \dot{q}_{3}
         \end{array}\right]
-        &=\left[\begin{array}{c}
+        =\left[\begin{array}{c}
         - \hat{q}_1 \omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
           \hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
           \hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
@@ -199,10 +205,10 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
     ^s_n\dot{q}_{\omega,t}&=\frac{1}{2}{^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t
     =\frac{1}{2}
     \left[\begin{array}{c}
-        - \hat{q}_1 \omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
-          \hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
-          \hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
-          \hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x
+            - \hat{q}_1 \omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
+              \hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
+              \hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
+              \hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x
     \end{array}\right] \\
     &=\frac{1}{2}
     \left[ \begin{array}{rrr}
@@ -228,7 +234,7 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
 
 式\ref{四元数积分方程}中$\Delta t$表示迭代周期。
 
-整理上文的推导，可以的出三轴姿态算法的步骤:
+整理上文的推导，可以写出三轴姿态算法的分量表示步骤:
 \begin{enumerate}
     \item 姿态初始化
 
@@ -244,13 +250,18 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
         % 初始化时 a b c 都为0带入上公式 所以初始化为 s_quaternion[4] = {1,0,0,0}
         %利用式\ref{初始欧拉角}和式\ref{欧拉角转四元数},得出四元数初始值为\footnote{研究推导}:
         利用式\ref{初始欧拉角}和式,得出四元数初始值为\footnote{推导欧拉角转四元数公式}:
-        \begin{equation}
-            q=[1\quad 0\quad 0\quad 0] \label{分量四元数}
+        \begin{equation}\label{四元数初值}
+            \begin{aligned} 
+                q_{0,0} = 1 \\
+                q_{1,0} = 0 \\
+                q_{2,0} = 0 \\
+                q_{3,0} = 0
+            \end{aligned}
         \end{equation}
+        式\ref{四元数初值}中第二个下标表示初始值。
     \item 微分
 
         整理式\ref{微分最终式},得出微分迭代方程:
-
         \begin{equation} \label{微分迭代方程}
             \begin{aligned} 
                 &\dot{q}_{0,t} = -\hat{q}_{1,t-1} \omega_x - \hat{q}_{2,t-1} \omega_y - \hat{q}_{3,t-1} \omega_z \\
@@ -274,7 +285,12 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
         式\ref{积分迭代方程}中上下标含义与式\ref{微分迭代方程}相同
 \end{enumerate}
 
-由以上三步即可利用陀螺仪完成3轴姿态算法。
+以上所有公式都转换为了分量形式，可以直接使用C语言实现陀螺仪的3轴姿态算法。
+
+\section{四元数转欧拉角}
+四元数转欧拉角推导
+
+欧拉角转四元数推导
 
 \section{后续工作}
 \begin{enumerate}
