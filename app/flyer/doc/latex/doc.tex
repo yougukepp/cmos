@@ -1,0 +1,214 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{xeCJK}
+\usepackage{makeidx}
+\usepackage[colorlinks,linkcolor=red]{hyperref}
+
+% 代码高亮
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{numbers=left,
+    numberstyle=\tiny,
+    keywordstyle=\color{blue!70}, commentstyle=\color{red!50!green!50!blue!50},
+    frame=shadowbox,
+    rulesepcolor=\color{red!20!green!20!blue!20}
+}
+\usepackage{multirow}
+
+% 数学公式
+\usepackage{amsmath}
+% 公式编号
+\makeatletter
+\@addtoreset{equation}{section}
+\makeatother 
+\renewcommand\theequation{\oldstylenums{\thesection} .\oldstylenums{\arabic{equation}}}
+
+% 参考文献 引用
+\usepackage[numbers,sort&compress]{natbib}
+\renewcommand{\citet}[1]{\textsuperscript{\cite{#1}}}
+\renewcommand{\citep}[1]{\textsuperscript{\cite{#1}}}
+\addtolength{\bibsep}{-0.5 em} % 缩小参考文献间的垂直间距
+\setlength{\bibhang}{2em}
+\newcommand{\bibnumfont}[1]{\textit{#1}}
+%\newcommand{\bibfont}{\normalfont}% 不宜使用中文字号，因为中文字号定义中包含了多余的行距
+%\renewcommand\bibnumfmt[1]{#1}  %去掉文末文献列表的[]（数字或上标模式）
+
+
+%中文断行
+\XeTeXlinebreaklocale "zh"
+%段首缩进
+\parindent 2em
+\usepackage{indentfirst}
+%文泉驿 字体
+\setCJKmainfont{文泉驿等宽微米黑:style=Regular}
+%\setCJKmainfont{文泉驿等宽正黑:style=Regular}
+%楷体
+%\setCJKmainfont{AR PL UKai CN:style=Regular}
+
+% 将日期变为中文格式
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+% 将目录标题改为中文
+\renewcommand{\contentsname}{目录}
+
+%制作索引
+\makeindex
+\printindex
+\setcounter{secnumdepth}{5}
+
+\title{姿态融合算法}
+\author{彭鹏(QQ:516190948)}
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+% section — subsection — subsubsection — paragraph — subparagraph
+\section{术语表} 
+以下是术语表:
+\begin{table}[!hbp]
+\begin{center}
+    \begin{tabular}{|l|l|}
+        \hline
+        术语名 & 含义 \\
+        \hline
+        n系 & 导航坐标系,$x,y,z$分别表示北东天 \\
+        \hline
+        s系 & 传感器坐标系也可以认为是载体坐标系,$x,y,z$分别表示前右上 \\
+        \hline
+        姿态 & 飞行器相对于n系的旋转 \\
+        \hline
+        四元数 & 算法内部飞行器姿态的数学表示 \\
+        \hline
+        欧拉角 & 用来确定飞行器姿态的3个一组的独立角度,最直观的姿态数学表示 \\
+        \hline
+        估计姿态 & 陀螺仪独立积分计算出的姿态 \\
+        \hline
+        常矢量 & 方向和长度不随坐标系变化的矢量 \\
+        \hline
+    \end{tabular}
+    \caption{术语表\label{术语表}}
+\end{center}
+\end{table}
+
+文中的陀螺仪、加速度计、磁力计都是三轴的。
+\newpage
+
+\section{概述}
+四轴飞行器主要包括:姿态算法和控制算法两种算法。姿态算法完成飞行器自身姿态的计算，控制算法使用姿态计算出需要施加的控制量完成姿态控制，本文主要分析姿态算法。
+
+姿态算法是四轴飞行器的核心算法，姿态算法的核心器件是陀螺仪，陀螺仪可以测量自身旋转的角速度。理论上只要陀螺仪精度足够，结合初始姿态通过积分可以计算飞行器任意时刻的姿态。然并卵，现实是残酷的，由于成本和尺寸的限制，四轴只能使用MEMS陀螺仪。MEMS陀螺仪精度不佳并有较大的漂移，在长时间的积分过程中会导致很大的积分误差，导致估计姿态随着时间累计而变得不可接受\cite{捷联惯导航}。
+
+怎么办呢？\cite{9轴融合论文}联想轮船,陀螺仪类似舵手,舵手长时间独立工作后会将船带偏，这个时候需要了望手来不断纠偏。通常四轴中使用加速度计来充当了望手，纠偏轮船的方向。加速度计通过测量重力场的方向纠正陀螺仪积分得到的姿态,普通的四轴飞行器使用陀螺仪和加速度计就可以完成精度可接受的姿态解算。但是有一个问题，重力场方向竖直向下，可以纠正飞行器的水平倾斜，但飞行器绕重力场方向的旋转没法纠正。所以仅用6轴(陀螺仪3轴，加速度计3轴)融合的姿态只能保证飞行器的水平平衡，无法保证其航向稳定\footnote{会水平旋转}，说通俗一点也就是飞行器会找不到北。类似加速度计的思路，传感器组合中加入一个测量地磁的传感器\cite{经典博客}，就可以纠正飞行器航向上的偏移，这就是通常所说的9轴姿态融合。
+
+\section{算法}
+为了便于分析，飞行器静止时，使s系前右上与n系北东天分别重合。姿态的解算就是求取s系相对于n系旋转的角度,表示姿态的方法很多，本文使用欧拉角和四元数表示姿态。姿态解算的中间过程用四元数，姿态解算的结果用欧拉角。原因是欧拉角物理含义明确便于执行后面的飞行控制，四元数做姿态计算可以降低运算量。
+姿态解算有5个已知量作为算法的输入，他们分别是:
+\begin{enumerate}
+    \item 重力场
+
+        与n系固连,恒定竖直向下,仅有天轴分量,是一个常矢量,与坐标系无关。
+    \item 地磁场
+
+        与n系固连,有一个北轴的分量和一个天轴的分量，但是没有东轴分量,是一个常矢量,与坐标系无关。
+    \item 加速度计\footnote{加速度的工作原理可以参考加速度计原理\cite{加速度计原理}}数据
+
+        该数据与s系固连,与重力场的方向相反\footnote{准确的说，加速度计的测量值叫比力加速度，表示作用在物体上非引力矢量和产生的加速度。如果飞行器受力不平衡会导致加速度计无法准确表征重力的反作用力的加速度，也就是说加速度计对干扰非常敏感,精确的姿态融合算法需要給加速度计滤波。}，可部分\footnote{水平旋转角无法表征}表征姿态。
+    \item 磁力计数据
+
+        该数据与s系固连,指向地磁场的方向，可部分\footnote{绕地磁场轴的旋转无法表征}表征姿态。
+    \item 陀螺仪数据
+
+        与s系固连,表征s系旋转的角速度,可独立积分后估计姿态。
+\end{enumerate}
+姿态解算的输出有三个量,分别为\footnote{欧拉角与旋转顺序有关，本文使用航空次序角，也就是n系的天东北}:
+\begin{enumerate}
+    \item 偏航角$\psi$
+        绕天轴旋转的角度
+    \item 俯仰角$\theta$
+        绕东轴旋转的角度
+    \item 横滚角$\phi$
+        绕北轴旋转的角度
+\end{enumerate}
+利用$\psi,\theta,\phi$可以计算出需要施加的控制量，完成姿态控制。
+
+姿态融合算法主要分为三个函数实现
+\begin{enumerate}
+    \item 3轴姿态
+
+        使用陀螺仪的数据和四元数微分方程 用积分法获取估计姿态
+    \item 6轴融合
+
+        使用陀螺仪、加速度计的数据和梯度下降算法
+    \item 9轴融合
+
+        使用陀螺仪、加速度计、磁力计的数据和梯度下降算法
+\end{enumerate}
+下面对三个算法分别阐述，由于算法内部使用四元数表示姿态，后文姿态和四元数混用。
+
+\subsection{3轴姿态}
+3轴姿态使用陀螺仪的数据\footnote{角速度}计算姿态的微分，然后对微分求积分获取当前姿态，下面开始分析。
+\subsubsection{四元数微积分}
+\begin{equation}\label{四元数积分方程}
+    ^s_n\hat{q}_{est,t}=^s_n\hat{q}_{est,t-1}+^s_n\dot{q}_{\omega,t}\Delta t
+\end{equation} 
+
+$^s_n\hat{q}_{est,t}$    代表本次迭代计算出的姿态，该量为姿态解算的结果。
+$^s_n\hat{q}_{est,t-1}$  代表上次迭代计算出的姿态，该量已知。
+$^s_n\dot{q}_{\omega,t}$ 代表使用陀螺仪数据计算出的姿态微分,该量未知。
+$\Delta t$               代表上次与本次迭代的时间间隔，该量为算法的可调参数，通常越小越好。
+下面推导$^s_n\dot{q}_{\omega,t}$的计算公式,利用四元数微分方程:
+\begin{equation}\label{四元数微分方程}
+    ^s_n\dot{q}_{\omega,t}=\frac{1}{2} ^s_n\hat{q}_{est,t-1} \cdot ^s\omega_t
+\end{equation} 
+
+$^s_n\dot{q}_{\omega,t}$ 代表使用陀螺仪数据计算出的姿态微分,与式\ref{四元数积分方程}中含义相同，需要求解。
+$^s_n\hat{q}_{est,t-1}$  代表上次姿态值\footnote{3轴融合算法中仅用陀螺仪数据估计，6轴或9轴使用额外的传感器数据。}
+$\cdot$                  代表四元数乘法。
+$^s\omega_t$             代表陀螺仪测量出的角速度\footnote{基于s系}。
+四元数微分方程的推导笔者不会，如果想自己推导究可以研究参考文献\citet{四元数微分方程的推导}。由于C语言中没有向量的概念，所以式\ref{四元数积分方程}和\ref{四元数微分方程}需要转换为分量形式。
+\subsubsection{四元数分量微积分}
+式\ref{四元数积分方程}的分量形式为:
+\begin{eqnarray}\label{四元数分量积分方程}
+    \begin{split}
+        \hat{q}_{0,t} = \frac{1}{2}\hat{q}_{0,t-1} + \dot{q}_{0,t} \cdot \Delta t \\ 
+        \hat{q}_{1,t} = \frac{1}{2}\hat{q}_{1,t-1} + \dot{q}_{1,t} \cdot \Delta t \\
+        \hat{q}_{2,t} = \frac{1}{2}\hat{q}_{2,t-1} + \dot{q}_{2,t} \cdot \Delta t \\
+        \hat{q}_{3,t} = \frac{1}{2}\hat{q}_{3,t-1} + \dot{q}_{3,t} \cdot \Delta t
+    \end{split}
+\end{eqnarray} 
+
+公式左边$\hat{q}_{x,t}$   表示当前第$x$个姿态分量的值
+公式右边$\hat{q}_{x,t-1}$ 表示上次迭代得到第$x$个姿态分量值
+公式右边$\dot{q}_{x,t}$   表示当前第$x$个姿态分量的微分
+公式右边$\Delta t$        表示上次与本次迭代的时间间隔，该量为算法的可调参数，通常越小越好。
+
+式\ref{四元数分量积分方程}中的每个分量利用上次迭代的分量值和微分求解当前值,公式右边的$\dot{q}_{x,t}$需要使用式\ref{四元数分量微分方程}求解:
+\begin{eqnarray}\label{四元数分量微分方程}
+    \begin{split}
+        \dot{q}_{0,t}&=- &\frac{1}{2}(\hat{q}_{1,t-1}\omega_x+\hat{q}_{2,t-1}\omega_y+\hat{q}_{3,t-1}\omega_z) \\
+        \hat{q}_{1,t}&=  &\frac{1}{2}(\hat{q}_{0,t-1}\omega_x+\hat{q}_{2,t-1}\omega_z-\hat{q}_{3,t-1}\omega_y) \\
+        \hat{q}_{2,t}&=  &\frac{1}{2}(\hat{q}_{0,t-1}\omega_y-\hat{q}_{1,t-1}\omega_z+\hat{q}_{3,t-1}\omega_x) \\
+        \hat{q}_{3,t}&=  &\frac{1}{2}(\hat{q}_{0,t-1}\omega_z+\hat{q}_{1,t-1}\omega_y-\hat{q}_{2,t-1}\omega_x)
+    \end{split}
+\end{eqnarray} 
+式\ref{四元数分量微分方程}是式\ref{四元数微分方程}的分量形式,\ref{section:四元数分量微分方程推导}完成式\ref{四元数分量微分方程}到式\ref{四元数微分方程}的推导。
+\subsubsection{四元数分量微分方程推导}\label{section:四元数分量微分方程推导}
+下面分析式\ref{四元数分量微分方程}的推导:
+
+
+% 参考文献
+\newpage
+% 将参考文献标题改为中文
+% article 使用
+\renewcommand\refname{参考文献}
+% book 使用
+%\renewcommand\bibname{参考文献}
+\centering %居中
+\bibliographystyle{plain}
+\bibliography{doc}
+
+\end{document}
+
