@@ -123,15 +123,47 @@
 
         与s系固连,表征s系旋转的角速度,可独立积分后估计姿态。
 \end{enumerate}
+
 姿态解算的输出有三个量,分别为\footnote{欧拉角与旋转顺序有关，本文使用航空次序角，也就是n系的天东北}:
 \begin{enumerate}
     \item 偏航角$\psi$
-        绕天轴旋转的角度
+
+        绕天轴旋转的角度,用方向余弦阵表示: 
+        \begin{eqnarray}\label{偏航角方向余弦}
+            \begin{split}
+                C_1=\left[\begin{matrix}
+                         \cos{\psi} & \sin{\psi} & 0 & \\
+                        -\sin{\psi} & \cos{\psi} & 0 & \\
+                                 0 &          0 & 1 &
+                \end{matrix}\right]
+            \end{split}
+        \end{eqnarray}
     \item 俯仰角$\theta$
-        绕东轴旋转的角度
+
+        绕东轴旋转的角度,用方向余弦阵表示: 
+        \begin{eqnarray}\label{俯仰角方向余弦}
+            \begin{split}
+                C_2=\left[\begin{matrix}
+                        \cos{\theta} & 0 & -\sin{\theta} & \\
+                                   0 & 1 &           0 & \\
+                        \sin{\theta} & 0 &  \cos{\theta} &
+                \end{matrix}\right]
+            \end{split}
+        \end{eqnarray}
     \item 横滚角$\phi$
-        绕北轴旋转的角度
+
+        绕北轴旋转的角度,用方向余弦阵表示: 
+        \begin{eqnarray}\label{横滚角方向余弦}
+            \begin{split}
+                C_3=\left[\begin{matrix}
+                        1 &           0 &          0 & \\
+                        0 &  \cos{\phi} & \sin{\phi} & \\
+                        0 & -\sin{\phi} & \cos{\phi} & \\
+                \end{matrix}\right]
+            \end{split}
+        \end{eqnarray}
 \end{enumerate}
+
 利用$\psi,\theta,\phi$可以计算出需要施加的控制量，完成姿态控制。
 
 姿态融合算法主要分为三个函数实现
@@ -146,6 +178,7 @@
 
         使用陀螺仪、加速度计、磁力计的数据和梯度下降算法
 \end{enumerate}
+
 下面对三个算法分别阐述，由于算法内部使用四元数表示姿态，后文姿态和四元数混用。
 
 \subsection{3轴姿态}
@@ -231,7 +264,25 @@ $^s\omega_t$             代表陀螺仪测量出的角速度\footnote{基于s�
         &=  ae-bf-cg-dh \\
         &+i(af+be+ch-dg) \\
         &+j(ag-bh+ce+df) \\
-        &+k(ah+bg-cf+de)
+        &+k(ah+bg-cf+de) \\
+        &=\left[\begin{matrix}
+        ae-bf-cg-dh \\
+        af+be+ch-dg \\
+        ag-bh+ce+df \\
+        ah+bg-cf+de
+        \end{matrix}\right] \\
+        &=\left[\begin{matrix}
+        a &-b &-c &-d \\
+        b & a &-d & c \\
+        c & d & a &-b \\
+        d &-c & b & a
+        \end{matrix}\right]
+        \left[\begin{matrix}
+                e \\
+                f \\
+                g \\
+                h \\
+        \end{matrix}\right]
     \end{split}
 \end{eqnarray} 
 
@@ -248,7 +299,50 @@ $^s\omega_t$             代表陀螺仪测量出的角速度\footnote{基于s�
 式\ref{四元数积}代入式\ref{四元数微分方程}，并写为分量形式得到式\ref{四元数分量微分方程}。
 
 \subsubsection{四元数与欧拉角的转换}\label{section:四元数与欧拉角的转换}
-四元数与欧拉角的转换
+n系到s系的转换可以利用欧拉角求得:
+\begin{equation}\label{欧拉角方向余弦}
+    \begin{split} 
+        C^s_n=C_3C_2C_1
+    \end{split}
+\end{equation} 
+
+将式\ref{偏航角方向余弦},\ref{俯仰角方向余弦},\ref{横滚角方向余弦}带入\ref{欧拉角方向余弦}整理可得:
+\begin{equation}\label{欧拉角s转n}
+    \begin{split} 
+        C^s_n=&\left[\begin{matrix}
+                1 &           0 &          0 & \\
+                0 &  \cos{\phi} & \sin{\phi} & \\
+                0 & -\sin{\phi} & \cos{\phi} & \\
+                \end{matrix}\right]
+                \left[\begin{matrix}
+                \cos{\theta} & 0 & -\sin{\theta} & \\
+                           0 & 1 &           0 & \\
+                \sin{\theta} & 0 &  \cos{\theta} &
+                \end{matrix}\right]
+                \left[\begin{matrix}
+                 \cos{\psi} & \sin{\psi} & 0 & \\
+                -\sin{\psi} & \cos{\psi} & 0 & \\
+                          0 &          0 & 1 &
+                \end{matrix}\right] \\
+                =&\left[\begin{matrix}
+                \cos{\theta}\cos{\psi} & \cos{\theta}\sin{\psi} & -\sin{\psi} & \\
+                -\cos{\phi}\sin{\psi}+\sin{\phi}sin{\theta}\cos{\psi} & \cos{\phi}\cos{\psi}+\sin{\phi}sin{\theta}\sin{\psi} & \sin{\phi}\cos{\theta} & \\
+                 \sin{\phi}\sin{\psi} + \cos{\phi}\sin{\theta}\cos{\psi} & -\sin{\phi}\cos{\psi} + \cos{\phi}\sin{\theta}\sin{\psi} & -\cos{\phi}\cos{\theta} &
+                \end{matrix}\right]
+    \end{split}
+\end{equation} 
+
+由于方向余弦矩阵的逆矩阵与转置矩阵是同一个矩阵\cite{方向余弦阵}，所以s系到n系的转换公式为:
+\begin{equation}\label{欧拉角s转n}
+    \begin{split} 
+        C^n_s=&{C^s_n}^\mathrm{T} \\
+             =&\left[\begin{matrix}
+                \cos{\theta}\cos{\psi} & -\cos{\phi}\sin{\psi}+\sin{\phi}sin{\theta}\cos{\psi} &  \sin{\phi}\sin{\psi} + \cos{\phi}\sin{\theta}\cos{\psi} & \\
+                \cos{\theta}\sin{\psi} &  \cos{\phi}\cos{\psi}+\sin{\phi}sin{\theta}\sin{\psi} & -\sin{\phi}\cos{\psi} + \cos{\phi}\sin{\theta}\sin{\psi} & \\
+                -\sin{\psi} & \sin{\phi}\cos{\theta} & -\cos{\phi}\cos{\theta} &
+                \end{matrix}\right]
+    \end{split}
+\end{equation} 
 
 % 参考文献
 \newpage
