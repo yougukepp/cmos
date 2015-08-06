@@ -3,6 +3,8 @@
 \usepackage{xeCJK}
 \usepackage{makeidx}
 \usepackage[colorlinks,linkcolor=red]{hyperref}
+
+% 代码高亮
 \usepackage{xcolor}
 \usepackage{listings}
 \lstset{numbers=left,
@@ -47,6 +49,7 @@
 \tableofcontents
 \newpage
 
+% section — subsection — subsubsection — paragraph — subparagraph
 \section{术语表} 
 以下是术语表:
 \begin{table}[!hbp]
@@ -55,15 +58,19 @@
         \hline
         术语名 & 含义 \\
         \hline
-        姿态 & 飞行器想对于N系的旋转 \\
+        n系 & 导航坐标系,$x,y,z$分别表示北东天 \\
         \hline
-        四元数 & 表示姿态或者旋转 \\
+        s系 & 传感器坐标系也可以认为是载体坐标系,$x,y,z$分别表示前右上 \\
         \hline
-        估计姿态 & 陀螺仪积分计算后的值 \\
+        姿态 & 飞行器相对于n系的旋转 \\
         \hline
-        s系 & 传感器坐标系也可以认为是载体坐标系,xyz分别表示前右上 \\
+        四元数 & 算法内部飞行器姿态的数学表示 \\
         \hline
-        n系 & 导航坐标系,xyz分别表示北东天 \\
+        欧拉角 & 用来确定飞行器姿态的3个一组的独立角度,最直观的姿态数学表示 \\
+        \hline
+        估计姿态 & 陀螺仪独立积分计算出的姿态 \\
+        \hline
+        常矢量 & 方向和长度不随坐标系变化的矢量 \\
         \hline
     \end{tabular}
     \caption{术语表\label{术语表}}
@@ -76,12 +83,12 @@
 \section{概述}
 四轴飞行器主要包括:姿态算法和控制算法两种算法。姿态算法完成飞行器自身姿态的计算，控制算法使用姿态计算出需要施加的控制量完成姿态控制，本文主要分析姿态算法。
 
-姿态算法是四轴飞行器的核心算法，姿态算法的核心器件是陀螺仪，陀螺仪可以测量自身旋转的角速度。理论上只要陀螺仪精度足够，结合初始姿态通过积分可以计算飞行器任意时刻的姿态。然并卵，现实是残酷的，由于成本和尺寸的限制，四轴只能使用MEMS陀螺仪。MEMS陀螺仪精度不佳并有较大的漂移，在长时间的积分过程中会导致较大的积分误差，导致姿态随着时间累计而变得不可接受\cite{捷联惯导航}。
+姿态算法是四轴飞行器的核心算法，姿态算法的核心器件是陀螺仪，陀螺仪可以测量自身旋转的角速度。理论上只要陀螺仪精度足够，结合初始姿态通过积分可以计算飞行器任意时刻的姿态。然并卵，现实是残酷的，由于成本和尺寸的限制，四轴只能使用MEMS陀螺仪。MEMS陀螺仪精度不佳并有较大的漂移，在长时间的积分过程中会导致很大的积分误差，导致估计姿态随着时间累计而变得不可接受\cite{捷联惯导航}。
 
-怎么办呢？\cite{9轴融合论文}联想轮船,陀螺仪类似舵手,舵手长时间工作后会将船带偏，这个时候需要了望手来不断纠偏。通常四轴中使用加速度计来充当了望手，纠偏轮船的方向。加速度计测量重力场的方向纠正陀螺仪积分得到的姿态,普通的四轴飞行器使用陀螺仪和加速度计就可以完成精度可接受的姿态解算。但是有一个问题，重力场方向竖直向下，可以纠正飞行器的水平倾斜，但飞行器绕重力场方向的旋转没法纠正。所以仅用6轴(陀螺仪3轴，加速度计3轴)融合的姿态只能保证飞行器的水平平衡，无法保证其航向稳定\footnote{会水平旋转}，说通俗一点也就是飞行器会找不到北。类似加速度计的思路，传感器组合中加入一个测量地磁的传感器\cite{经典博客}，就可以纠正飞行器航向上的偏移，这就是通常所说的9轴姿态融合。
+怎么办呢？\cite{9轴融合论文}联想轮船,陀螺仪类似舵手,舵手长时间独立工作后会将船带偏，这个时候需要了望手来不断纠偏。通常四轴中使用加速度计来充当了望手，纠偏轮船的方向。加速度计通过测量重力场的方向纠正陀螺仪积分得到的姿态,普通的四轴飞行器使用陀螺仪和加速度计就可以完成精度可接受的姿态解算。但是有一个问题，重力场方向竖直向下，可以纠正飞行器的水平倾斜，但飞行器绕重力场方向的旋转没法纠正。所以仅用6轴(陀螺仪3轴，加速度计3轴)融合的姿态只能保证飞行器的水平平衡，无法保证其航向稳定\footnote{会水平旋转}，说通俗一点也就是飞行器会找不到北。类似加速度计的思路，传感器组合中加入一个测量地磁的传感器\cite{经典博客}，就可以纠正飞行器航向上的偏移，这就是通常所说的9轴姿态融合。
 
 \section{算法}
-为了便于分析，飞行器停止时，使s系前右上与n系北东天分别重合。姿态的解算就是求取s系相对于n系旋转的角度,表示姿态的方法很多，本文使用欧拉角和四元数表示姿态。姿态解算的中间过程用四元数表示，姿态结算的结构用欧拉角表示。原因是欧拉角物理含义明确便于执行飞行控制，四元数做姿态计算可以降低运算量。
+为了便于分析，飞行器静止时，使s系前右上与n系北东天分别重合。姿态的解算就是求取s系相对于n系旋转的角度,表示姿态的方法很多，本文使用欧拉角和四元数表示姿态。姿态解算的中间过程用四元数，姿态解算的结果用欧拉角。原因是欧拉角物理含义明确便于执行后面的飞行控制，四元数做姿态计算可以降低运算量。
 姿态解算有5个已知量作为算法的输入，他们分别是:
 \begin{enumerate}
     \item 重力场
@@ -121,12 +128,34 @@
         使用陀螺仪、加速度计的数据和梯度下降算法
     \item 9轴融合
 
-        使用陀螺仪、加速度计的数据和梯度下降算法
+        使用陀螺仪、加速度计、磁力计的数据和梯度下降算法
 \end{enumerate}
-下面对三个算法分别阐述。
+下面对三个算法分别阐述，由于算法内部使用四元数表示姿态，后文姿态和四元数混用。
 
 \subsection{3轴姿态}
-3轴姿态使用陀螺仪的数据\footnote{角速度}计算姿态的微分，然后利用微分求积分获取当前姿态。用四元数表示表示向量，将其标量部分插入零即可。所以陀螺仪提供的数据为:
+3轴姿态使用陀螺仪的数据\footnote{角速度}计算姿态的微分，然后利用微分求积分获取当前姿态。由于C语言没有复数概念，所以需要将公式写为分量形式，下面开始推导。
+\subsubsection{四元数积分方程}
+\begin{equation}\label{四元数积分方程1}
+    ^s_n\hat{q}_{est,t}={^s_n\hat{q}_{est,t-1}}+^s_n\dot{q}_{\omega,t-1}\Delta t
+\end{equation} 
+$^s_n\dot{q}_{\omega,t-1}$表示上次迭代的姿态微分，坐标表示从s系转为n系，$\omega$表示陀螺仪器获取的姿态\footnote{$\omega$下标用于姿态微分，$est$下标用于姿态}。$\Delta t$表示时间间隔。通常$\Delta t$非常小，
+\begin{equation}\label{近似1}
+^s_n\dot{q}_{\omega,t}=^s_n\dot{q}_{\omega,t-1}
+\end{equation}
+所以为了方便计算
+\begin{equation}\label{四元数积分方程2}
+    ^s_n\hat{q}_{est,t}={^s_n\hat{q}_{est,t-1}}+^s_n\dot{q}_{\omega,t}\Delta t
+\end{equation}
+
+$\Delta t$
+
+$^s_n\dot{q}_{est,t-1}$表示t时刻从s系旋转到n系的四元数
+
+\footnote{可以理解为四元数是一个时间的函数$^s_n{q}=func(t)$,$^s_n\dot{q}=func'(t)$}微分\footnote{下标$\omega$表示该值通过陀螺仪输出的角速度算出}，${^s_n\hat{q}_{est,t-1}}$表示t-1\footnote{上次迭代的时刻}时刻姿态的估计值,也就是s系到n系四元数的估计值\footnote{est是estimation缩写}。$\otimes$表示四元数乘法
+
+式\ref{四元数积分方程}中$\Delta t$表示迭代周期。
+
+用四元数表示表示向量，将其标量部分插入零即可。所以陀螺仪提供的数据为:
 \begin{eqnarray}
     ^s\omega=[0\quad\omega_{x}\quad\omega_{y}\quad\omega_{z}] \label{陀螺仪数据}
 \end{eqnarray}
@@ -139,7 +168,7 @@ $\omega_{x},\omega_{y},\omega_{z}$分别表示飞行器绕s系的前、右、上
     ^s_n\dot{q}_{\omega,t}=\frac{1}{2}{^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t \label{四元数微分方程}
 \end{eqnarray}
 
-四元数微分方程使用就行，这里不推导了，笔者也不会。由于C语言没有复数概念，所以需要将微分方程写为分量形式。
+四元数微分方程使用就行，这里不推导了，笔者也不会。
 $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{可以理解为四元数是一个时间的函数$^s_n{q}=func(t)$,$^s_n\dot{q}=func'(t)$}微分\footnote{下标$\omega$表示该值通过陀螺仪输出的角速度算出}，${^s_n\hat{q}_{est,t-1}}$表示t-1\footnote{上次迭代的时刻}时刻姿态的估计值,也就是s系到n系四元数的估计值\footnote{est是estimation缩写}。$\otimes$表示四元数乘法
 
 四元数写为分量形式:
@@ -161,7 +190,7 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
     ki = -ik = j
 \end{eqnarray}
 
-四元数微分方程分量化:
+四元数微分方程分量化推导:
 \begin{equation} \label{微分方程分量推导}
     \begin{aligned}
         {^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t
@@ -181,34 +210,16 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
     \end{aligned}
 \end{equation}
 
-式\ref{微分方程分量推导}使用分量形式表示为:
-\begin{equation} \label{微分方程分量化}
-    \begin{aligned}
-        \left[\begin{array}{c}
-                \dot{q}_{0} \\
-                \dot{q}_{1} \\
-                \dot{q}_{2} \\
-                \dot{q}_{3}
-        \end{array}\right]
-        =\left[\begin{array}{c}
-        - \hat{q}_1 \omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
-          \hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
-          \hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
-          \hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x
-        \end{array}\right]
-    \end{aligned}
-\end{equation}
-
-整理式\ref{四元数微分方程}和式\ref{微分方程分量化},可得微分方程分量形式:
+整理式\ref{四元数微分方程}和式\ref{微分方程分量推导},可得微分方程分量形式:
 \begin{eqnarray}
     \begin{aligned}
     ^s_n\dot{q}_{\omega,t}&=\frac{1}{2}{^s_n\hat{q}_{est,t-1}}\otimes^s\omega_t
     =\frac{1}{2}
     \left[\begin{array}{c}
-            - \hat{q}_1 \omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
-              \hat{q}_0 \omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
-              \hat{q}_0 \omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
-              \hat{q}_0 \omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x
+            - \hat{q}_1\omega_x - \hat{q}_2 \omega_y - \hat{q}_3 \omega_z \\
+              \hat{q}_0\omega_x + \hat{q}_2 \omega_z - \hat{q}_3 \omega_y \\
+              \hat{q}_0\omega_y - \hat{q}_1 \omega_z + \hat{q}_3 \omega_x \\
+              \hat{q}_0\omega_z + \hat{q}_1 \omega_y - \hat{q}_2 \omega_x
     \end{array}\right] \\
     &=\frac{1}{2}
     \left[ \begin{array}{rrr}
@@ -226,13 +237,6 @@ $^s_n\dot{q}_{\omega,t}$表示t时刻从s系旋转到n系的四元数\footnote{�
 \end{eqnarray}
 
 式\ref{微分最终式}中四元数上方的三角表示估计值，上方点表示微分,下标t表示当前迭代时刻,下标t-1表示上次迭代时刻，下标0、1、2、3表示四元数分量编号。
-
-四元数积分方程为:
-\begin{eqnarray}\label{四元数积分方程}
-    ^s_n\hat{q}_{\omega,t}&={^s_n\hat{q}_{est,t-1}}+^s_n\dot{q}_{\omega,t}\Delta t
-\end{eqnarray}
-
-式\ref{四元数积分方程}中$\Delta t$表示迭代周期。
 
 整理上文的推导，可以写出三轴姿态算法的分量表示步骤:
 \begin{enumerate}
