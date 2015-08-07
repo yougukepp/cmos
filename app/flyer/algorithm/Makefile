@@ -1,6 +1,6 @@
 TARGET=x86_64
 
-LD=gcc -Wall -Werror -O2 -pedantic -std=c99
+LD=gcc -Wall -Werror -O2 -pedantic -std=c99 -D_BSD_SOURCE
 CC=$(LD) -c
 
 AR= ar -rcs
@@ -9,7 +9,7 @@ MAKE=make
 CP=cp -rvf
 
 all:clean test
-	./test
+	#./test
 
 test:math.o imu.o
 	$(CC) test.c -o test.o

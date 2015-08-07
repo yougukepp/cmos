@@ -24,17 +24,6 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-/*
- * 欧拉角度转四元数
- * 欧拉角度 旋转顺序 z(a) - y(b) - x(c)
- *
- * q0 = cos(c/2)cos(b/2)cos(a/2) + sin(c/2)sin(b/2)sin(a/2)
- * q1 = sin(c/2)cos(b/2)cos(a/2) - cos(c/2)sin(b/2)sin(a/2)
- * q2 = cos(c/2)sin(b/2)cos(a/2) + sin(c/2)cos(b/2)sin(a/2)
- * q3 = cos(c/2)cos(b/2)sin(a/2) + sin(c/2)sin(b/2)cos(a/2)
- *
- * 初始化时 a b c 都为0带入上公式 所以初始化为 s_quaternion[4] = {1,0,0,0}
- * */
 static float s_quaternion[4] = {1.0f, 0.0f, 0.0f, 0.0f}; /* 四元数 q0 q1 q2 q3*/
 
 /********************************** 函数声明区 *********************************/
@@ -67,10 +56,10 @@ int imu_update(const float *gyro)
     float wy = gyro[1];
     float wz = gyro[2];
 
-    float q0_last = 0.0f;
-    float q1_last = 0.0f;
-    float q2_last = 0.0f;
-    float q3_last = 0.0f;
+    float q0_diff = 0.0f;
+    float q1_diff = 0.0f;
+    float q2_diff = 0.0f;
+    float q3_diff = 0.0f;
 
     float q_norm = 0.0f;
 
@@ -81,21 +70,17 @@ int imu_update(const float *gyro)
 
     quaternion_lock();
 
-    q0_last = s_quaternion[0];
-    q1_last = s_quaternion[1];
-    q2_last = s_quaternion[2];
-    q3_last = s_quaternion[3];
+    /* 微分 */
+    q0_diff =  -0.5f * (s_quaternion[1] * wx + s_quaternion[2] * wy + s_quaternion[3] * wz);
+    q1_diff =   0.5f * (s_quaternion[0] * wx + s_quaternion[2] * wz - s_quaternion[3] * wy);
+    q2_diff =   0.5f * (s_quaternion[0] * wy - s_quaternion[1] * wz + s_quaternion[3] * wx);
+    q3_diff =   0.5f * (s_quaternion[0] * wz + s_quaternion[1] * wy - s_quaternion[2] * wx);
 
-    /* 更新四元数,四元数微分方程如下：
-     *  q0       |  0 -wx -wy -wz |   | q0_last |
-     *  q1       | wx   0  wz -wy |   | q1_last |
-     *     = 0.5 |                | * |         |
-     *  q2       | wy -wz   0  wx |   | q2_last |
-     *  q3       | wz  wy -wx   0 |   | q3_last | */
-    s_quaternion[0] += (-0.5 * (q1_last * wx + q2_last * wy + q3_last * wz));
-    s_quaternion[1] += ( 0.5 * (q0_last * wx + q2_last * wz - q3_last * wy));
-    s_quaternion[2] += ( 0.5 * (q0_last * wy - q1_last * wz + q3_last * wx));
-    s_quaternion[3] += ( 0.5 * (q0_last * wz + q1_last * wy - q2_last * wx));
+    /* 积分 */
+    s_quaternion[0] += q0_diff * ALGO_GYRO_PERIOD;
+    s_quaternion[1] += q1_diff * ALGO_GYRO_PERIOD;
+    s_quaternion[2] += q2_diff * ALGO_GYRO_PERIOD;
+    s_quaternion[3] += q3_diff * ALGO_GYRO_PERIOD;
 
 #if 0
     printf("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
@@ -143,7 +128,7 @@ int imu_update(const float *gyro)
  * 其 它:    6轴融合使用加速度计获取重力场修正陀螺仪积分误差(无法确定偏航角)
  *
  ******************************************************************************/
-int imu_fusion6axis(const float *gyro, const float *accel);
+int imu_fusion6axis(const float *gyro, const float *accel)
 {
     return 0;
 }
@@ -261,9 +246,9 @@ int imu_get_attitude(float *attitude)
     q3 = s_quaternion[3];
     quaternion_unlock();
 
-    roll = atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (q3 * q3 + q1 * q1));
-    pitch = asin(2 * (q0 * q1 - q2 * q3));
-    yaw = atan2(2 * (q0 * q2 + q3 * q1), 1 - 2 * (q1 * q1 + q2 * q2));
+    yaw   = atan2(2*(q1*q2 + q0*q3), 1 - 2*(q3*q3 - q2*q2));
+    roll  = asin(-2*(q1*q3 + q0*q2));
+    pitch = atan2(2*(q2*q3 + q0*q1), 1 - 2*(q1*q1 + q2*q2));
 
     attitude[0] = pitch;
     attitude[1] = roll;
