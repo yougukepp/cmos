@@ -21,6 +21,7 @@
 #include "cmos_api.h"
 #include "mpu9250.h"
 #include "inv_mpu.h"
+#include "algorithm.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 #define MAIN_DIM        (3)
@@ -38,6 +39,8 @@ static void get_temperature(float *temperature, unsigned long *time_stamp);
 static void get_gyro(float *gyro, unsigned long *time_stamp);
 static void get_accel(float *accel, unsigned long *time_stamp);
 static void get_compass(float *compass, unsigned long *time_stamp);
+
+void temp_imu(float *ypr, float *gyro);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -60,7 +63,7 @@ static void get_compass(float *compass, unsigned long *time_stamp);
 int main(void)
 { 
 
-#if 1
+#if 0
     unsigned char val = 0;
     int read_num = 0;
     /* 初始化硬件 */
@@ -89,22 +92,33 @@ int main(void)
     init();
     do{
         get_temperature(&temperature, &time_stamp);
-        cmos_printf("attitude(%5.2fs,%5.2fC):%5.2f,%5.2f,%5.2f.\r\n",
-                time_stamp / 1000.0, temperature, ypr[MAIN_YAW], ypr[MAIN_PITCH], ypr[MAIN_ROLL]);
-
-        get_accel(accel, &time_stamp); 
-        cmos_printf("accel(%5.2fs):     %5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
+        cmos_printf("temperature:%5.2fC)\r\n", temperature);
 
         get_gyro(gyro, &time_stamp); 
         cmos_printf("gyro(%5.2fs):      %5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
 
+        temp_imu(ypr, gyro);
+        cmos_printf("time:%l", time_stamp);
+        cmos_printf("ypr(%5.2fs):       %5.2f,%5.2f,%5.2f.\r\n", ypr[0], ypr[1], ypr[2]);
+
+        get_accel(accel, &time_stamp); 
+        cmos_printf("accel(%5.2fs):     %5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
+
         get_compass(compass, &time_stamp);
         cmos_printf("compass(%5.2f):    %5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
+
         cmos_printf("\r\n");
 
-        mpu9250_delay_ms(1000); /* 1s 打印一次 */
+        mpu9250_delay_ms(1); /* 1ms 打印一次 */
     }while(TRUE);
 #endif
+}
+
+/* 临时使用 */
+void temp_imu(float *ypr, float *gyro)
+{
+    imu_update(gyro); 
+    imu_get_attitude(ypr);
 }
 
 /*******************************************************************************

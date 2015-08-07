@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
         imu_get_attitude(attitude);
         printf("wx:%7.4f, wy:%7.4f, wz:%7.4f => ", 
                 gyro[0], gyro[1], gyro[2]);
-        printf("pitch:%7.4f, roll:%7.4f, yaw:%7.4f, max=%7.4f\n", 
+        printf("yaw:%7.4f, pitch:%7.4f, roll:%7.4f, max=%7.4f\n", 
                 math_arc2angle(attitude[0]), math_arc2angle(attitude[1]), math_arc2angle(attitude[2]), max);
         usleep(ALGO_GYRO_PERIOD * 1000000);
 

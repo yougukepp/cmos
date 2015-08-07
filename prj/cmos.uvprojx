@@ -555,7 +555,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>..\cmos\console;..\cmos\lib;..\cmos\hal;..\cmos\hal\i2c;..\cmos\hal\uart;..\app\flyer\mpu9250;..\app\flyer\eMD6.12\core\driver\eMPL</IncludePath>
+                  <IncludePath>..\cmos\console;..\cmos\lib;..\cmos\hal;..\cmos\hal\i2c;..\cmos\hal\uart;..\app\flyer\mpu9250;..\app\flyer\eMD6.12\core\driver\eMPL;..\app\flyer\algorithm</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -587,6 +587,16 @@
               <FileName>mpu9250.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\flyer\mpu9250\mpu9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>math.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\flyer\algorithm\math.c</FilePath>
+            </File>
+            <File>
+              <FileName>imu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\flyer\algorithm\imu.c</FilePath>
             </File>
           </Files>
         </Group>
