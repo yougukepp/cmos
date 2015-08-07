@@ -101,9 +101,9 @@
 \section{概述}
 四轴飞行器主要包括:姿态算法和控制算法两种算法。姿态算法完成飞行器自身姿态的计算，控制算法使用姿态计算出需要施加的控制量完成姿态控制，本文主要分析姿态算法。
 
-姿态算法是四轴飞行器的核心算法，姿态算法的核心器件是陀螺仪，陀螺仪可以测量自身旋转的角速度。理论上只要陀螺仪精度足够，结合初始姿态通过积分可以计算飞行器任意时刻的姿态。然并卵，现实是残酷的，由于成本和尺寸的限制，四轴只能使用MEMS陀螺仪。MEMS陀螺仪精度不佳并有较大的漂移，在长时间的积分过程中会导致很大的积分误差，导致估计姿态随着时间累计而变得不可接受\cite{捷联惯导航}。
+姿态算法是四轴飞行器的核心算法，姿态算法的核心器件是陀螺仪，陀螺仪可以测量自身旋转的角速度。理论上只要陀螺仪精度足够，结合初始姿态通过积分可以计算飞行器任意时刻的姿态。然并卵，现实是残酷的，由于成本和尺寸的限制，四轴只能使用MEMS陀螺仪。MEMS陀螺仪精度不佳并有较大的漂移，在长时间的积分过程中会导致很大的积分误差，导致估计姿态随着时间累计而变得不可接受\citep{捷联惯导航}。
 
-怎么办呢？\cite{9轴融合论文}联想轮船,陀螺仪类似舵手,舵手长时间独立工作后会将船带偏，这个时候需要了望手来不断纠偏。通常四轴中使用加速度计来充当了望手，纠偏轮船的方向。加速度计通过测量重力场的方向纠正陀螺仪积分得到的姿态,普通的四轴飞行器使用陀螺仪和加速度计就可以完成精度可接受的姿态解算。但是有一个问题，重力场方向竖直向下，可以纠正飞行器的水平倾斜，但飞行器绕重力场方向的旋转没法纠正。所以仅用6轴(陀螺仪3轴，加速度计3轴)融合的姿态只能保证飞行器的水平平衡，无法保证其航向稳定\footnote{会水平旋转}，说通俗一点也就是飞行器会找不到北。类似加速度计的思路，传感器组合中加入一个测量地磁的传感器\cite{经典博客}，就可以纠正飞行器航向上的偏移，这就是通常所说的9轴姿态融合。
+怎么办呢？\citep{9轴融合论文}联想轮船,陀螺仪类似舵手,舵手长时间独立工作后会将船带偏，这个时候需要了望手来不断纠偏。通常四轴中使用加速度计来充当了望手，纠偏轮船的方向。加速度计通过测量重力场的方向纠正陀螺仪积分得到的姿态,普通的四轴飞行器使用陀螺仪和加速度计就可以完成精度可接受的姿态解算。但是有一个问题，重力场方向竖直向下，可以纠正飞行器的水平倾斜，但飞行器绕重力场方向的旋转没法纠正。所以仅用6轴(陀螺仪3轴，加速度计3轴)融合的姿态只能保证飞行器的水平平衡，无法保证其航向稳定\footnote{会水平旋转}，说通俗一点也就是飞行器会找不到北。类似加速度计的思路，传感器组合中加入一个测量地磁的传感器\citep{经典博客}，就可以纠正飞行器航向上的偏移，这就是通常所说的9轴姿态融合。
 
 \section{算法}
 为了便于分析，飞行器静止时，使s系前右上与n系北东天分别重合。姿态的解算就是求取s系相对于n系旋转的角度,表示姿态的方法很多，本文使用欧拉角和四元数表示姿态。姿态解算的中间过程用四元数，姿态解算的结果用欧拉角。原因是欧拉角物理含义明确便于执行后面的飞行控制，四元数做姿态计算可以降低运算量。
@@ -115,7 +115,7 @@
     \item 地磁场
 
         与n系固连,有一个北轴的分量和一个天轴的分量，但是没有东轴分量,是一个常矢量,与坐标系无关。
-    \item 加速度计\footnote{加速度的工作原理可以参考加速度计原理\cite{加速度计原理}}数据
+    \item 加速度计\footnote{加速度的工作原理可以参考加速度计原理\citep{加速度计原理}}数据
 
         该数据与s系固连,与重力场的方向相反\footnote{准确的说，加速度计的测量值叫比力加速度，表示作用在物体上非引力矢量和产生的加速度。如果飞行器受力不平衡会导致加速度计无法准确表征重力的反作用力的加速度，也就是说加速度计对干扰非常敏感,精确的姿态融合算法需要給加速度计滤波。}，可部分\footnote{水平旋转角无法表征}表征姿态。
     \item 磁力计数据
@@ -130,7 +130,7 @@
 \begin{enumerate}
     \item 偏航角$\psi$
 
-        绕天轴旋转的角度,用方向余弦阵表示: 
+        绕天轴旋转的角度,用方向余弦阵表示\footnote{用极坐标很容易推导\citep{二维旋转}}: 
         \begin{eqnarray}\label{偏航角方向余弦}
             \begin{split}
                 C_1=\left[\begin{matrix}
@@ -252,7 +252,7 @@ $^s\bm{\omega}_t$               代表陀螺仪测量出的角速度\footnote{�
     \end{split}
 \end{eqnarray} 
 
-注意\ref{四元数虚部单位运算法则}的顺序不可颠倒，四元数乘法展开\cite{捷联惯导航}: 
+注意\ref{四元数虚部单位运算法则}的顺序不可颠倒，四元数乘法展开\citep{捷联惯导航}: 
 \begin{eqnarray}\label{四元数乘法展开}
     \begin{split}
         \bm{q}\cdot \bm{p}
@@ -313,7 +313,9 @@ $^s\bm{\omega}_t$               代表陀螺仪测量出的角速度\footnote{�
 式\ref{四元数积}代入式\ref{四元数微分方程}，并写为分量形式得到式\ref{四元数分量微分方程}。
 
 \subsubsection{四元数与欧拉角的转换}\label{section:四元数与欧拉角的转换}
-n系到s系的转换可以利用欧拉角求得:
+四元数与欧拉角的转换需要使用方向余弦阵与旋转一一对应，所以将姿态四元数和欧拉角都转换为方向余弦阵就可以得到它们之间的转换关系。
+
+n系到s系的方向余弦阵可以利用欧拉角\footnote{顺序为航空次序角$zyx$}\citep{捷联惯导航}求得:
 \begin{equation}\label{欧拉角方向余弦}
     \begin{split} 
         C^s_n=C_3C_2C_1
@@ -321,9 +323,9 @@ n系到s系的转换可以利用欧拉角求得:
 \end{equation} 
 
 将式\ref{偏航角方向余弦},\ref{俯仰角方向余弦},\ref{横滚角方向余弦}带入\ref{欧拉角方向余弦}整理可得:
-\begin{equation}\label{欧拉角s转n}
+\begin{equation}\label{欧拉角n转s}
     \begin{split} 
-        C^s_n=&\left[\begin{matrix}
+        C^n_s=&\left[\begin{matrix}
                 1 &           0 &          0 & \\
                 0 &  \cos{\phi} & \sin{\phi} & \\
                 0 & -\sin{\phi} & \cos{\phi} & \\
@@ -341,28 +343,108 @@ n系到s系的转换可以利用欧拉角求得:
                 =&\left[\begin{matrix}
                 \cos{\theta}\cos{\psi} & \cos{\theta}\sin{\psi} & -\sin{\psi} & \\
                 -\cos{\phi}\sin{\psi}+\sin{\phi}sin{\theta}\cos{\psi} & \cos{\phi}\cos{\psi}+\sin{\phi}sin{\theta}\sin{\psi} & \sin{\phi}\cos{\theta} & \\
-                 \sin{\phi}\sin{\psi} + \cos{\phi}\sin{\theta}\cos{\psi} & -\sin{\phi}\cos{\psi} + \cos{\phi}\sin{\theta}\sin{\psi} & -\cos{\phi}\cos{\theta} &
+                 \sin{\phi}\sin{\psi} + \cos{\phi}\sin{\theta}\cos{\psi} & -\sin{\phi}\cos{\psi} + \cos{\phi}\sin{\theta}\sin{\psi} & \cos{\phi}\cos{\theta} &
                 \end{matrix}\right]
     \end{split}
 \end{equation} 
 
-由于方向余弦矩阵的逆矩阵与转置矩阵是同一个矩阵\cite{方向余弦阵}，所以s系到n系的转换公式为:
+由于n系到s系方向余弦矩阵与s系到n系的方向余弦阵互为转置\citep{方向余弦阵}，所以s系到n系的转换公式为:
 \begin{equation}\label{欧拉角s转n}
     \begin{split} 
-        C^n_s=&{C^s_n}^\mathrm{T} \\
+        C^s_n=&{C^n_s}^\mathrm{T} \\
              =&\left[\begin{matrix}
                 \cos{\theta}\cos{\psi} & -\cos{\phi}\sin{\psi}+\sin{\phi}sin{\theta}\cos{\psi} &  \sin{\phi}\sin{\psi} + \cos{\phi}\sin{\theta}\cos{\psi} & \\
                 \cos{\theta}\sin{\psi} &  \cos{\phi}\cos{\psi}+\sin{\phi}sin{\theta}\sin{\psi} & -\sin{\phi}\cos{\psi} + \cos{\phi}\sin{\theta}\sin{\psi} & \\
-                -\sin{\psi} & \sin{\phi}\cos{\theta} & -\cos{\phi}\cos{\theta} &
+                -\sin{\psi} & \sin{\phi}\cos{\theta} & \cos{\phi}\cos{\theta} &
                 \end{matrix}\right]
     \end{split}
 \end{equation} 
 
+n系到s系的方向余弦阵可以利用四元数\citep{四元数矢量旋转证明1,四元数矢量旋转证明2}求得:
+\begin{equation}\label{四元数旋转向量}
+    \begin{split} 
+        ^n\bm{r} 
+        = &^s_n\bm{q} ^s\bm{r} ^s_n\bm{q}^{-1} \\
+        = &^s_n\bm{q} ^s\bm{r} ^s_n\bm{q}^{*} \\
+        = &C^s_n \cdot ^s\bm{r}
+    \end{split}
+\end{equation} 
+
+连续应用式\ref{四元数积}化简式\ref{四元数旋转向量}得:
+\begin{equation}\label{四元数方向余弦阵}
+    \begin{split} 
+        C^s_n = \left[\begin{matrix} 
+                (a^2+b^2-c^2-d^2) & 2(bc-ad) & 2(bd+ac) & \\
+                2(bc+ad) & (a^2-b^2+c^2-d^2) & 2(cd-ab) & \\
+                2(bd-ac) & 2(cd+ab) & (a^2-b^2-c^2+d^2) &
+        \end{matrix}\right]
+    \end{split}
+\end{equation} 
+
+方向余弦写为分量形式:
+\begin{equation}\label{方向余弦}
+    \begin{split} 
+        C^s_n = \left[\begin{matrix} 
+                C_{1,1} & C_{1,2} & C_{1,3} & \\
+                C_{2,1} & C_{2,2} & C_{2,3} & \\
+                C_{3,1} & C_{3,2} & C_{3,3} &
+        \end{matrix}\right]
+    \end{split}
+\end{equation} 
+
+结合式\ref{欧拉角s转n}、式\ref{四元数方向余弦阵}和式\ref{方向余弦}得:
+\begin{equation}\label{欧拉角转四元数}
+    \begin{split} 
+        a=b
+    \end{split}
+\end{equation} 
+\begin{equation}\label{四元数转欧拉角}
+    \begin{split} 
+        a=b
+    \end{split}
+\end{equation} 
+式\ref{欧拉角转四元数}是欧拉角转四元数公式，式\ref{四元数转欧拉角}是四元数转欧拉角公式。
+
+\subsubsection{四元数归一化}
+四元数归一化如下:
+\begin{equation}\label{四元数归一化}
+    \begin{split}
+        |^s_n\bm{q}|&=^s_n\bm{q} \cdot ^s_n\bm{q}^*={q_0^2+q_1^2+q_2^2+q_3^2}\\ 
+        ^s_n\bm{q}_{norm}&=\frac{^s_n\bm{q}}{|^s_n\bm{q}|}
+        =\left[\frac{q_{0,t}}{|^s_n\bm{q}|}\quad
+            \frac{q_{1,t}}{|^s_n\bm{q}|}\quad
+            \frac{q_{2,t}}{|^s_n\bm{q}|}\quad
+             \frac{q_{3,t}}{|^s_n\bm{q}|}\right]^\mathrm{T}
+    \end{split}
+\end{equation} 
+
+\subsubsection{3轴姿态解算小结}\label{section:3轴姿态解算小结}
+\begin{enumerate}
+        \item 初始化 
+            
+            首先，将初始欧拉角$\psi=\theta=\phi=0$代入公式\ref{欧拉角转四元数}得到初始四元数为:
+            \begin{equation}\label{四元数初始化}
+                ^s_n\bm{q}=[1\quad 0\quad 0\quad 0]^\mathrm{T}
+            \end{equation} 
+
+        \item 求姿态微分\label{3轴迭代开始}
+            
+            使用公式\ref{四元数分量微分方程}求解当前姿态微分;
+
+        \item 积分求姿态
+            
+            使用公式\ref{四元数分量积分方程}求解当前姿态四元数; 
+
+        \item 归一化 
+            
+            使用公式\ref{四元数归一化}归一化姿态并进入下次一迭代\ref{3轴迭代开始}。
+\end{enumerate}
+
 \section{后续工作}
 \begin{enumerate}
-    \item 向量旋转的四元数公式
+    \item 6、9轴融合
         
-        向量旋转的四元数公式 证明
+        融合算法继续
     \item 考虑“指东针“
 
         将重力场矢量与地磁叉乘得到一个仅有东向\footnote{或向西,由叉乘顺序决定}分量的矢量,这样可以简化计算。但有两个问题需要验证:
@@ -391,7 +473,6 @@ n系到s系的转换可以利用欧拉角求得:
 \centering %居中
 \bibliographystyle{plain}
 \bibliography{doc}
-
 
 \end{document}
 
