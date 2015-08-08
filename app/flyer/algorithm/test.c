@@ -58,7 +58,7 @@ static float rand_range(float min, float max);
  ******************************************************************************/
 int main(int argc, char *argv[])
 {
-    int i = 0;
+    unsigned long long i = 0;
     float gyro[3] = {0.0f};
     float attitude[3] = {0.0f}; 
 
@@ -72,11 +72,12 @@ int main(int argc, char *argv[])
 
         imu_update(gyro); 
         imu_get_attitude(attitude);
+        printf("%llu", i);
         printf("wx:%7.4f, wy:%7.4f, wz:%7.4f => ", 
                 gyro[0], gyro[1], gyro[2]);
         printf("yaw:%7.4f, pitch:%7.4f, roll:%7.4f, max=%7.4f\n", 
                 math_arc2angle(attitude[0]), math_arc2angle(attitude[1]), math_arc2angle(attitude[2]), max);
-        usleep(ALGO_GYRO_PERIOD * 1000000);
+        //usleep(ALGO_GYRO_PERIOD * 1000000);
 
         /* 找最大值 */
         if(max < fabs(math_arc2angle(attitude[0])))
