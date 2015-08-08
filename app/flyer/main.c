@@ -63,23 +63,36 @@ void temp_imu(float *ypr, float *gyro);
 int main(void)
 { 
 
-#if 0
+#if 1
     unsigned char val = 0;
+    int i = 0;
+    int iMax = 0;
     int read_num = 0;
+    unsigned char bmp180_reg_addr[] = {
+        0xAA, 0xAB,
+        0xAC, 0xAD,
+        0xAE, 0xAF,
+        0xBA, 0xBB,
+        0xBC, 0xBD,
+        0xBE, 0xBF,
+        0xD0, 0xE0, 0xF4, 0xF6, 0xF7, 0xF8};
+
     /* 初始化硬件 */
     cmos_init();
     cmos_i2c_init(MPU9250_I2C_INDEX, MPU9250_SPEED);
 
-    cmos_printf("读取BMP180 ID:");
-    read_num = cmos_i2c_read_buf(0xEF, 0xD0, &val, 1);
-    if(read_num != 1)
-    {
-        assert_failed(__FILE__, __LINE__);
+    cmos_printf("BMP180 寄存器值:\r\n");
+    iMax = sizeof(bmp180_reg_addr) /sizeof(bmp180_reg_addr[0]);
+    for(i=0;i<iMax;i++) 
+    { 
+        read_num = cmos_i2c_read_buf(0xEF, bmp180_reg_addr[i], &val, 1);
+        if(read_num != 1)
+        {
+            assert_failed(__FILE__, __LINE__);
+        }
+        cmos_printf("0x%02x:0x%02x\r\n", bmp180_reg_addr[i], val);
     }
-    cmos_printf("0x%02x.\r\n", val);
-
     while(TRUE);
-
 #else
     unsigned long time_stamp = 0;   /* 时间 */
     float temperature = 0;          /* 温度 */
