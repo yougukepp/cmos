@@ -1,0 +1,107 @@
+
+下面对三个算法分别阐述。
+\subsection{3轴姿态}
+3轴姿态使用陀螺仪的数据\footnote{角速度}计算姿态的微分，然后对微分求积分获取当前姿态，下面开始分析。
+\subsubsection{四元数微积分}
+\begin{equation}\label{四元数积分方程}
+    ^s_n\bm{q}_{est,t}=^s_n\bm{q}_{est,t-1}+^s_n\dot{{\bm{q}}}_{\omega,t} \Delta t
+\end{equation} 
+
+$^s_n\bm{q}_{est,t}$            代表本次迭代计算出的姿态，该量为姿态解算的结果；
+$^s_n\bm{q}_{est,t-1}$          代表上次迭代计算出的姿态，该量已知；
+$^s_n\dot{{\bm{q}}}_{\omega,t}$ 代表使用陀螺仪数据计算出的姿态微分,该量未知；
+$\Delta t$                      代表上次与本次迭代的时间间隔，该量为算法的可调参数，通常越小越好。
+
+$^s_n\dot{{\bm{q}}}_{\omega,t}$的计算公式由四元数微分方程计算:
+\begin{equation}\label{四元数微分方程}
+    ^s_n\dot{{\bm{q}}}_{\omega,t}=\frac{1}{2}{^s_n\bm{q}_{est,t-1}}\cdot^s{\bm{\omega}}_t
+\end{equation} 
+
+$^s_n\dot{{\bm{q}}}_{\omega,t}$ 代表使用陀螺仪数据计算出的姿态微分,与式\ref{四元数积分方程}中含义相同，需要求解。
+$^s_n\bm{q}_{est,t-1}$          代表上次姿态值\footnote{3轴融合算法中仅用陀螺仪数据估计，6轴或9轴使用额外的传感器数据。}
+$\cdot$                         代表四元数乘法。
+$^s\bm{\omega}_t$               代表陀螺仪测量出的角速度\footnote{基于s系}。
+
+四元数微分方程的推导笔者不会，如果想自己推导究可以研究参考文献\citet{四元数微分方程的推导}。由于C语言中没有向量的概念，所以式\ref{四元数积分方程}和\ref{四元数微分方程}需要转换为分量形式。
+\subsubsection{四元数分量微积分}
+式\ref{四元数积分方程}的分量形式为:
+\begin{eqnarray}\label{四元数分量积分方程}
+    \begin{split}
+        q_{0,t} = q_{0,t-1} + \dot{q}_{0,t} \cdot \Delta t \\ 
+        q_{1,t} = q_{1,t-1} + \dot{q}_{1,t} \cdot \Delta t \\
+        q_{2,t} = q_{2,t-1} + \dot{q}_{2,t} \cdot \Delta t \\
+        q_{3,t} = q_{3,t-1} + \dot{q}_{3,t} \cdot \Delta t
+    \end{split}
+\end{eqnarray} 
+
+$q_{x,t}$       代表当前第$x$个姿态分量的值；
+$q_{x,t-1}$     代表上次迭代得到第$x$个姿态分量值；
+$\dot{q}_{x,t}$ 代表当前第$x$个姿态分量的微分；
+$\Delta t$      代表上次与本次迭代的时间间隔，该量为算法的可调参数。
+
+式\ref{四元数分量积分方程}中的每个分量利用上次迭代的分量值和微分求解当前值,公式右边的$\dot{q}_{x,t}$需要使用式\ref{四元数分量微分方程}求解:
+\begin{eqnarray}\label{四元数分量微分方程}
+    \begin{split}
+        \dot{q}_{0,t}&=- &\frac{1}{2}(q_{1,t-1}\omega_x+q_{2,t-1}\omega_y+q_{3,t-1}\omega_z) \\
+        \dot{q}_{1,t}&=  &\frac{1}{2}(q_{0,t-1}\omega_x+q_{2,t-1}\omega_z-q_{3,t-1}\omega_y) \\
+        \dot{q}_{2,t}&=  &\frac{1}{2}(q_{0,t-1}\omega_y-q_{1,t-1}\omega_z+q_{3,t-1}\omega_x) \\
+        \dot{q}_{3,t}&=  &\frac{1}{2}(q_{0,t-1}\omega_z+q_{1,t-1}\omega_y-q_{2,t-1}\omega_x)
+    \end{split}
+\end{eqnarray} 
+
+式\ref{四元数分量微分方程}是式\ref{四元数微分方程}的分量形式,\ref{section:四元数分量微分方程推导}完成式四元数分量微分方程的推导。
+$\dot{q}_{x,t}$ 代表当前第$x$个姿态分量的微分值； 
+$q_{x,t-1}$     代表上次迭代得到第$x$个姿态分量值；
+$\omega_x$      代表陀螺仪测量的$x$\footnote{前}轴的角速度;
+$\omega_y$      代表陀螺仪测量的$y$\footnote{右}轴的角速度;
+$\omega_z$      代表陀螺仪测量的$z$\footnote{天}轴的角速度。
+
+\subsubsection{四元数分量微分方程推导}\label{section:四元数分量微分方程推导}
+三维矢量表示为四元数时，四元数标量分量为0，矢量的三维分量与四元数虚部对应。所以陀螺仪测量出$^s\bm{\omega}_t$的角速度矢量与姿态矢量分别表示为四元数:
+\begin{eqnarray}\label{四元数分量方程}
+    \begin{split}
+        ^s_n\bm{q}_t&=[q_{0,t}\quad q_{1,t}\quad q_{2,t}\quad q_{3,t}] \\
+        ^s\bm{\omega}_t&=[0\quad \omega_x\quad \omega_y\quad \omega_z]
+    \end{split}
+\end{eqnarray} 
+
+式\ref{四元数分量方程}代入\ref{四元数乘法展开}写为分量形式得:
+\begin{eqnarray}\label{四元数积}
+    \begin{split} 
+        ^s_n\bm{q}_{est,t-1}\cdot^s{\bm{\omega}}_t=
+        \left[\begin{matrix}
+                -q_{1,t-1}\omega_x-q_{2,t-1}\omega_y-q_{3,t-1}\omega_z \\
+                 q_{0,t-1}\omega_x+q_{2,t-1}\omega_z-q_{3,t-1}\omega_y \\
+                 q_{0,t-1}\omega_y-q_{1,t-1}\omega_z+q_{3,t-1}\omega_x \\
+                 q_{0,t-1}\omega_z+q_{1,t-1}\omega_y-q_{2,t-1}\omega_x
+        \end{matrix}\right]^\mathrm{T}
+        \left[\begin{matrix}
+                1 \\ i \\ j \\ k
+        \end{matrix}\right] \\
+    \end{split}
+\end{eqnarray} 
+
+式\ref{四元数积}代入式\ref{四元数微分方程}，并写为分量形式得到式\ref{四元数分量微分方程}。
+
+\subsubsection{3轴姿态解算小结}\label{section:3轴姿态解算小结}
+\begin{enumerate}
+        \item 初始化 
+            
+            首先，将初始欧拉角$\psi=\theta=\phi=0$代入公式\ref{欧拉角转四元数}得到初始四元数为:
+            \begin{equation}\label{四元数初始化}
+                ^s_n\bm{q}=[1\quad 0\quad 0\quad 0]^\mathrm{T}
+            \end{equation} 
+
+        \item 求姿态微分\label{3轴迭代开始}
+            
+            使用公式\ref{四元数分量微分方程}求解当前姿态微分;
+
+        \item 积分求姿态
+            
+            使用公式\ref{四元数分量积分方程}求解当前姿态; 
+
+        \item 归一化 
+            
+            使用公式\ref{四元数归一化}归一化姿态并进入下次一迭代\ref{3轴迭代开始}。
+\end{enumerate}
+
