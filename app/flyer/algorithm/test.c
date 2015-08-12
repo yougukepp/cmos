@@ -61,6 +61,9 @@ int main(int argc, char *argv[])
     unsigned long long i = 0;
     float gyro[3] = {0.0f};
     float attitude[3] = {0.0f}; 
+    float yaw = 0.0f;
+    float pitch = 0.0f;
+    float roll = 0.0f;
 
     float max = 0;
 
@@ -72,25 +75,30 @@ int main(int argc, char *argv[])
 
         imu_update(gyro); 
         imu_get_attitude(attitude);
+
+        yaw = attitude[0];
+        pitch = attitude[1];
+        roll = attitude[2];
+
         printf("%llu", i);
         printf("wx:%7.4f, wy:%7.4f, wz:%7.4f => ", 
                 gyro[0], gyro[1], gyro[2]);
         printf("yaw:%7.4f, pitch:%7.4f, roll:%7.4f, max=%7.4f\n", 
-                math_arc2angle(attitude[0]), math_arc2angle(attitude[1]), math_arc2angle(attitude[2]), max);
+                math_arc2angle(yaw), math_arc2angle(pitch), math_arc2angle(roll), max);
         //usleep(ALGO_GYRO_PERIOD * 1000000);
 
         /* 找最大值 */
-        if(max < fabs(math_arc2angle(attitude[0])))
+        if(max < fabs(math_arc2angle(yaw)))
         {
-            max = fabs(math_arc2angle(attitude[0]));
+            max = fabs(math_arc2angle(yaw));
         }
-        if(max < fabs(math_arc2angle(attitude[1])))
+        if(max < fabs(math_arc2angle(pitch)))
         {
-            max = fabs(math_arc2angle(attitude[1]));
+            max = fabs(math_arc2angle(pitch));
         }
-        if(max < fabs(math_arc2angle(attitude[2])))
+        if(max < fabs(math_arc2angle(roll)))
         {
-            max = fabs(math_arc2angle(attitude[2]));
+            max = fabs(math_arc2angle(roll));
         }
         i++;
     }

@@ -250,9 +250,9 @@ int imu_get_attitude(float *attitude)
     roll  = -asin(2*(q1*q3 + q0*q2));
     pitch = atan2(2*(q2*q3 - q0*q1), 2*(q0*q0 + q3*q3) - 1);
 
-    attitude[0] = pitch;
-    attitude[1] = roll;
-    attitude[2] = yaw;
+    attitude[0] = yaw;
+    attitude[1] = pitch;
+    attitude[2] = roll;
 
     return 0;
 }

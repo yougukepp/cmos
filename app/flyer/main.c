@@ -63,7 +63,7 @@ void temp_imu(float *ypr, float *gyro);
 int main(void)
 { 
 
-#if 1
+#if 0
     unsigned char val = 0;
     int i = 0;
     int iMax = 0;
