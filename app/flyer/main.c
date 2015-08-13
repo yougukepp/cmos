@@ -105,20 +105,19 @@ int main(void)
     init();
     do{
         get_temperature(&temperature, &time_stamp);
-        cmos_printf("temperature:%5.2fC)\r\n", temperature);
+        cmos_printf("%lu, temperature:  %5.2fC.\r\n", time_stamp, temperature);
 
         get_gyro(gyro, &time_stamp); 
-        cmos_printf("gyro(%5.2fs):      %5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
+        cmos_printf("gyro:              %5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
 
         temp_imu(ypr, gyro);
-        cmos_printf("time:%l", time_stamp);
-        cmos_printf("ypr(%5.2fs):       %5.2f,%5.2f,%5.2f.\r\n", ypr[0], ypr[1], ypr[2]);
+        cmos_printf("ypr:               %5.2f,%5.2f,%5.2f.\r\n", ypr[0], ypr[1], ypr[2]);
 
         get_accel(accel, &time_stamp); 
-        cmos_printf("accel(%5.2fs):     %5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
+        cmos_printf("accel:             %5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
 
         get_compass(compass, &time_stamp);
-        cmos_printf("compass(%5.2f):    %5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
+        cmos_printf("compass:           %5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
 
         cmos_printf("\r\n");
 
@@ -128,7 +127,7 @@ int main(void)
 }
 
 /* 临时使用 */
-void temp_imu(float *ypr, float *gyro)
+void temp_imu(float *ypr, const float *gyro)
 {
     imu_update(gyro); 
     imu_get_attitude(ypr);
