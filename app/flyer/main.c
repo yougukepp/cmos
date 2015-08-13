@@ -40,7 +40,7 @@ static void get_gyro(float *gyro, unsigned long *time_stamp);
 static void get_accel(float *accel, unsigned long *time_stamp);
 static void get_compass(float *compass, unsigned long *time_stamp);
 
-void temp_imu(float *ypr, float *gyro);
+void temp_imu(float *ypr, const float *gyro);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
