@@ -144,7 +144,7 @@
     \end{split}
 \end{equation} 
 
-n系到s系的方向余弦阵可以利用单位四元数\citep{四元数矢量旋转证明1,四元数矢量旋转证明2}求得:
+s系到n系的方向余弦阵可以利用单位四元数\citep{四元数矢量旋转证明1,四元数矢量旋转证明2}求得:
 \begin{equation}\label{四元数旋转向量}
     \begin{split} 
         ^n\bm{r} 
@@ -165,9 +165,9 @@ $\mathrm{C}^s_n$    表示s系到n系的方向余弦。
 \begin{equation}\label{四元数方向余弦阵}
     \begin{split} 
         C^s_n = \left[\begin{matrix} 
-                (q^2_0+q^2_1-q^2_2-q^2_3) & (2q_1q_2+2q_0q_3) & (2q_1q_3-2q_0q_2) & \\
-                (2q_1q_2-2q_0q_3) & (q^2_0-q^2_1+q^2_2-q^2_3) & (2q_2q_3+2q_0q_1) & \\
-                (2q_1q_3+2q_0q_2) & (2q_2q_3-2q_0q_1) & (q^2_0-q^2_1-q^2_2+q^2_3) &
+                (q^2_0+q^2_1-q^2_2-q^2_3) & (2q_1q_2-2q_0q_3) & (2q_1q_3+2q_0q_2) & \\
+                (2q_1q_2+2q_0q_3) & (q^2_0-q^2_1+q^2_2-q^2_3) & (2q_2q_3-2q_0q_1) & \\
+                (2q_1q_3-2q_0q_2) & (2q_2q_3+2q_0q_1) & (q^2_0-q^2_1-q^2_2+q^2_3) &
         \end{matrix}\right]
     \end{split}
 \end{equation} 
@@ -183,7 +183,7 @@ $\mathrm{C}^s_n$    表示s系到n系的方向余弦。
     \end{split}
 \end{equation} 
 
-结合式\ref{欧拉角s转n}、式\ref{四元数方向余弦阵}和式\ref{方向余弦}得\footnote{推导过于繁琐，风别从\citep{捷联惯导航},\citep{9轴融合论文}中抄录}:
+结合式\ref{欧拉角s转n}、式\ref{四元数方向余弦阵}和式\ref{方向余弦}得\footnote{推导过于繁琐，分别从\citep{捷联惯导航},\citep{9轴融合论文}中抄录},需要重推，有问题:
 \begin{equation}\label{欧拉角转四元数}
     \begin{split} 
         q_0=\cos\frac{\phi}{2}\cos\frac{\theta}{2}\cos\frac{\psi}{2}+\sin\frac{\phi}{2}\sin\frac{\theta}{2}\sin\frac{\psi}{2} \\
