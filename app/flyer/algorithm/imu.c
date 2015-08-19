@@ -25,6 +25,7 @@
 
 /********************************** 变量声明区 *********************************/
 static float s_quaternion[4] = {1.0f, 0.0f, 0.0f, 0.0f}; /* 四元数 q0 q1 q2 q3*/
+static float s_eg_integration[3] = {0.0f}; /* 加计误差积分 */
 
 /********************************** 函数声明区 *********************************/
 static int quaternion_lock(void);
@@ -131,9 +132,41 @@ int imu_update(const float *gyro)
  ******************************************************************************/
 int imu_fusion6axis(const float *gyro, const float *accel)
 {
-    /* 求解加计(重力)向量 在s系的值 */
+    float q0 = 0.0f;
+    float q1 = 0.0f;
+    float q2 = 0.0f;
+    float q3 = 0.0f;
+    float sg[3] = {0.0f}; /* 加计(重力)向量在s系的值 */
+    float eg[3] = {0.0f}; /* 加计误差 */
+    float est_gyro[3] = {0.0f}; /* 陀螺仪校正后的值 */
 
+    quaternion_lock();
+    q0 = s_quaternion[0];
+    q1 = s_quaternion[1];
+    q2 = s_quaternion[2];
+    q3 = s_quaternion[3];
+    quaternion_unlock();
 
+    /* n系到s系的方向余弦的第三列即为 加计(重力)向量 在s系的值 */
+    sg[0] = 2*(q1*q3 - q0*q2);
+    sg[1] = 2*(q0*q1 + q2*q3);
+    sg[2] = 2*(q0*q0 + q3*q3) - 1 ;
+
+    /* 叉积表示误差 */
+    math_vector_product(eg, accel, sg);
+
+    /* 对误差进行积分 */
+    s_eg_integration[0] += eg[0] * ALGO_ACCEL_KI;
+    s_eg_integration[0] += eg[1] * ALGO_ACCEL_KI;
+    s_eg_integration[0] += eg[2] * ALGO_ACCEL_KI;
+
+    /* 修正陀螺仪器 */
+    est_gyro[0] = gyro[0] + ALGO_ACCEL_KP*eg[0] + s_eg_integration[0];
+    est_gyro[1] = gyro[1] + ALGO_ACCEL_KP*eg[1] + s_eg_integration[1];
+    est_gyro[2] = gyro[2] + ALGO_ACCEL_KP*eg[2] + s_eg_integration[2];
+
+    /* 使用修正值计算姿态 */
+    imu_update(est_gyro);
 
     return 0;
 }
