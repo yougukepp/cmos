@@ -62,6 +62,7 @@ int imu_update(const float *gyro)
     float q3_diff = 0.0f;
 
     float q_norm = 0.0f;
+    float half_period = 0.5f * ALGO_GYRO_PERIOD;
 
     /* 角度转弧度 */
     wx = math_angle2arc(wx);
@@ -71,16 +72,16 @@ int imu_update(const float *gyro)
     quaternion_lock();
 
     /* 微分 */
-    q0_diff =  -0.5f * (s_quaternion[1] * wx + s_quaternion[2] * wy + s_quaternion[3] * wz);
-    q1_diff =   0.5f * (s_quaternion[0] * wx + s_quaternion[2] * wz - s_quaternion[3] * wy);
-    q2_diff =   0.5f * (s_quaternion[0] * wy - s_quaternion[1] * wz + s_quaternion[3] * wx);
-    q3_diff =   0.5f * (s_quaternion[0] * wz + s_quaternion[1] * wy - s_quaternion[2] * wx);
+    q0_diff =  -half_period * (s_quaternion[1] * wx + s_quaternion[2] * wy + s_quaternion[3] * wz);
+    q1_diff =   half_period * (s_quaternion[0] * wx + s_quaternion[2] * wz - s_quaternion[3] * wy);
+    q2_diff =   half_period * (s_quaternion[0] * wy - s_quaternion[1] * wz + s_quaternion[3] * wx);
+    q3_diff =   half_period * (s_quaternion[0] * wz + s_quaternion[1] * wy - s_quaternion[2] * wx);
 
     /* 积分 */
-    s_quaternion[0] += q0_diff * ALGO_GYRO_PERIOD;
-    s_quaternion[1] += q1_diff * ALGO_GYRO_PERIOD;
-    s_quaternion[2] += q2_diff * ALGO_GYRO_PERIOD;
-    s_quaternion[3] += q3_diff * ALGO_GYRO_PERIOD;
+    s_quaternion[0] += q0_diff;
+    s_quaternion[1] += q1_diff;
+    s_quaternion[2] += q2_diff;
+    s_quaternion[3] += q3_diff;
 
 #if 0
     printf("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
@@ -130,6 +131,10 @@ int imu_update(const float *gyro)
  ******************************************************************************/
 int imu_fusion6axis(const float *gyro, const float *accel)
 {
+    /* 求解加计(重力)向量 在s系的值 */
+
+
+
     return 0;
 }
 
