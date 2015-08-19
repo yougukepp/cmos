@@ -284,6 +284,7 @@ int imu_get_attitude(float *attitude)
     q3 = s_quaternion[3];
     quaternion_unlock();
 
+    /* TODO: 文档或者公式有错 */
     yaw   = atan2(2*(q1*q2 - q0*q3), 2*(q0*q0 + q1*q1) - 1);
     roll  = -asin(2*(q1*q3 + q0*q2));
     pitch = atan2(2*(q2*q3 - q0*q1), 2*(q0*q0 + q3*q3) - 1);
