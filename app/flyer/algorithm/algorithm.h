@@ -41,10 +41,12 @@ float math_angle2arc(float x);
 float math_arc2angle(float x);
 int math_vector_product(float *product, const float *a, const float *b);
 
+int imu_init(void);
 int imu_update(const float *gyro);
 int imu_fusion6axis(const float *gyro, const float *accel);
 int imu_fusion9axis(const float *gyro, const float *accel, const float *mag);
 int imu_get_attitude(float *attitude);
+int imu_deinit(void);
 
 int pid_pwm(const float *expect_attitude);
 

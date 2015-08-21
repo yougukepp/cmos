@@ -24,17 +24,67 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static float s_quaternion[4] = {1.0f, 0.0f, 0.0f, 0.0f}; /* 四元数 q0 q1 q2 q3*/
+static float s_quaternion[4] = {0.0f}; /* 四元数 q0 q1 q2 q3*/
 static float s_eg_integration[3] = {0.0f}; /* 加计误差积分 */
 
 /********************************** 函数声明区 *********************************/
 static int quaternion_lock(void);
 static int quaternion_unlock(void);
+static int euler2quaternion(float *quaternion, const float *euler);
+static int quaternion2euler(float *euler, const float *quaternion);
 
 /********************************** 变量实现区 *********************************/
 
 
 /********************************** 函数实现区 *********************************/
+/*******************************************************************************
+ *
+ * 函数名  : imu_init
+ * 负责人  : 彭鹏
+ * 创建日期: 20150821
+ * 函数功能: 融合算法初始化
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    无
+ *
+ ******************************************************************************/
+int imu_init(void)
+{
+    float euler[3] = {0.0f}; /* 欧拉角 全零 */
+
+    /* 由欧拉角球四元数初始值 */
+    euler2quaternion(s_quaternion, euler);
+
+
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : imu_deinit
+ * 负责人  : 彭鹏
+ * 创建日期: 20150821
+ * 函数功能: 融合算法反初始化
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    无
+ *
+ ******************************************************************************/
+int imu_deinit(void)
+{
+    return 0;
+}
+
 /*******************************************************************************
  *
  * 函数名  : imu_update
@@ -71,6 +121,8 @@ int imu_update(const float *gyro)
     wz = math_angle2arc(wz);
 
     quaternion_lock();
+
+    printf("%f,%f,%f,%f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
 
     /* 微分 */
     q0_diff =  -half_period * (s_quaternion[1] * wx + s_quaternion[2] * wy + s_quaternion[3] * wz);
@@ -268,6 +320,79 @@ inline static int quaternion_unlock(void)
  ******************************************************************************/
 int imu_get_attitude(float *attitude)
 {
+    float q[4] = {0.0f};
+
+    quaternion_lock(); 
+    q[0] = s_quaternion[0];
+    q[1] = s_quaternion[1];
+    q[2] = s_quaternion[2];
+    q[3] = s_quaternion[3];
+    quaternion_unlock();
+
+    quaternion2euler(attitude, q);
+
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : euler2quaternion
+ * 负责人  : 彭鹏
+ * 创建日期: 20150821
+ * 函数功能: 欧拉角转四元数
+ *
+ * 输入参数: euler   欧拉角
+ *           0 pitch 俯仰角 x轴
+ *           1 roll  翻滚角 y轴
+ *           2 yaw   偏航角 z轴
+ * 输出参数: quaternion 姿态四元数
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    无
+ *
+ ******************************************************************************/
+static int euler2quaternion(float *quaternion, const float *euler)
+{
+    float half_pitch = 0.0f;
+    float half_roll = 0.0f;
+    float half_yaw = 0.0f;
+
+    half_pitch = euler[0] / 2;
+    half_roll = euler[1] / 2;
+    half_yaw = euler[2] / 2;
+
+    quaternion[0] = cos(half_pitch)*cos(half_roll)*cos(half_yaw) + sin(half_pitch)*sin(half_roll)*sin(half_yaw);
+    quaternion[1] = sin(half_pitch)*cos(half_roll)*cos(half_yaw) - cos(half_pitch)*sin(half_roll)*sin(half_yaw);
+    quaternion[2] = cos(half_pitch)*sin(half_roll)*cos(half_yaw) + sin(half_pitch)*cos(half_roll)*sin(half_yaw);
+    quaternion[3] = cos(half_pitch)*cos(half_roll)*sin(half_yaw) - sin(half_pitch)*sin(half_roll)*cos(half_yaw);
+
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : quaternion2euler
+ * 负责人  : 彭鹏
+ * 创建日期: 20150821
+ * 函数功能: 四元数转欧拉角
+ *
+ * 输入参数: quaternion 姿态四元数
+ *
+ * 输出参数: euler   欧拉角
+ *           0 pitch 俯仰角 x轴
+ *           1 roll  翻滚角 y轴
+ *           2 yaw   偏航角 z轴
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    无
+ *
+ ******************************************************************************/
+static int quaternion2euler(float *euler, const float *quaternion)
+{
     float pitch = 0.0f;
     float roll = 0.0f;
     float yaw = 0.0f;
@@ -284,14 +409,16 @@ int imu_get_attitude(float *attitude)
     q3 = s_quaternion[3];
     quaternion_unlock();
 
-    /* TODO: 文档或者公式有错 */
-    yaw   = atan2(2*(q1*q2 - q0*q3), 2*(q0*q0 + q1*q1) - 1);
-    roll  = -asin(2*(q1*q3 + q0*q2));
-    pitch = atan2(2*(q2*q3 - q0*q1), 2*(q0*q0 + q3*q3) - 1);
 
-    attitude[0] = yaw;
-    attitude[1] = pitch;
-    attitude[2] = roll;
+    pitch = atan2(q2*q3 + q0*q1, q0*q0 + q3*q3 - 0.5f);
+    roll  = -asin(2*(q1*q3 - q0*q2));
+    yaw   = atan2(q1*q2 + q0*q3, q0*q0 + q1*q1 - 0.5f);
+
+    euler[0] = pitch;
+    euler[1] = roll;
+    euler[2] = yaw;
+
+    /* FIXME: 是否是全姿态的，反三角函数计算出的角度是否需要修正? */
 
     return 0;
 }

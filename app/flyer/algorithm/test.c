@@ -65,7 +65,9 @@ int main(int argc, char *argv[])
     float pitch = 0.0f;
     float roll = 0.0f;
 
-    float max = 0;
+    float max = 0; 
+    
+    imu_init(); 
 
     while(1)
     {
@@ -76,9 +78,9 @@ int main(int argc, char *argv[])
         imu_update(gyro); 
         imu_get_attitude(attitude);
 
-        yaw = attitude[0];
-        pitch = attitude[1];
-        roll = attitude[2];
+        pitch = attitude[0];
+        roll = attitude[1];
+        yaw = attitude[2];
 
         printf("%llu", i);
         printf("wx:%7.4f, wy:%7.4f, wz:%7.4f => ", 
@@ -102,6 +104,7 @@ int main(int argc, char *argv[])
         }
         i++;
     }
+    imu_deinit(); 
 
     printf("test done!\n");
     return 0;
