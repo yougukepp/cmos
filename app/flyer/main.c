@@ -34,13 +34,14 @@
 
 /********************************** 函数声明区 *********************************/
 static int init(void);
+static int deinit(void);
 static void run_self_test(void);
 static void get_temperature(float *temperature, unsigned long *time_stamp);
 static void get_gyro(float *gyro, unsigned long *time_stamp);
 static void get_accel(float *accel, unsigned long *time_stamp);
 static void get_compass(float *compass, unsigned long *time_stamp);
 
-void temp_imu(float *ypr, const float *gyro);
+void temp_imu(float *pry, const float *gyro);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -60,6 +61,8 @@ void temp_imu(float *ypr, const float *gyro);
 * 其 它   : 无
 *
 ******************************************************************************/
+
+float angle = 0;
 int main(void)
 { 
 
@@ -100,37 +103,58 @@ int main(void)
     float gyro[MAIN_DIM] = {0};     /* 陀螺仪 x y z*/
     float compass[MAIN_DIM] = {0};  /* 磁力计 x y z*/
 
-    float ypr[MAIN_DIM] = {0};      /* yaw pitch roll */
+    float pry[MAIN_DIM] = {0};      /* yaw pitch roll */
 
+    angle = asin(0.5f) * ALGO_ARC2ANGLE_RATE;          // 30
+		angle = atan2(1.0, 1.0) * ALGO_ARC2ANGLE_RATE;     // 45
+    angle = atan2(1.0, -1.0) * ALGO_ARC2ANGLE_RATE;    // 135
+    angle = atan2(-1.0, -1.0) * ALGO_ARC2ANGLE_RATE;   // -135
+		angle = atan2(-1.0, 1.0) * ALGO_ARC2ANGLE_RATE;    // -45
+		
     init();
+
+    int times = 0;
+    int times_print = 250;
+
+		
     do{
-        get_temperature(&temperature, &time_stamp);
-        cmos_printf("%lu, temperature:  %5.2fC.\r\n", time_stamp, temperature);
-
+        get_temperature(&temperature, &time_stamp); 
         get_gyro(gyro, &time_stamp); 
-        cmos_printf("gyro:              %5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
-
-        temp_imu(ypr, gyro);
-        cmos_printf("ypr:               %5.2f,%5.2f,%5.2f.\r\n", ypr[0], ypr[1], ypr[2]);
-
+        temp_imu(pry, gyro);
         get_accel(accel, &time_stamp); 
-        cmos_printf("accel:             %5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
-
         get_compass(compass, &time_stamp);
-        cmos_printf("compass:           %5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
 
-        cmos_printf("\r\n");
+        if(times > times_print)
+        {
+            cmos_printf("%d,%lu:\r\n", times, time_stamp);
+            cmos_printf("temperature:       %5.2fC.\r\n", temperature);
+            cmos_printf("pry:               %5.2f,%5.2f,%5.2f.\r\n", pry[0], pry[1], pry[2]);
+            cmos_printf("gyro:              %5.2f,%5.2f,%5.2f.\r\n", gyro[0], gyro[1], gyro[2]);
+            cmos_printf("accel:             %5.2f,%5.2f,%5.2f.\r\n", accel[0], accel[1], accel[2]);
+            cmos_printf("compass:           %5.2f,%5.2f,%5.2f.\r\n", compass[0], compass[1], compass[2]);
+            cmos_printf("\r\n");
+            times = 0;
+        }
 
         mpu9250_delay_ms(1); /* 1ms 打印一次 */
+
+        times++;
     }while(TRUE);
+
+    deinit();
 #endif
 }
 
 /* 临时使用 */
-void temp_imu(float *ypr, const float *gyro)
+void temp_imu(float *pry, const float *gyro)
 {
     imu_update(gyro); 
-    imu_get_attitude(ypr);
+    imu_get_attitude(pry);
+
+    for(int i=0;i<3;i++)
+    {
+        pry[i] = math_arc2angle(pry[i]);
+    }
 }
 
 /*******************************************************************************
@@ -202,8 +226,18 @@ static int init(void)
 
     cmos_printf("自检...\r\n"); 
     run_self_test();
+
+    cmos_printf("imu算法库初始化...\r\n"); 
+    imu_init();
+
     cmos_printf("初始化完成.\r\n");
 
+    return 0;
+}
+
+int deinit(void)
+{
+    imu_deinit();
     return 0;
 }
 
@@ -216,7 +250,7 @@ static int init(void)
 *
 * 输入参数: 无
 *
-* 输出参数: (unsigned long *time, float *temper, float *ypr, float *accel, float *gyro, float *compass)
+* 输出参数: (unsigned long *time, float *temper, float *pry, float *accel, float *gyro, float *compass)
 *
 * 返回值  : 0       成功
 *           其他    失败

@@ -187,22 +187,27 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gyro_rate</ItemText>
+          <ItemText>s_quaternion</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gyro_fsr</ItemText>
+          <ItemText>wx</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>accel_fsr</ItemText>
+          <ItemText>wy</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>compass_fsr</ItemText>
+          <ItemText>wz</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>angle</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

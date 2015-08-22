@@ -122,7 +122,7 @@ int imu_update(const float *gyro)
 
     quaternion_lock();
 
-    printf("%f,%f,%f,%f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
+    /* cmos_printf("%f,%f,%f,%f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);*/
 
     /* 微分 */
     q0_diff =  -half_period * (s_quaternion[1] * wx + s_quaternion[2] * wy + s_quaternion[3] * wz);
@@ -320,6 +320,7 @@ inline static int quaternion_unlock(void)
  ******************************************************************************/
 int imu_get_attitude(float *attitude)
 {
+    int i = 0;
     float q[4] = {0.0f};
 
     quaternion_lock(); 

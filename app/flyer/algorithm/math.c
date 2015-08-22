@@ -91,7 +91,7 @@ inline float math_angle2arc(float x)
  *
  * 返回值:   角度
  * 调用关系: 无
- * 其 它:    x 为 0 ~ pi
+ * 其 它:    x 为 -pi ~ pi
  *
  ******************************************************************************/
 inline float math_arc2angle(float x)
