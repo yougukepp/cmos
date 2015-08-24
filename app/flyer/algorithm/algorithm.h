@@ -27,6 +27,10 @@
 #define ALGO_PI                 (3.1415926f)
 #define ALGO_ANGLE2ARC_RATE     (ALGO_PI/180)
 #define ALGO_ARC2ANGLE_RATE     (180/ALGO_PI)
+#define ALGO_DIM                (3)
+#define ALGO_PITCH              (0)
+#define ALGO_ROLL               (1)
+#define ALGO_YAW                (2)
 
 /*********************************** 类型定义 **********************************/
 
