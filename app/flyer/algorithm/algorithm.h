@@ -27,32 +27,42 @@
 #define ALGO_PI                 (3.1415926f)
 #define ALGO_ANGLE2ARC_RATE     (ALGO_PI/180)
 #define ALGO_ARC2ANGLE_RATE     (180/ALGO_PI)
+#define ALGO_QUAD               (4)
 #define ALGO_DIM                (3)
 #define ALGO_PITCH              (0)
 #define ALGO_ROLL               (1)
 #define ALGO_YAW                (2)
 
-/*********************************** 类型定义 **********************************/
+#ifdef X86_64
+#define DEBUG_P                 printf
+#else
+#define DEBUG_P                 cmos_printf
+#endif
 
+/*********************************** 类型定义 **********************************/
+typedef struct ALGO_IMU_PARA_TAG{
+    unsigned int feature;
+    unsigned int gyro_period;
+    unsigned int accel_period;
+    unsigned int mag_period;
+}ALGO_IMU_PARA_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+int imu_set(ALGO_IMU_PARA_T *imu_para);
+int imu_start(void);
+int imu_get_pitch(float *pitch);
+int imu_get_roll(float *roll);
+int imu_get_yaw(float *yaw);
+
 float math_inv_sqrt(float x);
 float math_angle2arc(float x);
 float math_arc2angle(float x);
 int math_vector_product(float *product, const float *a, const float *b);
 
-int imu_init(void);
-int imu_update(const float *gyro);
-int imu_fusion6axis(const float *gyro, const float *accel);
-int imu_fusion9axis(const float *gyro, const float *accel, const float *mag);
-int imu_get_attitude(float *attitude);
-int imu_deinit(void);
-
-int pid_pwm(const float *expect_attitude);
 
 #endif // #ifndef _CMOS_ALGORITHM_H_
 

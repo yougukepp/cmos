@@ -1,6 +1,6 @@
-TARGET=x86_64
+TARGET=X86_64
 
-LD=gcc -Wall -Werror -O2 -pedantic -std=c99 -D_BSD_SOURCE
+LD=gcc -Wall -Werror -O2 -pedantic -std=c99 -D_BSD_SOURCE -D$(TARGET)
 CC=$(LD) -c
 
 AR= ar -rcs

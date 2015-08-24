@@ -17,28 +17,21 @@
 /************************************ 头文件 ***********************************/
 #include <math.h>
 #include <stdio.h>
-#include <string.h>
 #include "algorithm.h"
-
-#ifdef X86_64
-#include <sys/time.h>
-#endif
 
 
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static float s_quaternion[ALGO_QUAD] = {0.0f}; /* 四元数 q0 q1 q2 q3*/
-//static float s_eg_integration[ALGO_DIM] = {0.0f}; /* 加计误差积分 */
-ALGO_IMU_PARA_T s_imu_para = {0};
+static float s_quaternion[4] = {0.0f}; /* 四元数 q0 q1 q2 q3*/
+static float s_eg_integration[3] = {0.0f}; /* 加计误差积分 */
 
 /********************************** 函数声明区 *********************************/
 static int quaternion_lock(void);
 static int quaternion_unlock(void);
 static int euler2quaternion(float *quaternion, const float *euler);
 static int quaternion2euler(float *euler, const float *quaternion);
-static int get_ms(unsigned long *ms);
 
 /********************************** 变量实现区 *********************************/
 
@@ -46,10 +39,10 @@ static int get_ms(unsigned long *ms);
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
  *
- * 函数名  : imu_set
+ * 函数名  : imu_init
  * 负责人  : 彭鹏
  * 创建日期: 20150821
- * 函数功能: 融合算法参数设置
+ * 函数功能: 融合算法初始化
  *
  * 输入参数: 无
  * 输出参数: 无
@@ -60,24 +53,23 @@ static int get_ms(unsigned long *ms);
  * 其 它:    无
  *
  ******************************************************************************/
-int imu_set(ALGO_IMU_PARA_T *imu_para)
+int imu_init(void)
 {
     float euler[3] = {0.0f}; /* 欧拉角 全零 */
 
     /* 由欧拉角球四元数初始值 */
     euler2quaternion(s_quaternion, euler);
-    /* 初始化工作模式 */
-    memcpy(&s_imu_para, imu_para, sizeof(ALGO_IMU_PARA_T));
+
 
     return 0;
 }
 
 /*******************************************************************************
  *
- * 函数名  : imu_start
+ * 函数名  : imu_deinit
  * 负责人  : 彭鹏
- * 创建日期: 20150824
- * 函数功能: 启动融合算法线程
+ * 创建日期: 20150821
+ * 函数功能: 融合算法反初始化
  *
  * 输入参数: 无
  * 输出参数: 无
@@ -88,11 +80,8 @@ int imu_set(ALGO_IMU_PARA_T *imu_para)
  * 其 它:    无
  *
  ******************************************************************************/
-int imu_start(void)
+int imu_deinit(void)
 {
-#ifdef X86_64
-#else
-#endif
     return 0;
 }
 
@@ -109,7 +98,7 @@ int imu_start(void)
  * 返回值:   0   : 正常退出
  *           其它: 异常退出
  * 调用关系: 无
- * 其 它:    使用gyro输出的角速度积分获取当前姿态
+ * 其 它:    短期融合仅仅使用gyro输出的角速度积分获取当前姿态
  *
  ******************************************************************************/
 static int imu_fusion3axis(const float *gyro)
@@ -124,15 +113,7 @@ static int imu_fusion3axis(const float *gyro)
     float q3_diff = 0.0f;
 
     float q_norm = 0.0f;
-    float half_period = 0.0f;
-
-    static unsigned long last_ms = 0;
-    unsigned long now_ms = 0;
-
-    /* 计算积分时间 */
-    get_ms(&now_ms);
-    half_period = 0.5f * (now_ms - last_ms);
-    last_ms = now_ms;
+    float half_period = 0.5f * ALGO_GYRO_PERIOD;
 
     /* 角度转弧度 */
     wx = math_angle2arc(wx);
@@ -141,7 +122,7 @@ static int imu_fusion3axis(const float *gyro)
 
     quaternion_lock();
 
-    /* DEBUG_P("%f,%f,%f,%f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);*/
+    /* cmos_printf("%f,%f,%f,%f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);*/
 
     /* 微分 */
     q0_diff =  -half_period * (s_quaternion[1] * wx + s_quaternion[2] * wy + s_quaternion[3] * wz);
@@ -156,7 +137,7 @@ static int imu_fusion3axis(const float *gyro)
     s_quaternion[3] += q3_diff;
 
 #if 0
-    DEBUG_P("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
+    printf("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
             q0_last, q1_last, q2_last, q3_last,
             s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
 #endif
@@ -175,7 +156,7 @@ static int imu_fusion3axis(const float *gyro)
     quaternion_unlock();
 
 #if 0
-    DEBUG_P("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
+    printf("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
             q0_last, q1_last, q2_last, q3_last,
             s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
 #endif
@@ -183,8 +164,175 @@ static int imu_fusion3axis(const float *gyro)
     return 0;
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : imu_fusion6axis
+ * 负责人  : 彭鹏
+ * 创建日期: 20150729
+ * 函数功能: 6轴融合
+ *
+ * 输入参数: gyro  陀螺仪输出
+ *           accel 加速度计输出
+ *
+ * 输出参数: 无
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    6轴融合使用加速度计获取重力场修正陀螺仪积分误差(无法确定偏航角)
+ *
+ ******************************************************************************/
+static int imu_fusion6axis(const float *gyro, const float *accel)
+{
+    float q0 = 0.0f;
+    float q1 = 0.0f;
+    float q2 = 0.0f;
+    float q3 = 0.0f;
+    float sg[3] = {0.0f}; /* 加计(重力)向量在s系的值 */
+    float eg[3] = {0.0f}; /* 加计误差 */
+    float est_gyro[3] = {0.0f}; /* 陀螺仪校正后的值 */
 
+    quaternion_lock();
+    q0 = s_quaternion[0];
+    q1 = s_quaternion[1];
+    q2 = s_quaternion[2];
+    q3 = s_quaternion[3];
+    quaternion_unlock();
 
+    /* n系到s系的方向余弦的第三列即为 加计(重力)向量 在s系的值 */
+    sg[0] = 2*(q1*q3 - q0*q2);
+    sg[1] = 2*(q0*q1 + q2*q3);
+    sg[2] = 2*(q0*q0 + q3*q3) - 1 ;
+
+    /* 叉积表示误差 */
+    math_vector_product(eg, accel, sg);
+
+    /* 对误差进行积分 */
+    s_eg_integration[0] += eg[0] * ALGO_ACCEL_KI;
+    s_eg_integration[0] += eg[1] * ALGO_ACCEL_KI;
+    s_eg_integration[0] += eg[2] * ALGO_ACCEL_KI;
+
+    /* 修正陀螺仪器 */
+    est_gyro[0] = gyro[0] + ALGO_ACCEL_KP*eg[0] + s_eg_integration[0];
+    est_gyro[1] = gyro[1] + ALGO_ACCEL_KP*eg[1] + s_eg_integration[1];
+    est_gyro[2] = gyro[2] + ALGO_ACCEL_KP*eg[2] + s_eg_integration[2];
+
+    /* 使用修正值计算姿态 */
+    imu_fusion3axis(est_gyro);
+
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : imu_fusion9axis
+ * 负责人  : 彭鹏
+ * 创建日期: 20150729
+ * 函数功能: 9轴融合
+ *
+ * 输入参数: gyro  陀螺仪输出
+ *           accel 加速度计输出
+ *           mag   磁力计输出
+ *
+ * 输出参数: 无
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    9轴融合使用加速度计获取重力场、地磁场修正陀螺仪积分误差(可以纠正偏航角)
+ *
+ ******************************************************************************/
+static int imu_fusion9axis(const float *gyro, const float *accel, const float *mag)
+{
+    /* 重力场叉乘地磁场 求解正东单位向量在载体坐标系的值 
+     *
+     * 重力场 叉 地磁场 = 正东
+     * 地磁场 叉 重力场 = 正西
+     * 此处使用正东
+     *
+     * */ 
+    float product[3] = {0.0f};
+    math_vector_product(product, accel, mag);
+
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : quaternion_lock
+ * 负责人  : 彭鹏
+ * 创建日期: 20150729
+ * 函数功能: 锁定
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    可能会阻塞 避免获取四元数 时产生不一致
+ *
+ ******************************************************************************/
+inline static int quaternion_lock(void)
+{
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : quaternion_lock
+ * 负责人  : 彭鹏
+ * 创建日期: 20150729
+ * 函数功能: 解除锁定
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    与quaternion_lock成对使用
+ *
+ ******************************************************************************/
+inline static int quaternion_unlock(void)
+{
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : imu_get_attitude
+ * 负责人  : 彭鹏
+ * 创建日期: 20150729
+ * 函数功能: 获取当前针对参考坐标系的姿态
+ *           0 pitch 俯仰角
+ *           1 roll  翻滚角
+ *           2 yaw   偏航角
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值:   0   : 正常退出
+ *           其它: 异常退出
+ * 调用关系: 无
+ * 其 它:    求证公式出处(欧拉角与旋转顺序有关)
+ *
+ ******************************************************************************/
+int imu_get_attitude(float *attitude)
+{
+    float q[4] = {0.0f};
+
+    quaternion_lock(); 
+    q[0] = s_quaternion[0];
+    q[1] = s_quaternion[1];
+    q[2] = s_quaternion[2];
+    q[3] = s_quaternion[3];
+    quaternion_unlock();
+
+    quaternion2euler(attitude, q);
+
+    return 0;
+}
 
 /*******************************************************************************
  *
@@ -272,78 +420,6 @@ static int quaternion2euler(float *euler, const float *quaternion)
 
     /* FIXME: 是否是全姿态的，反三角函数计算出的角度是否需要修正? */
 
-    return 0;
-}
-
-/*******************************************************************************
- *
- * 函数名  : quaternion_lock
- * 负责人  : 彭鹏
- * 创建日期: 20150729
- * 函数功能: 锁定
- *
- * 输入参数: 无
- * 输出参数: 无
- *
- * 返回值:   0   : 正常退出
- *           其它: 异常退出
- * 调用关系: 无
- * 其 它:    可能会阻塞 避免获取四元数 时产生不一致
- *
- ******************************************************************************/
-inline static int quaternion_lock(void)
-{
-    return 0;
-}
-
-/*******************************************************************************
- *
- * 函数名  : quaternion_lock
- * 负责人  : 彭鹏
- * 创建日期: 20150729
- * 函数功能: 解除锁定
- *
- * 输入参数: 无
- * 输出参数: 无
- *
- * 返回值:   0   : 正常退出
- *           其它: 异常退出
- * 调用关系: 无
- * 其 它:    与quaternion_lock成对使用
- *
- ******************************************************************************/
-inline static int quaternion_unlock(void)
-{
-    return 0;
-}
-
-/*******************************************************************************
- *
- * 函数名  : get_ms
- * 负责人  : 彭鹏
- * 创建日期: 20150824
- * 函数功能: 获取当前进程的ms值
- *
- * 输入参数: 无
- * 输出参数: ms    毫秒值
- *
- * 返回值:   0   : 正常退出
- *           其它: 异常退出
- * 调用关系: 无
- * 其 它:    无
- *
- ******************************************************************************/
-static int get_ms(unsigned long *ms)
-{
-#ifdef X86_64
-    struct timeval timeval;
-    gettimeofday(&timeval, NULL);
-
-    /* FIXME: 溢出 */
-    *ms = timeval.tv_sec * 1000 + timeval.tv_usec / 1000;
-#else
-
-#endif
     return 0;
 }
 

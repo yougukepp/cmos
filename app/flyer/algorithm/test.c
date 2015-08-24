@@ -57,7 +57,23 @@ static float rand_range(float min, float max);
  *
  ******************************************************************************/
 int main(int argc, char *argv[])
-{
+{ 
+    ALGO_IMU_PARA_T imu_para = {0};
+
+    imu_para.feature = ALGO_3AXIS;
+    imu_para.gyro_period = 1;
+    imu_para.accel_period = 10;
+    imu_para.mag_period = 20;
+
+    imu_set(&imu_para);
+    imu_start();
+
+    while(1)
+    {
+        ;
+    }
+
+#if 0
     unsigned long long i = 0;
     float gyro[3] = {0.0f};
     float attitude[3] = {0.0f}; 
@@ -105,6 +121,8 @@ int main(int argc, char *argv[])
         i++;
     }
     imu_deinit(); 
+
+#endif
 
     printf("test done!\n");
     return 0;
