@@ -15,30 +15,26 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include <math.h>
 #include <stdio.h>
+#include <math.h>
 #include <string.h>
 #include "algorithm.h"
 
 #ifdef X86_64
+#include <pthread.h>
+#include <unistd.h>
 #include <sys/time.h>
 #endif
-
-
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static float s_quaternion[ALGO_QUAD] = {0.0f}; /* 四元数 q0 q1 q2 q3*/
-//static float s_eg_integration[ALGO_DIM] = {0.0f}; /* 加计误差积分 */
 ALGO_IMU_PARA_T s_imu_para = {0};
 
 /********************************** 函数声明区 *********************************/
-static int quaternion_lock(void);
-static int quaternion_unlock(void);
-static int euler2quaternion(float *quaternion, const float *euler);
-static int quaternion2euler(float *euler, const float *quaternion);
 static int get_ms(unsigned long *ms);
+static void *fusion_gyro_loop(void *argv);
+static int fusion_gyro(const float *gyro);
 
 /********************************** 变量实现区 *********************************/
 
@@ -62,12 +58,22 @@ static int get_ms(unsigned long *ms);
  ******************************************************************************/
 int imu_set(ALGO_IMU_PARA_T *imu_para)
 {
-    float euler[3] = {0.0f}; /* 欧拉角 全零 */
-
-    /* 由欧拉角球四元数初始值 */
-    euler2quaternion(s_quaternion, euler);
-    /* 初始化工作模式 */
+    /* 姿态初始化 */
+    attidude_init();
+    /* 算法库初始化 */
     memcpy(&s_imu_para, imu_para, sizeof(ALGO_IMU_PARA_T));
+
+#ifdef TRACE
+    DEBUG_P("算法库配置为:\n");
+    DEBUG_P("陀螺仪:%s, 周期:%4ums\n",
+            ALGO_GYRO_START(s_imu_para.features) ? ("打开") : ("关闭"), s_imu_para.gyro_period);
+
+    DEBUG_P("加计  :%s, 周期:%4ums\n", 
+            ALGO_ACCEL_START(s_imu_para.features) ? ("打开") : ("关闭"), s_imu_para.accel_period);
+
+    DEBUG_P("磁力计:%s, 周期:%4ums\n", 
+            ALGO_MAG_START(s_imu_para.features) ? ("打开") : ("关闭"), s_imu_para.mag_period);
+#endif
 
     return 0;
 }
@@ -90,15 +96,55 @@ int imu_set(ALGO_IMU_PARA_T *imu_para)
  ******************************************************************************/
 int imu_start(void)
 {
+    int gyro_flag = 0;
+    /*int accel_flag = 0;
+    int mag_flag = 0;*/
+
+    if(ALGO_GYRO_START(s_imu_para.features) && (0 != s_imu_para.gyro_period))
+    {
+        gyro_flag = 1;
+    }
+
 #ifdef X86_64
+    pthread_t gyro_pid = 0;
+    /* pthread_t accel_pid = 0;
+    pthread_t mag_pid = 0; */
+
+    if(gyro_flag)
+    {
+        pthread_create(&gyro_pid, NULL, fusion_gyro_loop, NULL);
+    }
 #else
 #endif
+
     return 0;
+}
+static void *fusion_gyro_loop(void *argv)
+{
+    float gyro[ALGO_DIM] = {0.0f};
+
+#ifdef TRACE
+    DEBUG_P("陀螺仪线程启动.\n");
+    DEBUG_P("\n"); 
+#endif
+
+    while(1)
+    {
+#ifdef X86_64
+        data_get_gyro(gyro);
+        usleep(s_imu_para.gyro_period * 1000);
+#else
+#endif 
+
+        fusion_gyro(gyro);
+    }
+
+    return NULL;
 }
 
 /*******************************************************************************
  *
- * 函数名  : imu_fusion3axis
+ * 函数名  : fusion_gyro
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 短期融合 3轴融合
@@ -112,11 +158,13 @@ int imu_start(void)
  * 其 它:    使用gyro输出的角速度积分获取当前姿态
  *
  ******************************************************************************/
-static int imu_fusion3axis(const float *gyro)
+static int fusion_gyro(const float *gyro)
 {
     float wx = gyro[0];
     float wy = gyro[1];
     float wz = gyro[2];
+
+    float q[ALGO_QUAD] = {0.0f};
 
     float q0_diff = 0.0f;
     float q1_diff = 0.0f;
@@ -130,190 +178,51 @@ static int imu_fusion3axis(const float *gyro)
     unsigned long now_ms = 0;
 
     /* 计算积分时间 */
+    if(0 == last_ms) /* 首次不积分 */
+    {
+        get_ms(&last_ms);
+        return 0;
+    }
     get_ms(&now_ms);
-    half_period = 0.5f * (now_ms - last_ms);
-    last_ms = now_ms;
+    half_period = 0.0005f * (now_ms - last_ms); /* ms => s 为单位 half 所以除以1000再除以2 */
+    last_ms = now_ms; 
 
     /* 角度转弧度 */
     wx = math_angle2arc(wx);
     wy = math_angle2arc(wy);
-    wz = math_angle2arc(wz);
-
-    quaternion_lock();
-
-    /* DEBUG_P("%f,%f,%f,%f\n", s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);*/
+    wz = math_angle2arc(wz); 
+    
+    attidude_get_quaternion(q);
 
     /* 微分 */
-    q0_diff =  -half_period * (s_quaternion[1] * wx + s_quaternion[2] * wy + s_quaternion[3] * wz);
-    q1_diff =   half_period * (s_quaternion[0] * wx + s_quaternion[2] * wz - s_quaternion[3] * wy);
-    q2_diff =   half_period * (s_quaternion[0] * wy - s_quaternion[1] * wz + s_quaternion[3] * wx);
-    q3_diff =   half_period * (s_quaternion[0] * wz + s_quaternion[1] * wy - s_quaternion[2] * wx);
+    q0_diff =  -half_period * (q[1] * wx + q[2] * wy + q[3] * wz);
+    q1_diff =   half_period * (q[0] * wx + q[2] * wz - q[3] * wy);
+    q2_diff =   half_period * (q[0] * wy - q[1] * wz + q[3] * wx);
+    q3_diff =   half_period * (q[0] * wz + q[1] * wy - q[2] * wx);
+
+#if 0
+    DEBUG_P("q:%7.5f,%7.5f,%7.5f,%7.5f.\n", q[0], q[1], q[2], q[3]);
+    DEBUG_P("w:%5.2f,%5.2f,%5.2f.\n", wx,wy,wz);
+    DEBUG_P("half_period:%5.2f.\n", half_period);
+    DEBUG_P("diff:%7.5f,%7.5f,%7.5f,%7.5f.\n", q0_diff, q1_diff, q2_diff, q3_diff);
+    DEBUG_P("\n");
+#endif
 
     /* 积分 */
-    s_quaternion[0] += q0_diff;
-    s_quaternion[1] += q1_diff;
-    s_quaternion[2] += q2_diff;
-    s_quaternion[3] += q3_diff;
+    q[0] += q0_diff;
+    q[1] += q1_diff;
+    q[2] += q2_diff;
+    q[3] += q3_diff;
 
-#if 0
-    DEBUG_P("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
-            q0_last, q1_last, q2_last, q3_last,
-            s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
-#endif
+    /* 归一化 */
+    q_norm = math_inv_sqrt( q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
+    q[0] *= q_norm;
+    q[1] *= q_norm;
+    q[2] *= q_norm;
+    q[3] *= q_norm;
 
-    /* 四元数归一化 */
-    q_norm = math_inv_sqrt( s_quaternion[0] * s_quaternion[0]
-                          + s_quaternion[1] * s_quaternion[1]
-                          + s_quaternion[2] * s_quaternion[2]
-                          + s_quaternion[3] * s_quaternion[3]);
+    attidude_set_quaternion(q);
 
-    s_quaternion[0] *= q_norm;
-    s_quaternion[1] *= q_norm;
-    s_quaternion[2] *= q_norm;
-    s_quaternion[3] *= q_norm;
-
-    quaternion_unlock();
-
-#if 0
-    DEBUG_P("%7.4f,%7.4f,%7.4f,%7.4f => %7.4f,%7.4f,%7.4f,%7.4f\n", 
-            q0_last, q1_last, q2_last, q3_last,
-            s_quaternion[0], s_quaternion[1], s_quaternion[2], s_quaternion[3]);
-#endif
-
-    return 0;
-}
-
-
-
-
-/*******************************************************************************
- *
- * 函数名  : euler2quaternion
- * 负责人  : 彭鹏
- * 创建日期: 20150821
- * 函数功能: 欧拉角转四元数
- *
- * 输入参数: euler   欧拉角
- *           0 pitch 俯仰角 x轴
- *           1 roll  翻滚角 y轴
- *           2 yaw   偏航角 z轴
- * 输出参数: quaternion 姿态四元数
- *
- * 返回值:   0   : 正常退出
- *           其它: 异常退出
- * 调用关系: 无
- * 其 它:    无
- *
- ******************************************************************************/
-static int euler2quaternion(float *quaternion, const float *euler)
-{
-    float half_pitch = 0.0f;
-    float half_roll = 0.0f;
-    float half_yaw = 0.0f;
-
-    half_pitch = euler[0] / 2;
-    half_roll = euler[1] / 2;
-    half_yaw = euler[2] / 2;
-
-    quaternion[0] = cos(half_pitch)*cos(half_roll)*cos(half_yaw) + sin(half_pitch)*sin(half_roll)*sin(half_yaw);
-    quaternion[1] = sin(half_pitch)*cos(half_roll)*cos(half_yaw) - cos(half_pitch)*sin(half_roll)*sin(half_yaw);
-    quaternion[2] = cos(half_pitch)*sin(half_roll)*cos(half_yaw) + sin(half_pitch)*cos(half_roll)*sin(half_yaw);
-    quaternion[3] = cos(half_pitch)*cos(half_roll)*sin(half_yaw) - sin(half_pitch)*sin(half_roll)*cos(half_yaw);
-
-    return 0;
-}
-
-/*******************************************************************************
- *
- * 函数名  : quaternion2euler
- * 负责人  : 彭鹏
- * 创建日期: 20150821
- * 函数功能: 四元数转欧拉角
- *
- * 输入参数: quaternion 姿态四元数
- *
- * 输出参数: euler   欧拉角
- *           0 pitch 俯仰角 x轴
- *           1 roll  翻滚角 y轴
- *           2 yaw   偏航角 z轴
- *
- * 返回值:   0   : 正常退出
- *           其它: 异常退出
- * 调用关系: 无
- * 其 它:    无
- *
- ******************************************************************************/
-static int quaternion2euler(float *euler, const float *quaternion)
-{
-    float pitch = 0.0f;
-    float roll = 0.0f;
-    float yaw = 0.0f;
-
-    float q0 = 0.0f;
-    float q1 = 0.0f;
-    float q2 = 0.0f;
-    float q3 = 0.0f;
-
-    quaternion_lock(); 
-    q0 = s_quaternion[0];
-    q1 = s_quaternion[1];
-    q2 = s_quaternion[2];
-    q3 = s_quaternion[3];
-    quaternion_unlock();
-
-
-    pitch = atan2(q2*q3 + q0*q1, q0*q0 + q3*q3 - 0.5f);
-    roll  = -asin(2*(q1*q3 - q0*q2));
-    yaw   = atan2(q1*q2 + q0*q3, q0*q0 + q1*q1 - 0.5f);
-
-    euler[0] = pitch;
-    euler[1] = roll;
-    euler[2] = yaw;
-
-    /* FIXME: 是否是全姿态的，反三角函数计算出的角度是否需要修正? */
-
-    return 0;
-}
-
-/*******************************************************************************
- *
- * 函数名  : quaternion_lock
- * 负责人  : 彭鹏
- * 创建日期: 20150729
- * 函数功能: 锁定
- *
- * 输入参数: 无
- * 输出参数: 无
- *
- * 返回值:   0   : 正常退出
- *           其它: 异常退出
- * 调用关系: 无
- * 其 它:    可能会阻塞 避免获取四元数 时产生不一致
- *
- ******************************************************************************/
-inline static int quaternion_lock(void)
-{
-    return 0;
-}
-
-/*******************************************************************************
- *
- * 函数名  : quaternion_lock
- * 负责人  : 彭鹏
- * 创建日期: 20150729
- * 函数功能: 解除锁定
- *
- * 输入参数: 无
- * 输出参数: 无
- *
- * 返回值:   0   : 正常退出
- *           其它: 异常退出
- * 调用关系: 无
- * 其 它:    与quaternion_lock成对使用
- *
- ******************************************************************************/
-inline static int quaternion_unlock(void)
-{
     return 0;
 }
 
@@ -344,6 +253,33 @@ static int get_ms(unsigned long *ms)
 #else
 
 #endif
+    return 0;
+}
+
+int imu_get_pitch(float *pitch)
+{
+    float q[ALGO_QUAD] = {0.0f};
+    attidude_get_quaternion(q);
+
+    *pitch = atan2(q[2]*q[3] + q[0]*q[1], q[0]*q[0] + q[3]*q[3] - 0.5f);
+    return 0;
+}
+
+int imu_get_roll(float *roll)
+{
+    float q[ALGO_QUAD] = {0.0f};
+    attidude_get_quaternion(q);
+
+    *roll  = -asin(2*(q[1]*q[3] - q[0]*q[2]));
+    return 0;
+}
+
+int imu_get_yaw(float *yaw)
+{
+    float q[ALGO_QUAD] = {0.0f};
+    attidude_get_quaternion(q);
+
+    *yaw   = atan2(q[1]*q[2] + q[0]*q[3], q[0]*q[0] + q[1]*q[1] - 0.5f);
     return 0;
 }
 

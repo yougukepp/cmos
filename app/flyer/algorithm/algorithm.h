@@ -18,12 +18,22 @@
 /************************************ 头文件 ***********************************/
 
 /************************************ 宏定义 ***********************************/
-/* 加计修正参数 */
-#define ALGO_ACCEL_KI           (0.008f)
-#define ALGO_ACCEL_KP           (10.0f)
+/* 算法库参数 */
+/*
+ * bit0   gyro
+ * bit1   accel
+ * bit2   mag
+ *
+ * */
+#define ALGO_NONE               (0x0000)
+#define ALGO_GYRO               (0x0001)
+#define ALGO_ACCEL              (0x0002)
+#define ALGO_MAG                (0x0004)
+#define ALGO_GYRO_START(v)      ((ALGO_GYRO) & (v))
+#define ALGO_ACCEL_START(v)     (((ALGO_ACCEL) & (v)) >> 1)
+#define ALGO_MAG_START(v)       (((ALGO_MAG) & (v)) >> 2)
 
-/* 陀螺仪 3轴姿态更新周期 s为单位 */
-#define ALGO_GYRO_PERIOD        (1.0f / 1000)
+/* 常用常量 */
 #define ALGO_PI                 (3.1415926f)
 #define ALGO_ANGLE2ARC_RATE     (ALGO_PI/180)
 #define ALGO_ARC2ANGLE_RATE     (180/ALGO_PI)
@@ -41,7 +51,7 @@
 
 /*********************************** 类型定义 **********************************/
 typedef struct ALGO_IMU_PARA_TAG{
-    unsigned int feature;
+    unsigned int features;
     unsigned int gyro_period;
     unsigned int accel_period;
     unsigned int mag_period;
@@ -58,11 +68,22 @@ int imu_get_pitch(float *pitch);
 int imu_get_roll(float *roll);
 int imu_get_yaw(float *yaw);
 
+int attidude_init(void);
+int attidude_get_quaternion(float *quaternion);
+int attidude_set_quaternion(const float *quaternion);
+int attidude_euler2quaternion(float *quaternion, const float *euler);
+int attidude_quaternion2euler(float *euler, const float *quaternion);
+int attidude_print_quaternion(void);
+
 float math_inv_sqrt(float x);
 float math_angle2arc(float x);
 float math_arc2angle(float x);
 int math_vector_product(float *product, const float *a, const float *b);
 
+#ifdef X86_64
+int data_get_gyro(float *gyro);
+#else
+#endif
 
 #endif // #ifndef _CMOS_ALGORITHM_H_
 
