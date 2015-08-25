@@ -1,8 +1,8 @@
 /******************************************************************************
  *
- * 文件名  ： math.c
+ * 文件名  ： algo_math.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20150116 
+ * 创建日期： 20150824 
  * 版本号  ： v1.0
  * 文件描述： 数学库
  * 版权说明： Copyright (c) 2000-2020 GNU
@@ -15,8 +15,9 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include "float.h"
-#include "algorithm.h"
+#include <float.h>
+#include "algo.h"
+#include "algo_math.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -101,7 +102,7 @@ inline float math_arc2angle(float x)
 
 /*******************************************************************************
  *
- * 函数名  : math_vector_product
+ * 函数名  : math_vector3_product
  * 负责人  : 彭鹏
  * 创建日期: 20150731
  * 函数功能: 向量叉乘
@@ -117,7 +118,7 @@ inline float math_arc2angle(float x)
  * 其 它:    顺序不可反
  *
  ******************************************************************************/
-inline int math_vector_product(float *product, const float *a, const float *b)
+inline int math_vector3_product(float *product, const float *a, const float *b)
 {
 
     /*

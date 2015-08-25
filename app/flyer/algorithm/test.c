@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
-#include "algorithm.h"
+#include "algo.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -58,29 +58,18 @@ int main(int argc, char *argv[])
 
     float max = 0.0f;
 
-    ALGO_IMU_PARA_T imu_para = {0};
-
-    imu_para.features = ALGO_GYRO;
-    imu_para.gyro_period = 5;
-    imu_para.accel_period = 10;
-    imu_para.mag_period = 20;
-
-    imu_set(&imu_para);
-    imu_start();
+    algo_init();
+    algo_start();
 
     while(1)
     {
-        imu_get_pitch(&pitch);
+        algo_get_level(&pitch, &roll);
         printf("pitch:%7.4f,", pitch);
-
-        imu_get_roll(&roll);
         printf("roll:%7.4f,", roll);
-
-        imu_get_yaw(&yaw);
+        algo_get_yaw(&yaw);
         printf("yaw:%7.4f <===", yaw); 
         
-        attidude_print_quaternion();
-
+        algo_print_quaternion();
         if(max < fabs(pitch))
         {
             max = fabs(pitch);

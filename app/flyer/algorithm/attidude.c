@@ -17,25 +17,19 @@
 /************************************ 头文件 ***********************************/
 #include <stdio.h>
 #include <math.h>
-#include "algorithm.h"
 
-#ifdef X86_64
-#include <pthread.h>
-#else
-#endif
+#include "algo.h"
+#include "port.h"
+#include "attidude.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
 static float s_quaternion[ALGO_QUAD] = {0.0f}; /* 四元数 q0 q1 q2 q3*/
+MUTEX_T s_quaternion_mutex; /* 四元数锁 */
 
-#ifdef X86_64
-static pthread_mutex_t s_quaternion_mutex; /* 四元数锁 */
-#else
-#endif
-
-static int quaternion_lock(void);
-static int quaternion_unlock(void);
+static int quaternion_lock(MUTEX_T *mutex);
+static int quaternion_unlock(MUTEX_T *mutex);
 
 /********************************** 函数声明区 *********************************/
 
@@ -51,7 +45,7 @@ static int quaternion_unlock(void);
  * 创建日期: 20150729
  * 函数功能: 锁定
  *
- * 输入参数: 无
+ * 输入参数: 锁变量
  * 输出参数: 无
  *
  * 返回值:   0   : 正常退出
@@ -60,15 +54,12 @@ static int quaternion_unlock(void);
  * 其 它:    可能会阻塞 避免获取四元数 时产生不一致
  *
  ******************************************************************************/
-inline static int quaternion_lock(void)
+inline static int quaternion_lock(MUTEX_T *mutex)
 {
-#ifdef X86_64
-    if (0 != pthread_mutex_lock(&s_quaternion_mutex))
+    if (0 != mutex_lock(mutex))
     {
-        DEBUG_P("%s,%d:pthread_mutex_lock error!\n", __FILE__,__LINE__);
+        DEBUG_P("%s,%d:mutex_lock error!\n", __FILE__,__LINE__);
     }
-#else
-#endif
 
     return 0;
 }
@@ -80,7 +71,7 @@ inline static int quaternion_lock(void)
  * 创建日期: 20150729
  * 函数功能: 解除锁定
  *
- * 输入参数: 无
+ * 输入参数: 锁变量
  * 输出参数: 无
  *
  * 返回值:   0   : 正常退出
@@ -89,15 +80,12 @@ inline static int quaternion_lock(void)
  * 其 它:    与quaternion_lock成对使用
  *
  ******************************************************************************/
-inline static int quaternion_unlock(void)
+inline static int quaternion_unlock(MUTEX_T *mutex)
 {
-#ifdef X86_64
-    if (0 != pthread_mutex_unlock(&s_quaternion_mutex))
+    if (0 != mutex_unlock(mutex))
     {
-        DEBUG_P("%s,%d:pthread_mutex_unlock error!\n", __FILE__,__LINE__);
+        DEBUG_P("%s,%d:mutex_unlock error!\n", __FILE__,__LINE__);
     }
-#else
-#endif
     return 0;
 }
 
@@ -181,26 +169,49 @@ int attidude_quaternion2euler(float *euler, const float *quaternion)
     return 0;
 }
 
+/* 提高效率 欧拉角 分为水平 和偏航 */
+int attidude_get_level(float *pitch, float *roll)
+{
+    float q[ALGO_QUAD] = {0.0f};
+
+    attidude_get_quaternion(q);
+
+    *pitch = atan2(q[2]*q[3] + q[0]*q[1], q[0]*q[0] + q[3]*q[3] - 0.5f);
+    *roll  = -asin(2*(q[1]*q[3] - q[0]*q[2]));
+
+    return 0;
+}
+
+int attidude_get_yaw(float *yaw)
+{
+    float q[ALGO_QUAD] = {0.0f};
+
+    attidude_get_quaternion(q);
+    *yaw   = atan2(q[1]*q[2] + q[0]*q[3], q[0]*q[0] + q[1]*q[1] - 0.5f);
+
+    return 0;
+}
+
 int attidude_get_quaternion(float *quaternion)
 {
-    quaternion_lock(); 
+    quaternion_lock(&s_quaternion_mutex); 
     quaternion[0] = s_quaternion[0];
     quaternion[1] = s_quaternion[1];
     quaternion[2] = s_quaternion[2];
     quaternion[3] = s_quaternion[3];
-    quaternion_unlock();
+    quaternion_unlock(&s_quaternion_mutex);
 
     return 0;
 }
 
 int attidude_set_quaternion(const float *quaternion)
 {
-    quaternion_lock(); 
+    quaternion_lock(&s_quaternion_mutex); 
     s_quaternion[0] = quaternion[0];
     s_quaternion[1] = quaternion[1];
     s_quaternion[2] = quaternion[2];
     s_quaternion[3] = quaternion[3];
-    quaternion_unlock();
+    quaternion_unlock(&s_quaternion_mutex);
 
     return 0;
 } 
@@ -210,18 +221,15 @@ int attidude_init(void)
     float euler[ALGO_DIM] = {0.0f}; /* 欧拉角 全零 */
     float q[ALGO_QUAD] = {0.0f}; /* 四元数 */
 
-#ifdef X86_64
-    if (0 != pthread_mutex_init(&s_quaternion_mutex, NULL))
+    if (0 != mutex_init(&s_quaternion_mutex))
     {
         DEBUG_P("%s,%d:pthread_mutex_init error!\n", __FILE__,__LINE__);
     }
-#else
-#endif
 
     attidude_euler2quaternion(q, euler);
     attidude_set_quaternion(q);
 
-#ifdef TRACE
+#ifdef ALGO_TRACE
     DEBUG_P("初始化四元数为:\n");
     attidude_print_quaternion();
 #endif
