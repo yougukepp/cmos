@@ -28,6 +28,8 @@
 
 /*********************************** 接口函数 **********************************/
 int pc_get_gyro(float *gyro);
+int pc_get_accel(float *accel);
+int pc_get_mag(float *mag);
 
 #endif // #ifndef _PC_H_
 

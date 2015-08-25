@@ -70,7 +70,7 @@ thread_id_T thread_create(thread_loop_T loop, void *argv)
     int rst = 0;
     thread_id_T tid; 
     rst = pthread_create(&tid, NULL, loop, argv);
-    if(0 == rst)
+    if(0 != rst)
     { 
         return 0;
     }
@@ -107,6 +107,22 @@ int get_gyro(float *gyro)
 {
 #ifdef X86_64
     return pc_get_gyro(gyro);
+#else
+#endif
+}
+
+int get_accel(float *accel)
+{
+#ifdef X86_64
+    return pc_get_accel(accel);
+#else
+#endif
+}
+
+int get_mag(float *mag)
+{
+#ifdef X86_64
+    return pc_get_mag(mag);
 #else
 #endif
 }

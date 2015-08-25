@@ -20,12 +20,18 @@
 /************************************ 宏定义 ***********************************/
 /* 算法库参数 */
 #define ALGO_GYRO_ENABLE        (1)
-#define ALGO_ACCEL_ENABLE       (0)
-#define ALGO_MAG_ENABLE         (0)
-/* 单位 ms */
+#define ALGO_ACCEL_ENABLE       (1)
+#define ALGO_MAG_ENABLE         (1)
+/* 周期单位 ms */
 #define ALGO_GYRO_PERIOD        (5)
+#define ALGO_GYRO_GET_DATA      (get_gyro)
+#define ALGO_GYRO_FUSION        (gyro_fusion)
 #define ALGO_ACCEL_PERIOD       (10)
+#define ALGO_ACCEL_GET_DATA     (get_accel)
+#define ALGO_ACCEL_FUSION       (accel_fusion)
 #define ALGO_MAG_PERIOD         (50)
+#define ALGO_MAG_GET_DATA       (get_mag)
+#define ALGO_MAG_FUSION         (mag_fusion)
 
 /* 常用常量 */
 #define ALGO_PI                 (3.1415926f)

@@ -28,7 +28,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-void *fusion_gyro_loop(void *argv);
+void *gyro_loop(void *argv);
+int gyro_fusion(const float *gyro);
 
 #endif // #ifndef _GYRO_H_
 

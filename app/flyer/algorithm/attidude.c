@@ -192,6 +192,64 @@ int attidude_get_yaw(float *yaw)
     return 0;
 }
 
+/* 出于效率考虑,暂时未使用 */
+int attidude_get_matrix(float *data)
+{
+    float q[ALGO_QUAD] = {0.0f};
+
+    attidude_get_quaternion(q);
+
+    /*
+     * 如下排列:
+     * 0 1 2
+     * 3 4 5
+     * 6 7 8
+     * */
+    data[0] = 2*(q[0]*q[0] + q[1]*q[1]) - 1;
+    data[1] = 2*(q[1]*q[2] + q[0]*q[3]);
+    data[2] = 2*(q[1]*q[3] - q[0]*q[2]);
+
+    data[3] = 2*(q[1]*q[2] - q[0]*q[3]);
+    data[4] = 2*(q[0]*q[0] + q[2]*q[2]) - 1;
+    data[5] = 2*(q[2]*q[3] + q[0]*q[1]);
+
+    data[6] = 2*(q[1]*q[3] + q[0]*q[2]);
+    data[7] = 2*(q[2]*q[3] - q[0]*q[1]);
+    data[8] = 2*(q[0]*q[0] + q[3]*q[3]) - 1;
+
+    return 0;
+}
+
+/* 提高效率 欧拉角 转旋转矩阵 按照列 */
+int attidude_get_matrix_by_column(float *data, int column)
+{
+    float q[ALGO_QUAD] = {0.0f};
+
+    attidude_get_quaternion(q);
+
+    if(2 == column)
+    {
+        data[0] = 2*(q[1]*q[3] - q[0]*q[2]);
+        data[1] = 2*(q[2]*q[3] + q[0]*q[1]); 
+        data[2] = 2*(q[0]*q[0] + q[3]*q[3]) - 1;
+    }
+    else if(3 == column)
+    {
+        data[0] = 2*(q[1]*q[2] + q[0]*q[3]);
+        data[1] = 2*(q[0]*q[0] + q[2]*q[2]) - 1;
+        data[2] = 2*(q[2]*q[3] - q[0]*q[1]);
+    }
+    else
+    {
+        data[0] = 0;
+        data[0] = 0;
+        data[0] = 0;
+        return -1;
+    }
+
+    return 0;
+}
+
 int attidude_get_quaternion(float *quaternion)
 {
     quaternion_lock(&s_quaternion_mutex); 
@@ -232,6 +290,7 @@ int attidude_init(void)
 #ifdef ALGO_TRACE
     algo_printf("初始化四元数为:\n");
     attidude_print_quaternion();
+    algo_printf("\n");
 #endif
 
     return 0;

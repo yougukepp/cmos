@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
     algo_init();
     algo_start();
 
+    usleep(10000); /* 睡眠10ms 使打印好看 */
+    printf("\n");
     while(1)
     {
         algo_get_level(&pitch, &roll);
@@ -84,8 +86,7 @@ int main(int argc, char *argv[])
         }
 
         printf("\tmax:%7.4f\n", max); 
-
-        usleep(5000);
+        usleep(1000000);
     }
 
     printf("test done!\n");

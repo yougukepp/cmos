@@ -19,6 +19,8 @@
 #include "port.h"
 #include "attidude.h"
 #include "gyro.h"
+#include "accel.h"
+#include "mag.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -85,15 +87,52 @@ int algo_init(void)
 int algo_start(void)
 {
     thread_id_T gyro_tid;
-    unsigned int gyro_period = 0;
+    thread_id_T accel_tid;
+    thread_id_T mag_tid;
+
+    gyro_tid = 0;
+    accel_tid = 0;
+    mag_tid = 0;
 
     if(ALGO_GYRO_ENABLE && ALGO_GYRO_PERIOD)
     {
-        gyro_period = ALGO_GYRO_PERIOD;
-        gyro_tid = thread_create(fusion_gyro_loop, &gyro_period);
+        gyro_tid = thread_create(gyro_loop, NULL);
+
+        if(0 == gyro_tid)
+        {
+            algo_printf("陀螺仪线程启动失败.\n");
+        }
 
 #ifdef ALGO_TRACE
         algo_printf("陀螺仪线程id:0x%08x.\n", (int)gyro_tid);
+#endif
+    }
+
+    if(ALGO_ACCEL_ENABLE && ALGO_ACCEL_PERIOD)
+    {
+        accel_tid= thread_create(accel_loop, NULL);
+
+        if(0 == accel_tid)
+        {
+            algo_printf("加计线程启动失败.\n");
+        }
+
+#ifdef ALGO_TRACE
+        algo_printf("加计线程id:0x%08x.\n", (int)accel_tid);
+#endif
+    }
+
+    if(ALGO_MAG_ENABLE && ALGO_MAG_PERIOD)
+    {
+        mag_tid= thread_create(mag_loop, NULL);
+
+        if(0 == mag_tid)
+        {
+            algo_printf("磁计线程启动失败.\n");
+        }
+
+#ifdef ALGO_TRACE
+        algo_printf("磁计线程id:0x%08x.\n", (int)mag_tid);
 #endif
     }
 

@@ -19,6 +19,7 @@
 #include "port.h"
 #include "attidude.h"
 #include "algo_math.h"
+#include "gyro.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -32,33 +33,15 @@
 
 
 /********************************** 函数实现区 *********************************/
-static int fusion_gyro(const float *gyro);
-
-/********************************** 变量实现区 *********************************/
-void *fusion_gyro_loop(void *argv)
+void *gyro_loop(void *argv)
 {
     float gyro[ALGO_DIM] = {0.0f};
-    unsigned int gyro_period = 0;
-
-    if(NULL == argv)
-    {
-        algo_printf("陀螺仪线程参数错误.\n");
-    }
-    else
-    {
-        gyro_period = *((unsigned int *)argv);
-    }
-
-#ifdef ALGO_TRACE
-    algo_printf("陀螺仪线程启动.\n");
-    algo_printf("\n"); 
-#endif
 
     while(1)
     {
-        get_gyro(gyro);
-        fusion_gyro(gyro);
-        delay_ms(gyro_period);
+        delay_ms(ALGO_GYRO_PERIOD);
+        ALGO_GYRO_GET_DATA(gyro);
+        ALGO_GYRO_FUSION(gyro);
     }
 
     return NULL;
@@ -66,7 +49,7 @@ void *fusion_gyro_loop(void *argv)
 
 /*******************************************************************************
  *
- * 函数名  : fusion_gyro
+ * 函数名  : gyro_fusion
  * 负责人  : 彭鹏
  * 创建日期: 20150729
  * 函数功能: 短期融合 3轴融合
@@ -80,7 +63,7 @@ void *fusion_gyro_loop(void *argv)
  * 其 它:    使用gyro输出的角速度积分获取当前姿态
  *
  ******************************************************************************/
-static int fusion_gyro(const float *gyro)
+int gyro_fusion(const float *gyro)
 {
     float wx = gyro[0];
     float wy = gyro[1];
