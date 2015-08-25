@@ -108,7 +108,6 @@ int algo_get_level(float *pitch, float *roll)
 int algo_get_yaw(float *yaw)
 {
     return attidude_get_yaw(yaw);
-    return 0;
 }
 
 int algo_print_quaternion(void)
