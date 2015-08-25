@@ -17,6 +17,7 @@
 /************************************ 头文件 ***********************************/
 #include "algo.h"
 #include "port.h"
+#include "algo_math.h"
 #include "attidude.h"
 #include "gyro.h"
 #include "accel.h"
@@ -141,12 +142,17 @@ int algo_start(void)
 
 int algo_get_level(float *pitch, float *roll)
 {
-    return attidude_get_level(pitch, roll);
+    attidude_get_level(pitch, roll);
+    *pitch = math_arc2angle(*pitch);
+    *roll = math_arc2angle(*roll);
+    return 0;
 }
 
 int algo_get_yaw(float *yaw)
 {
-    return attidude_get_yaw(yaw);
+    attidude_get_yaw(yaw);
+    *yaw = math_arc2angle(*yaw);
+    return 0;
 }
 
 int algo_print_quaternion(void)

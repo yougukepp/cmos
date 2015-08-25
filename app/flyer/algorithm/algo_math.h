@@ -28,8 +28,12 @@
 
 /*********************************** 接口函数 **********************************/
 float math_inv_sqrt(float x);
+int math_norm(float *dst, const float *src, int dim);
+int math_vetor_angle(float *angle, const float *a, const float *b);
 float math_angle2arc(float x);
 float math_arc2angle(float x);
+int math_vector3_cross_product(float *product, const float *a, const float *b);
+int math_vector3_dot_product(float *product, const float *a, const float *b);
 
 #endif // #ifndef _ALGO_MATH_H_
 

@@ -43,9 +43,10 @@ int pc_get_gyro(float *gyro)
 
 int pc_get_accel(float *accel)
 {
-    accel[0] = rand_range(-1.0f, 1.0f);
-    accel[1] = rand_range(-1.0f, 1.0f);
-    accel[2] = 1.0f + rand_range(-1.0f, 1.0f);
+    float snr = 100.0f;
+    accel[0] = rand_range(-1.0f, 1.0f) / snr;
+    accel[1] = rand_range(-1.0f, 1.0f) / snr;
+    accel[2] = 1.0f + rand_range(-1.0f, 1.0f) / snr;
 
     return 0;
 }

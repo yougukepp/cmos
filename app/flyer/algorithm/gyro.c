@@ -70,13 +70,13 @@ int gyro_fusion(const float *gyro)
     float wz = gyro[2];
 
     float q[ALGO_QUAD] = {0.0f};
+    float q_norm[ALGO_QUAD] = {0.0f};
 
     float q0_diff = 0.0f;
     float q1_diff = 0.0f;
     float q2_diff = 0.0f;
     float q3_diff = 0.0f;
 
-    float q_norm = 0.0f;
     float half_period = 0.0f;
 
     static unsigned long last_ms = 0;
@@ -119,14 +119,10 @@ int gyro_fusion(const float *gyro)
     q[2] += q2_diff;
     q[3] += q3_diff;
 
-    /* 归一化 */
-    q_norm = math_inv_sqrt( q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
-    q[0] *= q_norm;
-    q[1] *= q_norm;
-    q[2] *= q_norm;
-    q[3] *= q_norm;
+    /* 归一化 */ 
+    math_norm(q_norm, q, 4);
 
-    attidude_set_quaternion(q);
+    attidude_set_quaternion(q_norm);
 
     return 0;
 }
