@@ -229,15 +229,15 @@ int attidude_get_matrix_by_column(float *data, int column)
 
     if(2 == column)
     {
-        data[0] = 2*(q[1]*q[3] - q[0]*q[2]);
-        data[1] = 2*(q[2]*q[3] + q[0]*q[1]); 
-        data[2] = 2*(q[0]*q[0] + q[3]*q[3]) - 1;
-    }
-    else if(3 == column)
-    {
         data[0] = 2*(q[1]*q[2] + q[0]*q[3]);
         data[1] = 2*(q[0]*q[0] + q[2]*q[2]) - 1;
         data[2] = 2*(q[2]*q[3] - q[0]*q[1]);
+    }
+    else if(3 == column)
+    {
+        data[0] = 2*(q[1]*q[3] - q[0]*q[2]);
+        data[1] = 2*(q[2]*q[3] + q[0]*q[1]); 
+        data[2] = 2*(q[0]*q[0] + q[3]*q[3]) - 1;
     }
     else
     {
