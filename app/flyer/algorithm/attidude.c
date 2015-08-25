@@ -58,7 +58,7 @@ inline static int quaternion_lock(MUTEX_T *mutex)
 {
     if (0 != mutex_lock(mutex))
     {
-        DEBUG_P("%s,%d:mutex_lock error!\n", __FILE__,__LINE__);
+        algo_printf("%s,%d:mutex_lock error!\n", __FILE__,__LINE__);
     }
 
     return 0;
@@ -84,7 +84,7 @@ inline static int quaternion_unlock(MUTEX_T *mutex)
 {
     if (0 != mutex_unlock(mutex))
     {
-        DEBUG_P("%s,%d:mutex_unlock error!\n", __FILE__,__LINE__);
+        algo_printf("%s,%d:mutex_unlock error!\n", __FILE__,__LINE__);
     }
     return 0;
 }
@@ -223,14 +223,14 @@ int attidude_init(void)
 
     if (0 != mutex_init(&s_quaternion_mutex))
     {
-        DEBUG_P("%s,%d:pthread_mutex_init error!\n", __FILE__,__LINE__);
+        algo_printf("%s,%d:pthread_mutex_init error!\n", __FILE__,__LINE__);
     }
 
     attidude_euler2quaternion(q, euler);
     attidude_set_quaternion(q);
 
 #ifdef ALGO_TRACE
-    DEBUG_P("初始化四元数为:\n");
+    algo_printf("初始化四元数为:\n");
     attidude_print_quaternion();
 #endif
 
@@ -243,7 +243,7 @@ int attidude_print_quaternion(void)
 
     attidude_get_quaternion(q);
 
-    DEBUG_P("%7.4f,%7.4f,%7.4f,%7.4f", q[0], q[1], q[2], q[3]);
+    algo_printf("%7.4f,%7.4f,%7.4f,%7.4f", q[0], q[1], q[2], q[3]);
 
     return 0;
 }

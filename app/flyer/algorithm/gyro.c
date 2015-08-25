@@ -42,7 +42,7 @@ void *fusion_gyro_loop(void *argv)
 
     if(NULL == argv)
     {
-        DEBUG_P("陀螺仪线程参数错误.\n");
+        algo_printf("陀螺仪线程参数错误.\n");
     }
     else
     {
@@ -50,8 +50,8 @@ void *fusion_gyro_loop(void *argv)
     }
 
 #ifdef ALGO_TRACE
-    DEBUG_P("陀螺仪线程启动.\n");
-    DEBUG_P("\n"); 
+    algo_printf("陀螺仪线程启动.\n");
+    algo_printf("\n"); 
 #endif
 
     while(1)
@@ -123,11 +123,11 @@ static int fusion_gyro(const float *gyro)
     q3_diff =   half_period * (q[0] * wz + q[1] * wy - q[2] * wx);
 
 #if 0
-    DEBUG_P("q:%7.5f,%7.5f,%7.5f,%7.5f.\n", q[0], q[1], q[2], q[3]);
-    DEBUG_P("w:%5.2f,%5.2f,%5.2f.\n", wx,wy,wz);
-    DEBUG_P("half_period:%5.2f.\n", half_period);
-    DEBUG_P("diff:%7.5f,%7.5f,%7.5f,%7.5f.\n", q0_diff, q1_diff, q2_diff, q3_diff);
-    DEBUG_P("\n");
+    algo_printf("q:%7.5f,%7.5f,%7.5f,%7.5f.\n", q[0], q[1], q[2], q[3]);
+    algo_printf("w:%5.2f,%5.2f,%5.2f.\n", wx,wy,wz);
+    algo_printf("half_period:%5.2f.\n", half_period);
+    algo_printf("diff:%7.5f,%7.5f,%7.5f,%7.5f.\n", q0_diff, q1_diff, q2_diff, q3_diff);
+    algo_printf("\n");
 #endif
 
     /* 积分 */

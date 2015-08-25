@@ -37,13 +37,6 @@
 #define ALGO_ROLL               (1)
 #define ALGO_YAW                (2)
 
-#ifdef X86_64
-#include <stdio.h>
-#define DEBUG_P                 printf
-#else
-#define DEBUG_P                 cmos_printf
-#endif
-
 /*********************************** 类型定义 **********************************/
 
 /*--------------------------------- 接口声明区 --------------------------------*/

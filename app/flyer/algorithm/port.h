@@ -20,10 +20,15 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <stdio.h>
 #else
 #endif
 
 /************************************ 宏定义 ***********************************/
+#ifdef X86_64
+#define algo_printf             printf
+#else
+#endif
 
 /*********************************** 类型定义 **********************************/
 #ifdef X86_64

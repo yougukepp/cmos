@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
         printf("\tmax:%7.4f\n", max); 
 
-        usleep(100000);
+        usleep(5000);
     }
 
     printf("test done!\n");

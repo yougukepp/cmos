@@ -52,14 +52,14 @@ int algo_init(void)
     attidude_init();
 
 #ifdef ALGO_TRACE
-    DEBUG_P("算法库配置为:\n");
-    DEBUG_P("陀螺仪:%s, 周期:%4ums\n",
+    algo_printf("算法库配置为:\n");
+    algo_printf("陀螺仪:%s, 周期:%4ums\n",
             ALGO_GYRO_ENABLE ? ("打开") : ("关闭"), ALGO_GYRO_PERIOD);
 
-    DEBUG_P("加计  :%s, 周期:%4ums\n", 
+    algo_printf("加计  :%s, 周期:%4ums\n", 
             ALGO_ACCEL_ENABLE? ("打开") : ("关闭"), ALGO_ACCEL_PERIOD);
 
-    DEBUG_P("磁力计:%s, 周期:%4ums\n", 
+    algo_printf("磁力计:%s, 周期:%4ums\n", 
             ALGO_MAG_ENABLE? ("打开") : ("关闭"), ALGO_MAG_PERIOD);
 #endif
 
@@ -93,7 +93,7 @@ int algo_start(void)
         gyro_tid = thread_create(fusion_gyro_loop, &gyro_period);
 
 #ifdef ALGO_TRACE
-        DEBUG_P("陀螺仪线程id:0x%08x.\n", (int)gyro_tid);
+        algo_printf("陀螺仪线程id:0x%08x.\n", (int)gyro_tid);
 #endif
     }
 
