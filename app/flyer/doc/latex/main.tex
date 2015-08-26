@@ -26,6 +26,16 @@
 \makeatother 
 \renewcommand\theequation{\oldstylenums{\thesection} .\oldstylenums{\arabic{equation}}}
 % 公式快捷命令
+%\newcommand{name}[num]{definition}
+\newcommand{\veci}{\vec{i}}
+\newcommand{\vecj}{\vec{j}}
+\newcommand{\veck}{\vec{k}}
+\newcommand{\sinphidtwo}{\sin\frac{\phi}{2}}
+\newcommand{\cosphidtwo}{\cos\frac{\phi}{2}}
+\newcommand{\sinthetadtwo}{\sin\frac{\theta}{2}}
+\newcommand{\costhetadtwo}{\cos\frac{\theta}{2}}
+\newcommand{\sinpsidtwo}{\sin\frac{\psi}{2}}
+\newcommand{\cospsidtwo}{\cos\frac{\psi}{2}}
 
 % 参考文献
 \usepackage[numbers,sort&compress]{natbib}
@@ -103,6 +113,7 @@
 磁计\footnote{后问磁力计简称磁计}测量的物理量为地磁场.由于地磁场并非正北方向,导致不便,本文使用重力场叉乘地磁场构造出一个正东方向的"指东针",该向量仅有东向分量.便于计算,代价是多两次叉乘.至于是否划算暂不考虑,毕竟过早优化才是万恶之源.有了指东针,可以结合加计与磁计的输出叉乘出"指东针"测量值,将该测量转换到n系,比较他与实际"指东针"$\vec{e}=(0,1,0)$可以求得最后一个欧拉角分量偏航角,使用它纠正陀螺仪积分得出的偏航角完成偏航角融合。至次,完成了飞行器的全姿态融合.
 
 为了便于分析，假定飞行器启动前，s系前右下与n系北东地分别重合,飞行器的姿态解算转换为求s系相对于n系的旋转角. 本文在分析陀螺积分算法时为了减少运算量使用四元数表示姿态,分析直接姿态算法时出于简单\footnote{目前笔者能自己想明白的只有欧拉角算法，其他的互补滤波,卡尔曼滤波搞懂了再补上.}考虑使用欧拉角表示姿态,推导过程中采用方向余弦分析分析欧拉角与四元数的转换,出于方便姿态解算的输出使用欧拉角.
+
 \include{quaternion}
 
 \section{算法步骤}\label{section:最终结论}

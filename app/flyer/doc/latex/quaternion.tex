@@ -1,2 +1,34 @@
+% section — subsection — subsubsection — paragraph — subparagraph
+
 \section{四元数推导}
+四元数表示姿态时仅需要4个变量,比方向余弦矩阵表示姿态\footnote{需要9个变量}少需要5个变量,同时也没有欧拉角的万向锁问题\footnote{我也不懂}.下面分析四元数的性质为算法设计打基础.
+
+\subsection{定义}
+四元数的定义如下:
+\begin{equation}\label{四元数定义}
+    Q = q_0 + q_1 \cdot \veci + q_2 \cdot \vecj + q_3 \cdot \veck
+\end{equation} 
+
+其中$Q$     表示四元数,
+$q_x$       表示四元数的第$x$个分量,
+$i$,$j$,$k$ 表示虚部.他们的关系为:
+\begin{equation}\label{四元数虚部关系}
+    \begin{split}
+        \veci \cdot \veci &= \vecj \cdot \vecj = \veck \cdot \veck = -1 \\
+        \veci \cdot \vecj &= -\vecj \cdot \veci = k \\
+        \vecj \cdot \veck &= -\veck \cdot \vecj = i \\
+        \veck \cdot \veci &= -\veci \cdot \veck = j
+    \end{split}
+\end{equation} 
+
+单位四元数{归一化后}的定义如下:
+\begin{equation}\label{单位四元数定义}
+    Q = \costhetadtwo + \vec{n} \cdot \sinthetadtwo
+\end{equation} 
+
+其中$\vec{n}$   表示旋转轴向量,
+$\theta$        表示旋转的角度.
+
+\subsection{欧拉角转四元数}
 123
+
