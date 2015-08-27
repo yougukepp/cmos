@@ -100,10 +100,10 @@ int gyro_fusion(const float *gyro)
     attidude_get_quaternion(q);
 
     /* 微分 */
-    q0_diff =  -half_period * (q[1] * wx + q[2] * wy + q[3] * wz);
-    q1_diff =   half_period * (q[0] * wx + q[2] * wz - q[3] * wy);
-    q2_diff =   half_period * (q[0] * wy - q[1] * wz + q[3] * wx);
-    q3_diff =   half_period * (q[0] * wz + q[1] * wy - q[2] * wx);
+    q0_diff =  -half_period * ( q[1] * wx + q[2] * wy + q[3] * wz);
+    q1_diff =   half_period * ( q[0] * wx - q[3] * wy + q[2] * wz);
+    q2_diff =   half_period * ( q[3] * wx + q[0] * wy - q[1] * wz);
+    q3_diff =   half_period * (-q[2] * wx + q[1] * wy + q[0] * wz);
 
 #if 0
     algo_printf("q:%7.5f,%7.5f,%7.5f,%7.5f.\n", q[0], q[1], q[2], q[3]);
