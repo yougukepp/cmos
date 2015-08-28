@@ -1,5 +1,5 @@
 all:clean
-	asy *.asy
+	asy -render=0 *.asy
 
 draw:all
 	evince *.pdf

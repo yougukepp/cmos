@@ -10,6 +10,7 @@ fig:
 	make -C fig
 
 clean:
+	make -C fig clean
 	rm -rf *.aux *.idx *.log *.toc *.out *.bbl *.blg *.lot *.lof *.pdf
 
 .PHONY : all fig clean
