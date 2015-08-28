@@ -5,20 +5,22 @@ settings.tex = "xelatex";
 usepackage("xeCJK");
 texpreamble("\setCJKmainfont{AR PL UKai CN}");
 
-
-size(150);
-
 /***************************************** 定义 *****************************************/
+/* 尺寸 */ 
+real picSize=150;
+size(picSize);
 /* 原点 */ 
 pair O=(0,0);
 /* 半径 */
-real r=10;
+real r=picSize/10;
+real perpendicularSize = picSize/20;
 /* 旋转角 */
 real theta=10;
 real thetaCos=cos(theta/180*pi);
 real thetaSin=sin(theta/180*pi);
+pen  arcColor=red;
 /* 不变矢量 */
-real pLength=10;
+real pLength=picSize/10;
 real pAngle=45;
 real pCos=cos(pAngle/180*pi);
 real pSin=sin(pAngle/180*pi);
@@ -44,8 +46,10 @@ draw(Label("$y$", EndPoint), O--Y1, X1OY1Color, Arrow);
 /* 投影*/
 draw(P--PInX1, X1OY1Color+dashed);
 draw(P--PInY1, X1OY1Color+dashed);
-perpendicular(PInX1, NE, PInX1--P, X1OY1Color);
-perpendicular(PInY1, NE, PInY1--P, X1OY1Color);
+perpendicular(PInX1, SE, PInX1--P, perpendicularSize, X1OY1Color);
+draw(Label("$\mathbf{i}$", position=EndPoint, align=SE), O--PInX1, X1OY1Color, Arrow);
+perpendicular(PInY1, NE, PInY1--P, perpendicularSize, X1OY1Color);
+draw(Label("$\mathbf{j}$", position=EndPoint, align=NW), O--PInY1, X1OY1Color, Arrow);
 
 /* 旋转后的坐标轴 */
 draw(Label("$x'$", EndPoint), O--X2, X2OY2Color, Arrow);
@@ -53,9 +57,13 @@ draw(Label("$y'$", EndPoint), O--Y2, X2OY2Color, Arrow);
 /* 投影*/
 draw(P--PInX2, X2OY2Color+dashed);
 draw(P--PInY2, X2OY2Color+dashed);
-perpendicular(PInX2, NE, PInX2--P, X2OY2Color);
-perpendicular(PInY2, NE, PInY2--P, X2OY2Color);
+perpendicular(PInX2, SE, PInX2--P, perpendicularSize, X2OY2Color);
+draw(Label("$\mathbf{i'}$", position=EndPoint, align=SE), O--PInX2, X2OY2Color, Arrow);
+perpendicular(PInY2, NE, PInY2--P, perpendicularSize, X2OY2Color);
+draw(Label("$\mathbf{j'}$", position=EndPoint, align=NW), O--PInY2, X2OY2Color, Arrow);
 
 /* 向量 */
 draw(Label("$\mathbf{p}$", EndPoint), O--P, pColor, Arrow);
+/* 角度弧线 */
+draw(Label("$\theta$"), arc(O, r/2, 0, theta), arcColor, Arrow);
 

@@ -16,3 +16,6 @@ tools/flyer_controller/__pycache__/
 app/flyer/algorithm/*.o
 app/flyer/algorithm/*.exe
 app/flyer/algorithm/test
+
+app/flyer/doc/latex/fig/*.pdf
+
