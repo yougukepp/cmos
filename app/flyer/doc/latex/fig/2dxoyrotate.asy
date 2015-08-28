@@ -6,7 +6,7 @@ usepackage("xeCJK");
 texpreamble("\setCJKmainfont{AR PL UKai CN}");
 
 
-size(200);
+size(150);
 
 /***************************************** 定义 *****************************************/
 /* 原点 */ 
