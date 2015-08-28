@@ -24,13 +24,13 @@ $\bfi$,$\bfj$,$bfk$表示虚部.他们的关系为:
 单位四元数{归一化后}的定义如下:
 \begin{equation}\label{四元数归一化定义}
     \begin{split}
-        Q = & \costhetadtwo + \mathbf{n} \cdot \sinthetadtwo \\
-        \mathbf{n} = & \cos{\alpha}i + \cos{\beta}j + \cos{\gamma}k
+        Q = & \costhetadtwo + \bfx{n} \cdot \sinthetadtwo \\
+        \bfx{n} = & \cos{\alpha}i + \cos{\beta}j + \cos{\gamma}k
     \end{split}
 \end{equation} 
 
 其中$\theta$    表示旋转的角度,
-$\mathbf{n}$       表示旋转轴向量,
+$\bfx{n}$       表示旋转轴向量,
 $\alpha$        表示旋转轴与参考系$x$轴夹角,
 $\beta$         表示旋转轴与参考系$y$轴夹角,
 $\gamma$        表示旋转轴与参考系$z$轴夹角.
@@ -80,9 +80,9 @@ $q_x$           表示四元数的第$x$个分量.式\ref{欧拉角转四元数}
 \subsection{四元数转欧拉角}
 由于笔者尚未发现四元数直接转换欧拉角的推导,所以这里先推导四元数转方向余弦阵,再利用方向余弦阵推到四元数转欧拉角的公式.
 \subsubsection{四元数转方向余弦阵}
-设矢量$\mathbf{R}=x\bfi+y\bfj+z\bfk$,在\textcolor[rgb]{1,0,0}{旋转后的坐标系}\footnote{本文的旋转在未说明的情况下为矢量不变，坐标系旋转。某些资料中的旋转为坐标系不变矢量旋转，在这种情况下式\ref{四元数旋转倒数表示}公式为$\mathbf{R}' = Q \cdot \mathbf{R} \cdot Q^{-1}$,对应的方向余弦阵也需要转置\cite{惯性技术}}下为$\mathbf{R'}=x\mathbf{i'}+y\mathbf{j'}+z\mathbf{k'}$,满足:
+设矢量$\bfx{R}=x\bfi+y\bfj+z\bfk$,在\textcolor[rgb]{1,0,0}{旋转后的坐标系}\footnote{本文的旋转在未说明的情况下为矢量不变，坐标系旋转。某些资料中的旋转为坐标系不变矢量旋转，在这种情况下式\ref{四元数旋转倒数表示}公式为$\bfxd{R} = Q \cdot \bfx{R} \cdot Q^{-1}$,对应的方向余弦阵也需要转置\cite{惯性技术}}下为$\bfxd{R}=x\bfid+y\bfjd{j}+z\bfkd{k}$,满足:
 \begin{equation}\label{四元数旋转倒数表示}
-    \mathbf{R'}=Q^{-1} \cdot \mathbf{R} \cdot Q
+    \bfxd{R}=Q^{-1} \cdot \bfx{R} \cdot Q
 \end{equation} 
 
 其中$Q$         表示旋转四元数,
@@ -99,13 +99,13 @@ $Q^{-1}$        表示旋转四元数的倒数.
 \begin{equation*}
     \begin{split}
                     & Q^{-1} = \frac{1}{Q} = \frac{Q^*}{Q \cdot Q^*} = \frac{Q^*}{|Q|} = Q^* \\
-        \Rightarrow & \mathbf{R}'= Q^{-1} \cdot \mathbf{R} \cdot Q = Q^* \cdot \mathbf{R} \cdot Q
+        \Rightarrow & \bfxd{R}= Q^{-1} \cdot \bfx{R} \cdot Q = Q^* \cdot \bfx{R} \cdot Q
     \end{split}
 \end{equation*}
 
 即:
 \begin{equation}\label{四元数旋转共厄表示}
-    \mathbf{R}'= Q^* \cdot \mathbf{R} \cdot Q
+    \bfxd{R}= Q^* \cdot \bfx{R} \cdot Q
 \end{equation}
 
 将式\ref{四元数旋转共厄表示}展开即:

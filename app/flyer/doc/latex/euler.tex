@@ -1,3 +1,5 @@
+% section — subsection — subsubsection — paragraph — subparagraph
+
 \section{欧拉角与方向余弦}
 首先分析二维位旋转.
 \begin{figure}[!hbp]
@@ -7,5 +9,82 @@
     \end{center}
 \end{figure}
 
-这里有一点需要强调,本文坐标系统一采用右手坐标系,结合绘图的美观性,所有旋转轴\footnote{旋转所绕的轴，而非旋转的轴}指向读者.
+根据图\ref{二维旋转}容易得出:
+\begin{equation*}
+    \bfx{p}=x\bfi+y\bfj,
+    \bfx{p}=x'\bfxd{i}+y'\bfxd{j} \\ 
+\end{equation*} 
+
+进行如下变换
+\begin{equation*}
+    \begin{split}
+                    & \bfx{p}=x\bfi+y\bfj, \bfx{p}=x'\bfxd{i}+y'\bfxd{j} \\
+        \Rightarrow & x\bfi+y\bfj=x'\bfxd{i}+y'\bfxd{j} \\
+        \Rightarrow & x\bfi\cdot\bfi+y\bfi\cdot\bfj=x'\bfi\cdot\bfxd{i}+y'\bfi\cdot\bfxd{j} \\
+        \Rightarrow & x=\bfi\cdot\bfxd{i}x'+\bfi\cdot\bfxd{j}y'
+    \end{split}
+\end{equation*} 
+
+同理:
+\begin{equation*}
+    \begin{split}
+                    & x\bfi+y\bfj=x'\bfxd{i}+y'\bfxd{j} \\
+        \Rightarrow & x\bfj\cdot\bfi+y\bfj\cdot\bfj=x'\bfj\cdot\bfxd{i}+y'\bfj\cdot\bfxd{j} \\
+        \Rightarrow & y=\bfj\cdot\bfxd{i}x'+\bfj\cdot\bfxd{j}y'
+    \end{split}
+\end{equation*} 
+
+综合以上推导可以得出:
+\begin{equation}\label{二维方向余弦阵}
+    \begin{split}
+        \left[\begin{matrix}
+                x' \\
+                y'
+        \end{matrix}\right]
+        =
+        \left[\begin{matrix}
+                \bfi\bfid & \bfj\bfid \\
+                \bfi\bfjd & \bfj\bfjd
+        \end{matrix}\right]
+        \left[\begin{matrix}
+                x \\
+                y
+        \end{matrix}\right]
+    \end{split}
+\end{equation}
+
+其中$x$,$y$     表示$\bfx{p}$在原坐标系坐标;
+$\bfi$,$\bfj$   表示在原坐标系坐标轴方向单位向量;
+$\bfid$,$\bfjd$ 表示在旋转后坐标系坐标轴方向单位向量;
+$x'$,$y'$       表示$\bfx{p}$在旋转后坐标系坐标.类似二维旋转，三维旋转方向余弦阵可以表示为:
+\begin{equation}\label{三维方向余弦阵}
+    \begin{split}
+        \left[\begin{matrix}
+                x' \\
+                y' \\
+                z'
+        \end{matrix}\right]
+        =
+        \left[\begin{matrix}
+                \bfi\bfid & \bfj\bfid & \bfk\bfid \\
+                \bfi\bfjd & \bfj\bfjd & \bfk\bfjd \\
+                \bfi\bfkd & \bfj\bfkd & \bfk\bfkd
+        \end{matrix}\right]
+        \left[\begin{matrix}
+                x \\
+                y \\
+                z
+        \end{matrix}\right]
+    \end{split}
+\end{equation}
+
+其中$x$,$y$,$z$         表示$\bfx{p}$在原坐标系坐标;
+$\bfi$,$\bfj$,$\bfk$    表示在原坐标系坐标轴方向单位向量;
+$\bfid$,$\bfjd$,$\bfkd$ 表示在旋转后坐标系坐标轴方向单位向量;
+$x'$,$y'$,$z'$          表示$\bfx{p}$在旋转后坐标系坐标. 这里有一点需要强调,本文坐标系统一采用\textcolor[rgb]{1,0,0}{右手坐标系},结合绘图的美观性,所有旋转轴\footnote{旋转所绕的轴，而非旋转的轴}指向读者.
+
+\subsection{三次旋转}
+本文绕坐标轴旋转的顺序为$z$-$y$-$x$,首先绕$z$轴旋转$\psi$:
+$\phi$
+$\theta$
 

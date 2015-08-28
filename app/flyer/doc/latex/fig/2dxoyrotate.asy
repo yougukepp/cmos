@@ -47,9 +47,9 @@ draw(Label("$y$", EndPoint), O--Y1, X1OY1Color, Arrow);
 draw(P--PInX1, X1OY1Color+dashed);
 draw(P--PInY1, X1OY1Color+dashed);
 perpendicular(PInX1, SE, PInX1--P, perpendicularSize, X1OY1Color);
-draw(Label("$\mathbf{i}$", position=EndPoint, align=SE), O--PInX1, X1OY1Color, Arrow);
+draw(Label("$x\mathbf{i}$", position=EndPoint, align=SE), O--PInX1, X1OY1Color, Arrow);
 perpendicular(PInY1, NE, PInY1--P, perpendicularSize, X1OY1Color);
-draw(Label("$\mathbf{j}$", position=EndPoint, align=NW), O--PInY1, X1OY1Color, Arrow);
+draw(Label("$y\mathbf{j}$", position=EndPoint, align=NW), O--PInY1, X1OY1Color, Arrow);
 
 /* 旋转后的坐标轴 */
 draw(Label("$x'$", EndPoint), O--X2, X2OY2Color, Arrow);
@@ -58,9 +58,9 @@ draw(Label("$y'$", EndPoint), O--Y2, X2OY2Color, Arrow);
 draw(P--PInX2, X2OY2Color+dashed);
 draw(P--PInY2, X2OY2Color+dashed);
 perpendicular(PInX2, SE, PInX2--P, perpendicularSize, X2OY2Color);
-draw(Label("$\mathbf{i'}$", position=EndPoint, align=SE), O--PInX2, X2OY2Color, Arrow);
+draw(Label("$x'\mathbf{i'}$", position=EndPoint, align=SE), O--PInX2, X2OY2Color, Arrow);
 perpendicular(PInY2, NE, PInY2--P, perpendicularSize, X2OY2Color);
-draw(Label("$\mathbf{j'}$", position=EndPoint, align=NW), O--PInY2, X2OY2Color, Arrow);
+draw(Label("$y'\mathbf{j'}$", position=EndPoint, align=NW), O--PInY2, X2OY2Color, Arrow);
 
 /* 向量 */
 draw(Label("$\mathbf{p}$", EndPoint), O--P, pColor, Arrow);

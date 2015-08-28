@@ -22,6 +22,7 @@
 
 % 公式
 \usepackage{amsmath}
+\usepackage{amssymb}
 % 公式编号
 \makeatletter
 \@addtoreset{equation}{section}
@@ -29,15 +30,22 @@
 \renewcommand\theequation{\oldstylenums{\thesection} .\oldstylenums{\arabic{equation}}}
 % 公式快捷命令
 %\newcommand{name}[num]{definition}
-\newcommand{\bfi}{\mathbf{i}}
-\newcommand{\bfj}{\mathbf{j}}
-\newcommand{\bfk}{\mathbf{k}}
+\newcommand{\bfx}[1]{\mathbf{#1}}
+\newcommand{\bfxd}[1]{\mathbf{#1}'}
+\newcommand{\bfi}{\bfx{i}}
+\newcommand{\bfj}{\bfx{j}}
+\newcommand{\bfk}{\bfx{k}}
+\newcommand{\bfid}{\bfxd{i}}
+\newcommand{\bfjd}{\bfxd{j}}
+\newcommand{\bfkd}{\bfxd{k}}
+
 \newcommand{\sinphidtwo}{\sin\frac{\phi}{2}}
 \newcommand{\cosphidtwo}{\cos\frac{\phi}{2}}
 \newcommand{\sinthetadtwo}{\sin\frac{\theta}{2}}
 \newcommand{\costhetadtwo}{\cos\frac{\theta}{2}}
 \newcommand{\sinpsidtwo}{\sin\frac{\psi}{2}}
 \newcommand{\cospsidtwo}{\cos\frac{\psi}{2}}
+
 \newcommand{\pidtwo}{\frac{\pi}{2}}
 \newcommand{\transpose}{^\mathbf{T}}
 
