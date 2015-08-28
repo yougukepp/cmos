@@ -5,7 +5,7 @@ draw:all
 	evince *.pdf
 
 clean:
-	rm -rf *.pdf
+	rm -rf *.pdf *.aux *.log
 
 .PHONY : clean
 
