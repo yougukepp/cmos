@@ -1,4 +1,6 @@
-all:clean
+all: 3dRotateByZ.pdf
+
+3dRotateByZ.pdf:3dRotateByZ.asy
 	asy -render=0 *.asy
 
 draw:all
