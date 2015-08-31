@@ -8,7 +8,7 @@ texpreamble("\setCJKmainfont{AR PL UKai CN}");
 
 /***************************************** 定义 *****************************************/
 /* 尺寸 */ 
-real picSize=150;
+real picSize=200;
 size(picSize);
 /* 半径 */
 real r=picSize/1.5;
@@ -63,8 +63,10 @@ draw(Label("$y$", EndPoint), O--Y1, X1Y1Z1Color, Arrow3(DefaultHead2));
 /* 投影*/
 draw(P--PInX1, X1Y1Z1Color+dashed);
 draw(P--PInY1, X1Y1Z1Color+dashed);
-draw(Label("$x\mathbf{i}$", position=EndPoint, align=SE), O--PInX1, X1Y1Z1Color, Arrow3(DefaultHead2));
-draw(Label("$y\mathbf{j}$", position=EndPoint, align=NW), O--PInY1, X1Y1Z1Color, Arrow3(DefaultHead2));
+dot(PInX1, X1Y1Z1Color);
+draw(Label("$x_1$" ,EndPoint, SE), PInX1, X1Y1Z1Color, Arrow3(DefaultHead2));
+dot(PInY1, X1Y1Z1Color);
+draw(Label("$y_1$", EndPoint, NW), PInY1, X1Y1Z1Color, Arrow3(DefaultHead2));
 
 /* 旋转后的坐标轴 */
 draw(Label("$x'$", EndPoint), O--X2, X2Y2Z2Color, Arrow3(DefaultHead2));
@@ -72,8 +74,10 @@ draw(Label("$y'$", EndPoint), O--Y2, X2Y2Z2Color, Arrow3(DefaultHead2));
 /* 投影*/
 draw(P--PInX2, X2Y2Z2Color+dashed);
 draw(P--PInY2, X2Y2Z2Color+dashed);
-draw(Label("$x'\mathbf{i}'$", position=EndPoint, align=SE), O--PInX2, X2Y2Z2Color, Arrow3(DefaultHead2));
-draw(Label("$y'\mathbf{j}'$", position=EndPoint, align=NW), O--PInY2, X2Y2Z2Color, Arrow3(DefaultHead2));
+dot(PInX2, X2Y2Z2Color);
+draw(Label("$x_2$", EndPoint, SE), PInX2, X2Y2Z2Color, Arrow3(DefaultHead2));
+dot(PInY2, X2Y2Z2Color);
+draw(Label("$y_2$", EndPoint, NW), PInY2, X2Y2Z2Color, Arrow3(DefaultHead2));
 
 /* 旋转轴 */
 draw(Label("$z,z'$", EndPoint), O--Z1, Z1Z2Color, Arrow3(DefaultHead2));
@@ -82,5 +86,5 @@ draw(Label("$k,k'$", EndPoint, align=E), O--Zk, Z1Z2Color, Arrow3(DefaultHead2))
 /* 不变向量 */
 draw(Label("$\mathbf{p}$", EndPoint), O--P, pColor, Arrow3(DefaultHead2));
 /* 角度弧线 */
-draw("$\psi$", p=rotateAxisColor, arc(O, r/2, theta2, phi1, theta2, phi2), Arrow3(DefaultHead2));
+draw("$\psi$", p=rotateAxisColor, arc(O, r/2, theta1, phi1, theta2, phi2), Arrow3(DefaultHead2));
 
