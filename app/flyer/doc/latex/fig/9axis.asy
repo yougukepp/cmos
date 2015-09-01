@@ -23,7 +23,7 @@ triple lookPoint=(-r, r/5, -r/5);
 currentprojection = orthographic(lookPoint, up=-Z, target=O);
 /* 旋转角 */
 real theta=10;
-transform3 thetaRotate=rotate(theta, O, X);
+transform3 thetaRotate=rotate(theta, O, Z);
 real thetaCos=cos(theta/180*pi);
 real thetaSin=sin(theta/180*pi);
 real theta1 = -theta;
