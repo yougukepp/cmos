@@ -19,16 +19,43 @@ triple X=(r, 0, 0);
 triple Y=(0, r, 0);
 triple Z=(0, 0, r);
 /* 观察点 */
-triple lookPoint=(15, 30, 15);
+triple lookPoint=(-15, -30, -15);
 currentprojection = orthographic(lookPoint, up=-Z, target=O);
+/* 重力矢量 */
+triple G=(0, 0, 4*r/5);
+pen GColor=red;
+/* 磁矢量 */
+real mLength=4*r/5;
+real mAngle=30;
+real mZ=-sin(mAngle/180*pi)*mLength;
+real mX=cos(mAngle/180*pi)*mLength;
+triple M=(mX, 0, mZ);
+pen MColor=green;
+/* 指东针 */
+triple EPointer=(0, 4*r/5, 0);
+pen EColor=blue;
 /* 坐标轴 */
-pen  XYZColor=black;
+pen  XYZPen=gray+dashed+0.1;
 
 /***************************************** 绘图 *****************************************/
 /* 原坐标轴 */
-draw(Label("$x$", EndPoint), O--X, XYZColor, Arrow3(DefaultHead2));
-draw(Label("$y$", EndPoint), O--Y, XYZColor, Arrow3(DefaultHead2));
-draw(Label("$z$", EndPoint), O--Z, XYZColor, Arrow3(DefaultHead2));
+draw(Label("$x$", EndPoint), O--X, XYZPen, Arrow3(DefaultHead2));
+draw(Label("$y$", EndPoint), O--Y, XYZPen, Arrow3(DefaultHead2));
+draw(Label("$z$", EndPoint), O--Z, XYZPen, Arrow3(DefaultHead2));
 
-/* 不变向量 */
+/* 重力矢量 */
+draw(Label("$\mathbf{g}$", EndPoint, E), O--G, GColor, Arrow3(DefaultHead2));
+
+/* 磁矢量 */
+draw(Label("$\mathbf{m}$", EndPoint, SW), O--M, MColor, Arrow3(DefaultHead2));
+
+/* 指东针 */
+draw(Label("$\mathbf{e}$", EndPoint, E), O--EPointer, EColor, Arrow3(DefaultHead2));
+
+/* 角度弧线 */
+real theta1 = 0;
+real phi1 = 0;
+real theta2 = mAngle + 90;
+real phi2 = 0;
+draw("$\psi$", p=black, arc(O, r/2, theta1, phi1, theta2, phi2), Arrow3(DefaultHead2));
 
