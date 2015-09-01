@@ -8,7 +8,7 @@ texpreamble("\setCJKmainfont{AR PL UKai CN}");
 
 /***************************************** 定义 *****************************************/
 /* 尺寸 */ 
-real picSize=200;
+real picSize=150;
 size(picSize);
 /* 半径 */
 real r=picSize/1.5;
@@ -26,10 +26,10 @@ real theta=10;
 transform3 thetaRotate=rotate(theta, O, X);
 real thetaCos=cos(theta/180*pi);
 real thetaSin=sin(theta/180*pi);
-real theta1 = 90;
-real phi1 = 0;
-real theta2 = 90;
-real phi2 = theta;
+real theta1 = -theta;
+real phi1 = 90;
+real theta2 = 0;
+real phi2 = 90;
 /* 重力矢量 */
 real gLength=4*r/5;
 triple G=(0, 0, gLength);
@@ -69,9 +69,5 @@ dot(GInZ2, Y2Z2Color);
 draw(Label("$z_2$", EndPoint, NW), GInZ2, Y2Z2Color);
 
 /* 角度弧线 */
-theta1 = 0;
-phi1 = -90;
-theta2 = theta;
-phi2 = -90;
 draw(Label("$\theta$"), p=XColor, arc(O, r/2, theta1, phi1, theta2, phi2), Arrow3(DefaultHead2));
 
