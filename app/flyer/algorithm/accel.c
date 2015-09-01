@@ -15,6 +15,8 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include <math.h>
+
 #include "algo.h"
 #include "port.h"
 #include "attidude.h"
@@ -49,7 +51,6 @@ void *accel_loop(void *argv)
 int accel_fusion(const float *accel)
 {
     float a[ALGO_DIM] = {0.0f};
-    float g[ALGO_DIM] = {0.0f};
     float q[ALGO_QUAD] = {0.0f};
     float theta_a = 0.0f;
     float phi_a = 0.0f;
@@ -64,19 +65,13 @@ int accel_fusion(const float *accel)
     {
         a[i] = accel[i];
     }
-    attidude_get_matrix_by_column(g, 3);
 
     /* 直接姿态 */
     /* theta */
-    a[0] = 0; /* yoz 投影 x值设置为零 */
-    g[0] = 0; /* yoz 投影 x值设置为零 */
-    math_vetor_angle(&theta_a, a, g);
+    theta_a = atan2(a[1], a[2]);
     /* phi */
-    a[1] = 0; /* xoz 投影 y值设置为零 */
-    g[1] = 0; /* xoz 投影 y值设置为零 */
-    math_vetor_angle(&phi_a, a, g);
+    phi_a = atan2(a[0], a[2]);
 
-#if 1
     /* 获取积分姿态 */
     attidude_get_level(&theta_g, &phi_g);
 
@@ -93,12 +88,23 @@ int accel_fusion(const float *accel)
     
     attidude_euler2quaternion(q, euler);
     attidude_set_quaternion(q);
-#endif
 
+#if 1
+    static int pp = 0;
+    printf("%d:\n", pp);
     printf("%7.4f,%7.4f + ", math_arc2angle(theta_a), math_arc2angle(phi_a));
     printf("%7.4f,%7.4f => ", math_arc2angle(theta_g), math_arc2angle(phi_g));
     printf("%7.4f,%7.4f,%7.4f ", math_arc2angle(theta_r), math_arc2angle(phi_r), math_arc2angle(psi));
     printf("%7.4f,%7.4f,%7.4f,%7.4f\n", q[0],q[1],q[2],q[3]);
+    printf("\n");
+#endif
+
+    if(10000 == pp)
+    {
+        while(1);
+    }
+
+    pp++;
 
     return 0;
 }

@@ -18,4 +18,5 @@ app/flyer/algorithm/*.exe
 app/flyer/algorithm/test
 
 app/flyer/doc/latex/fig/*.pdf
+app/flyer/doc/latex/*.pdf
 
