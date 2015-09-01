@@ -89,7 +89,7 @@ int accel_fusion(const float *accel)
     attidude_euler2quaternion(q, euler);
     attidude_set_quaternion(q);
 
-#if 1
+#if 0
     static int pp = 0;
     printf("%d:\n", pp);
     printf("%7.4f,%7.4f + ", math_arc2angle(theta_a), math_arc2angle(phi_a));
@@ -97,14 +97,13 @@ int accel_fusion(const float *accel)
     printf("%7.4f,%7.4f,%7.4f ", math_arc2angle(theta_r), math_arc2angle(phi_r), math_arc2angle(psi));
     printf("%7.4f,%7.4f,%7.4f,%7.4f\n", q[0],q[1],q[2],q[3]);
     printf("\n");
-#endif
-
     if(10000 == pp)
     {
         while(1);
     }
 
     pp++;
+#endif
 
     return 0;
 }

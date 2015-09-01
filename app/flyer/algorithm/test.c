@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
     while(1)
     {
         algo_get_level(&theta, &phi);
-        //printf("theta:%7.4f,", theta);
-        //printf("phi:%7.4f,", phi);
+        printf("theta:%7.4f,", theta);
+        printf("phi:%7.4f,", phi);
         algo_get_psi(&psi);
-        //printf("psi:%7.4f <===", psi); 
+        printf("psi:%7.4f <===", psi); 
         
         algo_print_quaternion();
         if(max < fabs(theta))
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
             max = fabs(psi);
         }
 
-        //printf("\tmax:%7.4f\n", max); 
+        printf("\tmax:%7.4f\n", max); 
         usleep(1000000);
     }
 

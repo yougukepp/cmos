@@ -15,14 +15,23 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+#include "algo.h"
 
 
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static s_attidude[ALGO_DIM] = {0.0f};
+static float s_attidude[ALGO_DIM] = {0.0f};
+
+static float s_gyro[ALGO_DIM] = {0.0f};
+static float s_accel[ALGO_DIM] = {0.0f};
+static float s_mag[ALGO_DIM] = {0.0f};
 
 /********************************** 函数声明区 *********************************/
 static float rand_range(float min, float max);
@@ -32,6 +41,45 @@ static float rand_range(float min, float max);
 
 
 /********************************** 函数实现区 *********************************/
+/* 增加陀螺积分误差模型 */
+/* 增加加计干扰误差模型 */
+void *pc_loop(void *argv)
+{
+    float gyro_snr = 10.0f;
+
+    while(1)
+    { 
+        /* TODO: */
+        s_gyro[0] = rand_range(-1.0f, 1.0f)/gyro_snr;
+        s_gyro[1] = rand_range(-1.0f, 1.0f)/gyro_snr;
+        s_gyro[2] = rand_range(-1.0f, 1.0f)/gyro_snr;
+
+        s_accel[0] = 0;
+
+        s_mag[0] = 0;
+        
+        s_attidude[0] += s_gyro[0];
+
+        //printf("%s,%d:pc_loop.\n", __FILE__, __LINE__);
+        usleep(1000); /* 1ms 更新一次姿态 */
+    }
+    return NULL;
+}
+
+int pc_init(void)
+{
+    pthread_t tid;
+    int rst = 0;
+    rst = pthread_create(&tid, NULL, pc_loop, NULL);
+    if(0 != rst)
+    { 
+        printf("%s,%d:pc_init\n", __FILE__, __LINE__);
+        return -1;
+    }
+
+    return 0;
+}
+
 int pc_get_gyro(float *gyro)
 {
     gyro[0] = rand_range(-1.0f, 1.0f);

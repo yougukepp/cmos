@@ -51,6 +51,13 @@
  ******************************************************************************/
 int algo_init(void)
 {
+#ifdef X86_64
+    /* PC模拟传感器数据 */
+    algo_printf("PC模拟传感器数据.\n");
+    int pc_init(void);
+    pc_init();
+#endif
+
     /* 姿态初始化 */
     attidude_init();
 
