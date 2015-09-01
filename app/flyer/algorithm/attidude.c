@@ -97,9 +97,9 @@ inline static int quaternion_unlock(MUTEX_T *mutex)
  * 函数功能: 欧拉角转四元数
  *
  * 输入参数: euler   欧拉角
- *           0 pitch 俯仰角 x轴
- *           1 roll  翻滚角 y轴
- *           2 yaw   偏航角 z轴
+ *           0 theta 俯仰角 x轴
+ *           1 phi  翻滚角 y轴
+ *           2 psi   偏航角 z轴
  * 输出参数: quaternion 姿态四元数
  *
  * 返回值:   0   : 正常退出
@@ -110,18 +110,18 @@ inline static int quaternion_unlock(MUTEX_T *mutex)
  ******************************************************************************/
 int attidude_euler2quaternion(float *quaternion, const float *euler)
 {
-    float half_pitch = 0.0f;
-    float half_roll = 0.0f;
-    float half_yaw = 0.0f;
+    float half_theta = 0.0f;
+    float half_phi = 0.0f;
+    float half_psi = 0.0f;
 
-    half_pitch = euler[0] / 2;
-    half_roll = euler[1] / 2;
-    half_yaw = euler[2] / 2;
+    half_theta = euler[0] / 2;
+    half_phi = euler[1] / 2;
+    half_psi = euler[2] / 2;
 
-    quaternion[0] = cos(half_pitch)*cos(half_roll)*cos(half_yaw) + sin(half_pitch)*sin(half_roll)*sin(half_yaw);
-    quaternion[1] = sin(half_pitch)*cos(half_roll)*cos(half_yaw) - cos(half_pitch)*sin(half_roll)*sin(half_yaw);
-    quaternion[2] = cos(half_pitch)*sin(half_roll)*cos(half_yaw) + sin(half_pitch)*cos(half_roll)*sin(half_yaw);
-    quaternion[3] = cos(half_pitch)*cos(half_roll)*sin(half_yaw) - sin(half_pitch)*sin(half_roll)*cos(half_yaw); 
+    quaternion[0] = cos(half_theta)*cos(half_phi)*cos(half_psi) + sin(half_theta)*sin(half_phi)*sin(half_psi);
+    quaternion[1] = sin(half_theta)*cos(half_phi)*cos(half_psi) - cos(half_theta)*sin(half_phi)*sin(half_psi);
+    quaternion[2] = cos(half_theta)*sin(half_phi)*cos(half_psi) + sin(half_theta)*cos(half_phi)*sin(half_psi);
+    quaternion[3] = cos(half_theta)*cos(half_phi)*sin(half_psi) - sin(half_theta)*sin(half_phi)*cos(half_psi); 
 
     return 0;
 }
@@ -136,9 +136,9 @@ int attidude_euler2quaternion(float *quaternion, const float *euler)
  * 输入参数: quaternion 姿态四元数
  *
  * 输出参数: euler   欧拉角
- *           0 pitch 俯仰角 x轴
- *           1 roll  翻滚角 y轴
- *           2 yaw   偏航角 z轴
+ *           0 theta 俯仰角 x轴
+ *           1 phi  翻滚角 y轴
+ *           2 psi   偏航角 z轴
  *
  * 返回值:   0   : 正常退出
  *           其它: 异常退出
@@ -148,21 +148,21 @@ int attidude_euler2quaternion(float *quaternion, const float *euler)
  ******************************************************************************/
 int attidude_quaternion2euler(float *euler, const float *quaternion)
 {
-    float pitch = 0.0f;
-    float roll = 0.0f;
-    float yaw = 0.0f;
+    float theta = 0.0f;
+    float phi = 0.0f;
+    float psi = 0.0f;
 
     float q[ALGO_QUAD] = {0.0f};
 
     attidude_get_quaternion(q);
 
-    pitch = atan2(q[2]*q[3] + q[0]*q[1], q[0]*q[0] + q[3]*q[3] - 0.5f);
-    roll  = -asin(2*(q[1]*q[3] - q[0]*q[2]));
-    yaw   = atan2(q[1]*q[2] + q[0]*q[3], q[0]*q[0] + q[1]*q[1] - 0.5f);
+    theta = atan2(q[2]*q[3] + q[0]*q[1], q[0]*q[0] + q[3]*q[3] - 0.5f);
+    phi  = -asin(2*(q[1]*q[3] - q[0]*q[2]));
+    psi   = atan2(q[1]*q[2] + q[0]*q[3], q[0]*q[0] + q[1]*q[1] - 0.5f);
 
-    euler[0] = pitch;
-    euler[1] = roll;
-    euler[2] = yaw;
+    euler[0] = theta;
+    euler[1] = phi;
+    euler[2] = psi;
 
     /* FIXME: 是否是全姿态的，反三角函数计算出的角度是否需要修正? */
 
@@ -170,24 +170,24 @@ int attidude_quaternion2euler(float *euler, const float *quaternion)
 }
 
 /* 提高效率 欧拉角 分为水平 和偏航 */
-int attidude_get_level(float *pitch, float *roll)
+int attidude_get_level(float *theta, float *phi)
 {
     float q[ALGO_QUAD] = {0.0f};
 
     attidude_get_quaternion(q);
 
-    *pitch = atan2(q[2]*q[3] + q[0]*q[1], q[0]*q[0] + q[3]*q[3] - 0.5f);
-    *roll  = -asin(2*(q[1]*q[3] - q[0]*q[2]));
+    *theta = atan2(q[2]*q[3] + q[0]*q[1], q[0]*q[0] + q[3]*q[3] - 0.5f);
+    *phi  = -asin(2*(q[1]*q[3] - q[0]*q[2]));
 
     return 0;
 }
 
-int attidude_get_yaw(float *yaw)
+int attidude_get_psi(float *psi)
 {
     float q[ALGO_QUAD] = {0.0f};
 
     attidude_get_quaternion(q);
-    *yaw   = atan2(q[1]*q[2] + q[0]*q[3], q[0]*q[0] + q[1]*q[1] - 0.5f);
+    *psi   = atan2(q[1]*q[2] + q[0]*q[3], q[0]*q[0] + q[1]*q[1] - 0.5f);
 
     return 0;
 }

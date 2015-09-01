@@ -30,8 +30,8 @@
 int attidude_init(void);
 int attidude_set_quaternion(const float *quaternion);
 int attidude_get_quaternion(float *quaternion);
-int attidude_get_level(float *pitch, float *roll);
-int attidude_get_yaw(float *yaw);
+int attidude_get_level(float *theta, float *phi);
+int attidude_get_psi(float *psi);
 int attidude_get_matrix_by_column(float *data, int column);
 int attidude_euler2quaternion(float *quaternion, const float *euler);
 

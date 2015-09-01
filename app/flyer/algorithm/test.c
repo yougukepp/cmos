@@ -52,9 +52,9 @@
  ******************************************************************************/
 int main(int argc, char *argv[])
 { 
-    float pitch = 0;
-    float roll = 0;
-    float yaw = 0;
+    float theta = 0;
+    float phi = 0;
+    float psi = 0;
 
     float max = 0.0f;
 
@@ -65,24 +65,24 @@ int main(int argc, char *argv[])
     printf("\n");
     while(1)
     {
-        algo_get_level(&pitch, &roll);
-        printf("pitch:%7.4f,", pitch);
-        printf("roll:%7.4f,", roll);
-        algo_get_yaw(&yaw);
-        printf("yaw:%7.4f <===", yaw); 
+        algo_get_level(&theta, &phi);
+        printf("theta:%7.4f,", theta);
+        printf("phi:%7.4f,", phi);
+        algo_get_psi(&psi);
+        printf("psi:%7.4f <===", psi); 
         
         algo_print_quaternion();
-        if(max < fabs(pitch))
+        if(max < fabs(theta))
         {
-            max = fabs(pitch);
+            max = fabs(theta);
         }
-        if(max < fabs(roll))
+        if(max < fabs(phi))
         {
-            max = fabs(roll);
+            max = fabs(phi);
         }
-        if(max < fabs(yaw))
+        if(max < fabs(psi))
         {
-            max = fabs(yaw);
+            max = fabs(psi);
         }
 
         printf("\tmax:%7.4f\n", max); 

@@ -140,18 +140,18 @@ int algo_start(void)
     return 0;
 }
 
-int algo_get_level(float *pitch, float *roll)
+int algo_get_level(float *theta, float *phi)
 {
-    attidude_get_level(pitch, roll);
-    *pitch = math_arc2angle(*pitch);
-    *roll = math_arc2angle(*roll);
+    attidude_get_level(theta, phi);
+    *theta = math_arc2angle(*theta);
+    *phi = math_arc2angle(*phi);
     return 0;
 }
 
-int algo_get_yaw(float *yaw)
+int algo_get_psi(float *psi)
 {
-    attidude_get_yaw(yaw);
-    *yaw = math_arc2angle(*yaw);
+    attidude_get_psi(psi);
+    *psi = math_arc2angle(*psi);
     return 0;
 }
 

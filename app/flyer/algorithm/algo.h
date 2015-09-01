@@ -57,8 +57,8 @@
 /*********************************** 接口函数 **********************************/
 int algo_init(void);
 int algo_start(void);
-int algo_get_level(float *pitch, float *roll);
-int algo_get_yaw(float *yaw);
+int algo_get_level(float *theta, float *phi);
+int algo_get_psi(float *psi);
 
 int algo_print_quaternion(void);
 
