@@ -76,8 +76,8 @@ int accel_fusion(const float *accel)
     attidude_get_level(&theta_g, &phi_g);
 
     /* 姿态融合 */
-    theta_r = theta_g + (theta_a - theta_g) * ALGO_ACCEL_PITCH_RATE;
-    phi_r = phi_g + (phi_a - phi_g) * ALGO_ACCEL_ROLL_RATE;
+    theta_r = theta_g + (theta_a - theta_g) * ALGO_ACCEL_THETA_RATE;
+    phi_r = phi_g + (phi_a - phi_g) * ALGO_ACCEL_PHI_RATE;
 
     /* 转换为四元数 */
     attidude_get_psi(&psi);

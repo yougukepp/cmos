@@ -100,9 +100,10 @@ int pc_get_accel(float *accel)
 
 int pc_get_mag(float *mag)
 {
-    mag[0] = rand_range(-1.0f, 1.0f);
-    mag[1] = rand_range(-1.0f, 1.0f);
-    mag[2] = rand_range(-1.0f, 1.0f);
+    float snr = 100.0f;
+    mag[0] = rand_range(-1.0f, 1.0f) / snr;
+    mag[1] = rand_range(-1.0f, 1.0f) / snr;
+    mag[2] = rand_range(-1.0f, 1.0f) / snr;
 
     return 0;
 }

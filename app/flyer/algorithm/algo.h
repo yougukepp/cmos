@@ -33,10 +33,9 @@
 #define ALGO_MAG_GET_DATA       (get_mag)
 #define ALGO_MAG_FUSION         (mag_fusion)
 /* 值越大越相信直接姿态 */
-#define ALGO_ACCEL_PITCH_RATE   (0.5)
-#define ALGO_ACCEL_ROLL_RATE    (0.5)
-#define ALGO_MAG_YAW_RATE       (0.5)
-
+#define ALGO_ACCEL_THETA_RATE   (0.5)
+#define ALGO_ACCEL_PHI_RATE     (0.5)
+#define ALGO_MAG_PSI_RATE       (0.5)
 
 /* 常用常量 */
 #define ALGO_PI                 (3.1415926f)

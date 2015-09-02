@@ -19,6 +19,7 @@
 #include <math.h>
 #include <unistd.h>
 #include "algo.h"
+#include "pc.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -57,6 +58,10 @@ int main(int argc, char *argv[])
     float psi = 0;
 
     float max = 0.0f;
+
+    /* PC模拟传感器数据 */
+    printf("PC模拟传感器数据 启动.\n");
+    pc_init();
 
     algo_init();
     algo_start();
