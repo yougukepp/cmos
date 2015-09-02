@@ -16,11 +16,13 @@
 
 /************************************ 头文件 ***********************************/
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
 
 #include "algo.h"
+#include "algo_math.h"
 
 
 
@@ -90,7 +92,7 @@ int pc_get_gyro(float *gyro)
 
 int pc_get_accel(float *accel)
 {
-    float snr = 100.0f;
+    float snr = 1000.0f;
     accel[0] = rand_range(-1.0f, 1.0f) / snr;
     accel[1] = rand_range(-1.0f, 1.0f) / snr;
     accel[2] = 1.0f + rand_range(-1.0f, 1.0f) / snr;
@@ -100,10 +102,12 @@ int pc_get_accel(float *accel)
 
 int pc_get_mag(float *mag)
 {
-    float snr = 100.0f;
-    mag[0] = rand_range(-1.0f, 1.0f) / snr;
+    float theta = 30;
+    float snr = 1000.0f;
+
+    mag[0] = cos(math_angle2arc(theta)) + rand_range(-1.0f, 1.0f) / snr;
     mag[1] = rand_range(-1.0f, 1.0f) / snr;
-    mag[2] = rand_range(-1.0f, 1.0f) / snr;
+    mag[2] = -sin(math_angle2arc(theta)) + rand_range(-1.0f, 1.0f) / snr;
 
     return 0;
 }

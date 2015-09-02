@@ -111,6 +111,11 @@ int get_gyro(float *gyro)
 #endif
 }
 
+/* MPU9250加计方向向飞行器前右下系靠拢
+ *
+ * 由于MPU9250上轴为z轴,
+ * 所以加计输出(比力)与以下轴为z轴的飞行器坐标系的重力相同.
+ * */
 int get_accel(float *accel)
 {
 #ifdef X86_64

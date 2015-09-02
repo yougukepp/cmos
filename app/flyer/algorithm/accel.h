@@ -28,7 +28,7 @@
 
 /*********************************** 接口函数 **********************************/
 void *accel_loop(void *argv);
-int accel_fusion(const float *accel);
+int accel_fusion(void);
 
 #endif // #ifndef _ACCEL_H_
 

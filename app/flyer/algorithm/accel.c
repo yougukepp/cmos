@@ -36,21 +36,18 @@
 /********************************** 函数实现区 *********************************/
 void *accel_loop(void *argv)
 {
-    float accel[ALGO_DIM] = {0.0f};
-
     while(1)
     {
         delay_ms(ALGO_ACCEL_PERIOD);
-        ALGO_ACCEL_GET_DATA(accel);
-        ALGO_ACCEL_FUSION(accel);
+        ALGO_ACCEL_FUSION();
     }
 
     return NULL;
 }
 
-int accel_fusion(const float *accel)
+int accel_fusion(void)
 {
-    float a[ALGO_DIM] = {0.0f};
+    float accel[ALGO_DIM] = {0.0f};
     float q[ALGO_QUAD] = {0.0f};
     float theta_a = 0.0f;
     float phi_a = 0.0f;
@@ -61,16 +58,14 @@ int accel_fusion(const float *accel)
     float psi = 0.0f;
     float euler[ALGO_DIM] = {0.0f};
 
-    for(int i=0;i<ALGO_DIM;i++)
-    {
-        a[i] = accel[i];
-    }
+    /* 获取加计量数据 */
+    ALGO_ACCEL_GET_DATA(accel);
 
     /* 直接姿态 */
     /* theta */
-    theta_a = atan2(a[1], a[2]);
+    theta_a = atan2(accel[1], accel[2]);
     /* phi */
-    phi_a = atan2(a[0], a[2]);
+    phi_a = atan2(accel[0], accel[2]);
 
     /* 获取积分姿态 */
     attidude_get_level(&theta_g, &phi_g);

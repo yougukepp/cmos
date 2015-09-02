@@ -28,7 +28,7 @@
 
 /*********************************** 接口函数 **********************************/
 void *mag_loop(void *argv);
-int mag_fusion(const float *mag);
+int mag_fusion(void);
 
 #endif // #ifndef _MAG_H_
 
