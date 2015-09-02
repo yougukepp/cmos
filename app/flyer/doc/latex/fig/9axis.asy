@@ -33,42 +33,42 @@ pen eColor=blue;
 /* 原坐标 */
 triple X1=(r,0,0);
 triple Y1=(0,r,0);
-pen  X1Y1Color=black;
+pen  X1Y1Pen=black+dashed+0.1;
 /* 旋转后的坐标 */
 triple X2=thetaRotate*X1;
 triple Y2=thetaRotate*Y1;
 triple EInX2=eLength*thetaSin*unit(X2);
 triple EInY2=eLength*thetaCos*unit(Y2);
-pen  X2Y2Color=red;
+pen  X2Y2Pen=red+dashed+0.1;
 
 /* 旋转轴 */
-pen  ZColor=DarkCyan;
+pen  ZPen=DarkCyan+dashed+0.1;
 triple Z12=(0,0,r);
 
 /***************************************** 绘图 *****************************************/
 /* 原坐标轴 */
-draw(Label("$x$", EndPoint), O--X1,  X1Y1Color, Arrow3(DefaultHead2));
-draw(Label("$y$", EndPoint), O--Y1, X1Y1Color, Arrow3(DefaultHead2));
-draw(Label("$z,z'$", EndPoint), O--Z12,  ZColor, Arrow3(DefaultHead2));
+draw(Label("$x$", EndPoint), O--X1,  X1Y1Pen, Arrow3(DefaultHead2));
+draw(Label("$y$", EndPoint), O--Y1, X1Y1Pen, Arrow3(DefaultHead2));
+draw(Label("$z,z'$", EndPoint), O--Z12,  ZPen, Arrow3(DefaultHead2));
 
 /* 不变向量 */
 draw(Label("$\mathbf{e}$", EndPoint, N), O--EPointer, eColor, Arrow3(DefaultHead2));
 
 /* 旋转后的坐标轴 */
-draw(Label("$x'$", EndPoint), O--X2,  X2Y2Color, Arrow3(DefaultHead2));
-draw(Label("$y'$", EndPoint), O--Y2, X2Y2Color, Arrow3(DefaultHead2));
-draw(EPointer--EInX2, X2Y2Color+dashed);
-draw(EPointer--EInY2, X2Y2Color+dashed);
-draw(O--EInX2, X2Y2Color+dashed); /* 补全X2负半轴 */
-dot(EInX2, X2Y2Color);
-draw(Label("$x_2$", EndPoint, NW), EInX2, X2Y2Color);
-dot(EInY2, X2Y2Color);
-draw(Label("$y_2$", EndPoint, SE), EInY2, X2Y2Color);
+draw(Label("$x'$", EndPoint), O--X2,  X2Y2Pen, Arrow3(DefaultHead2));
+draw(Label("$y'$", EndPoint), O--Y2, X2Y2Pen, Arrow3(DefaultHead2));
+draw(EPointer--EInX2, X2Y2Pen);
+draw(EPointer--EInY2, X2Y2Pen);
+draw(O--EInX2, X2Y2Pen); /* 补全X2负半轴 */
+dot(EInX2, X2Y2Pen);
+draw(Label("$x_2$", EndPoint, NW), EInX2, X2Y2Pen);
+dot(EInY2, X2Y2Pen);
+draw(Label("$y_2$", EndPoint, SE), EInY2, X2Y2Pen);
 
 /* 角度弧线 */
 real theta1 = 90;
 real phi1 = 90+theta;
 real theta2 = 90;
 real phi2 = 90;
-draw(Label("$\psi$"), p=X2Y2Color, arc(O, r/2, theta1, phi1, theta2, phi2), Arrow3(DefaultHead2));
+draw(Label("$\psi$"), p=X2Y2Pen, arc(O, r/2, theta1, phi1, theta2, phi2), Arrow3(DefaultHead2));
 

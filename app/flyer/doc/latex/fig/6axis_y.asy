@@ -37,37 +37,37 @@ pen gColor=blue;
 /* 原坐标 */
 triple X1=(r,0,0);
 triple Z1=(0,0,r);
-pen  X1Z1Color=black;
+pen  X1Z1Pen=black+dashed+0.1;
 /* 旋转后的坐标 */
 triple X2=phiRotate * X1;
 triple Z2=phiRotate * Z1;
 triple GInX2=gLength*phiSin*unit(-X2);
 triple GInZ2=gLength*phiCos*unit(Z2);
-pen  X2Z2Color=red;
+pen  X2Z2Pen=red+dashed+0.1;
 /* 旋转轴 */
 triple Y12=(0,r,0);
-pen  YColor=DarkCyan;
+pen  YPen=DarkCyan+dashed+0.1;
 
 /***************************************** 绘图 *****************************************/
 /* 原坐标轴 */
-draw(Label("$x$", EndPoint), O--X1,  X1Z1Color, Arrow3(DefaultHead2));
-draw(Label("$z$", EndPoint), O--Z1,  X1Z1Color, Arrow3(DefaultHead2));
-draw(Label("$y,y'$", EndPoint), O--Y12, YColor, Arrow3(DefaultHead2));
+draw(Label("$x$", EndPoint), O--X1,  X1Z1Pen, Arrow3(DefaultHead2));
+draw(Label("$z$", EndPoint), O--Z1,  X1Z1Pen, Arrow3(DefaultHead2));
+draw(Label("$y,y'$", EndPoint), O--Y12, YPen, Arrow3(DefaultHead2));
 
 /* 不变向量 */
 draw(Label("$\mathbf{g}$", EndPoint, NE), O--G, gColor, Arrow3(DefaultHead2));
 
 /* 旋转后的坐标轴 */
-draw(Label("$x'$", EndPoint), O--X2,  X2Z2Color, Arrow3(DefaultHead2));
-draw(Label("$z'$", EndPoint), O--Z2,  X2Z2Color, Arrow3(DefaultHead2));
-draw(G--GInX2, X2Z2Color+dashed);
-draw(O--GInX2, X2Z2Color+dashed); /* 负半轴 辅助线 */
-draw(G--GInZ2, X2Z2Color+dashed);
-dot(GInX2, X2Z2Color);
-draw(Label("$x_2$", EndPoint, SE), GInX2, X2Z2Color);
-dot(GInZ2, X2Z2Color);
-draw(Label("$z_2$", EndPoint, NW), GInZ2, X2Z2Color);
+draw(Label("$x'$", EndPoint), O--X2,  X2Z2Pen, Arrow3(DefaultHead2));
+draw(Label("$z'$", EndPoint), O--Z2,  X2Z2Pen, Arrow3(DefaultHead2));
+draw(G--GInX2, X2Z2Pen);
+draw(O--GInX2, X2Z2Pen); /* 负半轴 辅助线 */
+draw(G--GInZ2, X2Z2Pen);
+dot(GInX2, X2Z2Pen);
+draw(Label("$x_2$", EndPoint, SE), GInX2, X2Z2Pen);
+dot(GInZ2, X2Z2Pen);
+draw(Label("$z_2$", EndPoint, NW), GInZ2, X2Z2Pen);
 
 /* 角度弧线 */
-draw(Label("$\phi$"), p=YColor, arc(O, r/2, theta1, phi1, theta2, phi2, true), Arrow3(DefaultHead2));
+draw(Label("$\phi$"), p=YPen, arc(O, r/2, theta1, phi1, theta2, phi2, true), Arrow3(DefaultHead2));
 

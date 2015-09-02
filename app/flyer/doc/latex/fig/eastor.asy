@@ -31,6 +31,11 @@ real mZ=-sin(mAngle/180*pi)*mLength;
 real mX=cos(mAngle/180*pi)*mLength;
 triple M=(mX, 0, mZ);
 pen MColor=green;
+/* 角度弧 */
+real theta1 = 0;
+real phi1 = 0;
+real theta2 = mAngle + 90;
+real phi2 = 0;
 /* 指东针 */
 triple EPointer=(0, 4*r/5, 0);
 pen EColor=blue;
@@ -53,9 +58,5 @@ draw(Label("$\mathbf{m}$", EndPoint, SW), O--M, MColor, Arrow3(DefaultHead2));
 draw(Label("$\mathbf{e}$", EndPoint, E), O--EPointer, EColor, Arrow3(DefaultHead2));
 
 /* 角度弧线 */
-real theta1 = 0;
-real phi1 = 0;
-real theta2 = mAngle + 90;
-real phi2 = 0;
-draw("$\psi$", p=black, arc(O, r/2, theta1, phi1, theta2, phi2), Arrow3(DefaultHead2));
+draw("$\theta$", p=black, arc(O, r/2, theta1, phi1, theta2, phi2), Arrow3(DefaultHead2));
 

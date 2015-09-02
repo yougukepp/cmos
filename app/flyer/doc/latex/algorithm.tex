@@ -60,8 +60,8 @@ $a_z$       表示加计$z$分量.
         使用直接欧拉角修正估计欧拉角,计算公式如下:
         \begin{equation}\label{水平融合}
             \left\{\!\!\!\begin{array}{ll}
-                    \theta = \hat{\theta} + \alpha(\hat{\theta}+\theta_a), & \alpha \in [0, 1] \\
-                    \phi   = \hat{\phi} + \beta(\hat{\phi}+\phi_a), & \beta \in [0, 1]
+                    \theta = \hat{\theta} + \alpha(\theta_a - \hat{\theta}), & \alpha \in [0, 1] \\
+                    \phi   = \hat{\phi} + \beta(\phi_a - \hat{\phi}), & \beta \in [0, 1]
                 \end{array}\right.
             \end{equation} 
             
@@ -83,7 +83,16 @@ $a_z$       表示加计$z$分量.
     \caption{指东针}\label{指东针}
 \end{center}
 \end{figure}
-其中重力叉乘磁力获取指向正东的不变矢量.9轴融合在6轴融合的基础上,使用磁计数据\footnote{结合加计数据}修正偏航角.磁计修正偏航角如图\ref{偏航角补偿}.
+其中重力叉乘磁力获取指向正东的不变矢量.
+
+\begin{equation}\label{指东针叉乘}
+    \bfx{e} = \bfx{a} \otimes \bfx{m}
+\end{equation} 
+
+式\ref{指东针叉乘}中$\bfx{a}$   表示加计测量值,
+$\bfx{m}$       表示磁计测量值,
+$\bfx{e}$       表示指东针.
+9轴融合在6轴融合的基础上,使用磁计数据\footnote{结合加计数据}修正偏航角.指东针修正偏航角如图\ref{偏航角补偿}.
 \begin{figure}[h]
 \begin{center}
     \includegraphics[height=5cm, width=5cm]{fig/9axis.pdf}
@@ -95,9 +104,8 @@ $a_z$       表示加计$z$分量.
     \psi = \arctan2(x_2,y_2) = \arctan2(a_x,a_y)
 \end{equation} 
 
-其中$a_x$   表示磁计$x$分量,
-$a_y$       表示磁计$y$分量.
-
+其中$a_x$   表示指东针$x$分量,
+$a_y$       表示指东针$y$分量.
 下面总结9轴融合算法步骤:
 \begin{enumerate}
     \item 获取估计偏航角
@@ -111,7 +119,7 @@ $a_y$       表示磁计$y$分量.
         使用直接偏航角修正估计偏航角,计算公式如下:
         \begin{equation}\label{偏航融合}
             \begin{array}{ll}
-                    \psi   = \hat{\psi} + \gamma(\hat{\psi}+\psi_a), & \gamma \in [0, 1]
+                    \psi   = \hat{\psi} + \gamma(\psi_a - \hat{\psi}), & \gamma \in [0, 1]
             \end{array}
         \end{equation} 
             
