@@ -588,16 +588,6 @@
               <FileType>1</FileType>
               <FilePath>..\app\flyer\mpu9250\mpu9250.c</FilePath>
             </File>
-            <File>
-              <FileName>math.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\flyer\algorithm\math.c</FilePath>
-            </File>
-            <File>
-              <FileName>imu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\flyer\algorithm\imu.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
