@@ -31,12 +31,12 @@ class FCAxis():
                  0.0,              -self.mArrowScale, 1.0 - self.mArrowScale, self.mAxisScale])
         # X轴顶点 颜色
         self.mXColors = array.array('f',
-                [ 1.0,  0.0,  0.0,  1.0,
-                  1.0,  0.0,  0.0,  1.0,
-                  1.0,  0.0,  0.0,  1.0,
-                  1.0,  0.0,  0.0,  1.0,
-                  1.0,  0.0,  0.0,  1.0,
-                  1.0,  0.0,  0.0,  1.0] ) 
+                [ 0.3,  0.0,  0.0,  1.0,
+                  0.3,  0.0,  0.0,  1.0,
+                  0.3,  0.0,  0.0,  1.0,
+                  0.3,  0.0,  0.0,  1.0,
+                  0.3,  0.0,  0.0,  1.0,
+                  0.3,  0.0,  0.0,  1.0] ) 
         # X轴顶点索引
         self.mXIndices = [
                 array.array('B', [0, 1]),
@@ -56,12 +56,12 @@ class FCAxis():
                   1.0 - self.mArrowScale, 0.0,               -self.mArrowScale, self.mAxisScale]) 
         # Y轴顶点 颜色
         self.mYColors = array.array('f',
-                [ 0.0,  1.0,  0.0,  1.0,
-                  0.0,  1.0,  0.0,  1.0,
-                  0.0,  1.0,  0.0,  1.0,
-                  0.0,  1.0,  0.0,  1.0,
-                  0.0,  1.0,  0.0,  1.0,
-                  0.0,  1.0,  0.0,  1.0] ) 
+                [ 0.0,  0.2,  0.0,  1.0,
+                  0.0,  0.2,  0.0,  1.0,
+                  0.0,  0.2,  0.0,  1.0,
+                  0.0,  0.2,  0.0,  1.0,
+                  0.0,  0.2,  0.0,  1.0,
+                  0.0,  0.2,  0.0,  1.0] ) 
         # Y轴顶点索引
         self.mYIndices = [
                 array.array('B', [0, 1]),
@@ -73,20 +73,20 @@ class FCAxis():
         # Z 天 蓝
         # Z轴顶点 位置
         self.mZVertices = array.array('f',
-                [0.0,              -1.0,                    0.0,              self.mAxisScale,
-                 0.0,               1.0,                    0.0,              self.mAxisScale,
-                 self.mArrowScale,  1.0 - self.mArrowScale, 0.0,              self.mAxisScale,
-                 -self.mArrowScale, 1.0 - self.mArrowScale, 0.0,              self.mAxisScale,
-                 0.0,               1.0 - self.mArrowScale, self.mArrowScale, self.mAxisScale,
-                 0.0,               1.0 - self.mArrowScale, self.mArrowScale, self.mAxisScale,])
+                [0.0,                1.0,                    0.0,              self.mAxisScale,
+                 0.0,               -1.0,                    0.0,              self.mAxisScale,
+                 self.mArrowScale,  -1.0 + self.mArrowScale, 0.0,              self.mAxisScale,
+                 -self.mArrowScale, -1.0 + self.mArrowScale, 0.0,              self.mAxisScale,
+                 0.0,               -1.0 + self.mArrowScale, self.mArrowScale, self.mAxisScale,
+                 0.0,               -1.0 + self.mArrowScale, -self.mArrowScale, self.mAxisScale])
         # Z轴顶点 颜色
         self.mZColors = array.array('f',
-                [ 0.0,  0.0,  1.0,  1.0,
-                  0.0,  0.0,  1.0,  1.0,
-                  0.0,  0.0,  1.0,  1.0,
-                  0.0,  0.0,  1.0,  1.0,
-                  0.0,  0.0,  1.0,  1.0,
-                  0.0,  0.0,  1.0,  1.0] ) 
+                [ 0.0,  0.0,  0.4,  1.0,
+                  0.0,  0.0,  0.4,  1.0,
+                  0.0,  0.0,  0.4,  1.0,
+                  0.0,  0.0,  0.4,  1.0,
+                  0.0,  0.0,  0.4,  1.0,
+                  0.0,  0.0,  0.4,  1.0] ) 
         # Z轴顶点索引
         self.mZIndices = [
                 array.array('B', [0, 1]),
