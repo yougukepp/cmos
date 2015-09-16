@@ -54,6 +54,8 @@ cmos_status_T hal_init(void)
         assert_failed(__FILE__, __LINE__);
 			  return status;
     }
+
+    /* HAL_Init 执行后才可以使用 */
     /* 时钟配置 180M */
     status = SystemClock_Config();
     if(cmos_OK_E != status)
@@ -62,7 +64,7 @@ cmos_status_T hal_init(void)
 			  return status;
     }
 		
-    /* 尽早初始化控制台便于打印 console 初始化 */
+    /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
     status = console_init(CMOS_CONSOLE_BAUDRATE);
     if(cmos_OK_E != status)
     {
@@ -84,6 +86,7 @@ cmos_status_T hal_init(void)
     return cmos_OK_E;
 }
 
+/* FIXME:不同的芯片需要修改 当前使用stm32f429 后面考虑stm32f401 */
 static cmos_status_T SystemClock_Config(void)
 {
     cmos_status_T status = cmos_ERR_E;

@@ -9,8 +9,8 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 0. 实现app/flyer/doc/README.md计划
 1. 按照结构图修改目录结构
 2. 系统调用的所有代码整理入syscall.s syscall.c syscall.h 三个文件
-3. 实现驱动层堆STM HAL层封装
-4. 实现串口命令行
+3. 实现驱动层堆STM HAL层封装,参考串口\I2C\RCC时钟模块的CMSIS驱动模型,RCC时钟模块
+4. 实现串口命令行,参考CMSIS驱动模型
 5. 系统调用加用户空间运行部分
 6. 实现CMSIS OS要求SignalManagement
 
