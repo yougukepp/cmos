@@ -1,0 +1,19 @@
+CMOS_HAL用于封装STM32F4Cube4代码，提供一个CMOS的适配层，将底层与CMOS上层功能隔离，本文档介绍CMOS_HAL驱动结构模型。
+代码分为两部分:硬件配置+驱动
+
+其中硬件相关的代码位于cmos/hal中以下三个文件:
+stm32f4xx_hal_conf.h    配置STM32F4Cube4 hal层
+stm32f4xx_hal_msp.c     实现硬件配置的钩子函数 由STM32F4Cube4 hal层调用
+stm32f4xx_hal_msp.h     实现硬件配置的相关宏定义 由STM32F4Cube4 hal层调用
+对于不同的硬件主要通过以上三个文件来配置。
+这些源码的调用链为:
+cmos_init               cmos主初始化
+->
+hal_init                cmos hal 初始化
+->
+HAL_Init()              STM32F4Cube4 hal层初始化 内部会调用stm32f4xx_hal_msp中实现的钩子函数
+
+其中硬件驱动的代码位于各自的子目录中，例如串口的相关代码位于cmos/hal/uart:
+其中实现了多硬件驱动的复用，例如UART0、UART1复用UART驱动代码.
+未完待续
+
