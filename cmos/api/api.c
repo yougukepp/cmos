@@ -67,16 +67,3 @@ inline cmos_uint32_T cmos_get_ms(void)
     return get_ms();
 }
 
-cmos_int32_T cmos_get_char(void)
-{
-    cmos_uint8_T c = 0x00;
-    cmos_uint32_T rst = 0;
-
-    rst = uart_recv_poll(&c, 1);
-    if(1 != rst)
-    {
-        return cmos_DEV_ERR_E;
-    }
-    return c;
-}
-

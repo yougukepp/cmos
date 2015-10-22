@@ -24,9 +24,11 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T uart_init(cmos_uint32_T uart_base_addr, cmos_int32_T baud_rate);
-cmos_status_T uart_send_poll(cmos_uint8_T *buf, cmos_int32_T len);
-cmos_uint32_T uart_recv_poll(cmos_uint8_T *buf, cmos_uint32_T buf_len);
+cmos_int32_T cmos_hal_uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
+cmos_int32_T cmos_hal_uart_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
+cmos_int32_T cmos_hal_uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
+cmos_status_T cmos_hal_uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, ...);
+cmos_status_T cmos_hal_uart_close(cmos_int32_T dev_id);
 
 #endif /* _CMOS_HAL_UART_H_ */
 

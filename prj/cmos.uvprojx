@@ -778,7 +778,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\lib;..\cmos\hal\uart</IncludePath>
+                      <IncludePath>..\cmos\hal;..\cmos\lib;..\cmos</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

@@ -18,13 +18,14 @@
 #include <stdio.h>
 #include "cmos_config.h"
 #include "lib.h"
-#include "uart.h"
 #include "console.h"
+#include "cmos_api.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
 static char s_printf_buf[CMOS_PRINTF_BUF_SIZE] = {0};
+static cmos_int32_T s_console_uart_fd = 0;
 
 /********************************** 函数声明区 *********************************/
 
@@ -50,11 +51,13 @@ cmos_status_T console_init(cmos_int32_T baud_rate)
 {
     cmos_status_T status = cmos_ERR_E;
 
-    status = uart_init(CMOS_CONSOLE_INDEX, baud_rate);
-    if(cmos_OK_E != status)
+    s_console_uart_fd = open("/dev/uart/console", CMOS_O_RDWR);
+    if(-1 == s_console_uart_fd)
     {
         assert_failed(__FILE__, __LINE__);
     }
+
+    ioctl(s_console_uart_fd, CMOS_I_SETBAUDRATE, baud_rate);
 
     return cmos_OK_E;
 }
@@ -77,22 +80,14 @@ cmos_status_T console_init(cmos_int32_T baud_rate)
 *
 ******************************************************************************/
 cmos_int32_T console_printf(char *fmt, ...)
+{ 
+    //cmos_int32_T cmos_hal_uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
+    return 0;
+}
+
+cmos_int32_T console_uninit()
 {
-    cmos_status_T status = cmos_ERR_E;
-    va_list args;
-    int n = 0;
-   
-    va_start(args, fmt);
-    n = vsprintf(s_printf_buf, fmt, args);
-    va_end(args);
-
-    /* 传输 */
-    status = uart_send_poll((cmos_uint8_T *)s_printf_buf, n);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
-
-    return n;
+    /* FIXME:不使用 预留 */
+    close(s_console_uart_fd);
 }
 

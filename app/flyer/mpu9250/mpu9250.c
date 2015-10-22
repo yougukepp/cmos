@@ -52,8 +52,11 @@ inline int mpu9250_read_buf(unsigned char dev_addr,
     unsigned int read_num = 0;
 
     dev_addr = addr_convert(dev_addr);
-	
+
+    /* FIXME: debug for 驱动模型 */
+#if 0
     read_num = cmos_i2c_read_buf(dev_addr, reg_addr, ptr_read_buf, buf_len);
+#endif
     if(read_num != buf_len)
     {
         assert_failed(__FILE__, __LINE__);
@@ -90,7 +93,10 @@ inline int mpu9250_write_buf(unsigned char dev_addr,
 
     dev_addr = addr_convert(dev_addr);
 
+    /* FIXME: debug for 驱动模型 */
+#if 0
     write_num = cmos_i2c_write_buf(dev_addr, reg_addr, ptr_write_buf, buf_len);
+#endif
     if(write_num != buf_len)
     {
         assert_failed(__FILE__, __LINE__);
@@ -220,4 +226,3 @@ inline static unsigned char addr_convert(unsigned char addr)
 {
     return (addr << 1);
 }
-

@@ -52,7 +52,7 @@ cmos_status_T hal_init(void)
     if(HAL_OK != HAL_Init())
     {
         assert_failed(__FILE__, __LINE__);
-			  return status;
+        return status;
     }
 
     /* HAL_Init 执行后才可以使用 */
@@ -61,15 +61,15 @@ cmos_status_T hal_init(void)
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
-			  return status;
+        return status;
     }
-		
+
     /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
     status = console_init(CMOS_CONSOLE_BAUDRATE);
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
-			  return status;
+        return status;
     }
 
     /* 此后可以控制台输出了 */
