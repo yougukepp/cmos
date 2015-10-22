@@ -26,6 +26,10 @@ UART_HandleTypeDef s_uart_handle;
 /********************************** 函数声明区 *********************************/
 
 /********************************** 函数实现区 *********************************/
+cmos_status_T cmos_hal_uart_init(void)
+{
+    return cmos_OK_E;
+}
 
 cmos_int32_T cmos_hal_uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
 {

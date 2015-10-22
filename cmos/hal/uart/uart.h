@@ -24,6 +24,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+cmos_status_T cmos_hal_uart_init(void); /* 底层初始化 */
+/* 驱动函数 */
 cmos_int32_T cmos_hal_uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 cmos_int32_T cmos_hal_uart_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_hal_uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);

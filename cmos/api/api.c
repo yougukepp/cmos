@@ -53,7 +53,15 @@ cmos_status_T cmos_init(void)
         assert_failed(__FILE__, __LINE__);
     }
 
+    /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
+    status = console_init(CMOS_CONSOLE_BAUDRATE);
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+        return status;
+    }
     /* 后面的初始化可以使用控制台输出了 */
+
     return cmos_OK_E;
 }
 

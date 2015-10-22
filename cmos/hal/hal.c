@@ -17,8 +17,6 @@
 #include "hal.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
-#include "console.h"
-#include "usb.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -64,24 +62,13 @@ cmos_status_T hal_init(void)
         return status;
     }
 
-    /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
-    status = console_init(CMOS_CONSOLE_BAUDRATE);
+    /* cmos hal uart low 初始化 */
+    status = cmos_hal_uart_init();
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
         return status;
     }
-
-    /* 此后可以控制台输出了 */
-#ifdef CMOS_USB
-    /* cmos hal usb low 初始化 */
-    status = usb_init();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return status;
-    }
-#endif
 
     return cmos_OK_E;
 }
