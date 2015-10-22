@@ -6,12 +6,7 @@ stm32f4xx_hal_conf.h    配置STM32F4Cube4 hal层
 /hardware/*_hardware.c  实现硬件配置的钩子函数 由STM32F4Cube4 hal层调用
 /hardware/*_hardware.h  实现硬件配置的相关宏定义 由STM32F4Cube4 hal层调用
 对于不同的硬件主要通过以上三个文件来配置。
-这些源码的调用链为:
-cmos_init               cmos主初始化
-->
-hal_init                cmos hal 初始化
-->
-HAL_Init()              STM32F4Cube4 hal层初始化 内部会调用stm32f4xx_hal_msp中实现的钩子函数
+这些源码在stam32F4Cube4调用相应设备初始化时被调用,例如HAL_UART_Init.
 
 其中硬件驱动的代码位于各自的子目录中，例如串口的相关代码位于cmos/hal/uart:
 其中实现了多硬件驱动的复用，例如UART0、UART1复用UART驱动代码.
