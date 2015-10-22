@@ -640,7 +640,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>..\cmos\hal;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc;..\cmos\hal\usb;..\cmos\hal\uart;..\cmos\hal\i2c;E:\Keil_v5\STM32Cube_FW_F4\Middlewares\ST\STM32_USB_Device_Library\Core\Inc</IncludePath>
+                  <IncludePath>..\cmos\hal;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc;..\cmos\hal\usb;..\cmos\hal\uart;..\cmos\hal\i2c;..\cmos\hal\hardware;E:\Keil_v5\STM32Cube_FW_F4\Middlewares\ST\STM32_USB_Device_Library\Core\Inc</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -663,11 +663,6 @@
             </GroupArmAds>
           </GroupOption>
           <Files>
-            <File>
-              <FileName>stm32f4xx_hal_msp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\cmos\hal\stm32f4xx_hal_msp.c</FilePath>
-            </File>
             <File>
               <FileName>hal.c</FileName>
               <FileType>1</FileType>
@@ -730,6 +725,11 @@
               <FileName>i2c.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\hal\i2c\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f429idiscovery_hardware.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\hal\hardware\stm32f429idiscovery_hardware.c</FilePath>
             </File>
           </Files>
         </Group>
