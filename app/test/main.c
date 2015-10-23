@@ -47,7 +47,7 @@ int main(void)
 {
     cmos_status_T status = cmos_ERR_E;
 
-    status = cmos_api_init();
+    status = cmos_init();
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);

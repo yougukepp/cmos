@@ -17,12 +17,16 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "console.h"
-#include "hal.h"
 #include "lib.h"
 
 /************************************ 宏定义 ***********************************/
 /* 控制台输出 */
-#define cmos_printf(...)        console_printf(__VA_ARGS__);
+#define cmos_printf(...)        cmos_console_printf(__VA_ARGS__);
+
+/* 系统调用cmos_open参数宏 */
+#define CMOS_O_RDWR             (0x00000000)
+/* 系统调用cmos_ioctl参数宏 */
+#define CMOS_I_SETBAUDRATE      (0x00000000)
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -30,6 +34,12 @@
 
 /*********************************** 接口函数 **********************************/
 cmos_status_T cmos_init(void);
+
+cmos_int32_T cmos_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
+cmos_int32_T cmos_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
+cmos_int32_T cmos_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
+cmos_status_T cmos_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, ...);
+cmos_status_T cmos_close(cmos_int32_T dev_id);
 
 #endif /* _CMOS_API_H_ */
 

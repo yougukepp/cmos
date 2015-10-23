@@ -83,17 +83,17 @@ cmos_status_T cmos_console_init(cmos_int32_T baud_rate)
 ******************************************************************************/
 cmos_int32_T cmos_console_printf(char *fmt, ...)
 { 
-    cmos_status_T status = cmos_ERR_E;
     va_list args;
-    int n = 0;
+    cmos_int32_T n = 0;
+    cmos_int32_T n_writes = 0;
    
     va_start(args, fmt);
     n = vsprintf(s_printf_buf, fmt, args);
     va_end(args);
 
     /* 传输 */
-    status = cmos_write(s_console_uart_fd, (cmos_uint8_T)s_printf_buf, n);
-    if(cmos_OK_E != status)
+    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)s_printf_buf, n);
+    if(n_writes != n)
     {
         assert_failed(__FILE__, __LINE__);
     }
@@ -123,7 +123,6 @@ cmos_status_T cmos_console_uninit(void)
     /* FIXME:不使用 预留 */
     cmos_status_T status = cmos_ERR_E;
     status = cmos_close(s_console_uart_fd);
-
     return status;
 }
 

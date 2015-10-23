@@ -17,6 +17,7 @@
 #include "hal.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
+#include "uart.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
