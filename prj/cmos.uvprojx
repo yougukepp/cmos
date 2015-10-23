@@ -586,16 +586,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>asm</GroupName>
-          <Files>
-            <File>
-              <FileName>stm32f429xx.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\cmos\asm\starup\stm32f429xx.s</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>hal</GroupName>
           <GroupOption>
             <CommonProperty>
@@ -721,6 +711,11 @@
               <FileType>1</FileType>
               <FilePath>..\cmos\hal\hardware\stm32f429idiscovery_hardware.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f429xx.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\cmos\hal\startup\stm32f429xx.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -777,55 +772,12 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>api</GroupName>
+          <GroupName>syscal</GroupName>
           <Files>
             <File>
-              <FileName>api.c</FileName>
+              <FileName>syscall.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\cmos\api\api.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>2</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath>..\cmos\console;..\cmos\hal;..\cmos\lib;..\cmos\hal\i2c;..\cmos\hal\uart</IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>..\cmos\syscall\syscall.c</FilePath>
             </File>
           </Files>
         </Group>
