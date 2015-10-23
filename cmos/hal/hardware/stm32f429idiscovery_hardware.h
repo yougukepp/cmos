@@ -19,7 +19,9 @@
 #include "stm32f4xx_hal_conf.h"
 
 /************************************ 宏定义 ***********************************/
-/******************************** 控制台串口定义 *******************************/
+/* 串口个数 控制台+ESP8266 */
+#define CMOS_HAL_UART_NUMS                      (2)
+/* 控制台串口定义 */
 #define CONSOLE_UART                            USART1
 #define CONSOLE_UART_CLK_ENABLE()               __HAL_RCC_USART1_CLK_ENABLE()
 #define CONSOLE_UART_RX_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOA_CLK_ENABLE()
@@ -34,8 +36,11 @@
 #define CONSOLE_UART_RX_AF                      GPIO_AF7_USART1
 #define CONSOLE_UART_IRQn                       USART1_IRQn
 #define CONSOLE_UART_IRQHandler                 USART1_IRQHandler
+/* TODO:ESP82699串口定义 */
 
-/********************************** IMU I2C定义 ********************************/
+/* I2C个数 MPU9250+功能板 */
+#define CMOS_HAL_I2C_NUMS                      (2)
+/* MPU9250 I2C定义 FIXME:使用I2C1 */
 #define IMU_I2C                                 I2C3
 #define IMU_I2C_CLOCK_ENABLE()                  __I2C3_CLK_ENABLE()
 #define IMU_I2C_FORCE_RESET()                   __I2C3_FORCE_RESET()
@@ -56,6 +61,7 @@
 #define IMU_INT_CLK_ENABLE()                    __GPIOA_CLK_ENABLE()
 #define IMU_INT_CLK_DISABLE()                   __GPIOA_CLK_DISABLE()
 #define IMU_INT_EXTI                            EXTI15_10_IRQn
+/* TODO:功能板 I2C定义 */
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
