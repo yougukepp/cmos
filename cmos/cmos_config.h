@@ -32,7 +32,7 @@
 /* 串口号 UART1 => 1*/
 #define CMOS_CONSOLE_INDEX                                      (1)
 /* 波特率 */
-#define CMOS_CONSOLE_BAUDRATE                                   (57600)
+#define CMOS_CONSOLE_BAUDRATE                                   (115200)
 
 /************************************ USB配置 **********************************/
 /* 不使用USB */

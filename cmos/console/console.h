@@ -44,8 +44,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T console_init(cmos_int32_T baud_rate);
-cmos_int32_T console_printf(char *fmt, ...);
+cmos_status_T cmos_console_init(cmos_int32_T baud_rate);
+cmos_int32_T cmos_console_printf(char *fmt, ...);
 
 #endif /* _CMOS_HAL_UART_H_ */
 

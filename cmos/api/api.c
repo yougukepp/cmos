@@ -16,7 +16,6 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cmos_api.h"
-#include "hal.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -27,7 +26,7 @@
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
 *
-* 函数名  : cmos_init
+* 函数名  : cmos_api_init
 * 负责人  : 彭鹏
 * 创建日期: 20150321
 * 函数功能: CMOS 初始化
@@ -42,11 +41,11 @@
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_init(void)
+cmos_status_T cmos_api_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
 
-    /* cmos hal 初始化 */
+    /* cmos hal 硬件底层初始化 */
     status = hal_init();
     if(cmos_OK_E != status)
     {
@@ -63,15 +62,5 @@ cmos_status_T cmos_init(void)
     /* 后面的初始化可以使用控制台输出了 */
 
     return cmos_OK_E;
-}
-
-inline void cmos_delay_ms(cmos_uint32_T ms)
-{
-    delay_ms(ms);
-}
-
-inline cmos_uint32_T cmos_get_ms(void)
-{
-    return get_ms();
 }
 

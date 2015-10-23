@@ -24,7 +24,9 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+/* 控制台缓存 */
 static char s_printf_buf[CMOS_PRINTF_BUF_SIZE] = {0};
+/* 控制台文件句柄 */
 static cmos_int32_T s_console_uart_fd = 0;
 
 /********************************** 函数声明区 *********************************/
@@ -32,7 +34,7 @@ static cmos_int32_T s_console_uart_fd = 0;
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
 *
-* 函数名  : console_init
+* 函数名  : cmos_console_init
 * 负责人  : 彭鹏
 * 创建日期: 20150614
 * 函数功能: 控制台初始化
@@ -47,7 +49,7 @@ static cmos_int32_T s_console_uart_fd = 0;
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T console_init(cmos_int32_T baud_rate)
+cmos_status_T cmos_console_init(cmos_int32_T baud_rate)
 {
     cmos_status_T status = cmos_ERR_E;
 
@@ -64,7 +66,7 @@ cmos_status_T console_init(cmos_int32_T baud_rate)
 
 /*******************************************************************************
 *
-* 函数名  : console_printf
+* 函数名  : cmos_console_printf
 * 负责人  : 彭鹏
 * 创建日期: 20150614
 * 函数功能: 控制台打印
@@ -79,15 +81,37 @@ cmos_status_T console_init(cmos_int32_T baud_rate)
 * 其 它   : 系统错误或调试打印需要第一时间输出 采用轮询方式输出
 *
 ******************************************************************************/
-cmos_int32_T console_printf(char *fmt, ...)
+cmos_int32_T cmos_console_printf(char *fmt, ...)
 { 
-    //cmos_int32_T cmos_hal_uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
+    //cmos_int32_T cmos_hal_uart_write(s_console_uart_fd, const void *buf, cmos_int32_T n_bytes);
     return 0;
 }
 
-cmos_int32_T console_uninit()
+/*******************************************************************************
+*
+* 函数名  : cmos_console_uninit
+* 负责人  : 彭鹏
+* 创建日期: 20151023
+* 函数功能: 解除控制台串口的管腿复用
+*
+* 输入参数: 无
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_status_T cmos_console_uninit(void)
 {
     /* FIXME:不使用 预留 */
-    close(s_console_uart_fd);
+    if(-1 == close(s_console_uart_fd))
+    {
+        return cmos_CONSOLE_E;
+    }
+
+    return cmos_OK_E;
 }
 

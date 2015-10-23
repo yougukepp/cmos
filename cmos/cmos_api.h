@@ -29,8 +29,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_init(void);
-void cmos_delay_ms(cmos_uint32_T ms);
-cmos_uint32_T cmos_get_ms(void);
+cmos_status_T cmos_api_init(void);
 
 #endif /* _CMOS_API_H_ */
+

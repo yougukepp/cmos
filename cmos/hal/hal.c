@@ -116,12 +116,3 @@ static cmos_status_T SystemClock_Config(void)
     return cmos_OK_E;
 }
 
-inline void delay_ms(cmos_uint32_T ms)
-{
-    HAL_Delay(ms);
-}
-
-inline cmos_uint32_T get_ms(void)
-{
-    return HAL_GetTick();
-}

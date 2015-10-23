@@ -52,7 +52,7 @@ int main(void)
     {
         assert_failed(__FILE__, __LINE__);
     }
-		
+
     cmos_printf("hello:%d,%c,%d,0x%08x,%s,%f\r\n", 1, 'a', 20, 1024, "bcd", 7.9);
     cmos_printf("hello:%d,%c,%d,0x%08x,%s,%f\r\n", 2, 'b', 30, 2048, "cde", 9.7);
 
