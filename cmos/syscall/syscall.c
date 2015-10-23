@@ -24,6 +24,13 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
+static cmos_status_T cmos_start_c(void);
+static cmos_int32_T cmos_task_create_c(cmos_func_T task_func, void *argv, const cmos_task_para_T *task_para);
+static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
+static cmos_status_T cmos_close_c(cmos_int32_T fd);
+static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
+static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
+static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -47,12 +54,14 @@ void syscall_c(cmos_uint32_T *sp)
 {
     cmos_uint32_T stacked_r0 = 0;
     cmos_uint32_T stacked_r1 = 0;
+    cmos_uint32_T stacked_r2 = 0;
 
     cmos_uint8_T svc_number = 0;
 
     svc_number = ((cmos_uint8_T *) sp[6])[-2];
     stacked_r0 = sp[0];
     stacked_r1 = sp[1];
+    stacked_r2 = sp[2];
 
     /***************************************************************************
      *
@@ -61,34 +70,66 @@ void syscall_c(cmos_uint32_T *sp)
      *  - 高四位指示系统调用类别()
      *  - 低四位指示系统调用类别中的不同调用 
      *    目前已经定义的系统调用号：
+     *      0x0 内核基本控制(参考CMSIS Kernel Information and Control)
+     *        0x00 cmos_init 没有汇编部分
+     *        0x01 cmos_start 没有汇编部分
+     *      0x1 任务控制(参考CMSIS Thread Management)
+     *        0x10 cmos_task_create
      *      0xa 驱动系统调用(利用Linux VFS思想)
-     *        0xa1 cmos_open
-     *        0xa2 cmos_close
-     *        0xa3 cmos_read
-     *        0xa4 cmos_write
-     *        0xa5 cmos_ioctl
+     *        0xa0 cmos_open
+     *        0xa1 cmos_close
+     *        0xa2 cmos_read
+     *        0xa3 cmos_write
+     *        0xa4 cmos_ioctl
      *
      **************************************************************************/
     switch(svc_number)
     {
+        /* 内核基本 */
+        case 0x00:
+            {
+                /* cmos_init 没有汇编部分 */
+                assert_failed(__FILE__, __LINE__);
+                break;
+            }
+        case 0x01:
+            { 
+                sp[0] = cmos_start_c(); 
+                break;
+            }
+
+        /* 任务控制 */
+        case 0x10:
+            { 
+                sp[0] = cmos_task_create_c((cmos_func_T)stacked_r0,
+                        (void *)stacked_r1, (const cmos_task_para_T *)stacked_r2);
+                break;
+            }
+
+        /* 驱动系统调用(利用Linux VFS思想) */
+        case 0xa0:
+            { 
+                sp[0] = cmos_open_c((const cmos_uint8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
+                break;
+            }
         case 0xa1:
             {
+                sp[0] = cmos_close_c((cmos_uint32_T)stacked_r0); 
                 break;
             }
         case 0xa2:
             {
+                sp[0] = cmos_read_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa3:
             {
+                sp[0] = cmos_write_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa4:
             {
-                break;
-            }
-        case 0xa5:
-            {
+                sp[0] = cmos_ioctl_c((cmos_int32_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
                 break;
             }
         default:
@@ -101,13 +142,175 @@ void syscall_c(cmos_uint32_T *sp)
     return;
 }
 
-#if 0
-cmos_int32_T cmos_hal_uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
-cmos_int32_T cmos_hal_uart_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
-cmos_int32_T cmos_hal_uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
-cmos_status_T cmos_hal_uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, ...);
-cmos_status_T cmos_hal_uart_close(cmos_int32_T dev_id);
-#endif
+/*******************************************************************************
+ *
+ * 函数名  : cmos_start_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 内核启动
+ *
+ * 输入参数: 无
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_status_T cmos_start_c(void)
+{
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_create_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 创建任务
+ *
+ * 输入参数: 
+ *           task_func 任务入口
+ *           argv      任务参数
+ *           task_para 任务属性 堆栈 优先级 等
+ *
+ * 输出参数: 任务句柄
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_int32_T cmos_task_create_c(cmos_func_T task_func, void *argv, const cmos_task_para_T *task_para)
+{
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_open_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_open的C语言主逻辑
+ *
+ * 输入参数: 
+ *           path vfs的路径
+ *           flag 调用标记
+ *           ...  第三个参数由flag决定
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 文件句柄
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
+{
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_close_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_close的C语言主逻辑
+ *
+ * 输入参数: 
+ *           fd      文件句柄
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 实际写入字节数
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_status_T cmos_close_c(cmos_int32_T fd)
+{
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_read_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read的C语言主逻辑
+ *
+ * 输入参数: 
+ *           fd      文件句柄
+ *           buf     读取数据的缓存
+ *           n_bytes 要求读取的字节数
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 实际读取字节数
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+{
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_write_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_write的C语言主逻辑
+ *
+ * 输入参数: 
+ *           fd      文件句柄
+ *           buf     写入数据的缓存
+ *           n_bytes 要求写入的字节数
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 实际写入字节数
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+{
+    return 0;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_ioctl_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_ioctl的C语言主逻辑
+ *
+ * 输入参数: 
+ *           fd      文件句柄
+ *           buf     操作类型
+ *           n_bytes 由操作类型决定
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 实际写入字节数
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
+{
+    return cmos_OK_E;
+}
 
 /*******************************************************************************
 *
@@ -145,6 +348,8 @@ cmos_status_T cmos_init(void)
         return status;
     }
     /* 后面的初始化可以使用控制台输出了 */
+
+    /* 创建idle任务 */
 
     /* TODO:进入非特权级别 */
     return cmos_OK_E;

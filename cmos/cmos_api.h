@@ -33,8 +33,14 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+/* 内核基本 */
 cmos_status_T cmos_init(void);
+cmos_status_T cmos_start(void);
 
+/* 任务管理 */
+cmos_int32_T cmos_task_create(cmos_func_T task_func, void *argv, const cmos_task_para_T *task_para);
+
+/* 外设驱动 */
 cmos_int32_T cmos_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 cmos_int32_T cmos_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);

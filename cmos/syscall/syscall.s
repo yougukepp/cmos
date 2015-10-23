@@ -24,37 +24,50 @@ SVC_Handler     PROC
                 B     syscall_c                     ; 调用C语言主逻辑
                 ENDP
 
+cmos_start      PROC
+                EXPORT  cmos_start
+                SVC 0x01
+                BX  LR
+                ENDP
+
+cmos_task_create    PROC
+                EXPORT  cmos_task_create
+                SVC 0x10
+                BX  LR
+                ENDP
+
 cmos_open       PROC
                 EXPORT  cmos_open
-                SVC 0xa1
+                SVC 0xa0
                 BX  LR
                 ENDP
 
 cmos_close      PROC
                 EXPORT  cmos_close
-                SVC 0xa2
+                SVC 0xa1
                 BX  LR
                 ENDP
 
 
 cmos_read       PROC
                 EXPORT  cmos_read
-                SVC 0xa3
+                SVC 0xa2
                 BX  LR
                 ENDP
 
 cmos_write      PROC
                 EXPORT  cmos_write
-                SVC 0xa4
+                SVC 0xa3
                 BX  LR
                 ENDP
 
 
 cmos_ioctl      PROC
                 EXPORT  cmos_ioctl
-                SVC 0xa5
+                SVC 0xa4
                 BX  LR
                 ENDP
 
-                ALIGN
-
+                ALIGN 
+                
+                END
