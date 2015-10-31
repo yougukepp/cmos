@@ -16,6 +16,7 @@
                 AREA    |.text|, CODE, READONLY
 
 SVC_Handler     PROC
+                EXPORT SVC_Handler
                 IMPORT syscall_c
                 TST   LR, #4                        ; 测试EXC_RETURN的bit2 用于检查当前SP为 PSP or MSP
                 ITE   EQ

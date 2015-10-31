@@ -43,6 +43,7 @@ __heap_limit
 ; 复位后的向量表
 ; 位于0x00000000
                 AREA    RESET, DATA, READONLY
+                IMPORT SVC_Handler
                 EXPORT  __Vectors
                 EXPORT  __Vectors_End
                 EXPORT  __Vectors_Size
@@ -58,7 +59,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; Reserved
                 DCD     0                       ; Reserved
                 DCD     0                       ; Reserved
-                DCD     0                       ; SVCall Handler
+                DCD     SVC_Handler             ; SVCall Handler
                 DCD     DebugMon_Handler        ; Debug Monitor Handler
                 DCD     0                       ; Reserved
                 DCD     0                       ; PendSV Handler
