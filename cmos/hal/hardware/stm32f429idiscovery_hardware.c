@@ -14,6 +14,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "stm32f429idiscovery_hardware.h"
+#include "tree.h"
 #include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -42,6 +43,7 @@
 ******************************************************************************/
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {  
+    cmos_status_T status = cmos_ERR_E;
     /************************ 控制台使用的串口初始化 ************************/
     GPIO_InitTypeDef  GPIO_InitStruct;
 
@@ -62,6 +64,13 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 
     HAL_NVIC_SetPriority(CONSOLE_UART_IRQn, 0, 1);
     HAL_NVIC_EnableIRQ(CONSOLE_UART_IRQn);
+
+    status = cmos_hal_hardware_tree_add(CMOS_CONSOLE_TREE_PATH);
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+        return;
+    }
 
     /**************************** 其他串口初始化 ****************************/
 }
@@ -85,6 +94,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 ******************************************************************************/
 void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 {
+    cmos_status_T status = cmos_ERR_E;
     /*********************** 控制台使用的串口解初始化 ***********************/
     CONSOLE_UART_FORCE_RESET();
     CONSOLE_UART_RELEASE_RESET();
@@ -93,6 +103,13 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
     HAL_GPIO_DeInit(CONSOLE_UART_RX_GPIO_PORT, CONSOLE_UART_RX_PIN);
 
     HAL_NVIC_DisableIRQ(CONSOLE_UART_IRQn);
+
+    status = cmos_hal_hardware_tree_del(CMOS_CONSOLE_TREE_PATH);
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+        return;
+    }
 
     /*************************** 其他串口解初始化 ***************************/
 }

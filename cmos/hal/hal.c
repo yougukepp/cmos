@@ -17,6 +17,7 @@
 #include "hal.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
+#include "tree.h"
 #include "uart.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -47,6 +48,14 @@ static cmos_status_T SystemClock_Config(void);
 cmos_status_T hal_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
+    /* 初始化硬件树 */
+    status = cmos_hal_hardware_tree_init();
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+        return status;
+    }
+
     /* stm32 hal 初始化 */
     if(HAL_OK != HAL_Init())
     {
