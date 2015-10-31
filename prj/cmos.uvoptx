@@ -81,31 +81,36 @@
       <Books>
         <Book>
           <Number>0</Number>
-          <Title>Getting Started (STM32F429I-Discovery)</Title>
-          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00092920.pdf</Path>
+          <Title>STM32F429I-Discovery: Blinky Lab (STM32F429I-Discovery)</Title>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.6.0\Documentation\STMicroelectronics_Blinky_Lab.pdf</Path>
         </Book>
         <Book>
           <Number>1</Number>
-          <Title>User Manual (STM32F429I-Discovery)</Title>
-          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00093903.pdf</Path>
+          <Title>Getting Started (STM32F429I-Discovery)</Title>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.6.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00092920.pdf</Path>
         </Book>
         <Book>
           <Number>2</Number>
-          <Title>Bill of Materials (STM32F429I-Discovery)</Title>
-          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_bom.zip</Path>
+          <Title>User Manual (STM32F429I-Discovery)</Title>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.6.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\DM00093903.pdf</Path>
         </Book>
         <Book>
           <Number>3</Number>
-          <Title>Gerber Files (STM32F429I-Discovery)</Title>
-          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_gerber.zip</Path>
+          <Title>Bill of Materials (STM32F429I-Discovery)</Title>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.6.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_bom.zip</Path>
         </Book>
         <Book>
           <Number>4</Number>
-          <Title>Schematics (STM32F429I-Discovery)</Title>
-          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_sch.zip</Path>
+          <Title>Gerber Files (STM32F429I-Discovery)</Title>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.6.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_gerber.zip</Path>
         </Book>
         <Book>
           <Number>5</Number>
+          <Title>Schematics (STM32F429I-Discovery)</Title>
+          <Path>E:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.6.0\MDK\Boards\ST\STM32F429I-Discovery\Documentation\stm32f429i-disco_sch.zip</Path>
+        </Book>
+        <Book>
+          <Number>6</Number>
           <Title>STM32F429I-Discovery Web Page (STM32F429I-Discovery)</Title>
           <Path>http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1199/PF259090</Path>
         </Book>
@@ -169,7 +174,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>ST-LINKIII-KEIL_SWO</Key>
-          <Name>-U50FF6E065078525318521087 -I0 -O206 -S1 -C0 -A0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO19 -TC180000000 -TP21 -TDS8059 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F429ZITx$CMSIS\Flash\STM32F4xx_2048.FLM)</Name>
+          <Name>-U50FF6E065078525318521087 -O8398 -S1 -C0 -A0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO19 -TC180000000 -TP21 -TDS8059 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F429ZITx$CMSIS\Flash\STM32F4xx_2048.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -183,7 +188,7 @@
           <Type>0</Type>
           <LineNumber>131</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134232722</Address>
+          <Address>134228984</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -192,14 +197,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\os\lib\usbirq.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\cmos\../os/lib/usbirq.c\131</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
           <LineNumber>59</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134232376</Address>
+          <Address>134228616</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -208,7 +213,23 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\os\lib\usbirq.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\cmos\../os/lib/usbirq.c\59</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>119</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134228184</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\main\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\cmos\../main/main.c\119</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -318,12 +339,13 @@
       </DebugFlag>
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
+      <bLintAuto>0</bLintAuto>
     </TargetOption>
   </Target>
 
   <Group>
     <GroupName>main</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -573,7 +595,7 @@
 
   <Group>
     <GroupName>driver</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

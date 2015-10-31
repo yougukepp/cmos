@@ -112,9 +112,9 @@ int main(void)
 {
     HardWare_Init();
 
-    /*osKernelInitialize(); 
+    osKernelInitialize(); 
     osThreadCreate(osThread(job1), NULL);
-    osKernelStart();*/
+    osKernelStart();
 	
     while(1);
 }
@@ -182,7 +182,7 @@ static void HardWare_Init(void)
     
     UART_Init();
     /* uart_test(); */
-    USB_Init();
+    /* USB_Init(); */
     /* usb_test(); */
 }
 
