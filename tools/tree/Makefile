@@ -1,7 +1,7 @@
 CC=gcc
 LD=gcc
 INC=-I../../cmos/
-CFLAGS=-c
+CFLAGS=-c -Wall -D_X64_PC_
 
 all:test
 
@@ -14,3 +14,4 @@ test:tree.c main.c
 clean:
 	rm -rf *.o
 	rm -rf test
+	rm -rf *.stackdump

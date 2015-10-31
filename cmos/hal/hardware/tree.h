@@ -18,9 +18,23 @@
 /************************************ 头文件 ***********************************/
 
 /************************************ 宏定义 ***********************************/
+/* 设备树 根 */
+#define CMOS_HAL_HARDWARE_TREE_ROOT_NAME        ("/dev/")
+/* 设备树名字 */
+#define CMOS_HAL_HARDWARE_TREE_NAME_SIZE        (16)
+/* 设备树分隔符 */
+#define CMOS_HAL_HARDWARE_TREE_SPLIT_CHAR       ('/')
 
 /*********************************** 类型定义 **********************************/
+typedef struct cmos_hal_hardware_tree_node_T_tag{
+    cmos_uint8_T *ptr_name;
+    cmos_int32_T *ptr_value;
+    struct cmos_hal_hardware_tree_node_T_tag *ptr_first_sun;
+    struct cmos_hal_hardware_tree_node_T_tag *ptr_next_brother;
+}cmos_hal_hardware_tree_node_T;
 
+/* 对结点的操作函数 */
+typedef cmos_status_T (*cmos_hal_hardware_tree_node_func_T)(cmos_hal_hardware_tree_node_T *ptr_node);
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -30,6 +44,7 @@
 cmos_status_T cmos_hal_hardware_tree_init(void);
 cmos_status_T cmos_hal_hardware_tree_add(const cmos_uint8_T *path);
 cmos_status_T cmos_hal_hardware_tree_del(const cmos_uint8_T *path);
+cmos_status_T cmos_hal_hardware_tree_print(void);
 
 #endif /* #ifndef _CMOS_HAL_HARDWARE_TREE_H_ */
 

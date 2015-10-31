@@ -15,10 +15,13 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include <stdarg.h>
 #include <stdio.h>
-#include <cmos_config.h>
+#include <stdlib.h>
 
-
+#include "cmos_config.h"
+#include "pc.h"
+#include "tree.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -51,15 +54,72 @@
  *
  ******************************************************************************/
 int main(int argc, char *argv[])
-{
+{ 
+    cmos_hal_hardware_tree_init();
+    cmos_hal_hardware_tree_add((const cmos_uint8_T *)"/dev/uart/console");
+    //cmos_hal_hardware_tree_add((const cmos_uint8_T *)"/dev/0123456789abcdefuart/abcdef0123456789console");
 
-cmos_status_T cmos_hal_hardware_tree_init(void);
-cmos_status_T cmos_hal_hardware_tree_add(const cmos_uint8_T *path);
-cmos_status_T cmos_hal_hardware_tree_del(const cmos_uint8_T *path);
-
-    printf("Hello, World!\n");
+    //cmos_hal_hardware_tree_print();
     return 0;
 
 }
 
+/********************************** 函数实现区 *********************************/
+/*******************************************************************************
+*
+* 函数名  : assert_failed
+* 负责人  : 彭鹏
+* 创建日期: 20151030
+* 函数功能: 断言失败调用
+*
+* 输入参数: file 出错源文件名字
+*           line 出错源文件行数
+*
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void assert_failed(char *file, cmos_uint32_T line)
+{
+    printf("%s,%d: assert failed!\n", file, line);
+    fflush(stderr);
+    fflush(stdout);
+    exit(0);
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_printf
+* 负责人  : 彭鹏
+* 创建日期: 20151030
+* 函数功能: 控制台打印 模式cmos输出行为
+*
+* 输入参数: 与printf参数含义一致
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : 系统错误或调试打印需要第一时间输出 采用轮询方式输出
+*
+******************************************************************************/
+cmos_int32_T cmos_printf(char *fmt, ...)
+{ 
+    char printf_buf[1024];
+    va_list args;
+    cmos_int32_T n = 0;
+   
+    va_start(args, fmt);
+    n = vsprintf(printf_buf, fmt, args);
+    va_end(args);
+
+    printf(printf_buf);
+
+    return n;
+}
 
