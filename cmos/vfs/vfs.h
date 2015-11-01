@@ -20,6 +20,21 @@
 /************************************ 宏定义 ***********************************/
 
 /*********************************** 类型定义 **********************************/
+typedef enum{
+    vfs_file = 0x00,
+    vfs_dir = 0x01,
+    vfs_cdev = 0x02,
+    vfs_link = 0x03,
+
+    vfs_err_type = 0xff,
+}vfs_node_type_E;
+
+/* vfs结点data域值定义 */
+typedef struct vfs_node_data_T_tag{
+    vfs_node_type_E type;
+    cmos_uint8_T    *name;
+}vfs_node_data_T;
+
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -27,6 +42,7 @@
 
 /*********************************** 接口函数 **********************************/
 cmos_status_T vfs_init(void);
+cmos_status_T vfs_destroy(void);
 
 #endif /* #ifndef _CMOS_VFS_H_ */
 

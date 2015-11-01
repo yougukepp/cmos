@@ -19,6 +19,11 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+/* 
+ * vfs树
+ * FIXME:所有操作加锁 
+ * */
+cmos_lib_tree_T s_vfs_root;
 
 /********************************** 函数声明区 *********************************/
 
@@ -45,9 +50,56 @@
 cmos_status_T vfs_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
-    /* TODO: 加入/ /dev /proc 目录 */
 
-    status = cmos_OK_E;
-    return status;
+    lib_tree_init(&s_vfs_root); 
+    
+    /* TODO: 加入/dev目录 */
+    cmos_lib_tree_node_T *node = NULL;
+    //lib_tree_node_init(root_node);
+    root_node = (cmos_lib_tree_node_T *)malloc(sizeof(cmos_lib_tree_node_T));
+    if(NULL == root_node)
+    {
+        return cmos_MEM_LACK_E;
+    }
+    root_node->data = ;
+    root_node->parent = &s_vfs_root;
+    root_node->first_sun = NULL;
+    root_node->next_brother = NULL;
+    
+    lib_tree_insert_child(&s_vfs_root, &s_vfs_root, 0, root_node);
+
+    /* TODO: 加入/proc目录 */
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_destroy
+* 负责人  : 彭鹏
+* 创建日期: 20151101
+* 函数功能: cmos vfs 解除初始化
+*
+* 输入参数: 无
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_status_T vfs_destroy(void)
+{
+    cmos_status_T status = cmos_ERR_E;
+
+    status = lib_tree_destroy(&s_vfs_root);
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__)
+    }
+
+    return cmos_OK_E;
 }
 
