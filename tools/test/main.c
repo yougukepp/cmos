@@ -55,11 +55,7 @@
  ******************************************************************************/
 int main(int argc, char *argv[])
 { 
-    cmos_hal_hardware_tree_init();
-    cmos_hal_hardware_tree_add((const cmos_uint8_T *)"/dev/uart/console");
-    //cmos_hal_hardware_tree_add((const cmos_uint8_T *)"/dev/0123456789abcdefuart/abcdef0123456789console");
-
-    //cmos_hal_hardware_tree_print();
+    printf("123\n");
     return 0;
 
 }

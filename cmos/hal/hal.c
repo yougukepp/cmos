@@ -17,7 +17,7 @@
 #include "hal.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
-#include "tree.h"
+#include "device.h"
 #include "uart.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -49,7 +49,7 @@ cmos_status_T hal_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
     /* 初始化硬件树 */
-    status = cmos_hal_hardware_tree_init();
+    status = cmos_hal_device_init();
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);

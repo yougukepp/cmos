@@ -53,7 +53,7 @@ cmos_status_T cmos_console_init(cmos_int32_T baud_rate)
 {
     cmos_status_T status = cmos_ERR_E;
 
-    s_console_uart_fd = cmos_open(CMOS_CONSOLE_TREE_PATH, CMOS_O_RDWR);
+    s_console_uart_fd = cmos_open(CMOS_CONSOLE_DEVICE_PATH, CMOS_O_RDWR);
     if(-1 == s_console_uart_fd)
     {
         assert_failed(__FILE__, __LINE__);

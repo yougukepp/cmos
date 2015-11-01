@@ -34,7 +34,7 @@
 /* 波特率 */
 #define CMOS_CONSOLE_BAUDRATE                                   (115200)
 /* 调试串口设备路径 */
-#define CMOS_CONSOLE_TREE_PATH  ("/dev/uart/console")
+#define CMOS_CONSOLE_DEVICE_PATH                                ("/dev/console")
 
 /************************************ USB配置 **********************************/
 /* 不使用USB */

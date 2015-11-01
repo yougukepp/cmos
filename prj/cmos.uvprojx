@@ -741,9 +741,14 @@
               <FilePath>..\cmos\hal\startup\stm32f429xx.s</FilePath>
             </File>
             <File>
-              <FileName>tree.c</FileName>
+              <FileName>device.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\cmos\hal\hardware\tree.c</FilePath>
+              <FilePath>..\cmos\hal\device.c</FilePath>
+            </File>
+            <File>
+              <FileName>driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\hal\driver.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -920,6 +925,16 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\lib\list.c</FilePath>
+            </File>
+            <File>
+              <FileName>tree.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\lib\tree.c</FilePath>
             </File>
           </Files>
         </Group>
