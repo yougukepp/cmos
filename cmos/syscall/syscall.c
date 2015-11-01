@@ -16,6 +16,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cmos_api.h"
+#include "vfs.h"
 #include "hal.h"
 #include "console.h"
 
@@ -332,6 +333,14 @@ static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
 cmos_status_T cmos_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
+
+    /* cmos hal vfs初始化 */
+    status = vfs_init();
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+
 
     /* cmos hal 硬件底层初始化 */
     status = hal_init();

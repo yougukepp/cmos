@@ -65,7 +65,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
     HAL_NVIC_SetPriority(CONSOLE_UART_IRQn, 0, 1);
     HAL_NVIC_EnableIRQ(CONSOLE_UART_IRQn);
 
-    status = cmos_hal_device_add(CMOS_CONSOLE_DEVICE_PATH);
+    status = hal_device_add(CMOS_CONSOLE_DEVICE_PATH);
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
@@ -104,7 +104,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 
     HAL_NVIC_DisableIRQ(CONSOLE_UART_IRQn);
 
-    status = cmos_hal_device_del(CMOS_CONSOLE_DEVICE_PATH);
+    status = hal_device_del(CMOS_CONSOLE_DEVICE_PATH);
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);

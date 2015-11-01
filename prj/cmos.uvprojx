@@ -721,11 +721,6 @@
               </FileOption>
             </File>
             <File>
-              <FileName>cortex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\cmos\hal\cortex.c</FilePath>
-            </File>
-            <File>
               <FileName>uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\hal\uart\uart.c</FilePath>
@@ -749,6 +744,11 @@
               <FileName>driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\hal\driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>cortex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\hal\cortex\cortex.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -858,7 +858,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\console</IncludePath>
+                      <IncludePath>..\cmos\hal;..\cmos\console;..\cmos\vfs</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -935,6 +935,16 @@
               <FileName>tree.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\lib\tree.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>vfs</GroupName>
+          <Files>
+            <File>
+              <FileName>vfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\vfs\vfs.c</FilePath>
             </File>
           </Files>
         </Group>

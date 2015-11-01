@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * 文件名  ： device.c
+ * 文件名  ： vfs.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20151030
  * 版本号  ： v1.0
- * 文件描述： 硬件设备树的实现
+ * 文件描述： 虚拟文件系统(vfs)的实现
  * 版权说明： Copyright (c) 2000-2020 GNU
  * 其    他： 无
  *
@@ -15,8 +15,6 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "tree.h"
-#include "device.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -27,25 +25,27 @@
 /********************************** 变量实现区 *********************************/
 
 /********************************** 函数实现区 *********************************/
-cmos_status_T hal_device_init(void)
+/*******************************************************************************
+*
+* 函数名  : vfs_init
+* 负责人  : 彭鹏
+* 创建日期: 20151101
+* 函数功能: cmos vfs初始化
+*
+* 输入参数: 无
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_status_T vfs_init(void)
 {
-    cmos_status_T status = cmos_ERR_E; 
-
-    status = cmos_OK_E;
-    return status;
-}
-
-cmos_status_T hal_device_add(const cmos_uint8_T *path)
-{
-    cmos_status_T status = cmos_ERR_E; 
-
-    status = cmos_OK_E;
-    return status;
-}
-
-cmos_status_T hal_device_del(const cmos_uint8_T *path)
-{
-    cmos_status_T status = cmos_ERR_E; 
+    cmos_status_T status = cmos_ERR_E;
+    /* TODO: 加入/ /dev /proc 目录 */
 
     status = cmos_OK_E;
     return status;

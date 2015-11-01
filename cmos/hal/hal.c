@@ -49,7 +49,7 @@ cmos_status_T hal_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
     /* 初始化硬件树 */
-    status = cmos_hal_device_init();
+    status = hal_device_init();
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
