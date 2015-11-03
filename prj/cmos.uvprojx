@@ -936,6 +936,11 @@
               <FileType>1</FileType>
               <FilePath>..\cmos\lib\tree.c</FilePath>
             </File>
+            <File>
+              <FileName>mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\lib\mem.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
