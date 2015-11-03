@@ -57,7 +57,6 @@ static cmos_lib_tree_node_T * vfs_tree_node_malloc(vfs_node_type_E type, const c
 cmos_status_T vfs_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
-
     /* 构造 树根 */ 
     cmos_lib_tree_node_T *root_node = NULL; 
     root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_ROOT);

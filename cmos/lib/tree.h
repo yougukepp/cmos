@@ -28,6 +28,7 @@ struct cmos_lib_tree_node_T_tag{
     cmos_lib_tree_node_T *first_sun;    /* 首孩子结点 */
     cmos_lib_tree_node_T *next_brother; /* 下一兄弟结点 */
 };
+
 /* 树的定义恰巧与树的结点相同 */
 typedef cmos_lib_tree_node_T cmos_lib_tree_T;
 
@@ -39,12 +40,11 @@ typedef cmos_lib_tree_node_T cmos_lib_tree_T;
 /* 树操作 */
 void cmos_lib_tree_init(cmos_lib_tree_T *root, const cmos_lib_tree_node_T *node);
 cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *root);
-
 cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *root, cmos_lib_tree_node_T *modify_node, cmos_uint32_T index, const cmos_lib_tree_T *child_root);
-
 
 /* 结点操作 */ 
 cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data);
+
 
 #endif /* #ifndef _CMOS_LIB_TREE_H_ */
 
