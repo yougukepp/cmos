@@ -121,9 +121,6 @@ cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *root,
 * 函数功能: 分配树结点
 *
 * 输入参数: data        结点数据域指针
-*           parent      父结点
-*           first_sun   首子结点
-*           next_brother首弟结点
 *
 * 输出参数: 无
 *
@@ -134,10 +131,7 @@ cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *root,
 * 其 它   : TODO:需要对应free否则内存泄露
 *
 ******************************************************************************/
-cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(void *data,
-        const cmos_lib_tree_node_T *parent, 
-        const cmos_lib_tree_node_T *first_sun,
-        const cmos_lib_tree_node_T *next_brother)
+cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
 {
     cmos_lib_tree_node_T *node = NULL;
 
@@ -146,10 +140,10 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(void *data,
     {
         return NULL;
     }
-    node->data = data;
-    node->parent = (cmos_lib_tree_node_T *)parent;
-    node->first_sun = (cmos_lib_tree_node_T *)first_sun;
-    node->next_brother = (cmos_lib_tree_node_T *)next_brother;
+    node->data = (void *)data;
+    node->parent = NULL;
+    node->first_sun = NULL;
+    node->next_brother = NULL;
 
     return NULL;
 }

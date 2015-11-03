@@ -44,10 +44,7 @@ cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *root, cmos_lib_tree_no
 
 
 /* 结点操作 */ 
-cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(void *data,
-        const cmos_lib_tree_node_T *parent, 
-        const cmos_lib_tree_node_T *first_sun,
-        const cmos_lib_tree_node_T *next_brother);
+cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data);
 
 #endif /* #ifndef _CMOS_LIB_TREE_H_ */
 

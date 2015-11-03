@@ -32,11 +32,7 @@ cmos_lib_tree_T s_vfs_root;
 
 /********************************** 函数声明区 *********************************/
 static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name);
-static cmos_lib_tree_node_T * vfs_tree_node_malloc(vfs_node_type_E type,
-        const cmos_uint8_T *name, 
-        const cmos_lib_tree_node_T *parent, 
-        const cmos_lib_tree_node_T *first_sun,
-        const cmos_lib_tree_node_T *next_brother);
+static cmos_lib_tree_node_T * vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name);
 
 /********************************** 变量实现区 *********************************/
 
@@ -64,16 +60,21 @@ cmos_status_T vfs_init(void)
 
     /* 构造 树根 */ 
     cmos_lib_tree_node_T *root_node = NULL; 
-    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_ROOT, NULL, NULL, NULL);
+    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_ROOT);
 
     /* 使用根结点初始化树 */ 
     cmos_lib_tree_init(&s_vfs_root, root_node); 
 
-    /* TODO: 加入/dev目录 */
-    /* cmos_lib_tree_insert_child(&s_vfs_root, &s_vfs_root, 0, root_node); */
+    /* 加入/proc目录 */
+    cmos_lib_tree_node_T *proc_node = NULL; 
+    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_PROC_DIR);
+    cmos_lib_tree_insert_child(&s_vfs_root, root_node, 0, proc_node);
+    /* TODO:加入/proc/cpuinfo /proc/meminfo文件 */
 
-    /* TODO: 加入/proc目录 */
-
+    /* 加入/dev目录 为驱动加入到vfs做准备 */
+    cmos_lib_tree_node_T *dev_node = NULL; 
+    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_DEV_DIR);
+    cmos_lib_tree_insert_child(&s_vfs_root, root_node, 0, dev_node);
 
     status = cmos_OK_E;
     return status;
@@ -151,9 +152,6 @@ static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *nam
 *
 * 输入参数: type        结点类型
 *           name        结点名字
-*           parent      父结点
-*           first_sun   首子结点
-*           next_brother首弟结点
 *
 * 输出参数: 无
 *
@@ -164,11 +162,7 @@ static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *nam
 * 其 它   : TODO:需要对应free否则内存泄露
 *
 ******************************************************************************/
-static cmos_lib_tree_node_T * vfs_tree_node_malloc(vfs_node_type_E type,
-        const cmos_uint8_T *name, 
-        const cmos_lib_tree_node_T *parent, 
-        const cmos_lib_tree_node_T *first_sun,
-        const cmos_lib_tree_node_T *next_brother)
+static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name)
 {
     /* 数据 */
     vfs_node_T *data = NULL; 
@@ -180,7 +174,7 @@ static cmos_lib_tree_node_T * vfs_tree_node_malloc(vfs_node_type_E type,
 
     /* 树结点 */
     cmos_lib_tree_node_T *node = NULL;
-    node = cmos_lib_tree_node_malloc(data, parent, first_sun, next_brother);
+    node = cmos_lib_tree_node_malloc(data);
     if(NULL == node)
     {
         return NULL;
