@@ -54,15 +54,32 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
         CMOS_ERR_STR("vfs valid path name must not be NULL.");
         return FALSE;
     }
-    if(NUL == path)
+    if(CMOS_VFS_ROOT[0] != path[0])
     {
-        CMOS_ERR_STR("vfs valid path name must not be NUL.");
         return FALSE;
     }
 
     return TRUE;
 }
 
+/*******************************************************************************
+*
+* 函数名  : vfs_path_is_valid
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: 检查路径是否合法
+*
+* 输入参数: name        第一个目录名字
+*           name_max    name的有效大小
+*           path        待解析的目录
+* 输出参数: 无
+*
+* 返回值  : 运行状态
+*
+* 调用关系: 无
+* 其 它   : TODO:实现
+*
+******************************************************************************/
 cmos_status_T vfs_path_head_pop(cmos_uint8_T *name, cmos_uint32_T name_max, const cmos_uint8_T *path)
 { 
     char *go_path = (char *)path;

@@ -305,11 +305,7 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
     cmos_status_T status = cmos_ERR_E;
     cmos_lib_tree_node_T *go_node = NULL;
     const cmos_uint8_T *go_path = path;
-    //const char *go_path_new = NULL;
     cmos_uint8_T name[CMOS_VFS_NAME_MAX] = {0};
-    //cmos_int32_T name_len = 0;
-    //const char *node_name = NULL;
-    //vfs_node_T *data = NULL; 
 
     /* 算好备用 */
     go_node = s_vfs_tree.root; 
@@ -318,19 +314,19 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
     if(CMOS_VFS_ROOT_LEN == strlen((const char *)go_path))
     {
         goto found;
-    }
+    } 
     
+    CMOS_TRACE_STR(go_path);
     /* TODO: 以下功能使用链表 */
     do{
-        memset(name, NUL, CMOS_VFS_NAME_MAX);
         /* 找出一级目录 */
         status = vfs_path_head_pop(name, CMOS_VFS_NAME_MAX, go_path);
         if(cmos_OK_E != status) /* 没有有效的目录了 */
         {
             break;
         }
-        go_path += (strlen((const char *)name) + 1); /* 移除一级目录 */
-        cmos_debug_log("pppp%s\n", name);
+        go_path += strlen((const char *)name) + 1; /* 移除一级子目录 */
+        CMOS_TRACE_STR(name);
 
         /* 查找对应结点 */
         /* 1、获取首子结点 并更新go_node */
