@@ -59,24 +59,24 @@ cmos_status_T vfs_init(void)
     cmos_status_T status = cmos_ERR_E;
     /* 构造 树根 */ 
     cmos_lib_tree_node_T *root_node = NULL; 
-    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_ROOT, NULL);
+    root_node = vfs_tree_node_malloc(vfs_dir, (const cmos_uint8_T *)CMOS_VFS_ROOT, NULL);
     if(NULL == root_node)
     {
         return cmos_MEM_LACK_E;
     }
     /* 使用根结点初始化树 */ 
-    cmos_lib_tree_init(&s_vfs_root, root_node, CMOS_VFS_NAME); 
+    cmos_lib_tree_init(&s_vfs_root, root_node, (const cmos_uint8_T *)CMOS_VFS_NAME); 
 
     /* 加入/proc目录 */
     /* TODO:加入/proc/cpuinfo /proc/meminfo文件 */
-    status = vfs_node_add(CMOS_VFS_ROOT, CMOS_VFS_DEV, vfs_dir, NULL);
+    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_ROOT, (const cmos_uint8_T *)CMOS_VFS_DEV, vfs_dir, NULL);
     if(cmos_OK_E != status)
     {
         return status;
     }
 
     /* 加入/dev目录 为驱动加入到vfs做准备 */
-    status = vfs_node_add(CMOS_VFS_ROOT, CMOS_VFS_PROC, vfs_dir, NULL);
+    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_ROOT, (const cmos_uint8_T *)CMOS_VFS_PROC, vfs_dir, NULL);
     if(cmos_OK_E != status)
     {
         return status;
@@ -110,7 +110,7 @@ cmos_status_T vfs_destroy(void)
     status = cmos_lib_tree_destroy(&s_vfs_root);
     if(cmos_OK_E != status)
     {
-        assert_failed(__FILE__, __LINE__);
+        assert_failed((cmos_uint8_T *)__FILE__, __LINE__);
     }
 
     return cmos_OK_E;

@@ -22,6 +22,7 @@
 #include "cmos_config.h"
 #include "pc.h"
 #include "tree.h"
+#include "vfs.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -56,6 +57,11 @@
 int main(int argc, char *argv[])
 { 
     printf("123\n");
+cmos_status_T vfs_init(void);
+cmos_status_T vfs_destroy(void);
+
+cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
+
     return 0;
 
 }
@@ -117,5 +123,49 @@ cmos_int32_T cmos_printf(char *fmt, ...)
     printf(printf_buf);
 
     return n;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_malloc
+* 负责人  : 彭鹏
+* 创建日期: 20151103
+* 函数功能: 动态分配内存接口
+*
+* 输入参数: size 欲分配的字节数
+*
+* 输出参数: 无
+*
+* 返回值  : 分配的内存首地址
+*
+* 调用关系: 无
+* 其 它   : 自己实现
+*
+******************************************************************************/
+void *cmos_malloc(cmos_uint32_T size)
+{
+    return malloc(size);
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_free
+* 负责人  : 彭鹏
+* 创建日期: 20151103
+* 函数功能: 动态释放内存接口
+*
+* 输入参数: ptr 欲释放的地址
+*
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 自己实现
+*
+******************************************************************************/
+void cmos_free(void *ptr)
+{
+    free(ptr);
 }
 
