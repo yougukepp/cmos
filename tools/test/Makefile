@@ -8,11 +8,12 @@ all:clean test
 	@echo
 	#./test
 
-test:tree.c main.c vfs.c
+test:tree.c main.c path.c vfs.c
 	$(CC) $(CFLAGS) $(INC) vfs.c -o vfs.o
+	$(CC) $(CFLAGS) $(INC) path.c -o path.o
 	$(CC) $(CFLAGS) $(INC) tree.c -o tree.o
 	$(CC) $(CFLAGS) $(INC) main.c -o main.o
-	$(LD) $(LDFLAGS) main.o tree.o vfs.o -o test
+	$(LD) $(LDFLAGS) main.o tree.o vfs.o path.o -o test
 
 .PHONY: clean
 clean:

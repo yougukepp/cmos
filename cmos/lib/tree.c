@@ -53,6 +53,14 @@ void cmos_lib_tree_init(cmos_lib_tree_T *tree, cmos_lib_tree_node_T *node, const
 {
     CMOS_TRACE_FUNC_IN;
 
+    if((NULL == tree)
+    || (NULL == node)
+    || (NULL == name))
+    {
+        CMOS_ERR_STR("NULL pointer");
+        return;
+    }
+
     tree->root = node;
     tree->name = name;
 
@@ -82,6 +90,11 @@ cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *tree)
     CMOS_TRACE_FUNC_IN;
 
     cmos_status_T status = cmos_ERR_E;
+    if(NULL == tree)
+    {
+        return cmos_NULL_E;
+    }
+
     /* TODO:遍历树free每个结点 */
 
     status = cmos_OK_E;
@@ -118,6 +131,13 @@ cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *tree,
 
     cmos_status_T status = cmos_ERR_E;
 
+    if((NULL == tree)
+    || (NULL == modify_node)
+    || (NULL == child_root))
+    {
+        return cmos_NULL_E;
+    }
+
     status = cmos_OK_E;
     CMOS_TRACE_FUNC_OUT;
     return status;
@@ -147,6 +167,12 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
 
     cmos_lib_tree_node_T *node = NULL;
 
+    if(NULL == data)
+    {
+        CMOS_ERR_STR("NULL pointer");
+        return NULL;
+    }
+
     node = (cmos_lib_tree_node_T *)cmos_malloc(sizeof(cmos_lib_tree_node_T));
     if(NULL == node)
     {
@@ -160,3 +186,100 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
     CMOS_TRACE_FUNC_OUT;
     return node;
 }
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_get_first_sun
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: 获取结点 node 的首子结点
+*
+* 输入参数: tree    待查找的树
+*           node    待查结点
+*
+* 输出参数: 无
+*
+* 返回值  : NULL 无相应结点
+*           其他 子结点指针
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_lib_tree_node_T *cmos_lib_tree_get_first_sun(const cmos_lib_tree_T *tree,
+        const cmos_lib_tree_node_T *node)
+{
+    if((NULL == tree)
+    || (NULL == node))
+    {
+        CMOS_ERR_STR("NULL pointer");
+        return NULL;
+    }
+
+    return node->first_sun;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_get_next_brother
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: 获取结点 node 的下一兄弟结点
+*
+* 输入参数: tree    待查找的树
+*           node    待查结点
+*
+* 输出参数: 无
+*
+* 返回值  : NULL 无相应结点
+*           其他 子结点指针
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_lib_tree_node_T *cmos_lib_tree_get_next_brother(const cmos_lib_tree_T *tree,
+        const cmos_lib_tree_node_T *node)
+{
+    if((NULL == tree)
+    || (NULL == node))
+    {
+        CMOS_ERR_STR("NULL pointer");
+        return NULL;
+    }
+
+    return node->next_brother;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_get_data
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: 获取结点 node 的数据域指针
+*
+* 输入参数: tree    待查找的树
+*           node    待查结点
+*
+* 输出参数: 无
+*
+* 返回值  : NULL 无数据
+*           其他 数据指针
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void *cmos_lib_tree_get_data(const cmos_lib_tree_T *tree,
+        const cmos_lib_tree_node_T *node)
+{
+    if((NULL == tree)
+    || (NULL == node))
+    {
+        CMOS_ERR_STR("NULL pointer");
+        return NULL;
+    }
+
+    return node->data;
+}
+

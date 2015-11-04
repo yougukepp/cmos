@@ -25,7 +25,10 @@
 #define CMOS_VFS_PROC                                           ("proc")
 #define CMOS_VFS_DEV_DIR                                        ("/dev")
 #define CMOS_VFS_PROC_DIR                                       ("/proc")
-#define CMOS_VFS_SEPARATOR                                      ("/")
+#define CMOS_VFS_SEPARATOR                                      (CMOS_VFS_ROOT)
+#define CMOS_VFS_ROOT_LEN                                       (1)
+#define CMOS_VFS_SEPARATOR_LEN                                  (CMOS_VFS_ROOT_LEN)
+
 /* 文件系统深度 */
 #define CMOS_VFS_DEPTH                                          (8)
 #define CMOS_VFS_NAME_MAX                                       (8)

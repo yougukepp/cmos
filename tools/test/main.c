@@ -67,10 +67,11 @@ int main(int argc, char *argv[])
     }
 
     /* 加入控制台设备结点*/
-    status = vfs_node_add((const cmos_uint8_T *)"/11/22/33/44/55", (const cmos_uint8_T *)CMOS_CONSOLE_NAME, vfs_dev, NULL);
+    status = vfs_node_add((const cmos_uint8_T *)"/1111/2/333/44/555", (const cmos_uint8_T *)CMOS_CONSOLE_NAME, vfs_dev, (void *)0x1234);
     if(cmos_OK_E != status)
     {
-        return status;
+        cmos_trace_log("status:0x%08X.", status);
+        assert_failed(__FILE__, __LINE__);
     }
 
 #if 0

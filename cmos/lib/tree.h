@@ -48,7 +48,14 @@ cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *tree,
         cmos_uint32_T index,
         cmos_lib_tree_node_T *child_root);
 
+
 /* 结点操作 */ 
+cmos_lib_tree_node_T *cmos_lib_tree_get_first_sun(const cmos_lib_tree_T *tree,
+        const cmos_lib_tree_node_T *node);
+cmos_lib_tree_node_T *cmos_lib_tree_get_next_brother(const cmos_lib_tree_T *tree,
+        const cmos_lib_tree_node_T *node);
+void *cmos_lib_tree_get_data(const cmos_lib_tree_T *tree,
+        const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data);
 
 

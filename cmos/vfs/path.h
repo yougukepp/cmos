@@ -15,6 +15,7 @@
 #ifndef _CMOS_VFS_PATH_H_
 #define _CMOS_VFS_PATH_H_
 
+
 /************************************ 头文件 ***********************************/
 
 /************************************ 宏定义 ***********************************/
@@ -26,6 +27,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path);
+cmos_status_T vfs_path_head_pop(cmos_uint8_T *name, cmos_uint32_T name_len, const cmos_uint8_T *path);
 
 #endif /* #ifndef _CMOS_VFS_PATH_H_ */
 

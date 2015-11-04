@@ -15,7 +15,11 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+
+#include <string.h>
+
 #include "path.h"
+#include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -26,4 +30,75 @@
 /********************************** 变量实现区 *********************************/
 
 /********************************** 函数实现区 *********************************/
+/*******************************************************************************
+*
+* 函数名  : vfs_path_is_valid
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: 检查路径是否合法
+*
+* 输入参数: path    路径
+* 输出参数: 无
+*
+* 返回值  : TRUE    合法
+*           FALSE   非法
+*
+* 调用关系: 无
+* 其 它   : TODO:实现
+*
+******************************************************************************/
+cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
+{
+    if(NULL == path)
+    {
+        CMOS_ERR_STR("vfs valid path name must not be NULL.");
+        return FALSE;
+    }
+    if(NUL == path)
+    {
+        CMOS_ERR_STR("vfs valid path name must not be NUL.");
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+cmos_status_T vfs_path_head_pop(cmos_uint8_T *name, cmos_uint32_T name_max, const cmos_uint8_T *path)
+{ 
+    char *go_path = (char *)path;
+    char *go_path_new = (char *)path;
+    cmos_uint32_T name_len = 0;
+    if(NULL == name)
+    {
+        CMOS_ERR_STR("vfs name must not be NULL.");
+        return cmos_NULL_E;
+    }
+    if(!vfs_path_is_valid(path))
+    {
+        return cmos_PARA_E;
+    } 
+    
+    go_path += CMOS_VFS_SEPARATOR_LEN;
+    go_path_new = strstr(go_path, CMOS_VFS_SEPARATOR);
+    if(NULL == go_path_new) /* 已经是叶子结点 */
+    {
+        name_len = strlen(go_path);
+        if( 0 == name_len) /* 尾部带有separator的格式 */
+        { 
+            return cmos_PARA_E;
+        }
+    }
+    else /* 后面还有目录 */
+    {
+        name_len = go_path_new - go_path;
+        if(name_len >= name_max)
+        {
+            return cmos_BUF_SMALL_E;
+        }
+    } 
+    strncpy((char *)name, go_path, name_len);
+    name[name_len] = NUL; 
+
+    return cmos_OK_E;
+}
 

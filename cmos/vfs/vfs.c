@@ -17,11 +17,11 @@
 #include "cmos_config.h"
 
 #include <string.h>
-#include <strings.h>
 
 #include "lib.h"
 #include "mem.h"
 #include "tree.h"
+#include "path.h"
 #include "vfs.h"
 #include "console.h"
 
@@ -151,6 +151,26 @@ static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cm
 {
     CMOS_TRACE_FUNC_IN;
 
+    if((vfs_dev == type)
+    && (NULL == driver))
+    {
+        CMOS_ERR_STR("vfs_dev must have driver.");
+        return NULL;
+    }
+    if(NULL == name)
+    {
+        CMOS_ERR_STR("vfs name must not be NULL.");
+        return NULL;
+    }
+    cmos_int32_T name_len = 0;
+    name_len = strlen((const char *)name);
+    if((0 == name_len)
+    || (CMOS_VFS_NAME_MAX <= name_len)) /* 注意边间 NUL */
+    {
+        CMOS_ERR_STR("vfs_name must be in (0, CMOS_VFS_NAME_MAX).");
+        return NULL;
+    }
+
     /* 数据 */
     vfs_node_T *data = NULL; 
     data = (vfs_node_T *)cmos_malloc(sizeof(vfs_node_T));
@@ -195,9 +215,36 @@ static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cm
 * 其 它   : TODO:需要对应free否则内存泄露
 *
 ******************************************************************************/
-cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *driver)
+cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
+        const cmos_uint8_T *name, 
+        vfs_node_type_E type,
+        const void *driver)
 {
     CMOS_TRACE_FUNC_IN;
+    if(NULL == dir_path) 
+    { 
+        CMOS_ERR_STR("dir_path must not be NULL.");
+        return cmos_NULL_E;
+    }
+    if((vfs_dev == type)
+    && (NULL == driver))
+    {
+        cmos_err_log("%s,%d:vfs_dev %s must have driver.", __FILE__, __LINE__, name);
+        return cmos_NULL_E;
+    }
+    if(NULL == name)
+    {
+        CMOS_ERR_STR("vfs name must not be NULL.");
+        return cmos_NULL_E;
+    }
+    cmos_int32_T name_len = 0;
+    name_len = strlen((const char *)name);
+    if((0 == name_len)
+    || (CMOS_VFS_NAME_MAX <= name_len)) /* 注意边间 NUL */
+    {
+        CMOS_ERR_STR("vfs_name must be in (0, CMOS_VFS_NAME_MAX).");
+        return cmos_PARA_E;
+    }
 
     cmos_status_T status = cmos_ERR_E;
 
@@ -225,57 +272,73 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *nam
     return status;
 }
 
+/*******************************************************************************
+*
+* 函数名  : vfs_get_tree_node
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: 通过路径查找对应的结点
+*
+* 输入参数: path    父路径
+* 输出参数: 无
+*
+* 返回值  : NULL 失败
+*           其他 结点指针
+*
+* 调用关系: 无
+* 其 它   : TODO:是否可以复用树的遍历?
+*
+******************************************************************************/
 static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
 {
     CMOS_TRACE_FUNC_IN;
-    /* TODO:此处逻辑有问题 多思考 */
-
-    cmos_lib_tree_node_T *go_node = NULL;
-    const char *go_path = (const char *)path;
-    cmos_int32_T i = 0;
-    cmos_uint8_T name[CMOS_VFS_NAME_MAX] = {0};
-    cmos_int32_T root_len = 0;
-    cmos_int32_T separator_len = 0;
-
-    root_len = strlen(CMOS_VFS_ROOT);
-    separator_len = strlen(CMOS_VFS_SEPARATOR);
-
-    go_node = s_vfs_tree.root;
-    if(0 != strncmp(go_path, CMOS_VFS_ROOT, root_len)) /* 不以根打头 路径错误 */
-    {
+    if(NULL == path) 
+    { 
+        CMOS_ERR_STR("path must not be NULL.");
         return NULL;
     } 
-    if(root_len == strlen(go_path)) /* 根结点 */
+    if(!vfs_path_is_valid(path))
+    {
+        return NULL;
+    }
+
+    cmos_status_T status = cmos_ERR_E;
+    cmos_lib_tree_node_T *go_node = NULL;
+    const cmos_uint8_T *go_path = path;
+    //const char *go_path_new = NULL;
+    cmos_uint8_T name[CMOS_VFS_NAME_MAX] = {0};
+    //cmos_int32_T name_len = 0;
+    //const char *node_name = NULL;
+    //vfs_node_T *data = NULL; 
+
+    /* 算好备用 */
+    go_node = s_vfs_tree.root; 
+    
+    /* 路径对应根结点 */
+    if(CMOS_VFS_ROOT_LEN == strlen((const char *)go_path))
     {
         goto found;
     }
     
-    CMOS_TRACE_FUNC(go_path);
-
-    go_path += root_len;
-    while(TRUE)
-    {
-        if(NUL == *go_path)
+    /* TODO: 以下功能使用链表 */
+    do{
+        memset(name, NUL, CMOS_VFS_NAME_MAX);
+        /* 找出一级目录 */
+        status = vfs_path_head_pop(name, CMOS_VFS_NAME_MAX, go_path);
+        if(cmos_OK_E != status) /* 没有有效的目录了 */
         {
-            /* TODO:以name 查找是否为该结点 */
-            CMOS_TRACE_FUNC("find dir");
-            CMOS_TRACE_FUNC(name);
-            memset(name, NUL, CMOS_VFS_NAME_MAX);
-            i = 0;
             break;
         }
+        go_path += (strlen((const char *)name) + 1); /* 移除一级目录 */
+        cmos_debug_log("pppp%s\n", name);
 
-        if(0 == strncmp(go_path, CMOS_VFS_SEPARATOR, separator_len)) /* 分隔符 */
-        {
-            /* TODO:以name查找结点 并进入下一层 */
-            CMOS_TRACE_FUNC("goto dir");
-            CMOS_TRACE_FUNC(name);
-            memset(name, NUL, CMOS_VFS_NAME_MAX);
-            i = 0;
-            continue;
-        }
-        CMOS_TRACE_FUNC(go_path);
-    }
+        /* 查找对应结点 */
+        /* 1、获取首子结点 并更新go_node */
+        /* 2、比较go_node名字是否与name匹配 */
+        /* 3、若是则找到break */
+        /* 4、若否则获取go_node右兄弟并更新go_node */
+        /* 5、返回2迭代直到 NULL == go_node 匹配失败 */
+    }while(TRUE); 
 
 found:
     CMOS_TRACE_FUNC_OUT;
