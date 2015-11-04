@@ -16,10 +16,14 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 
+#include <string.h>
+#include <strings.h>
+
 #include "lib.h"
 #include "mem.h"
 #include "tree.h"
 #include "vfs.h"
+#include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -28,7 +32,7 @@
  * vfs树
  * FIXME:所有操作加锁 
  * */
-cmos_lib_tree_T s_vfs_root;
+cmos_lib_tree_T s_vfs_tree;
 
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
@@ -56,7 +60,10 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
 ******************************************************************************/
 cmos_status_T vfs_init(void)
 {
-    cmos_status_T status = cmos_ERR_E;
+    CMOS_TRACE_FUNC_IN;
+
+    cmos_status_T status = cmos_ERR_E; 
+
     /* 构造 树根 */ 
     cmos_lib_tree_node_T *root_node = NULL; 
     root_node = vfs_tree_node_malloc(vfs_dir, (const cmos_uint8_T *)CMOS_VFS_ROOT, NULL);
@@ -65,7 +72,7 @@ cmos_status_T vfs_init(void)
         return cmos_MEM_LACK_E;
     }
     /* 使用根结点初始化树 */ 
-    cmos_lib_tree_init(&s_vfs_root, root_node, (const cmos_uint8_T *)CMOS_VFS_NAME); 
+    cmos_lib_tree_init(&s_vfs_tree, root_node, (const cmos_uint8_T *)CMOS_VFS_NAME); 
 
     /* 加入/proc目录 */
     /* TODO:加入/proc/cpuinfo /proc/meminfo文件 */
@@ -83,6 +90,8 @@ cmos_status_T vfs_init(void)
     }
 
     status = cmos_OK_E;
+
+    CMOS_TRACE_FUNC_OUT;
     return status;
 }
 
@@ -105,14 +114,17 @@ cmos_status_T vfs_init(void)
 ******************************************************************************/
 cmos_status_T vfs_destroy(void)
 {
+    CMOS_TRACE_FUNC_IN;
+
     cmos_status_T status = cmos_ERR_E;
 
-    status = cmos_lib_tree_destroy(&s_vfs_root);
+    status = cmos_lib_tree_destroy(&s_vfs_tree);
     if(cmos_OK_E != status)
     {
         assert_failed((cmos_uint8_T *)__FILE__, __LINE__);
     }
 
+    CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;
 }
 
@@ -137,6 +149,8 @@ cmos_status_T vfs_destroy(void)
 ******************************************************************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver)
 {
+    CMOS_TRACE_FUNC_IN;
+
     /* 数据 */
     vfs_node_T *data = NULL; 
     data = (vfs_node_T *)cmos_malloc(sizeof(vfs_node_T));
@@ -156,6 +170,7 @@ static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cm
         return NULL;
     }
 
+    CMOS_TRACE_FUNC_OUT;
     return node;
 }
 
@@ -182,6 +197,8 @@ static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cm
 ******************************************************************************/
 cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *driver)
 {
+    CMOS_TRACE_FUNC_IN;
+
     cmos_status_T status = cmos_ERR_E;
 
     cmos_lib_tree_node_T *node = NULL; 
@@ -200,49 +217,68 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *nam
     }
 
     /* 插入到父节点 */
-    cmos_lib_tree_insert_child(&s_vfs_root, parent_node, 0, node);
+    cmos_lib_tree_insert_child(&s_vfs_tree, parent_node, 0, node);
 
     status = cmos_OK_E;
+
+    CMOS_TRACE_FUNC_OUT;
     return status;
 }
 
 static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
 {
-#if 0
+    CMOS_TRACE_FUNC_IN;
+    /* TODO:此处逻辑有问题 多思考 */
+
     cmos_lib_tree_node_T *go_node = NULL;
-    cmos_uint8_T *go_path = NULL;
-    cmos_int32_T name_count = 0;
+    const char *go_path = (const char *)path;
     cmos_int32_T i = 0;
     cmos_uint8_T name[CMOS_VFS_NAME_MAX] = {0};
     cmos_int32_T root_len = 0;
+    cmos_int32_T separator_len = 0;
 
     root_len = strlen(CMOS_VFS_ROOT);
-    go_path = path;
-    go_node = s_vfs_root;
-    if(0 != strcmp(*go_path, CMOS_VFS_ROOT, root_len)) /* 不以根打头 路径错误 */
-    {
-        return cmos_PARA_E;
-    }
+    separator_len = strlen(CMOS_VFS_SEPARATOR);
 
-    for(go_path += root_len; (NULL != go_path) && (NUL != *go_path); go_path++)
+    go_node = s_vfs_tree.root;
+    if(0 != strncmp(go_path, CMOS_VFS_ROOT, root_len)) /* 不以根打头 路径错误 */
     {
-        if(0 != strcmp(go_path, CMOS_VFS_SEPARATOR, root_len)) /* 非分隔符 */
+        return NULL;
+    } 
+    if(root_len == strlen(go_path)) /* 根结点 */
+    {
+        goto found;
+    }
+    
+    CMOS_TRACE_FUNC(go_path);
+
+    go_path += root_len;
+    while(TRUE)
+    {
+        if(NUL == *go_path)
         {
-            name[i++] = *go_path;
-            if(CMOS_VFS_NAME_MAX <= i) /* 名字过长 防止溢出 */
-            {
-                return cmos_PARA_E;
-            }
-        }
-        else
-        {
-            //s_vfs_root->
-            /* 以name 查找是否为该结点 */
+            /* TODO:以name 查找是否为该结点 */
+            CMOS_TRACE_FUNC("find dir");
+            CMOS_TRACE_FUNC(name);
+            memset(name, NUL, CMOS_VFS_NAME_MAX);
             i = 0;
+            break;
         }
-    }
-#endif
 
-    return NULL;
+        if(0 == strncmp(go_path, CMOS_VFS_SEPARATOR, separator_len)) /* 分隔符 */
+        {
+            /* TODO:以name查找结点 并进入下一层 */
+            CMOS_TRACE_FUNC("goto dir");
+            CMOS_TRACE_FUNC(name);
+            memset(name, NUL, CMOS_VFS_NAME_MAX);
+            i = 0;
+            continue;
+        }
+        CMOS_TRACE_FUNC(go_path);
+    }
+
+found:
+    CMOS_TRACE_FUNC_OUT;
+    return go_node;
 }
 

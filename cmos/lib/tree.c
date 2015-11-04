@@ -17,6 +17,7 @@
 #include "cmos_config.h"
 #include "mem.h"
 #include "tree.h"
+#include "console.h"
 
 #ifdef _X64_PC_
 #include "pc.h"
@@ -50,9 +51,12 @@
 ******************************************************************************/
 void cmos_lib_tree_init(cmos_lib_tree_T *tree, cmos_lib_tree_node_T *node, const cmos_uint8_T *name)
 {
+    CMOS_TRACE_FUNC_IN;
+
     tree->root = node;
     tree->name = name;
 
+    CMOS_TRACE_FUNC_OUT;
     return;
 }
 
@@ -75,10 +79,13 @@ void cmos_lib_tree_init(cmos_lib_tree_T *tree, cmos_lib_tree_node_T *node, const
 ******************************************************************************/
 cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *tree)
 {
+    CMOS_TRACE_FUNC_IN;
+
     cmos_status_T status = cmos_ERR_E;
     /* TODO:遍历树free每个结点 */
 
     status = cmos_OK_E;
+    CMOS_TRACE_FUNC_OUT;
     return status;
 }
 
@@ -107,9 +114,12 @@ cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *tree,
         cmos_uint32_T index,
         cmos_lib_tree_node_T *child_root)
 {
+    CMOS_TRACE_FUNC_IN;
+
     cmos_status_T status = cmos_ERR_E;
 
     status = cmos_OK_E;
+    CMOS_TRACE_FUNC_OUT;
     return status;
 }
 
@@ -133,6 +143,8 @@ cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *tree,
 ******************************************************************************/
 cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
 {
+    CMOS_TRACE_FUNC_IN;
+
     cmos_lib_tree_node_T *node = NULL;
 
     node = (cmos_lib_tree_node_T *)cmos_malloc(sizeof(cmos_lib_tree_node_T));
@@ -145,5 +157,6 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
     node->first_sun = NULL;
     node->next_brother = NULL;
 
-    return NULL;
+    CMOS_TRACE_FUNC_OUT;
+    return node;
 }

@@ -66,10 +66,28 @@ int main(int argc, char *argv[])
         assert_failed(__FILE__, __LINE__);
     }
 
-    /*
-cmos_status_T vfs_destroy(void);
-cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
-*/
+    /* 加入控制台设备结点*/
+    status = vfs_node_add((const cmos_uint8_T *)"/11/22/33/44/55", (const cmos_uint8_T *)CMOS_CONSOLE_NAME, vfs_dev, NULL);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+#if 0
+    /* 加入控制台设备结点*/
+    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_DEV_DIR, (const cmos_uint8_T *)CMOS_CONSOLE_NAME, vfs_dev, NULL);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+    /* 加入i2c设备结点*/
+    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_DEV_DIR, (const cmos_uint8_T *)("i2c"), vfs_dev, NULL);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+#endif
 
     return 0;
 }
@@ -129,6 +147,7 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     va_end(args);
 
     printf(printf_buf);
+    fflush(stdout);
 
     return n;
 }

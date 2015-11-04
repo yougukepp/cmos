@@ -38,6 +38,9 @@
 #define cmos_trace_log(...)
 #endif
 
+#define CMOS_TRACE_FUNC_IN   cmos_trace_log("[IN]  %-8s%-8d%-20s", __FILE__, __LINE__, __func__)
+#define CMOS_TRACE_FUNC_OUT  cmos_trace_log("[OUT] %-8s%-8d%-20s", __FILE__, __LINE__, __func__)
+#define CMOS_TRACE_FUNC(str) cmos_trace_log("[TRC] %-8s%-8d%-20s\t\t%s" , __FILE__, __LINE__, __func__, str)
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

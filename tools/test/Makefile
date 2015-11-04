@@ -3,7 +3,10 @@ LD=gcc
 INC=-I../../cmos/
 CFLAGS=-c -Wall -D_X64_PC_
 
-all:test
+all:clean test
+	@echo
+	@echo
+	#./test
 
 test:tree.c main.c vfs.c
 	$(CC) $(CFLAGS) $(INC) vfs.c -o vfs.o
@@ -16,3 +19,6 @@ clean:
 	rm -rf *.o
 	rm -rf test
 	rm -rf *.stackdump
+	rm -rf cscope.*
+	rm -rf tags
+
