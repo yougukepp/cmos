@@ -38,7 +38,9 @@
 * 创建日期: 20151101
 * 函数功能: tree 初始化
 *
-* 输入参数: root 树根
+* 输入参数: tree 树
+*           node 根结点
+*           name 树名字
 * 输出参数: 无
 * 返回值  : 无
 *
@@ -46,12 +48,10 @@
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_lib_tree_init(cmos_lib_tree_T *root, const cmos_lib_tree_node_T *node)
+void cmos_lib_tree_init(cmos_lib_tree_T *tree, cmos_lib_tree_node_T *node, const cmos_uint8_T *name)
 {
-    root->data = NULL;
-    root->parent = NULL;
-    root->first_sun = NULL;
-    root->next_brother = NULL;
+    tree->root = node;
+    tree->name = name;
 
     return;
 }
@@ -63,7 +63,7 @@ void cmos_lib_tree_init(cmos_lib_tree_T *root, const cmos_lib_tree_node_T *node)
 * 创建日期: 20151101
 * 函数功能: tree 解除初始化
 *
-* 输入参数: root 树根
+* 输入参数: tree 树
 *
 * 输出参数: 无
 *
@@ -73,7 +73,7 @@ void cmos_lib_tree_init(cmos_lib_tree_T *root, const cmos_lib_tree_node_T *node)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *root)
+cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *tree)
 {
     cmos_status_T status = cmos_ERR_E;
     /* TODO:遍历树free每个结点 */
@@ -89,7 +89,7 @@ cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *root)
 * 创建日期: 20151101
 * 函数功能: 插入子树(或者插入结点)
 *
-* 输入参数: root        待插入的树的根
+* 输入参数: tree        待插入的树
 *           modify_node 待插入子节点的结点
 *           index       插入modify_node的度
 *           child_root  待插入的子树的根
@@ -102,10 +102,10 @@ cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *root)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *root,
+cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *tree, 
         cmos_lib_tree_node_T *modify_node,
         cmos_uint32_T index,
-        const cmos_lib_tree_T *child_root)
+        cmos_lib_tree_node_T *child_root)
 {
     cmos_status_T status = cmos_ERR_E;
 

@@ -19,9 +19,16 @@
 
 /************************************ 宏定义 ***********************************/
 /****************************** 虚拟文件系统(VFS) ******************************/
+#define CMOS_VFS_NAME                                           ("vfs")
 #define CMOS_VFS_ROOT                                           ("/")
-#define CMOS_VFS_DEV_DIR                                        ("dev")
-#define CMOS_VFS_PROC_DIR                                       ("proc")
+#define CMOS_VFS_DEV                                            ("dev")
+#define CMOS_VFS_PROC                                           ("proc")
+#define CMOS_VFS_DEV_DIR                                        ("/dev")
+#define CMOS_VFS_PROC_DIR                                       ("/proc")
+#define CMOS_VFS_SEPARATOR                                      ("/")
+/* 文件系统深度 */
+#define CMOS_VFS_DEPTH                                          (8)
+#define CMOS_VFS_NAME_MAX                                       (8)
 
 /********************************** 控制台配置 *********************************/
 /* 调试级别 */

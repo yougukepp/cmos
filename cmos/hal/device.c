@@ -15,7 +15,8 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "tree.h"
+#include "lib.h"
+#include "vfs.h"
 #include "device.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -49,8 +50,12 @@ cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver)
 {
     cmos_status_T status = cmos_ERR_E; 
 
-    /* 加入设备 "/dev/'name'" 结点*/
-    /* TODO:vfs实现相应接口 */
+    /* 加入设备结点*/
+    status = vfs_node_add(CMOS_VFS_DEV_DIR, name, vfs_dev, driver);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
 
     status = cmos_OK_E;
     return status;
