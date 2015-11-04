@@ -17,7 +17,7 @@
 #include "hal.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
-#include "device.h"
+#include "vfs.h"
 #include "uart.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -48,8 +48,8 @@ static cmos_status_T SystemClock_Config(void);
 cmos_status_T hal_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
-    /* 初始化硬件树 */
-    status = hal_device_init();
+    /* 初始化vfs */
+    status = vfs_init();
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
@@ -66,14 +66,6 @@ cmos_status_T hal_init(void)
     /* HAL_Init 执行后才可以使用 */
     /* 时钟配置 180M */
     status = SystemClock_Config();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return status;
-    }
-
-    /* cmos hal uart low 初始化 */
-    status = cmos_hal_uart_init();
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);

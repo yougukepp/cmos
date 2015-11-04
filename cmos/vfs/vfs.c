@@ -31,8 +31,8 @@
 cmos_lib_tree_T s_vfs_root;
 
 /********************************** 函数声明区 *********************************/
-static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name);
-static cmos_lib_tree_node_T * vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name);
+static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
+static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
 
 /********************************** 变量实现区 *********************************/
 
@@ -59,20 +59,20 @@ cmos_status_T vfs_init(void)
     cmos_status_T status = cmos_ERR_E;
     /* 构造 树根 */ 
     cmos_lib_tree_node_T *root_node = NULL; 
-    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_ROOT);
+    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_ROOT, NULL);
 
     /* 使用根结点初始化树 */ 
     cmos_lib_tree_init(&s_vfs_root, root_node); 
 
     /* 加入/proc目录 */
     cmos_lib_tree_node_T *proc_node = NULL; 
-    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_PROC_DIR);
+    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_PROC_DIR, NULL);
     cmos_lib_tree_insert_child(&s_vfs_root, root_node, 0, proc_node);
     /* TODO:加入/proc/cpuinfo /proc/meminfo文件 */
 
     /* 加入/dev目录 为驱动加入到vfs做准备 */
     cmos_lib_tree_node_T *dev_node = NULL; 
-    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_DEV_DIR);
+    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_DEV_DIR, NULL);
     cmos_lib_tree_insert_child(&s_vfs_root, root_node, 0, dev_node);
 
     status = cmos_OK_E;
@@ -116,8 +116,9 @@ cmos_status_T vfs_destroy(void)
 * 创建日期: 20151103
 * 函数功能: cmos vfs 结点初始化
 *
-* 输入参数: type 结点类型
-*           name 结点名字
+* 输入参数: type    结点类型
+*           name    结点名字
+*           driver  驱动指针
 *
 * 输出参数: 无
 *
@@ -128,7 +129,7 @@ cmos_status_T vfs_destroy(void)
 * 其 它   : TODO:需要对应free否则内存泄露
 *
 ******************************************************************************/
-static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name)
+static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver)
 {
     vfs_node_T *data = NULL; 
     data = (vfs_node_T *)cmos_malloc(sizeof(vfs_node_T));
@@ -161,11 +162,11 @@ static vfs_node_T *vfs_node_malloc(vfs_node_type_E type, const cmos_uint8_T *nam
 * 其 它   : TODO:需要对应free否则内存泄露
 *
 ******************************************************************************/
-static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name)
+static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver)
 {
     /* 数据 */
     vfs_node_T *data = NULL; 
-    data = vfs_node_malloc(type, name);
+    data = vfs_node_malloc(type, name, driver);
     if(NULL == data)
     {
         return NULL;

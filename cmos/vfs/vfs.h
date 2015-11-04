@@ -23,7 +23,7 @@
 typedef enum{
     vfs_file = 0x00,
     vfs_dir = 0x01,
-    vfs_cdev = 0x02,
+    vfs_dev = 0x02,
     vfs_link = 0x03,
 
     vfs_err_type = 0xff,
@@ -33,6 +33,7 @@ typedef enum{
 typedef struct vfs_node_data_T_tag{
     vfs_node_type_E type;
     cmos_uint8_T    *name;
+    void            *driver;
 }vfs_node_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/

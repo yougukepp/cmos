@@ -14,8 +14,9 @@
 
 /************************************ 头文件 ***********************************/
 #include "stm32f429idiscovery_hardware.h"
-#include "device.h"
 #include "console.h"
+#include "device.h"
+#include "uart.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -65,7 +66,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
     HAL_NVIC_SetPriority(CONSOLE_UART_IRQn, 0, 1);
     HAL_NVIC_EnableIRQ(CONSOLE_UART_IRQn);
 
-    status = hal_device_add(CMOS_CONSOLE_DEVICE_PATH);
+    status = hal_device_add(CMOS_CONSOLE_NAME, &g_uart_driver);
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
@@ -104,7 +105,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 
     HAL_NVIC_DisableIRQ(CONSOLE_UART_IRQn);
 
-    status = hal_device_del(CMOS_CONSOLE_DEVICE_PATH);
+    status = hal_device_del(CMOS_CONSOLE_NAME);
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);

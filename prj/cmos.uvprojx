@@ -714,7 +714,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\console</IncludePath>
+                      <IncludePath>..\cmos\console;..\cmos\vfs</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -736,11 +736,6 @@
               <FilePath>..\cmos\hal\startup\stm32f429xx.s</FilePath>
             </File>
             <File>
-              <FileName>device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\cmos\hal\device.c</FilePath>
-            </File>
-            <File>
               <FileName>driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\hal\driver.c</FilePath>
@@ -749,6 +744,11 @@
               <FileName>cortex.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\hal\cortex\cortex.c</FilePath>
+            </File>
+            <File>
+              <FileName>device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\hal\device.c</FilePath>
             </File>
           </Files>
         </Group>

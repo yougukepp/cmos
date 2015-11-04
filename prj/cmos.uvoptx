@@ -393,7 +393,7 @@
 
   <Group>
     <GroupName>hal</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -457,8 +457,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\cmos\hal\device.c</PathWithFileName>
-      <FilenameWithoutPath>device.c</FilenameWithoutPath>
+      <PathWithFileName>..\cmos\hal\driver.c</PathWithFileName>
+      <FilenameWithoutPath>driver.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -470,8 +470,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\cmos\hal\driver.c</PathWithFileName>
-      <FilenameWithoutPath>driver.c</FilenameWithoutPath>
+      <PathWithFileName>..\cmos\hal\cortex\cortex.c</PathWithFileName>
+      <FilenameWithoutPath>cortex.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -483,8 +483,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\cmos\hal\cortex\cortex.c</PathWithFileName>
-      <FilenameWithoutPath>cortex.c</FilenameWithoutPath>
+      <PathWithFileName>..\cmos\hal\device.c</PathWithFileName>
+      <FilenameWithoutPath>device.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -547,7 +547,7 @@
 
   <Group>
     <GroupName>lib</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

@@ -27,23 +27,53 @@
 /********************************** 变量实现区 *********************************/
 
 /********************************** 函数实现区 *********************************/
-cmos_status_T hal_device_init(void)
+/*******************************************************************************
+*
+* 函数名  : hal_device_add
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: cmos vfs中加入设备并绑定驱动
+*
+* 输入参数: name   vfs设备名字
+*           driver 驱动指针
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : TODO:del中需要对应的内存释放
+*
+******************************************************************************/
+cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver)
 {
     cmos_status_T status = cmos_ERR_E; 
+
+    /* 加入设备 "/dev/'name'" 结点*/
+    /* TODO:vfs实现相应接口 */
 
     status = cmos_OK_E;
     return status;
 }
 
-cmos_status_T hal_device_add(const cmos_uint8_T *path)
-{
-    cmos_status_T status = cmos_ERR_E; 
-
-    status = cmos_OK_E;
-    return status;
-}
-
-cmos_status_T hal_device_del(const cmos_uint8_T *path)
+/*******************************************************************************
+*
+* 函数名  : hal_device_del
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: cmos vfs中删除设备并解除绑定
+*
+* 输入参数: name   vfs设备名字
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : 释放内存
+*
+******************************************************************************/
+cmos_status_T hal_device_del(const cmos_uint8_T *name)
 {
     cmos_status_T status = cmos_ERR_E; 
 
