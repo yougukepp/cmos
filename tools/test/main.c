@@ -23,6 +23,7 @@
 #include "pc.h"
 #include "tree.h"
 #include "vfs.h"
+#include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -56,14 +57,21 @@
  ******************************************************************************/
 int main(int argc, char *argv[])
 { 
-    printf("123\n");
-cmos_status_T vfs_init(void);
-cmos_status_T vfs_destroy(void);
+    cmos_status_T status = cmos_OK_E;
+    cmos_trace_log("start.");
+    status = vfs_init();
+    if(cmos_OK_E != status)
+    {
+        cmos_trace_log("status:0x%08X.", status);
+        assert_failed(__FILE__, __LINE__);
+    }
 
+    /*
+cmos_status_T vfs_destroy(void);
 cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
+*/
 
     return 0;
-
 }
 
 /********************************** 函数实现区 *********************************/
@@ -95,7 +103,7 @@ void assert_failed(char *file, cmos_uint32_T line)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_printf
+* 函数名  : cmos_console_printf
 * 负责人  : 彭鹏
 * 创建日期: 20151030
 * 函数功能: 控制台打印 模式cmos输出行为
@@ -110,7 +118,7 @@ void assert_failed(char *file, cmos_uint32_T line)
 * 其 它   : 系统错误或调试打印需要第一时间输出 采用轮询方式输出
 *
 ******************************************************************************/
-cmos_int32_T cmos_printf(char *fmt, ...)
+cmos_int32_T cmos_console_printf(char *fmt, ...)
 { 
     char printf_buf[1024];
     va_list args;

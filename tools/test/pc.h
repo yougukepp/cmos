@@ -28,7 +28,7 @@
 
 /*********************************** 接口函数 **********************************/
 void assert_failed(char *file, cmos_uint32_T line);
-cmos_int32_T cmos_printf(char *fmt, ...);
+cmos_int32_T cmos_console_printf(char *fmt, ...);
 
 #endif // #ifndef _PC_H_
 

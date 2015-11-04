@@ -13,6 +13,8 @@ app/flyer/eMD6.12/prj/md.uvguix.Administrator
 app/flyer/eMD6.12/prj/md.uvguix.pp
 
 tools/flyer_controller/__pycache__/
+tools/test/*.o
+tools/test/*.exe
 
 app/flyer/algorithm/*.o
 app/flyer/algorithm/*.exe
