@@ -328,6 +328,8 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
         go_path += strlen((const char *)name) + 1; /* 移除一级子目录 */
         CMOS_TRACE_STR(name);
 
+        /* 封装函数 */
+        /*name,go_node*/
         /* 查找对应结点 */
         /* 1、获取首子结点 并更新go_node */
         /* 2、比较go_node名字是否与name匹配 */
