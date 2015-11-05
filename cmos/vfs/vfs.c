@@ -32,7 +32,7 @@
  * vfs树
  * FIXME:所有操作加锁 
  * */
-cmos_lib_tree_T s_vfs_tree;
+cmos_lib_tree_T *s_vfs_tree;
 
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
@@ -72,7 +72,7 @@ cmos_status_T vfs_init(void)
         return cmos_MEM_LACK_E;
     }
     /* 使用根结点初始化树 */ 
-    cmos_lib_tree_init(&s_vfs_tree, root_node, (const cmos_uint8_T *)CMOS_VFS_NAME); 
+    cmos_lib_tree_init(&s_vfs_tree, root_node);
 
     /* 加入/proc目录 */
     /* TODO:加入/proc/cpuinfo /proc/meminfo文件 */
@@ -118,7 +118,7 @@ cmos_status_T vfs_destroy(void)
 
     cmos_status_T status = cmos_ERR_E;
 
-    status = cmos_lib_tree_destroy(&s_vfs_tree);
+    status = cmos_lib_tree_destroy(s_vfs_tree);
     if(cmos_OK_E != status)
     {
         assert_failed((cmos_uint8_T *)__FILE__, __LINE__);
@@ -220,7 +220,7 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
         vfs_node_type_E type,
         const void *driver)
 {
-    CMOS_TRACE_FUNC_IN;
+    CMOS_TRACE_FUNC_IN; 
     if(NULL == dir_path) 
     { 
         CMOS_ERR_STR("dir_path must not be NULL.");
@@ -264,7 +264,7 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
     }
 
     /* 插入到父节点 */
-    cmos_lib_tree_insert_child(&s_vfs_tree, parent_node, 0, node);
+    cmos_lib_tree_insert_child(s_vfs_tree, parent_node, 0, node);
 
     status = cmos_OK_E;
 
@@ -307,12 +307,12 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
     const cmos_uint8_T *go_path = path;
     cmos_uint8_T name[CMOS_VFS_NAME_MAX] = {0};
 
-    /* 算好备用 */
-    go_node = s_vfs_tree.root; 
+    /* 初始为根结点 */
+    go_node = cmos_lib_tree_root(s_vfs_tree);
     
     /* 路径对应根结点 */
     if(CMOS_VFS_ROOT_LEN == strlen((const char *)go_path))
-    {
+    { 
         goto found;
     } 
     

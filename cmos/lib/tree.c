@@ -46,23 +46,20 @@
 * 返回值  : 无
 *
 * 调用关系: 无
-* 其 它   : 无
+* 其 它   : tree 需要使用二级指针
 *
 ******************************************************************************/
-void cmos_lib_tree_init(cmos_lib_tree_T *tree, cmos_lib_tree_node_T *node, const cmos_uint8_T *name)
+void cmos_lib_tree_init(cmos_lib_tree_T **tree, cmos_lib_tree_node_T *node)
 {
     CMOS_TRACE_FUNC_IN;
 
-    if((NULL == tree)
-    || (NULL == node)
-    || (NULL == name))
+    if(NULL == node)
     {
         CMOS_ERR_STR("NULL pointer");
         return;
     }
 
-    tree->root = node;
-    tree->name = name;
+    *tree = node;
 
     CMOS_TRACE_FUNC_OUT;
     return;
@@ -96,10 +93,35 @@ cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *tree)
     }
 
     /* TODO:遍历树free每个结点 */
-
     status = cmos_OK_E;
     CMOS_TRACE_FUNC_OUT;
     return status;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_root
+* 负责人  : 彭鹏
+* 创建日期: 20151105
+* 函数功能: 获取树tree的根
+*
+* 输入参数: tree 树
+* 输出参数: 无
+*
+* 返回值  : tree树的根
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_lib_tree_node_T *cmos_lib_tree_root(const cmos_lib_tree_T *tree)
+{
+    if(NULL == tree)
+    {
+        CMOS_ERR_STR("tree root must not be NULL.");
+    }
+
+    return (cmos_lib_tree_node_T *)tree;
 }
 
 /*******************************************************************************
