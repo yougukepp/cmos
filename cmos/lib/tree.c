@@ -57,7 +57,6 @@ void cmos_lib_tree_init(cmos_lib_tree_T **tree, cmos_lib_tree_node_T *node)
         CMOS_ERR_STR("NULL pointer");
         return;
     }
-
     *tree = node;
 
     CMOS_TRACE_FUNC_OUT;
@@ -333,14 +332,17 @@ cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node)
         return 0;
     }
 
+    cmos_debug_log("1\n");
     /* 1 子女 */
     node_first_sun = cmos_lib_tree_first_sun(node);
     depth_sun = 1 + cmos_lib_tree_depth(node_first_sun);
 
+    cmos_debug_log("2\n");
     /* 2 兄弟 */
     node_next_brother = cmos_lib_tree_next_brother(node);
     depth_brother = cmos_lib_tree_depth(node_next_brother);
 
+    cmos_debug_log("3\n");
     /* 2 自己 */
     depth_self = (depth_brother > depth_sun) ? depth_brother : depth_sun;
 
@@ -415,5 +417,38 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
 
     CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_node_print
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 打印结点
+*
+* 输入参数: node 树结点指针
+*
+* 输出参数: 无
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node)
+{
+    if(NULL == node)
+    {
+        cmos_console_printf("null node\n");
+    }
+    else
+    {
+        cmos_console_printf("addr:%p,data:%p,parent:%p,sun:%p,brother:%p\n", 
+                node,
+                node->data,
+                node->parent,
+                node->first_sun,
+                node->next_brother);
+    }
 }
 

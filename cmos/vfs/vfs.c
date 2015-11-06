@@ -76,6 +76,8 @@ cmos_status_T vfs_init(void)
     /* 使用根结点初始化树 */ 
     cmos_lib_tree_init(&s_vfs_tree, root_node);
 
+    vfs_print();
+
     /* 加入/proc目录 */
     /* TODO:加入/proc/cpuinfo /proc/meminfo文件 */
     status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_ROOT, (const cmos_uint8_T *)CMOS_VFS_DEV, vfs_dir, NULL);
@@ -428,6 +430,8 @@ static cmos_int32_T vfs_node_depth(const vfs_node_T *node)
     /* 利用Linux黑暗魔法获取 cmos_lib_tree_node_T 指针 求深度 */
     tree_node = cmos_container_of((void *)node, cmos_lib_tree_node_T, data);
 
+    cmos_console_printf("node:%p\n", node);
+    cmos_lib_tree_node_print(tree_node);
     depth = cmos_lib_tree_depth(tree_node);
 
     CMOS_TRACE_FUNC_OUT;

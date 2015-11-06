@@ -23,10 +23,10 @@
 /* 树结点定义 */
 typedef struct cmos_lib_tree_node_T_tag cmos_lib_tree_node_T;
 struct cmos_lib_tree_node_T_tag{
-    void *data;                         /* 结点数据指针 */
     cmos_lib_tree_node_T *parent;       /* 父结点 */
     cmos_lib_tree_node_T *first_sun;    /* 首孩子结点 */
     cmos_lib_tree_node_T *next_brother; /* 下一兄弟结点 */
+    void *data;                         /* 结点数据指针 */
 };
 
 /* 树的定义 */
@@ -51,7 +51,8 @@ cmos_lib_tree_node_T *cmos_lib_tree_first_sun(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_next_brother(const cmos_lib_tree_node_T *node);
 void *cmos_lib_tree_data(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data);
-cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *tree_node);
+cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node);
+void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node);
 
 
 #endif /* #ifndef _CMOS_LIB_TREE_H_ */

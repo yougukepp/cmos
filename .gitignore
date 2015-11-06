@@ -15,6 +15,7 @@ app/flyer/eMD6.12/prj/md.uvguix.pp
 tools/flyer_controller/__pycache__/
 tools/test/*.o
 tools/test/*.exe
+tools/test/test
 
 app/flyer/algorithm/*.o
 app/flyer/algorithm/*.exe
