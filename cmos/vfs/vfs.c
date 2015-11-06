@@ -89,8 +89,6 @@ cmos_status_T vfs_init(void)
         return status;
     }
 
-    cmos_lib_tree_print(s_vfs_tree, (cmos_lib_tree_data_func_T)vfs_node_name);
-
     CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;
 }
@@ -316,7 +314,6 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
         goto found;
     } 
     
-    cmos_debug_log("full_path:%s\n", go_path);
     /* TODO: 以下功能使用链表 */
     do{
         /* 找出一级目录 */
@@ -326,7 +323,6 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
             break;
         }
         go_path += strlen((const char *)name) + 1; /* 移除一级子目录 */
-        cmos_debug_log("%s->", name)
 
         /* 封装函数 */
         /*name,go_node*/
@@ -337,7 +333,6 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
         /* 4、若否则获取go_node右兄弟并更新go_node */
         /* 5、返回2迭代直到 NULL == go_node 匹配失败 */
     }while(TRUE); 
-    cmos_debug_log("\n")
 
 found:
     CMOS_TRACE_FUNC_OUT;
@@ -372,5 +367,26 @@ const cmos_uint8_T *vfs_node_name(vfs_node_T *node)
 
     CMOS_TRACE_FUNC_OUT;
     return node->name;
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_print
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 打印vfs
+*
+* 输入参数: 无
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void vfs_print(void)
+{ 
+    cmos_lib_tree_print(s_vfs_tree, (cmos_lib_tree_node_get_data_str_T)vfs_node_name);
 }
 

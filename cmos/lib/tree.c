@@ -332,17 +332,14 @@ cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node)
         return 0;
     }
 
-    cmos_debug_log("1\n");
     /* 1 子女 */
     node_first_sun = cmos_lib_tree_first_sun(node);
     depth_sun = 1 + cmos_lib_tree_depth(node_first_sun);
 
-    cmos_debug_log("2\n");
     /* 2 兄弟 */
     node_next_brother = cmos_lib_tree_next_brother(node);
     depth_brother = cmos_lib_tree_depth(node_next_brother);
 
-    cmos_debug_log("3\n");
     /* 2 自己 */
     depth_self = (depth_brother > depth_sun) ? depth_brother : depth_sun;
 
@@ -360,6 +357,7 @@ cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node)
 *
 * 输入参数: tree    待遍历的树
 *           func    对于每个结点的操作回调
+*           para    func函数的第二参数
 *
 * 输出参数: 无
 *
@@ -368,56 +366,48 @@ cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node)
 *
 * 调用关系: FIXME:递归算法 栈要求很高
 * 其 它   : 
-*           func 参数   data 结点数据域指针
-*           func 返回值 func执行状态
+*           func 参数   
+*                node 树结点指针
+*                para 附加参数
 *
 ******************************************************************************/
-cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_T func)
+void cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_walk_func_T func, void *para)
 {
     CMOS_TRACE_FUNC_IN;
-    cmos_status_T status = cmos_ERR_E;
     cmos_lib_tree_node_T *node_self = tree;
     cmos_lib_tree_node_T *node_next_brother = NULL;
     cmos_lib_tree_node_T *node_first_sun = NULL;
-    if((NULL == tree)
-    || (NULL == func))
+    if(NULL == tree) /* 递归结束 */
     {
-        return cmos_NULL_E;
+        CMOS_TRACE_STR("call myself over");
+        return;
+    }
+    if(NULL == func)
+    {
+        CMOS_ERR_STR("cmos_lib_tree_walk with NULL function.\n");
+        return;
     }
 
     /* 深度优先 */
     /* 1 自己 */
-    status = func(node_self->data);
-    if(cmos_OK_E != status)
-    {
-        return status;
-    }
+    func(node_self, para);
 
     /* 2 子女 */
     node_first_sun = cmos_lib_tree_first_sun(node_self);
     if(NULL != node_first_sun) /* 遍历完 */
     { 
-        status = cmos_lib_tree_walk(node_first_sun, func);
-        if(cmos_OK_E != status)
-        {
-            return status;
-        }
+        cmos_lib_tree_walk(node_first_sun, func, para);
     }
-
 
     /* 3 兄弟 */
     node_next_brother = cmos_lib_tree_next_brother(node_self);
     if(NULL != node_next_brother) /* 遍历完 */
     { 
-        status = cmos_lib_tree_walk(node_next_brother, func);
-        if(cmos_OK_E != status)
-        {
-            return status;
-        }
+        cmos_lib_tree_walk(node_next_brother, func, para);
     }
 
     CMOS_TRACE_FUNC_OUT;
-    return cmos_OK_E;
+    return;
 }
 
 /*******************************************************************************
@@ -455,26 +445,28 @@ void cmos_lib_tree_node_show(const cmos_lib_tree_node_T *node)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_lib_tree_print
+* 函数名  : cmos_lib_tree_node_print
 * 负责人  : 彭鹏
 * 创建日期: 20151106
-* 函数功能: 打印整棵树
+* 函数功能: 打树结点
 *
-* 输入参数: tree 待打印的树
+* 输入参数: para 
+*               node         待打印的结点
+*               get_data_str 结点数据域的提供的获取其标识字符串的回调函数
 *
 * 输出参数: 无
 * 返回值  : 无
 *
 * 调用关系: 无
-* 其 它   : 需要确保树结点的data数据域可以有效转换为字符串
+* 其 它   : 为了便于使用cmos_lib_tree_walk函数参数使用指针
 *
 ******************************************************************************/
-void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node, cmos_lib_tree_data_func_T get_data_str)
+void cmos_lib_tree_node_print(cmos_lib_tree_node_T *node, cmos_lib_tree_node_get_data_str_T get_data_str)
 {
     if((NULL == node)
     || (NULL == get_data_str))
     {
-        CMOS_ERR_STR("null tree no need print\n");
+        CMOS_ERR_STR("cmos_lib_tree_node_print node or get_data_str should not be null.\n");
         return;
     }
 
@@ -496,5 +488,27 @@ void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node, cmos_lib_tree_da
     } 
     cmos_console_printf(data_str);
     cmos_console_printf("\n");
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_print
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 打印整棵树
+*
+* 输入参数: tree 待打印的树
+*
+* 输出参数: 无
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 需要确保树结点的data数据域可以有效转换为字符串
+*
+******************************************************************************/
+void cmos_lib_tree_print(cmos_lib_tree_T *tree, cmos_lib_tree_node_get_data_str_T get_data_str)
+{ 
+    cmos_lib_tree_walk_func_T print_node = (cmos_lib_tree_walk_func_T)cmos_lib_tree_node_print;
+    cmos_lib_tree_walk(tree, print_node, get_data_str);
 }
 
