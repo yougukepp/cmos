@@ -233,7 +233,6 @@ cmos_lib_tree_node_T *cmos_lib_tree_get_first_sun(const cmos_lib_tree_T *tree,
     if((NULL == tree)
     || (NULL == node))
     {
-        CMOS_ERR_STR("NULL pointer");
         return NULL;
     }
 
@@ -265,7 +264,6 @@ cmos_lib_tree_node_T *cmos_lib_tree_get_next_brother(const cmos_lib_tree_T *tree
     if((NULL == tree)
     || (NULL == node))
     {
-        CMOS_ERR_STR("NULL pointer");
         return NULL;
     }
 
@@ -328,7 +326,9 @@ void *cmos_lib_tree_get_data(const cmos_lib_tree_T *tree,
 cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_T func)
 {
     cmos_status_T status = cmos_ERR_E;
-    cmos_lib_tree_node_T *node = tree;
+    cmos_lib_tree_node_T *node_self = tree;
+    cmos_lib_tree_node_T *node_next_brother = NULL;
+    cmos_lib_tree_node_T *node_first_sun = NULL;
     if((NULL == tree)
     || (NULL == func))
     {
@@ -337,26 +337,32 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
 
     /* 广度优先 */
     /* 1 自己 */
-    status = func(node->data);
+    status = func(node_self->data);
     if(cmos_OK_E != status)
     {
         return status;
     }
 
     /* 2 兄弟 */
-    node = cmos_lib_tree_get_next_brother(tree, node);
-    status = cmos_lib_tree_walk(node, func);
-    if(cmos_OK_E != status)
-    {
-        return status;
+    node_next_brother = cmos_lib_tree_get_next_brother(tree, node_next_brother);
+    if(NULL != node_next_brother) /* 遍历完 */
+    { 
+        status = cmos_lib_tree_walk(node_next_brother, func);
+        if(cmos_OK_E != status)
+        {
+            return status;
+        }
     }
 
     /* 3 子女 */
-    node = cmos_lib_tree_get_first_sun(tree, node);
-    status = cmos_lib_tree_walk(node, func);
-    if(cmos_OK_E != status)
-    {
-        return status;
+    node_first_sun = cmos_lib_tree_get_first_sun(tree, node_first_sun);
+    if(NULL != node_first_sun) /* 遍历完 */
+    { 
+        status = cmos_lib_tree_walk(node_first_sun, func);
+        if(cmos_OK_E != status)
+        {
+            return status;
+        }
     }
 
     return cmos_OK_E;

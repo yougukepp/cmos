@@ -68,7 +68,7 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
     /* 扫描 */
     while(NUL != *go_path)
     {
-        if(!(isalnum(*go_path) /* 合法path只可为 字母 数字 '_' '/' */
+        if(!(isalnum(go_path[0]) /* 合法path只可为 字母 数字 '_' '/' */
         || ('_' == *go_path)
         || ('/' == *go_path)))
         {
