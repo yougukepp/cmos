@@ -27,9 +27,9 @@
 #define CMOS_VFS_SEPARATOR                                      (CMOS_VFS_ROOT)
 #define CMOS_VFS_ROOT_LEN                                       (1)
 #define CMOS_VFS_SEPARATOR_LEN                                  (CMOS_VFS_ROOT_LEN)
-
 /* 文件系统深度 */
 #define CMOS_VFS_DEPTH                                          (8)
+#define CMOS_VFS_PRINT_WIDTH                                    ((CMOS_VFS_DEPTH) + 2)
 #define CMOS_VFS_NAME_MAX                                       (8)
 /*
  * 路径长度 最大值
@@ -45,7 +45,7 @@
 /* 0: 输出cmos_err_log */
 /* 1: 输出cmos_debug_log */
 /* 2: 输出cmos_trace_log */
-#define CMOS_DEBUG_LEVEL                                        (2)
+#define CMOS_DEBUG_LEVEL                                        (1)
 
 /* printf缓存 */
 #define CMOS_PRINTF_BUF_SIZE                                    (1024)

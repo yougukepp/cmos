@@ -385,7 +385,7 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
         return cmos_NULL_E;
     }
 
-    /* 广度优先 */
+    /* 深度优先 */
     /* 1 自己 */
     status = func(node_self->data);
     if(cmos_OK_E != status)
@@ -393,22 +393,23 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
         return status;
     }
 
-    /* 2 兄弟 */
-    node_next_brother = cmos_lib_tree_next_brother(node_self);
-    if(NULL != node_next_brother) /* 遍历完 */
+    /* 2 子女 */
+    node_first_sun = cmos_lib_tree_first_sun(node_self);
+    if(NULL != node_first_sun) /* 遍历完 */
     { 
-        status = cmos_lib_tree_walk(node_next_brother, func);
+        status = cmos_lib_tree_walk(node_first_sun, func);
         if(cmos_OK_E != status)
         {
             return status;
         }
     }
 
-    /* 3 子女 */
-    node_first_sun = cmos_lib_tree_first_sun(node_self);
-    if(NULL != node_first_sun) /* 遍历完 */
+
+    /* 3 兄弟 */
+    node_next_brother = cmos_lib_tree_next_brother(node_self);
+    if(NULL != node_next_brother) /* 遍历完 */
     { 
-        status = cmos_lib_tree_walk(node_first_sun, func);
+        status = cmos_lib_tree_walk(node_next_brother, func);
         if(cmos_OK_E != status)
         {
             return status;
@@ -421,10 +422,10 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
 
 /*******************************************************************************
 *
-* 函数名  : cmos_lib_tree_node_print
+* 函数名  : cmos_lib_tree_node_show
 * 负责人  : 彭鹏
 * 创建日期: 20151106
-* 函数功能: 打印结点
+* 函数功能: 打印结点指针
 *
 * 输入参数: node 树结点指针
 *
@@ -435,7 +436,7 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node)
+void cmos_lib_tree_node_show(const cmos_lib_tree_node_T *node)
 {
     if(NULL == node)
     {
@@ -450,5 +451,50 @@ void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node)
                 node->first_sun,
                 node->next_brother);
     }
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_print
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 打印整棵树
+*
+* 输入参数: tree 待打印的树
+*
+* 输出参数: 无
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 需要确保树结点的data数据域可以有效转换为字符串
+*
+******************************************************************************/
+void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node, cmos_lib_tree_data_func_T get_data_str)
+{
+    if((NULL == node)
+    || (NULL == get_data_str))
+    {
+        CMOS_ERR_STR("null tree no need print\n");
+        return;
+    }
+
+    void *data = NULL;
+    char *data_str = NULL;
+    cmos_int32_T i = 0;
+    cmos_int32_T depth = 0;
+    cmos_int32_T space_num = 0; /* 凹入表示法 深度约深的结点 空格越少 根最靠前 */
+
+    data = node->data;
+    data_str = (char *)get_data_str(data);
+
+    depth = cmos_lib_tree_depth(node);
+    space_num = CMOS_VFS_PRINT_WIDTH - depth;
+
+    for(i = 0; i< space_num; i++)
+    {
+        cmos_console_printf(" ");
+    } 
+    cmos_console_printf(data_str);
+    cmos_console_printf("\n");
 }
 

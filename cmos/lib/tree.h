@@ -33,6 +33,7 @@ struct cmos_lib_tree_node_T_tag{
 typedef cmos_lib_tree_node_T cmos_lib_tree_T;
 /* 遍历时对于结点的回调函数 */
 typedef cmos_status_T (*cmos_lib_tree_node_func_T)(void *data);
+typedef void *(*cmos_lib_tree_data_func_T)(void *data);
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -52,8 +53,8 @@ cmos_lib_tree_node_T *cmos_lib_tree_next_brother(const cmos_lib_tree_node_T *nod
 void *cmos_lib_tree_data(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data);
 cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node);
-void cmos_lib_tree_node_print(const cmos_lib_tree_node_T *node);
-
+void cmos_lib_tree_node_show(const cmos_lib_tree_node_T *node);
+void cmos_lib_tree_print(const cmos_lib_tree_T *tree, cmos_lib_tree_data_func_T get_data_str);
 
 #endif /* #ifndef _CMOS_LIB_TREE_H_ */
 

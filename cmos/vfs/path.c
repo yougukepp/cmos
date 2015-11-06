@@ -50,6 +50,7 @@
 ******************************************************************************/
 cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
 {
+    int c = 0;
     char *go_path = (char *)path;
     if(NULL == go_path)
     {
@@ -68,11 +69,12 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
     /* 扫描 */
     while(NUL != *go_path)
     {
-        if(!(isalnum(go_path[0]) /* 合法path只可为 字母 数字 '_' '/' */
-        || ('_' == *go_path)
-        || ('/' == *go_path)))
+        c = *go_path;
+        if(!(isalnum(c) /* 合法path只可为 字母 数字 '_' '/' */
+        || ('_' == c)
+        || ('/' == c)))
         {
-            cmos_debug_log("%s: have invalid char:%c(0x%02x)\n", path, *go_path, *go_path);
+            cmos_debug_log("%s: have invalid char:%c(0x%02x)\n", path, c, c);
             return FALSE;
         }
         go_path++;
