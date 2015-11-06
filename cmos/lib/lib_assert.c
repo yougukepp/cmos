@@ -42,7 +42,7 @@
 * 其 它   : 无
 *
 ******************************************************************************/
-void assert_failed(cmos_uint8_T *file, cmos_uint32_T line)
+void assert_failed(cmos_uint8_T *file, cmos_int32_T line)
 {
     /* FIXME: 串口初始化完成前无法打印 */
     cmos_err_log("%s,%d: assert failed!", file, line);

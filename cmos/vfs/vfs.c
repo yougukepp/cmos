@@ -66,7 +66,7 @@ cmos_status_T vfs_init(void)
 
     /* 构造 树根 */ 
     cmos_lib_tree_node_T *root_node = NULL; 
-    root_node = vfs_tree_node_malloc(vfs_dir, (const cmos_uint8_T *)CMOS_VFS_ROOT, NULL);
+    root_node = vfs_tree_node_malloc(vfs_dir, CMOS_VFS_ROOT, NULL);
     if(NULL == root_node)
     {
         return cmos_MEM_LACK_E;
@@ -76,18 +76,29 @@ cmos_status_T vfs_init(void)
 
     /* 加入/proc目录 */
     /* TODO:加入/proc/cpuinfo /proc/meminfo文件 */
-    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_ROOT, (const cmos_uint8_T *)CMOS_VFS_DEV, vfs_dir, NULL);
+    status = vfs_node_add(CMOS_VFS_ROOT, CMOS_VFS_DEV, vfs_dir, NULL);
     if(cmos_OK_E != status)
     {
         return status;
     }
 
     /* 加入/dev目录 为驱动加入到vfs做准备 */
-    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_ROOT, (const cmos_uint8_T *)CMOS_VFS_PROC, vfs_dir, NULL);
+    status = vfs_node_add(CMOS_VFS_ROOT, CMOS_VFS_PROC, vfs_dir, NULL);
     if(cmos_OK_E != status)
     {
         return status;
     }
+
+#if 1
+    /* 加入控制台设备结点*/
+    status = vfs_node_add(CMOS_VFS_DEV_DIR, CMOS_CONSOLE_NAME, vfs_dev, (void *)0x1234abcd);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+    vfs_print();
+#endif
 
     CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;
@@ -244,8 +255,6 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
         return cmos_PARA_E;
     }
 
-    cmos_status_T status = cmos_ERR_E;
-
     cmos_lib_tree_node_T *node = NULL; 
     node = vfs_tree_node_malloc(type, name, driver);
     if(NULL == node)
@@ -262,12 +271,11 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
     }
 
     /* 插入到父节点 */
-    cmos_lib_tree_insert_child(s_vfs_tree, parent_node, 0, node);
+    cmos_lib_tree_insert_child(parent_node, 0, node);
 
-    status = cmos_OK_E;
 
     CMOS_TRACE_FUNC_OUT;
-    return status;
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
@@ -301,42 +309,49 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
     }
 
     cmos_status_T status = cmos_ERR_E;
-    cmos_lib_tree_node_T *go_node = NULL;
     const cmos_uint8_T *go_path = path;
+    cmos_lib_tree_node_T *now_node = NULL;
+    cmos_int32_T i = 0;
+    cmos_int32_T depth = 0;
     cmos_uint8_T name[CMOS_VFS_NAME_MAX] = {0};
 
     /* 初始为根结点 */
-    go_node = cmos_lib_tree_root(s_vfs_tree);
+    now_node = cmos_lib_tree_root(s_vfs_tree);
     
     /* 路径对应根结点 */
     if(CMOS_VFS_ROOT_LEN == strlen((const char *)go_path))
     { 
         goto found;
     } 
-    
-    /* TODO: 以下功能使用链表 */
-    do{
-        /* 找出一级目录 */
-        status = vfs_path_head_pop(name, CMOS_VFS_NAME_MAX, go_path);
-        if(cmos_OK_E != status) /* 没有有效的目录了 */
-        {
-            break;
-        }
-        go_path += strlen((const char *)name) + 1; /* 移除一级子目录 */
 
-        /* 封装函数 */
-        /*name,go_node*/
-        /* 查找对应结点 */
-        /* 1、获取首子结点 并更新go_node */
-        /* 2、比较go_node名字是否与name匹配 */
-        /* 3、若是则找到break */
-        /* 4、若否则获取go_node右兄弟并更新go_node */
-        /* 5、返回2迭代直到 NULL == go_node 匹配失败 */
-    }while(TRUE); 
+    /* step1: 求取path的深度 */
+    depth = vfs_path_depth(go_path);
+
+    /* step2: 逐级比对 */
+    for(i = 0; i < depth; i++)
+    {
+        /* step2.1: 获取i级path name */
+        status = vfs_path_sub_name(name, CMOS_VFS_NAME_MAX, go_path, i);
+
+        /* step2.2: 比对name与本级vfs所有名字 */
+        status = vfs_name_compare(now_node, name);
+
+        /* step2.3: 比对成功 continue */
+        if(cmos_OK_E == status)
+        {
+            /* step2.3: 更新一级vfs名字 */
+            now_node = cmos_lib_tree_first_sun(now_node);
+        }
+        /* step2.4: 否则 return NULL */
+        else
+        {
+            return NULL;
+        }
+    }
 
 found:
     CMOS_TRACE_FUNC_OUT;
-    return go_node;
+    return now_node;
 }
 
 /*******************************************************************************
@@ -388,5 +403,51 @@ const cmos_uint8_T *vfs_node_name(vfs_node_T *node)
 void vfs_print(void)
 { 
     cmos_lib_tree_print(s_vfs_tree, (cmos_lib_tree_node_get_data_str_T)vfs_node_name);
+}
+
+cmos_lib_tree_node_T vfs_walk_by_name(const cmos_lib_tree_node_T *tree_node, cmos_uint8_T *name)
+{
+
+        /* 封装函数 */ 
+        /* 查找对应结点 */
+        /* 1、获取首子结点 并更新go_node */
+        go_node = cmos_lib_tree_first_sun(go_node);
+        if(NULL == go_node) /* name 对应的目录 不存在 */
+        {
+            cmos_err_log("path:%s is not exist!", path);
+            return NULL;
+        }
+        else
+        { 
+            /* 2、比较go_node名字是否与name匹配 */
+            vfs_node_T *vfs_node = cmos_lib_tree_data(go_node);
+            if(NULL == vfs_node) /* 异常 */
+            { 
+                cmos_err_log("path:%s has no data!", path);
+                return NULL
+            }
+            cmos_uint8_T *node_name = vfs_node_name(vfs_node);
+            /* 3、若是则找到break */
+            if(0 == strcmp(name, node_name))
+            {
+                break;
+            }
+            /* 4、若否则获取go_node右兄弟并更新go_node */
+            else
+            {
+                go_node = cmos_lib_tree_next_brother(go_node); 
+                if(NULL == go_node) /* 所有该级目录都找过依然没有名字为name的目录 不存在 */
+                { 
+                    cmos_err_log("path:%s is not exist!", path);
+                    return NULL;
+                }
+                else
+                {
+                    ;
+                }
+            } 
+            /* 5、返回2迭代直到 NULL == go_node 匹配失败 */
+        }
+    ;
 }
 

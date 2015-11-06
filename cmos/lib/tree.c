@@ -129,10 +129,9 @@ cmos_lib_tree_node_T *cmos_lib_tree_root(const cmos_lib_tree_T *tree)
 * 创建日期: 20151101
 * 函数功能: 插入子树(或者插入结点)
 *
-* 输入参数: tree        待插入的树
-*           modify_node 待插入子节点的结点
-*           index       插入modify_node的度
-*           child_root  待插入的子树的根
+* 输入参数: parent 待插入子节点的结点
+*           order  插入parent的度
+*           child  待插入的子树的根
 *
 * 输出参数: 无
 *
@@ -142,25 +141,34 @@ cmos_lib_tree_node_T *cmos_lib_tree_root(const cmos_lib_tree_T *tree)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *tree, 
-        cmos_lib_tree_node_T *modify_node,
-        cmos_uint32_T index,
-        cmos_lib_tree_node_T *child_root)
+void cmos_lib_tree_insert_child(cmos_lib_tree_node_T *parent,
+        cmos_int32_T order,
+        cmos_lib_tree_node_T *child)
 {
     CMOS_TRACE_FUNC_IN;
 
-    cmos_status_T status = cmos_ERR_E;
-
-    if((NULL == tree)
-    || (NULL == modify_node)
-    || (NULL == child_root))
+    if((NULL == parent)
+    || (NULL == child))
     {
-        return cmos_NULL_E;
+        CMOS_ERR_STR("cmos_lib_tree_insert_child para is null.");
+        return;
+    }
+    if(0 != order) /* 目前仅插为首子结点 */
+    {
+        CMOS_ERR_STR("cmos_lib_tree_insert_child no accept 0 != order now.");
+        return;
     }
 
-    status = cmos_OK_E;
+    child->parent = parent;
+    cmos_lib_tree_node_T *first_sun = cmos_lib_tree_first_sun(parent);
+    if(NULL != first_sun)
+    {
+        child->next_brother = first_sun;
+    } 
+    parent->first_sun = child; 
+
     CMOS_TRACE_FUNC_OUT;
-    return status;
+    return;
 }
 
 /*******************************************************************************

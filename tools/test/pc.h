@@ -27,7 +27,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-void assert_failed(char *file, cmos_uint32_T line);
+void assert_failed(char *file, cmos_int32_T line);
 cmos_int32_T cmos_console_printf(char *fmt, ...);
 
 #endif // #ifndef _PC_H_

@@ -28,7 +28,7 @@
 
 /*********************************** 接口函数 **********************************/
 cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path);
-cmos_status_T vfs_path_head_pop(cmos_uint8_T *name, cmos_uint32_T name_len, const cmos_uint8_T *path);
+cmos_status_T vfs_path_sub_name(cmos_uint8_T *name, cmos_int32_T name_max, const cmos_uint8_T *path, cmos_int32_T i);
 
 #endif /* #ifndef _CMOS_VFS_PATH_H_ */
 

@@ -38,8 +38,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-void assert_failed(cmos_uint8_T *file, cmos_uint32_T line);
-void *cmos_malloc(cmos_uint32_T size);
+void assert_failed(cmos_uint8_T *file, cmos_int32_T line);
+void *cmos_malloc(cmos_int32_T size);
 void cmos_free(void *ptr);
 
 #endif /* _CMOS_LIB_H_ */

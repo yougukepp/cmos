@@ -56,11 +56,9 @@ cmos_lib_tree_node_T *cmos_lib_tree_first_sun(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_next_brother(const cmos_lib_tree_node_T *node);
 void *cmos_lib_tree_data(const cmos_lib_tree_node_T *node);
 cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node);
-cmos_status_T cmos_lib_tree_insert_child(cmos_lib_tree_T *tree,
-        cmos_lib_tree_node_T *modify_node,
-        cmos_uint32_T index,
+void cmos_lib_tree_insert_child(cmos_lib_tree_node_T *modify_node,
+        cmos_int32_T order,
         cmos_lib_tree_node_T *child_root);
-
 void cmos_lib_tree_print(cmos_lib_tree_T *tree, cmos_lib_tree_node_get_data_str_T get_data_str);
 void cmos_lib_tree_node_show(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data);

@@ -60,7 +60,6 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
     {
         return FALSE;
     }
-
     if(CMOS_VFS_PATH_MAX < strlen(go_path))
     {
         return FALSE;
@@ -93,6 +92,8 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
 * 输入参数: name        第一个目录名字
 *           name_max    name的有效大小
 *           path        待解析的目录
+*           count       path中的第多少级
+*
 * 输出参数: 无
 *
 * 返回值  : 运行状态
@@ -101,20 +102,40 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
 * 其 它   : TODO:实现
 *
 ******************************************************************************/
-cmos_status_T vfs_path_head_pop(cmos_uint8_T *name, cmos_uint32_T name_max, const cmos_uint8_T *path)
+cmos_status_T vfs_path_sub_name(cmos_uint8_T *name, cmos_int32_T name_max, 
+        const cmos_uint8_T *path, cmos_int32_T count)
+{
+    if((NULL == name)
+    || (name_max <= 0))
+    {
+        CMOS_ERR_STR("vfs name buf must not be >=0.");
+        return cmos_NULL_E;
+    } 
+    if(!vfs_path_is_valid(path))
+    {
+        CMOS_ERR_STR("vfs_path_sub_name get a invalid path.");
+        return cmos_PARA_E;
+    }
+    if(count < 0)
+    {
+        CMOS_ERR_STR("vfs_path_sub_name count should >=0.");
+        return cmos_NULL_E;
+    }
+
+    if(0 == count) /* 根 */
+    {
+        name[0] = path[0];
+        goto OK;
+    }
+
+OK:
+    return;
+}
+
 { 
     char *go_path = (char *)path;
     char *go_path_new = (char *)path;
-    cmos_uint32_T name_len = 0;
-    if(NULL == name)
-    {
-        CMOS_ERR_STR("vfs name must not be NULL.");
-        return cmos_NULL_E;
-    } 
-    if(NUL == *path)
-    {
-        return cmos_PARA_E;
-    }
+    cmos_int32_T name_len = 0;
     
     go_path += CMOS_VFS_SEPARATOR_LEN;
     go_path_new = strstr(go_path, CMOS_VFS_SEPARATOR);
