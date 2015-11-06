@@ -37,7 +37,8 @@ cmos_lib_tree_T *s_vfs_tree;
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
 static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
-static cmos_status_T vfs_node_print(vfs_node_T *node);
+static cmos_status_T vfs_node_print(const vfs_node_T *node);
+static cmos_int32_T vfs_node_depth(const vfs_node_T *node);
 
 /********************************** 变量实现区 *********************************/
 
@@ -363,6 +364,7 @@ found:
 ******************************************************************************/
 void vfs_print(void)
 { 
+    CMOS_TRACE_FUNC_IN;
     cmos_status_T status = cmos_ERR_E;
     cmos_lib_tree_node_func_T func = (cmos_lib_tree_node_func_T)vfs_node_print;
 
@@ -370,8 +372,11 @@ void vfs_print(void)
     if(cmos_OK_E != status)
     {
         cmos_err_log("%s:%d:%s", __FILE__, __LINE__, __func__);
+        return;
     }
 
+    CMOS_TRACE_FUNC_OUT;
+    return;
 }
 
 /*******************************************************************************
@@ -390,12 +395,41 @@ void vfs_print(void)
 * 其 它   : 无
 *
 ******************************************************************************/
-static cmos_status_T vfs_node_print(vfs_node_T *node)
+static cmos_status_T vfs_node_print(const vfs_node_T *node)
 {
-    cmos_lib_tree_node_T *tree_node = NULL;
-    /* 利用Linux黑暗魔法获取 cmos_lib_tree_node_T 指针 */
-    tree_node = cmos_container_of((void *)node, cmos_lib_tree_node_T, data);
+    CMOS_TRACE_FUNC_IN;
+    vfs_node_depth(node);
 
+    CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;
 }
 
+/*******************************************************************************
+*
+* 函数名  : vfs_node_depth
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 打印一个结点
+*
+* 输入参数: node vfs 结点
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static cmos_int32_T vfs_node_depth(const vfs_node_T *node)
+{
+    CMOS_TRACE_FUNC_IN;
+    cmos_uint32_T depth = 0;
+    cmos_lib_tree_node_T *tree_node = NULL;
+    /* 利用Linux黑暗魔法获取 cmos_lib_tree_node_T 指针 求深度 */
+    tree_node = cmos_container_of((void *)node, cmos_lib_tree_node_T, data);
+
+    depth = cmos_lib_tree_depth(tree_node);
+
+    CMOS_TRACE_FUNC_OUT;
+    return depth;
+}

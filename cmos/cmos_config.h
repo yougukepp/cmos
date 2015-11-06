@@ -45,7 +45,7 @@
 /* 0: 输出cmos_err_log */
 /* 1: 输出cmos_debug_log */
 /* 2: 输出cmos_trace_log */
-#define CMOS_DEBUG_LEVEL                                        (1)
+#define CMOS_DEBUG_LEVEL                                        (2)
 
 /* printf缓存 */
 #define CMOS_PRINTF_BUF_SIZE                                    (1024)

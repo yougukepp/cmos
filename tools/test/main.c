@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
         assert_failed(__FILE__, __LINE__);
     } 
     
+    cmos_trace_log("=============================================================\n");
     vfs_print();
 
 #if 0

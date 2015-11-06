@@ -210,13 +210,12 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_lib_tree_get_first_sun
+* 函数名  : cmos_lib_tree_first_sun
 * 负责人  : 彭鹏
 * 创建日期: 20151104
 * 函数功能: 获取结点 node 的首子结点
 *
-* 输入参数: tree    待查找的树
-*           node    待查结点
+* 输入参数: node    待查结点
 *
 * 输出参数: 无
 *
@@ -227,27 +226,27 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_lib_tree_node_T *cmos_lib_tree_get_first_sun(const cmos_lib_tree_T *tree,
-        const cmos_lib_tree_node_T *node)
+cmos_lib_tree_node_T *cmos_lib_tree_first_sun(const cmos_lib_tree_node_T *node)
 {
-    if((NULL == tree)
-    || (NULL == node))
+    //CMOS_TRACE_FUNC_IN;
+    if(NULL == node)
     {
+        CMOS_ERR_STR("cmos_lib_tree_first_sun should not with NULL");
         return NULL;
     }
 
+    //CMOS_TRACE_FUNC_OUT;
     return node->first_sun;
 }
 
 /*******************************************************************************
 *
-* 函数名  : cmos_lib_tree_get_next_brother
+* 函数名  : cmos_lib_tree_next_brother
 * 负责人  : 彭鹏
 * 创建日期: 20151104
 * 函数功能: 获取结点 node 的下一兄弟结点
 *
-* 输入参数: tree    待查找的树
-*           node    待查结点
+* 输入参数: node    待查结点
 *
 * 输出参数: 无
 *
@@ -258,27 +257,27 @@ cmos_lib_tree_node_T *cmos_lib_tree_get_first_sun(const cmos_lib_tree_T *tree,
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_lib_tree_node_T *cmos_lib_tree_get_next_brother(const cmos_lib_tree_T *tree,
-        const cmos_lib_tree_node_T *node)
+cmos_lib_tree_node_T *cmos_lib_tree_next_brother(const cmos_lib_tree_node_T *node)
 {
-    if((NULL == tree)
-    || (NULL == node))
+    //CMOS_TRACE_FUNC_IN;
+    if(NULL == node)
     {
+        CMOS_ERR_STR("cmos_lib_tree_next_brother should not with NULL");
         return NULL;
     }
 
+    //CMOS_TRACE_FUNC_OUT;
     return node->next_brother;
 }
 
 /*******************************************************************************
 *
-* 函数名  : cmos_lib_tree_get_data
+* 函数名  : cmos_lib_tree_data
 * 负责人  : 彭鹏
 * 创建日期: 20151104
 * 函数功能: 获取结点 node 的数据域指针
 *
-* 输入参数: tree    待查找的树
-*           node    待查结点
+* 输入参数: node    待查结点
 *
 * 输出参数: 无
 *
@@ -289,17 +288,65 @@ cmos_lib_tree_node_T *cmos_lib_tree_get_next_brother(const cmos_lib_tree_T *tree
 * 其 它   : 无
 *
 ******************************************************************************/
-void *cmos_lib_tree_get_data(const cmos_lib_tree_T *tree,
-        const cmos_lib_tree_node_T *node)
+void *cmos_lib_tree_data(const cmos_lib_tree_node_T *node)
 {
-    if((NULL == tree)
-    || (NULL == node))
+    CMOS_TRACE_FUNC_IN;
+    if(NULL == node)
     {
-        CMOS_ERR_STR("NULL pointer");
+        CMOS_ERR_STR("cmos_lib_tree_data should not with NULL");
         return NULL;
     }
 
+    CMOS_TRACE_FUNC_OUT;
     return node->data;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_depth
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 获取树的深度
+*
+* 输入参数: tree    树
+*
+* 输出参数: 无
+*
+* 返回值  : 0    空树
+*           其他 深度
+*
+* 调用关系: 无
+* 其 它   : FIXME:递归算法 栈要求很高
+*
+******************************************************************************/
+cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node)
+{
+    CMOS_TRACE_FUNC_IN;
+    cmos_int32_T depth_self = 0;
+    cmos_int32_T depth_sun = 0;
+    cmos_int32_T depth_brother = 0;
+    cmos_lib_tree_node_T *node_next_brother = NULL;
+    cmos_lib_tree_node_T *node_first_sun = NULL;
+
+    if(NULL == node)
+    {
+        return 0;
+    }
+
+    /* 1 子女 */
+    node_first_sun = cmos_lib_tree_first_sun(node);
+    depth_sun = 1 + cmos_lib_tree_depth(node_first_sun);
+
+    /* 2 兄弟 */
+    node_next_brother = cmos_lib_tree_next_brother(node);
+    depth_brother = cmos_lib_tree_depth(node_next_brother);
+
+    /* 2 自己 */
+    depth_self = (depth_brother > depth_sun) ? depth_brother : depth_sun;
+
+    CMOS_TRACE_FUNC_OUT;
+    return depth_self;
+
 }
 
 /*******************************************************************************
@@ -325,6 +372,7 @@ void *cmos_lib_tree_get_data(const cmos_lib_tree_T *tree,
 ******************************************************************************/
 cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_T func)
 {
+    CMOS_TRACE_FUNC_IN;
     cmos_status_T status = cmos_ERR_E;
     cmos_lib_tree_node_T *node_self = tree;
     cmos_lib_tree_node_T *node_next_brother = NULL;
@@ -344,7 +392,7 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
     }
 
     /* 2 兄弟 */
-    node_next_brother = cmos_lib_tree_get_next_brother(tree, node_next_brother);
+    node_next_brother = cmos_lib_tree_next_brother(node_self);
     if(NULL != node_next_brother) /* 遍历完 */
     { 
         status = cmos_lib_tree_walk(node_next_brother, func);
@@ -355,7 +403,7 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
     }
 
     /* 3 子女 */
-    node_first_sun = cmos_lib_tree_get_first_sun(tree, node_first_sun);
+    node_first_sun = cmos_lib_tree_first_sun(node_self);
     if(NULL != node_first_sun) /* 遍历完 */
     { 
         status = cmos_lib_tree_walk(node_first_sun, func);
@@ -365,6 +413,7 @@ cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_
         }
     }
 
+    CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;
 }
 
