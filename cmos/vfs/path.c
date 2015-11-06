@@ -16,6 +16,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 
+#include <ctype.h>
 #include <string.h>
 
 #include "path.h"
@@ -49,14 +50,32 @@
 ******************************************************************************/
 cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
 {
-    if(NULL == path)
+    char *go_path = (char *)path;
+    if(NULL == go_path)
     {
-        CMOS_ERR_STR("vfs valid path name must not be NULL.");
         return FALSE;
     }
-    if(CMOS_VFS_ROOT[0] != path[0])
+    if(CMOS_VFS_ROOT[0] != go_path[0])
     {
         return FALSE;
+    }
+
+    if(CMOS_VFS_PATH_MAX < strlen(go_path))
+    {
+        return FALSE;
+    }
+
+    /* 扫描 */
+    while(NUL != *go_path)
+    {
+        if(!(isalnum(*go_path) /* 合法path只可为 字母 数字 '_' '/' */
+        || ('_' == *go_path)
+        || ('/' == *go_path)))
+        {
+            cmos_debug_log("%s: have invalid char:%c(0x%02x)\n", path, *go_path, *go_path);
+            return FALSE;
+        }
+        go_path++;
     }
 
     return TRUE;
@@ -89,11 +108,11 @@ cmos_status_T vfs_path_head_pop(cmos_uint8_T *name, cmos_uint32_T name_max, cons
     {
         CMOS_ERR_STR("vfs name must not be NULL.");
         return cmos_NULL_E;
-    }
-    if(!vfs_path_is_valid(path))
+    } 
+    if(NUL == *path)
     {
         return cmos_PARA_E;
-    } 
+    }
     
     go_path += CMOS_VFS_SEPARATOR_LEN;
     go_path_new = strstr(go_path, CMOS_VFS_SEPARATOR);

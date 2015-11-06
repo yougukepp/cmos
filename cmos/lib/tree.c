@@ -52,7 +52,6 @@
 void cmos_lib_tree_init(cmos_lib_tree_T **tree, cmos_lib_tree_node_T *node)
 {
     CMOS_TRACE_FUNC_IN;
-
     if(NULL == node)
     {
         CMOS_ERR_STR("NULL pointer");
@@ -303,5 +302,63 @@ void *cmos_lib_tree_get_data(const cmos_lib_tree_T *tree,
     }
 
     return node->data;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_lib_tree_walk
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 遍历树
+*
+* 输入参数: tree    待遍历的树
+*           func    对于每个结点的操作回调
+*
+* 输出参数: 无
+*
+* 返回值  : NULL 无数据
+*           其他 数据指针
+*
+* 调用关系: FIXME:递归算法 栈要求很高
+* 其 它   : 
+*           func 参数   data 结点数据域指针
+*           func 返回值 func执行状态
+*
+******************************************************************************/
+cmos_status_T cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_node_func_T func)
+{
+    cmos_status_T status = cmos_ERR_E;
+    cmos_lib_tree_node_T *node = tree;
+    if((NULL == tree)
+    || (NULL == func))
+    {
+        return cmos_NULL_E;
+    }
+
+    /* 广度优先 */
+    /* 1 自己 */
+    status = func(node->data);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+    /* 2 兄弟 */
+    node = cmos_lib_tree_get_next_brother(tree, node);
+    status = cmos_lib_tree_walk(node, func);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+    /* 3 子女 */
+    node = cmos_lib_tree_get_first_sun(tree, node);
+    status = cmos_lib_tree_walk(node, func);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+    return cmos_OK_E;
 }
 

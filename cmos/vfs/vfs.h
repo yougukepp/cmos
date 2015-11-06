@@ -46,5 +46,7 @@ cmos_status_T vfs_destroy(void);
 
 cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
 
+void vfs_print(void);
+
 #endif /* #ifndef _CMOS_VFS_H_ */
 

@@ -31,13 +31,21 @@
 /* 文件系统深度 */
 #define CMOS_VFS_DEPTH                                          (8)
 #define CMOS_VFS_NAME_MAX                                       (8)
+/*
+ * 路径长度 最大值
+ * 
+ * /x...x/x...x/x...x/x...x/x...x/x...x/x...x
+ *   1     2     3     4     5     6     7       = CMOS_VFS_DEPTH - 1 (根算1级深度)
+ *  |-7-| CMOS_VFS_NAME_MAX - 1
+ * */
+#define CMOS_VFS_PATH_MAX                                       ((CMOS_VFS_DEPTH - 1) * (CMOS_VFS_NAME_MAX - 1))
 
 /********************************** 控制台配置 *********************************/
 /* 调试级别 */
 /* 0: 输出cmos_err_log */
 /* 1: 输出cmos_debug_log */
 /* 2: 输出cmos_trace_log */
-#define CMOS_DEBUG_LEVEL                                        (2)
+#define CMOS_DEBUG_LEVEL                                        (1)
 
 /* printf缓存 */
 #define CMOS_PRINTF_BUF_SIZE                                    (1024)

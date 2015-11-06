@@ -37,6 +37,7 @@ cmos_lib_tree_T *s_vfs_tree;
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
 static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
+static cmos_status_T vfs_node_print(vfs_node_T *node);
 
 /********************************** 变量实现区 *********************************/
 
@@ -316,7 +317,7 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
         goto found;
     } 
     
-    CMOS_TRACE_STR(go_path);
+    cmos_debug_log("full_path:%s\n", go_path);
     /* TODO: 以下功能使用链表 */
     do{
         /* 找出一级目录 */
@@ -326,7 +327,7 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
             break;
         }
         go_path += strlen((const char *)name) + 1; /* 移除一级子目录 */
-        CMOS_TRACE_STR(name);
+        cmos_debug_log("%s->", name)
 
         /* 封装函数 */
         /*name,go_node*/
@@ -337,9 +338,64 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
         /* 4、若否则获取go_node右兄弟并更新go_node */
         /* 5、返回2迭代直到 NULL == go_node 匹配失败 */
     }while(TRUE); 
+    cmos_debug_log("\n")
 
 found:
     CMOS_TRACE_FUNC_OUT;
     return go_node;
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_print
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 模拟 Linux tree命令打印目录树
+*
+* 输入参数: 无
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void vfs_print(void)
+{ 
+    cmos_status_T status = cmos_ERR_E;
+    cmos_lib_tree_node_func_T func = (cmos_lib_tree_node_func_T)vfs_node_print;
+
+    status = cmos_lib_tree_walk(s_vfs_tree, func);
+    if(cmos_OK_E != status)
+    {
+        cmos_err_log("%s:%d:%s", __FILE__, __LINE__, __func__);
+    }
+
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_node_print
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 打印一个结点
+*
+* 输入参数: 无
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static cmos_status_T vfs_node_print(vfs_node_T *node)
+{
+    cmos_lib_tree_node_T *tree_node = NULL;
+    /* 利用Linux黑暗魔法获取 cmos_lib_tree_node_T 指针 */
+    tree_node = cmos_container_of((void *)node, cmos_lib_tree_node_T, data);
+
+    return cmos_OK_E;
 }
 

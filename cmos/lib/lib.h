@@ -30,9 +30,10 @@
  * 备注:        参考Linux内核同名宏
  *
  * */
-#define container_of(ptr, type, member) ({ \
+#define cmos_offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#define cmos_container_of(ptr, type, member) ({ \
         const typeof( ((type *)0)->member ) *__mptr = (ptr); \
-        (type *)( (char *)__mptr - offsetof(type,member) );})
+        (type *)( (char *)__mptr - cmos_offsetof(type,member) );})
 
 /*********************************** 全局变量 **********************************/
 
