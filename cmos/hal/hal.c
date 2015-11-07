@@ -48,13 +48,6 @@ static cmos_status_T SystemClock_Config(void);
 cmos_status_T hal_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
-    /* 初始化vfs */
-    status = vfs_init();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return status;
-    }
 
     /* stm32 hal 初始化 */
     if(HAL_OK != HAL_Init())
