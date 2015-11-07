@@ -482,7 +482,7 @@ void cmos_lib_tree_node_print(cmos_lib_tree_node_T *node, cmos_lib_tree_node_get
     char *data_str = NULL;
     cmos_int32_T i = 0;
     cmos_int32_T depth = 0;
-    cmos_int32_T space_num = 0; /* 凹入表示法 深度约深的结点 空格越少 根最靠前 */
+    cmos_int32_T space_num = 0; /* 凹入表示法 深度越深的结点 空格越少 根最靠前 */
 
     data = node->data;
     data_str = (char *)get_data_str(data);

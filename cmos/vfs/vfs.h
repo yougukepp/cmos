@@ -16,6 +16,7 @@
 #define _CMOS_VFS_H_
 
 /************************************ 头文件 ***********************************/
+#include "tree.h"
 
 /************************************ 宏定义 ***********************************/
 
@@ -46,7 +47,7 @@ cmos_status_T vfs_destroy(void);
 
 cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
 void vfs_print(void);
-const cmos_uint8_T *vfs_node_name(vfs_node_T *node);
+cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *now_node, const cmos_uint8_T *name);
 
 #endif /* #ifndef _CMOS_VFS_H_ */
 

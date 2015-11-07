@@ -19,11 +19,11 @@
 
 /************************************ 宏定义 ***********************************/
 /****************************** 虚拟文件系统(VFS) ******************************/
-#define CMOS_VFS_ROOT                                           ("/")
-#define CMOS_VFS_DEV                                            ("dev")
-#define CMOS_VFS_PROC                                           ("proc")
-#define CMOS_VFS_DEV_DIR                                        ("/dev")
-#define CMOS_VFS_PROC_DIR                                       ("/proc")
+#define CMOS_VFS_ROOT                                           ((const cmos_uint8_T *)("/"))
+#define CMOS_VFS_DEV                                            ((const cmos_uint8_T *)("dev"))
+#define CMOS_VFS_PROC                                           ((const cmos_uint8_T *)("proc"))
+#define CMOS_VFS_DEV_DIR                                        ((const cmos_uint8_T *)("/dev"))
+#define CMOS_VFS_PROC_DIR                                       ((const cmos_uint8_T *)("/proc"))
 #define CMOS_VFS_SEPARATOR                                      (CMOS_VFS_ROOT)
 #define CMOS_VFS_ROOT_LEN                                       (1)
 #define CMOS_VFS_SEPARATOR_LEN                                  (CMOS_VFS_ROOT_LEN)
@@ -56,9 +56,9 @@
 /* 波特率 */
 #define CMOS_CONSOLE_BAUDRATE                                   (115200)
 /* 调试串口名 */
-#define CMOS_CONSOLE_NAME                                       ("console")
+#define CMOS_CONSOLE_NAME                                       ((const cmos_uint8_T *)("console"))
 /* 调试串口路径 */
-#define CMOS_CONSOLE_PATH                                       ("/dev/console")
+#define CMOS_CONSOLE_PATH                                       ((const cmos_uint8_T *)("/dev/console"))
 
 /************************************ USB配置 **********************************/
 /* 不使用USB */

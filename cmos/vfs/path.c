@@ -84,7 +84,63 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
 
 /*******************************************************************************
 *
-* 函数名  : vfs_path_is_valid
+* 函数名  : vfs_path_depth
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 检查路径的级数
+*
+* 输入参数: path    待解析的路径
+* 输出参数: 无
+*
+* 返回值  : 0  路径错误
+*           >0 级数
+*
+* 调用关系: 无
+* 其 它   : 根算一级
+*
+******************************************************************************/
+cmos_int32_T vfs_path_depth(const cmos_uint8_T *path)
+{
+    if(!vfs_path_is_valid(path))
+    {
+        CMOS_ERR_STR("vfs_path_depth get a invalid path.");
+        return 0;
+    }
+
+    const cmos_uint8_T *go_path = path;
+    cmos_int32_T path_len = 0;
+    cmos_int32_T separator_count = 0;
+    cmos_int32_T separator_len = 0;
+
+    separator_len = strlen((const char *)CMOS_VFS_SEPARATOR);
+
+    /* 查找CMOS_VFS_SEPARATOR个数 */
+    do
+    {
+        go_path = (const cmos_uint8_T *)strstr((const char *)go_path, (const char *)CMOS_VFS_SEPARATOR);
+        cmos_bool_T over = ((NULL == go_path) || (NUL == *go_path));
+        if(over)
+        {
+            break;
+        }
+        separator_count++;
+        go_path += separator_len; /* 跳过分隔符 */
+    }while(TRUE);
+
+    /* 以非CMOS_VFS_SEPARATOR separator_count++ */
+    path_len = strlen((const char *)path);
+    go_path = path + path_len - separator_len;
+    if(0 != strcmp((const char *)go_path, (const char *)CMOS_VFS_SEPARATOR))
+    {
+        separator_count++;
+    }
+
+    return separator_count;
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_path_sub_name
 * 负责人  : 彭鹏
 * 创建日期: 20151104
 * 函数功能: 检查路径是否合法
@@ -105,33 +161,85 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
 cmos_status_T vfs_path_sub_name(cmos_uint8_T *name, cmos_int32_T name_max, 
         const cmos_uint8_T *path, cmos_int32_T count)
 {
+    cmos_int32_T depth = 0;
+    char *head = NULL;
+    cmos_int32_T name_len = 0; 
+    cmos_int32_T i = 0;
+    char *tail = NULL;
+    char *go_path = (char *)path;
+
     if((NULL == name)
     || (name_max <= 0))
     {
         CMOS_ERR_STR("vfs name buf must not be >=0.");
-        return cmos_NULL_E;
+        goto ERR1;
     } 
     if(!vfs_path_is_valid(path))
     {
         CMOS_ERR_STR("vfs_path_sub_name get a invalid path.");
-        return cmos_PARA_E;
+        goto ERR2;
     }
     if(count < 0)
     {
         CMOS_ERR_STR("vfs_path_sub_name count should >=0.");
-        return cmos_NULL_E;
+        goto ERR2;
     }
+
+    depth = vfs_path_depth(path);
+    if(count >= depth)
+    {
+        CMOS_ERR_STR("vfs_path_sub_name count > path depth."); 
+        goto ERR2;
+    } 
 
     if(0 == count) /* 根 */
     {
-        name[0] = path[0];
-        goto OK;
+        /* 拷贝 */
+        head = (char *)path;
+        name_len = strlen((const char *)CMOS_VFS_ROOT);
+    }
+    else /* 非根 */
+    {
+        /* count为需要走过的spepartor */
+        for(i = 0; i < count; i++)
+        {
+            go_path = strstr((const char *)go_path, (const char *)CMOS_VFS_SEPARATOR);
+            go_path++;
+        }
+        head = go_path; 
+        tail = strstr((const char *)go_path, (const char *)CMOS_VFS_SEPARATOR);
+        if(NULL == tail) /* 需要的是最后一个子目录 且 不带 CMOS_VFS_SEPARATOR */
+        {
+            name_len = strlen(head);
+        }
+				else
+        {
+            name_len = tail - head;
+        }
     }
 
-OK:
-    return;
+    /* 拷贝 */
+    if(name_max <= name_len)
+    {
+        CMOS_ERR_STR("vfs_path_sub_name name buf is too small."); 
+        goto ERR2;
+    }
+    else /* 正常拷贝 */
+    {
+        strncpy((char *)name, (const char *)head, name_len);
+        name[name_len] = NUL;
+    }
+    return cmos_OK_E;
+
+ERR1:
+    return cmos_NULL_E;
+
+ERR2:
+    memset(name, NUL, name_max);
+    return cmos_PARA_E;
 }
 
+#if 0
 { 
     char *go_path = (char *)path;
     char *go_path_new = (char *)path;
@@ -161,3 +269,4 @@ OK:
     return cmos_OK_E;
 }
 
+#endif
