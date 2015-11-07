@@ -52,6 +52,7 @@ cmos_status_T cmos_lib_tree_destroy(cmos_lib_tree_T *tree);
 
 void cmos_lib_tree_walk(cmos_lib_tree_T *tree, cmos_lib_tree_walk_func_T func, void *para);
 cmos_lib_tree_node_T *cmos_lib_tree_root(const cmos_lib_tree_T *tree);
+cmos_lib_tree_node_T *cmos_lib_tree_parent(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_first_sun(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_next_brother(const cmos_lib_tree_node_T *node);
 void *cmos_lib_tree_data(const cmos_lib_tree_node_T *node);

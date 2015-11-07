@@ -89,17 +89,6 @@ cmos_status_T vfs_init(void)
         return status;
     }
 
-#if 1
-    /* 加入控制台设备结点*/
-    status = vfs_node_add(CMOS_VFS_DEV_DIR, CMOS_CONSOLE_NAME, vfs_dev, (void *)0x1234abcd);
-    if(cmos_OK_E != status)
-    {
-        return status;
-    }
-
-    vfs_print();
-#endif
-
     CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;
 }

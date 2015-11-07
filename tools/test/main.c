@@ -66,6 +66,8 @@ int main(int argc, char *argv[])
         assert_failed(__FILE__, __LINE__);
     } 
 
+    vfs_print();
+
 
 #if 0
 

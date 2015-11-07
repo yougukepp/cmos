@@ -217,6 +217,38 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data)
 
 /*******************************************************************************
 *
+* 函数名  : cmos_lib_tree_parent
+* 负责人  : 彭鹏
+* 创建日期: 20151104
+* 函数功能: 获取结点 node 的父结点
+*
+* 输入参数: node 待查结点
+*
+* 输出参数: 无
+*
+* 返回值  : NULL 无相应结点
+*           其他 父结点指针
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_lib_tree_node_T *cmos_lib_tree_parent(const cmos_lib_tree_node_T *node)
+{
+    //CMOS_TRACE_FUNC_IN;
+    if(NULL == node)
+    {
+        CMOS_ERR_STR("cmos_lib_tree_parent should not with NULL");
+        return NULL;
+    }
+
+    //CMOS_TRACE_FUNC_OUT;
+    return node->parent;
+}
+
+/*******************************************************************************
+*
+*
 * 函数名  : cmos_lib_tree_first_sun
 * 负责人  : 彭鹏
 * 创建日期: 20151104
@@ -481,6 +513,48 @@ void cmos_lib_tree_node_print(cmos_lib_tree_node_T *node, cmos_lib_tree_node_get
     void *data = NULL;
     char *data_str = NULL;
     cmos_int32_T i = 0;
+    cmos_lib_tree_node_T *go_node = node;
+    cmos_int32_T distance = 0; /* 距离根的跳数 根为0 一级目录为1 以此类推 */
+    cmos_int32_T space_num = 0; /* 凹入表示法 深度越深的结点 空格越少 根最靠前 */
+
+    do
+    {
+        go_node = cmos_lib_tree_parent(go_node);
+        if(NULL == go_node)
+        {
+            break;
+        }
+        distance++;
+    }while(TRUE);
+
+    if(distance>0) /* 非根结点 后移 */
+    {
+        space_num = 2 * distance;
+    }
+
+    data = node->data;
+    data_str = (char *)get_data_str(data);
+
+    for(i = 0; i < space_num; i++)
+    {
+        cmos_console_printf(" ");
+    }
+
+    if(0 == distance)
+    {
+        cmos_console_printf("|");
+    }
+    else
+    {
+        cmos_console_printf("|-");
+    }
+    cmos_console_printf(data_str);
+    cmos_console_printf("\n");
+
+#if 0
+    void *data = NULL;
+    char *data_str = NULL;
+    cmos_int32_T i = 0;
     cmos_int32_T depth = 0;
     cmos_int32_T space_num = 0; /* 凹入表示法 深度越深的结点 空格越少 根最靠前 */
 
@@ -496,6 +570,8 @@ void cmos_lib_tree_node_print(cmos_lib_tree_node_T *node, cmos_lib_tree_node_get
     } 
     cmos_console_printf(data_str);
     cmos_console_printf("\n");
+#endif
+
 }
 
 /*******************************************************************************
