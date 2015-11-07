@@ -37,6 +37,7 @@ cmos_lib_tree_T *s_vfs_tree;
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
 static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
+static void node_print(cmos_lib_tree_node_T *node, void *para);
 
 /********************************** 变量实现区 *********************************/
 
@@ -336,7 +337,7 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
         if(NULL != now_node)
         {
             /* step2.3: 更新下一级vfs名字 */
-            last_node = cmos_lib_tree_first_sun(now_node);
+            last_node = cmos_lib_tree_node_first_sun(now_node);
         }
         /* step2.4: 否则 return NULL */
         else
@@ -398,7 +399,69 @@ const cmos_uint8_T *vfs_node_name(vfs_node_T *node)
 ******************************************************************************/
 void vfs_print(void)
 { 
-    cmos_lib_tree_print(s_vfs_tree, (cmos_lib_tree_node_get_data_str_T)vfs_node_name);
+    cmos_lib_tree_walk_func_T print_node = (cmos_lib_tree_walk_func_T)node_print;
+    cmos_lib_tree_walk(s_vfs_tree, print_node, NULL);
+}
+
+/*******************************************************************************
+*
+* 函数名  : node_print
+* 负责人  : 彭鹏
+* 创建日期: 20151106
+* 函数功能: 打树结点
+*
+* 输入参数: para 
+*             node         待打印的结点
+*             get_data_str 结点数据域的提供的获取其标识字符串的回调函数
+*
+* 输出参数: 无
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 为了便于使用cmos_lib_tree_walk函数参数使用指针
+*
+******************************************************************************/
+static void node_print(cmos_lib_tree_node_T *node, void *para)
+{
+    if(NULL == node)
+    {
+        CMOS_ERR_STR("node_print node should not be null.\n");
+        return;
+    }
+
+    void *data = NULL;
+    char *data_str = NULL;
+    cmos_int32_T i = 0;
+    cmos_lib_tree_node_T *go_node = node;
+    cmos_int32_T distance = 0;
+    cmos_int32_T space_num = 0; /* 凹入表示法 深度越深的结点 空格越少 根最靠前 */
+
+    distance = cmos_lib_tree_node_distance(go_node);
+    if(distance>0) /* 非根结点 后移 */
+    {
+        space_num = 2 * distance;
+    }
+
+    data = node->data;
+    data_str = (char *)vfs_node_name(data);
+
+    for(i = 0; i < space_num; i++)
+    {
+        cmos_console_printf(" ");
+    }
+
+    if(0 == distance)
+    {
+        cmos_console_printf("|");
+    }
+    else
+    {
+        cmos_console_printf("|-");
+    }
+    cmos_console_printf(data_str);
+    cmos_console_printf("\n");
+
+    return;
 }
 
 /*******************************************************************************
@@ -432,14 +495,14 @@ cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, co
 
     do
     {
-        vfs_node = cmos_lib_tree_data(go_node); 
+        vfs_node = cmos_lib_tree_node_data(go_node); 
         if(0 == strcmp((const char *)name, (const char *)vfs_node->name)) /* 找到 */ 
         {
             break;
         }
         else
         {
-            go_node = cmos_lib_tree_next_brother(go_node);
+            go_node = cmos_lib_tree_node_next_brother(go_node);
         }
 
     }while(NULL != go_node);
