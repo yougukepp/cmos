@@ -359,7 +359,6 @@ cmos_status_T cmos_init(void)
     /* 后面的初始化可以使用控制台输出了 */
 
     /* 创建idle任务 */
-
     /* TODO:进入非特权级别 */
     return cmos_OK_E;
 }

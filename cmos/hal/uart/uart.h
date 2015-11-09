@@ -29,12 +29,12 @@ typedef struct cmos_hal_uart_init_para_T_tag{
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/
-extern const cmos_hal_driver_T g_uart_driver;
+extern const cmos_hal_driver_T g_uart_driver; /* 驱动变量由vfs指示 */
 
 
 /*********************************** 接口函数 **********************************/
-/* 驱动函数 */
-void uart_init(void *para);
+/* 初始化函数 */
+void cmos_hal_uart_init(void *para);
 
 #endif /* _CMOS_HAL_UART_H_ */
 

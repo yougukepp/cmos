@@ -31,7 +31,7 @@ static cmos_hal_uart_init_para_T s_uart_console_para =
 
 cmos_hardware_init_item_T g_hardware_init_list[] =
 { 
-    {uart_init, (void *)&s_uart_console_para},
+    {cmos_hal_uart_init, (void *)&s_uart_console_para},
     {NULL, NULL}
 };
 
