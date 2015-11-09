@@ -59,7 +59,7 @@ typedef enum{
   cmos_PARA_E           =  0x7FFFFFF7, /* 参数错误 */
   cmos_NULL_E           =  0x7FFFFFF8, /* 空指针 */
   cmos_MEM_LACK_E       =  0x7FFFFFF9, /* 内存不足 无法malloc */
-  cmos_CONSOLE_E        =  0x7FFFFFFA,
+  cmos_CONSOLE_E        =  0x7FFFFFFA, /* 串口错误 */
   cmos_DEV_TIMEOUT_E    =  0x7FFFFFFB,
   cmos_DEV_BUSY_E       =  0x7FFFFFFC,
   cmos_DEV_ERR_E        =  0x7FFFFFFD,
