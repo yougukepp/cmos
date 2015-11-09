@@ -36,7 +36,11 @@
 #define NULL ((void*) 0)
 #endif
 
-/* 任务优先级 */
+/* 设备初始化的时候连接使用
+ * 例如USART1 <= CMOS_DEV_INSTNAME(USART, 1)
+ * */
+#define CMOS_DEV_INSTNAME(dev_name, index) dev_name##index
+
 
 /*********************************** 类型定义 **********************************/
 typedef unsigned char       cmos_uint8_T;

@@ -20,6 +20,12 @@
 
 /************************************ 宏定义 ***********************************/
 
+/*********************************** 类型定义 **********************************/
+typedef struct cmos_hal_uart_init_para_T_tag{
+    cmos_int32_T uart_index;
+    cmos_int32_T baud_rate;
+}cmos_hal_uart_init_para_T;
+
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/
@@ -28,11 +34,7 @@ extern const cmos_hal_driver_T g_uart_driver;
 
 /*********************************** 接口函数 **********************************/
 /* 驱动函数 */
-cmos_int32_T uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
-cmos_int32_T uart_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
-cmos_int32_T uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
-cmos_status_T uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, ...);
-cmos_status_T uart_close(cmos_int32_T dev_id);
+void uart_init(void *para);
 
 #endif /* _CMOS_HAL_UART_H_ */
 

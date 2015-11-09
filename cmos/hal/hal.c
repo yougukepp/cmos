@@ -19,6 +19,7 @@
 #include "stm32f4xx_hal.h"
 #include "vfs.h"
 #include "uart.h"
+#include "stm32f429idiscovery_hardware.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -48,6 +49,7 @@ static cmos_status_T SystemClock_Config(void);
 cmos_status_T hal_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
+    cmos_int32_T i = 0;
 
     /* stm32 hal 初始化 */
     if(HAL_OK != HAL_Init())
@@ -63,6 +65,13 @@ cmos_status_T hal_init(void)
     {
         assert_failed(__FILE__, __LINE__);
         return status;
+    }
+		
+    /* 逐个初始化硬件 */
+    while(NULL != g_hardware_init_list[i].init)
+    {
+        g_hardware_init_list[i].init(g_hardware_init_list[i].para);
+        i++;
     }
 
     return cmos_OK_E;
