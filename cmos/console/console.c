@@ -83,6 +83,8 @@ cmos_status_T cmos_console_init(cmos_int32_T baud_rate)
 ******************************************************************************/
 cmos_int32_T cmos_console_printf(char *fmt, ...)
 { 
+    /* FIXME: 合理使用s_printf_buf */
+
     va_list args;
     cmos_int32_T n = 0;
     cmos_int32_T n_writes = 0;
