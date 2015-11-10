@@ -462,7 +462,7 @@ static void node_print(cmos_lib_tree_node_T *node, void *para)
         cmos_console_printf("|-");
     }
     cmos_console_printf(data_str);
-    cmos_console_printf("\n");
+    cmos_console_printf("\r\n");
 
     return;
 }
@@ -572,7 +572,8 @@ cmos_int32_T vfs_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_
     s_vfs_fd_list[s_vfs_fd_list_index].driver_id = driver_id;
     s_vfs_fd_list_index++;
 
-    return s_vfs_fd_list_index;
+    /* 当前fd为自加之前的 */
+    return s_vfs_fd_list_index - 1;
 
 err:
     return -1;

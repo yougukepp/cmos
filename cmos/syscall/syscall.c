@@ -376,6 +376,10 @@ cmos_status_T cmos_init(void)
     }
     /* 后面的初始化可以使用控制台输出了 */
 
+    /* 打印目录树 */
+    cmos_printf("cmos init done with vfs tree:\r\n");
+    vfs_print();
+
     /* 创建idle任务 */
     /* TODO:进入非特权级别 */
     return cmos_OK_E;
