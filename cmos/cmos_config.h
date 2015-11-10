@@ -62,6 +62,8 @@
 #define CMOS_CONSOLE_NAME                                       ((const cmos_uint8_T *)("console"))
 /* 调试串口路径 */
 #define CMOS_CONSOLE_PATH                                       ((const cmos_uint8_T *)("/dev/console"))
+/* 阻塞发送串口数据超时参数 */ 
+#define CMOS_UART_TIMEOUT_DIV                                   (1)
 
 /************************************ USB配置 **********************************/
 /* 不使用USB */
