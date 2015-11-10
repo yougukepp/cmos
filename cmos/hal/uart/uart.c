@@ -22,10 +22,10 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static cmos_int32_T uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
+static cmos_int32_T uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
 static cmos_int32_T uart_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
 static cmos_int32_T uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
-static cmos_status_T uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, ...);
+static cmos_status_T uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, cmos_uint32_T mode);
 static cmos_status_T uart_close(cmos_int32_T dev_id);
 
 /* 驱动变量 加入到vfs */
@@ -62,6 +62,7 @@ static UART_HandleTypeDef s_uart_handle;
 void cmos_hal_uart_init(void *para)
 { 
     const cmos_hal_uart_init_para_T *init_para = para;
+
     /* 仅实现一个串口 */
     switch(init_para->uart_index)
     {
@@ -94,7 +95,8 @@ void cmos_hal_uart_init(void *para)
     return;
 }
 
-static cmos_int32_T uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
+/* TODO:实现多设备管理 fd <-> s_uart_handle */
+static cmos_int32_T uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 {
     return 0;
 }
@@ -114,7 +116,7 @@ static cmos_int32_T uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_
     return 0;
 }
 
-static cmos_status_T uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, ...)
+static cmos_status_T uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, cmos_uint32_T para)
 {
     return cmos_OK_E;
 }

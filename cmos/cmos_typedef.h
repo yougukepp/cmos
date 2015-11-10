@@ -56,7 +56,7 @@ typedef void(*cmos_func_T)(void *argv);
 
 /* CMOS函数状态返回 */
 typedef enum{
-  cmos_OK_E             =  0,
+  cmos_OK_E             =  0x00000000, /* int32正数 最高位为 0 */
 
   cmos_BUF_SMALL_E      =  0x7FFFFFF5, /* 缓冲过小 */
   cmos_END_E            =  0x7FFFFFF6, /* 结束 */
@@ -68,7 +68,7 @@ typedef enum{
   cmos_DEV_BUSY_E       =  0x7FFFFFFC,
   cmos_DEV_ERR_E        =  0x7FFFFFFD,
   cmos_ERR_E            =  0x7FFFFFFE,
-  cmos_RESERVED_E       =  0x7FFFFFFF  /* int正数 最高位为 0 */
+  cmos_RESERVED_E       =  0x7FFFFFFF
 }cmos_status_T;
 
 /* 任务优先级 */

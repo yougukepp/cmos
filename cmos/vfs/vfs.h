@@ -44,8 +44,10 @@ typedef struct vfs_node_data_T_tag{
 /*********************************** 接口函数 **********************************/
 cmos_status_T vfs_init(void);
 cmos_status_T vfs_destroy(void);
+cmos_int32_T vfs_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
 
-cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path, const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
+cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
+        const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
 void vfs_print(void);
 cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *now_node, const cmos_uint8_T *name);
 

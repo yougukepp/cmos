@@ -25,7 +25,7 @@
 static cmos_hal_uart_init_para_T s_uart_console_para =
 {
     .uart_index = 1,
-    .baud_rate = 9600
+    .baud_rate = CMOS_CONSOLE_BAUDRATE
 };
 
 

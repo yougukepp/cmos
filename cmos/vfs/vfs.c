@@ -23,6 +23,7 @@
 #include "tree.h"
 #include "path.h"
 #include "vfs.h"
+#include "driver.h"
 #include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -36,8 +37,8 @@ cmos_lib_tree_T *s_vfs_tree;
 
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
-static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
 static void node_print(cmos_lib_tree_node_T *node, void *para);
+static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
 
 /********************************** 变量实现区 *********************************/
 
@@ -275,14 +276,14 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
 * 创建日期: 20151104
 * 函数功能: 通过路径查找对应的结点
 *
-* 输入参数: path    父路径
+* 输入参数: path 路径
 * 输出参数: 无
 *
 * 返回值  : NULL 失败
 *           其他 结点指针
 *
 * 调用关系: 无
-* 其 它   : TODO:是否可以复用树的遍历?
+* 其 它   : 无
 *
 ******************************************************************************/
 static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
@@ -508,5 +509,58 @@ cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, co
     }while(NULL != go_node);
 
     return go_node;
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_open
+* 负责人  : 彭鹏
+* 创建日期: 20151110
+* 函数功能: 打开path指示的文件
+*
+* 输入参数: path
+* 输出参数: 无
+*
+* 返回值  : 文件句柄
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T vfs_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
+{
+    cmos_lib_tree_node_T *tree_node = NULL;
+    vfs_node_T *vfs_node = NULL;
+    cmos_hal_driver_T *driver = NULL;
+
+    cmos_int32_T fd = 0;
+
+    tree_node = vfs_get_tree_node(path);
+    vfs_node = cmos_lib_tree_node_data(tree_node);
+    driver = vfs_node->driver;
+
+    switch(vfs_node->type)
+    {
+        case vfs_dev:
+            {
+                if(NULL != driver)
+                {
+                    fd = driver->open(path, flag, mode);
+                }
+                else
+                {
+                    cmos_err_log("%s driver err.", path);
+                    fd = -1;
+                }
+                break;
+            }
+        default:
+            {
+                cmos_err_log("not implement %d type.", vfs_node->type);
+                fd = -1;
+            }
+    }
+
+    return fd;
 }
 

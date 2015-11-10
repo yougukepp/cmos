@@ -14,6 +14,8 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include <stdarg.h>
+
 #include "cmos_config.h"
 #include "cmos_api.h"
 #include "vfs.h"
@@ -207,12 +209,24 @@ static cmos_int32_T cmos_task_create_c(cmos_func_T task_func, void *argv, const 
  * 返回值  : 文件句柄
  *          
  * 调用关系: 无
- * 其 它   : 无
+ * 其 它   : TODO: 完成 实际功能
  *
  ******************************************************************************/
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
-{
-    return 0;
+{ 
+    cmos_int32_T fd = 0;
+    cmos_uint32_T mode = 0;
+
+    va_list args;
+
+    va_start(args, flag);
+    mode = va_arg(args, cmos_uint32_T);
+    va_end(args);
+
+    /* 返回的是指针 */
+    fd = vfs_open(path, flag, mode);
+
+    return fd;
 }
 
 /*******************************************************************************
