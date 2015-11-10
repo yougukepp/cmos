@@ -17,6 +17,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "tree.h"
+#include "driver.h"
 
 /************************************ 宏定义 ***********************************/
 
@@ -37,6 +38,12 @@ typedef struct vfs_node_data_T_tag{
     void            *driver;
 }vfs_node_T;
 
+/* vfs列表元素 */
+typedef struct vfs_fd_item_T_tag{
+    cmos_hal_driver_T *driver; /* 驱动指针 */
+    void *driver_id; /* 驱动底层句柄 */
+}vfs_fd_item_T;
+
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/
@@ -45,6 +52,7 @@ typedef struct vfs_node_data_T_tag{
 cmos_status_T vfs_init(void);
 cmos_status_T vfs_destroy(void);
 cmos_int32_T vfs_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
+cmos_int32_T vfs_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
 
 cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
         const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);

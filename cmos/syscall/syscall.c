@@ -299,7 +299,11 @@ static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes
  ******************************************************************************/
 static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
-    return 0;
+    cmos_int32_T n_writes = 0;
+
+    n_writes = vfs_write(fd, buf, n_bytes);
+
+    return n_writes;
 }
 
 /*******************************************************************************

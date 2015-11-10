@@ -34,6 +34,8 @@
  * FIXME:所有操作加锁 
  * */
 cmos_lib_tree_T *s_vfs_tree;
+static vfs_fd_item_T s_vfs_fd_list[CMOS_VFS_FD_MAX] = {{0}}; /* fd 列表 */
+static cmos_int32_T s_vfs_fd_list_index = 0;            /* fd 列表索引 */
 
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
@@ -518,49 +520,106 @@ cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, co
 * 创建日期: 20151110
 * 函数功能: 打开path指示的文件
 *
-* 输入参数: path
+* 输入参数: path 文件路径
+*           flag 打开flag
+*           mode 模式
+*           参数规则参考Linux open
 * 输出参数: 无
 *
 * 返回值  : 文件句柄
 *
 * 调用关系: 无
-* 其 它   : 无
+* 其 它   : TODO: 实现多设备管理
 *
 ******************************************************************************/
 cmos_int32_T vfs_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 {
+    /* step1: 找到对应驱动 */
     cmos_lib_tree_node_T *tree_node = NULL;
     vfs_node_T *vfs_node = NULL;
     cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
 
-    cmos_int32_T fd = 0;
+    /* vfs fd 已满 */
+    if(CMOS_VFS_FD_MAX <= s_vfs_fd_list_index)
+    {
+        CMOS_ERR_STR("vfs fd list is full.");
+        goto err;
+    }
+    if(NULL == path)
+    {
+        CMOS_ERR_STR("vfs_open should not have a null path.");
+        goto err;
+    }
 
     tree_node = vfs_get_tree_node(path);
     vfs_node = cmos_lib_tree_node_data(tree_node);
     driver = vfs_node->driver;
 
-    switch(vfs_node->type)
+    /* step2: 执行驱动对应open函数 获取驱动相关句柄 */
+    if(NULL != driver)
     {
-        case vfs_dev:
-            {
-                if(NULL != driver)
-                {
-                    fd = driver->open(path, flag, mode);
-                }
-                else
-                {
-                    cmos_err_log("%s driver err.", path);
-                    fd = -1;
-                }
-                break;
-            }
-        default:
-            {
-                cmos_err_log("not implement %d type.", vfs_node->type);
-                fd = -1;
-            }
+        driver_id = driver->open(path, flag, mode);
+    }
+    else
+    {
+        cmos_err_log("%s driver is null.", path);
+        goto err;
     }
 
-    return fd;
+    /* step3: 保存底层句柄 */
+    s_vfs_fd_list[s_vfs_fd_list_index].driver = driver;
+    s_vfs_fd_list[s_vfs_fd_list_index].driver_id = driver_id;
+    s_vfs_fd_list_index++;
+
+    return s_vfs_fd_list_index;
+
+err:
+    return -1;
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_write
+* 负责人  : 彭鹏
+* 创建日期: 20151110
+* 函数功能: 写入fd指示的文件
+*
+* 输入参数: fd      文件句柄
+*           buf     缓冲
+*           n_bytes 缓冲大小
+*           参数规则见Linux write
+* 输出参数: 无
+*
+* 返回值  : 写入字节数
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T vfs_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_int32_T write_bytes = 0;
+    /* step1: 找到对应驱动及stm32hal底层句柄 */
+    vfs_fd_item_T *fd_item = NULL;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
+    fd_item = &s_vfs_fd_list[fd];
+    driver = fd_item->driver;
+    driver_id = fd_item->driver_id;         /* 底层驱动需要的指针 */
+
+    /* step2: 执行驱动对应write函数 */
+    if(NULL != driver)
+    { 
+        write_bytes = driver->write(driver_id, buf, n_bytes);
+    }
+    else
+    {
+        cmos_err_log("file %d driver is null.", fd);
+        write_bytes = 0;
+    }
+
+    return write_bytes;
 }
 

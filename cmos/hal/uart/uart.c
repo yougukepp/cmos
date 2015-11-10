@@ -22,11 +22,11 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static cmos_int32_T uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
-static cmos_int32_T uart_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
-static cmos_int32_T uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
-static cmos_status_T uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, cmos_uint32_T mode);
-static cmos_status_T uart_close(cmos_int32_T dev_id);
+static void *uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
+static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_bytes);
+static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
+static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode);
+static cmos_status_T uart_close(const void *dev_id);
 
 /* 驱动变量 加入到vfs */
 const cmos_hal_driver_T g_uart_driver = {
@@ -95,28 +95,36 @@ void cmos_hal_uart_init(void *para)
     return;
 }
 
-/* TODO:实现多设备管理 fd <-> s_uart_handle */
-static cmos_int32_T uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
+/* TODO:
+   1 实现 参数 管理 */
+static void *uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 {
-    return 0;
+    /* 由path返回相应的 s_uart_handle */
+    return (void *)(&s_uart_handle);
 }
 
-static cmos_status_T uart_close(cmos_int32_T dev_id)
+static cmos_status_T uart_close(const void *dev_id)
 {
     return cmos_OK_E;
 }
 
-static cmos_int32_T uart_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes)
+static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_bytes)
 {
     return 0;
 }
 
-static cmos_int32_T uart_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes)
-{
+static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
+{ 
+    /* 发送 */
+    if(HAL_UART_Transmit(dev_id, (uint8_t*)buf, n_bytes, n_bytes/UART_TIMEOUT_DIV)!= HAL_OK)
+    {
+        Error_Handler();
+    }	
+
     return 0;
 }
 
-static cmos_status_T uart_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, cmos_uint32_T para)
+static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T para)
 {
     return cmos_OK_E;
 }

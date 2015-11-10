@@ -20,11 +20,11 @@
 /************************************ 宏定义 ***********************************/
 
 /*********************************** 类型定义 **********************************/
-typedef cmos_int32_T (*cmos_open_func_T)(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
-typedef cmos_int32_T (*cmos_read_func_T)(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
-typedef cmos_int32_T (*cmos_write_func_T)(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
-typedef cmos_status_T (*cmos_ioctl_func_T)(cmos_int32_T dev_id, cmos_uint32_T request, cmos_uint32_T para);
-typedef cmos_status_T (*cmos_close_func_T)(cmos_int32_T dev_id);
+typedef void *(*cmos_open_func_T)(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
+typedef cmos_int32_T (*cmos_read_func_T)(const void *dev_id, void *buf, cmos_int32_T n_bytes);
+typedef cmos_int32_T (*cmos_write_func_T)(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
+typedef cmos_status_T (*cmos_ioctl_func_T)(const void *dev_id, cmos_uint32_T request, cmos_uint32_T para);
+typedef cmos_status_T (*cmos_close_func_T)(const void *dev_id);
 
 typedef struct cmos_hal_driver_T_tag{
     cmos_open_func_T    open;

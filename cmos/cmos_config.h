@@ -19,6 +19,9 @@
 
 /************************************ 宏定义 ***********************************/
 /****************************** 虚拟文件系统(VFS) ******************************/
+/* 可打开的文件数 */
+#define CMOS_VFS_FD_MAX                                         (8)
+/* 文件系统路径 */
 #define CMOS_VFS_ROOT                                           ((const cmos_uint8_T *)("/"))
 #define CMOS_VFS_DEV                                            ((const cmos_uint8_T *)("dev"))
 #define CMOS_VFS_PROC                                           ((const cmos_uint8_T *)("proc"))
