@@ -18,6 +18,7 @@
 #include "lib.h"
 #include "vfs.h"
 #include "device.h"
+#include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -48,6 +49,13 @@
 ******************************************************************************/
 cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver)
 {
+    if((NULL == name)
+    || (NULL == driver))
+    {
+        CMOS_ERR_STR("hal_device_del name or driver is null.");
+        return cmos_NULL_E;
+    }
+
     cmos_status_T status = cmos_ERR_E; 
 
     /* 加入设备结点*/
@@ -80,6 +88,12 @@ cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver)
 ******************************************************************************/
 cmos_status_T hal_device_del(const cmos_uint8_T *name)
 {
+    if(NULL == name)
+    {
+        CMOS_ERR_STR("hal_device_del name or driver is null.");
+        return cmos_NULL_E;
+    }
+
     cmos_status_T status = cmos_ERR_E; 
 
     status = cmos_OK_E;

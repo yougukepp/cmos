@@ -11,14 +11,14 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 近期计划
-0. 实现硬件树
-1. 实现驱动层堆STM HAL层封装,UART及I2C 利用系统调用,所有代码整理入syscall.s syscall.c syscall.h(实际为cmos\_api.h) 三个文件
-2. 多线程
-3. 延迟
-4. 互斥锁 参考 SignalManagement
-5. 实现串口命令行,参考CMSIS驱动模型
-6. 系统调用加用户空间运行部分
-7. 实现app/flyer/doc/README.md计划
+1. 实现驱动层堆STM HAL层封装,I2C利用系统调用
+2. 系统调用代码整理入syscall.s syscall.c syscall.h(实际为cmos\_api.h) 三个文件
+3. 多线程
+4. 延迟
+5. 互斥锁 参考 SignalManagement
+6. 实现串口命令行,参考CMSIS驱动模型
+7. 系统调用加用户空间运行部分
+8. 实现app/flyer/doc/README.md计划
 
 ### 远期计划
 1. 整理TODO

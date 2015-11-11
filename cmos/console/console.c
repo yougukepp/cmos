@@ -83,6 +83,11 @@ cmos_status_T cmos_console_init(cmos_int32_T baud_rate)
 ******************************************************************************/
 cmos_int32_T cmos_console_printf(char *fmt, ...)
 { 
+    if(NULL == fmt) /* 无需打印 */
+    {
+        return 0;
+    }
+
     /* FIXME: 合理使用s_printf_buf */
 
     va_list args;

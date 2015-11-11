@@ -38,7 +38,10 @@ cmos_status_T cmos_init(void);
 cmos_status_T cmos_start(void);
 
 /* 任务管理 */
-cmos_int32_T cmos_task_create(cmos_func_T task_func, void *argv, const cmos_task_para_T *task_para);
+cmos_status_T cmos_task_create(cmos_task_id_T *task_id, 
+        cmos_func_T task_func, 
+        void *argv, 
+        const cmos_task_para_T *task_para);
 
 /* 外设驱动 */
 cmos_int32_T cmos_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);

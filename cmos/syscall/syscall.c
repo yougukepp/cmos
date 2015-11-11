@@ -28,7 +28,10 @@
 
 /********************************** 函数声明区 *********************************/
 static cmos_status_T cmos_start_c(void);
-static cmos_int32_T cmos_task_create_c(cmos_func_T task_func, void *argv, const cmos_task_para_T *task_para);
+static cmos_status_T cmos_task_create_c(cmos_task_id_T *task_id, 
+        cmos_func_T task_func,
+        void *argv,
+        const cmos_task_para_T *task_para);
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 static cmos_status_T cmos_close_c(cmos_int32_T fd);
 static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
@@ -55,9 +58,15 @@ static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...);
  ******************************************************************************/
 void syscall_c(cmos_uint32_T *sp)
 {
+    if(NULL == sp)
+    {
+        CMOS_ERR_STR("sp is null");
+    }
+
     cmos_uint32_T stacked_r0 = 0;
     cmos_uint32_T stacked_r1 = 0;
     cmos_uint32_T stacked_r2 = 0;
+    cmos_uint32_T stacked_r3 = 0;
 
     cmos_uint8_T svc_number = 0;
 
@@ -65,6 +74,7 @@ void syscall_c(cmos_uint32_T *sp)
     stacked_r0 = sp[0];
     stacked_r1 = sp[1];
     stacked_r2 = sp[2];
+    stacked_r3 = sp[3];
 
     /***************************************************************************
      *
@@ -104,8 +114,10 @@ void syscall_c(cmos_uint32_T *sp)
         /* 任务控制 */
         case 0x10:
             { 
-                sp[0] = cmos_task_create_c((cmos_func_T)stacked_r0,
-                        (void *)stacked_r1, (const cmos_task_para_T *)stacked_r2);
+                sp[0] = cmos_task_create_c((cmos_task_id_T *)stacked_r0,
+                        (cmos_func_T)stacked_r1, 
+                        (void *)stacked_r1, 
+                        (const cmos_task_para_T *)stacked_r3);
                 break;
             }
 
@@ -174,12 +186,11 @@ static cmos_status_T cmos_start_c(void)
  * 创建日期：20151023 
  * 函数功能: 创建任务
  *
- * 输入参数: 
- *           task_func 任务入口
- *           argv      任务参数
- *           task_para 任务属性 堆栈 优先级 等
+ * 输入参数: task_func      任务入口
+ *           argv           任务参数
+ *           task_attribute 任务属性 堆栈 优先级 等
  *
- * 输出参数: 任务句柄
+ * 输出参数: task_id 任务id号
  *
  * 返回值  : 执行状态
  *          
@@ -187,9 +198,18 @@ static cmos_status_T cmos_start_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_int32_T cmos_task_create_c(cmos_func_T task_func, void *argv, const cmos_task_para_T *task_para)
+static cmos_status_T cmos_task_create_c(cmos_task_id_T *task_id, 
+        cmos_func_T task_func,
+        void *argv,
+        const cmos_task_para_T *task_attribute)
 {
-    return 0;
+    if((NULL == task_func)
+    || (NULL == task_attribute))
+    {
+        CMOS_ERR_STR("task func and task attribute should not to be null.");
+    }
+
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
@@ -199,14 +219,13 @@ static cmos_int32_T cmos_task_create_c(cmos_func_T task_func, void *argv, const 
  * 创建日期：20151023 
  * 函数功能: 系统调用cmos_open的C语言主逻辑
  *
- * 输入参数: 
- *           path vfs的路径
+ * 输入参数: path vfs的路径
  *           flag 调用标记
  *           ...  第三个参数由flag决定
  *
  * 输出参数: 无
- *
- * 返回值  : 文件句柄
+ * 返回值  : -1     出错
+ *           其他   文件id从0开始
  *          
  * 调用关系: 无
  * 其 它   : TODO: 完成 实际功能
@@ -214,6 +233,12 @@ static cmos_int32_T cmos_task_create_c(cmos_func_T task_func, void *argv, const 
  ******************************************************************************/
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
 { 
+    if(NULL == path)
+    {
+        CMOS_ERR_STR("open path is null.");
+        return -1;
+    }
+
     cmos_int32_T fd = 0;
     cmos_uint32_T mode = 0;
 
@@ -249,6 +274,12 @@ static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ..
  ******************************************************************************/
 static cmos_status_T cmos_close_c(cmos_int32_T fd)
 {
+    if(fd < 0)
+    {
+        CMOS_ERR_STR("close fd < 0.");
+        return cmos_PARA_E;
+    }
+
     return cmos_OK_E;
 }
 
@@ -274,6 +305,19 @@ static cmos_status_T cmos_close_c(cmos_int32_T fd)
  ******************************************************************************/
 static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
+    if(fd < 0)
+    {
+        CMOS_ERR_STR("read fd < 0.");
+        return cmos_PARA_E;
+    }
+
+    if((NULL == buf)
+    || (n_bytes <= 0))
+    {
+        CMOS_ERR_STR("read buf err.");
+        return cmos_PARA_E;
+    }
+
     return 0;
 }
 
@@ -299,6 +343,19 @@ static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes
  ******************************************************************************/
 static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
+    if(fd < 0)
+    {
+        CMOS_ERR_STR("write fd < 0.");
+        return cmos_PARA_E;
+    }
+
+    if((NULL == buf)
+    || (n_bytes <= 0))
+    {
+        CMOS_ERR_STR("write buf err.");
+        return cmos_PARA_E;
+    }
+
     cmos_int32_T n_writes = 0;
 
     n_writes = vfs_write(fd, buf, n_bytes);
@@ -328,6 +385,12 @@ static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_byte
  ******************************************************************************/
 static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
 {
+    if(fd < 0)
+    {
+        CMOS_ERR_STR("write fd < 0.");
+        return cmos_PARA_E;
+    }
+
     return cmos_OK_E;
 }
 

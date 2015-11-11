@@ -57,6 +57,12 @@ cmos_hardware_init_item_T g_hardware_init_list[] =
 ******************************************************************************/
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {  
+    if(NULL == huart)
+    {
+        CMOS_ERR_STR("HAL_UART_MspInit huart is null.");
+        return;
+    }
+
     cmos_status_T status = cmos_ERR_E;
     /************************ 控制台使用的串口初始化 ************************/
     GPIO_InitTypeDef  GPIO_InitStruct;
@@ -108,6 +114,12 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 ******************************************************************************/
 void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 {
+    if(NULL == huart)
+    {
+        CMOS_ERR_STR("HAL_UART_MspDeInithuart is null.");
+        return;
+    }
+
     cmos_status_T status = cmos_ERR_E;
     /*********************** 控制台使用的串口解初始化 ***********************/
     CONSOLE_UART_FORCE_RESET();
