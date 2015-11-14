@@ -41,7 +41,7 @@
 
 /* I2C个数 MPU9250+功能板 */
 #define CMOS_HAL_I2C_NUMS                      (2)
-/* MPU9250 I2C定义 FIXME:使用I2C1 */
+/* IMU I2C定义 FIXME:使用I2C1 */
 #define IMU_I2C                                 I2C3
 #define IMU_I2C_CLOCK_ENABLE()                  __I2C3_CLK_ENABLE()
 #define IMU_I2C_FORCE_RESET()                   __I2C3_FORCE_RESET()
@@ -63,6 +63,7 @@
 #define IMU_INT_CLK_DISABLE()                   __GPIOA_CLK_DISABLE()
 #define IMU_INT_EXTI                            EXTI15_10_IRQn
 /* TODO:功能板 I2C定义 */
+
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

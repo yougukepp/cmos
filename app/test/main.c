@@ -19,6 +19,13 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 
+/* 测试使用 */
+int mpu9250_read_buf(unsigned char dev_addr, unsigned char reg_addr,
+        unsigned short buf_len, unsigned char *ptr_read_buf);
+int mpu9250_write_buf(unsigned char dev_addr, unsigned char reg_addr, 
+        unsigned short buf_len, const unsigned char *ptr_write_buf);
+
+
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/

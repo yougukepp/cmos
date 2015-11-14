@@ -797,6 +797,11 @@
                 </FileArmAds>
               </FileOption>
             </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\hal\i2c\i2c.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

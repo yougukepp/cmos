@@ -105,7 +105,7 @@ static void *uart_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32
 
 static cmos_status_T uart_close(const void *dev_id)
 {
-    return cmos_OK_E;
+    return cmos_ERR_E;
 }
 
 static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_bytes)
@@ -127,6 +127,6 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
 
 static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T para)
 {
-    return cmos_OK_E;
+    return cmos_ERR_E;
 }
 

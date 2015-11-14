@@ -33,7 +33,7 @@
 /* 文件系统深度 */
 #define CMOS_VFS_DEPTH                                          (8)
 #define CMOS_VFS_PRINT_WIDTH                                    ((CMOS_VFS_DEPTH) + 2)
-#define CMOS_VFS_NAME_MAX                                       (8)
+#define CMOS_VFS_NAME_MAX                                       (16)
 /*
  * 路径长度 最大值
  * 
@@ -64,6 +64,14 @@
 #define CMOS_CONSOLE_PATH                                       ((const cmos_uint8_T *)("/dev/console"))
 /* 阻塞发送串口数据超时参数 */ 
 #define CMOS_UART_TIMEOUT_DIV                                   (1)
+
+/* IMU I2C总线 */
+/* I2C总线号 3 */
+#define CMOS_IMU_I2C_INDEX                                      (3)
+/* IMU I2C 速度 */
+#define CMOS_IMU_I2C_RATE                                       (100000)
+/* IMU I2C总线名字 */
+#define CMOS_IMU_I2CBUS_NAME                                    ((const cmos_uint8_T *)("imu_i2c"))
 
 /************************************ USB配置 **********************************/
 /* 不使用USB */
