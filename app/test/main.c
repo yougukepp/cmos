@@ -66,8 +66,7 @@ int main(void)
 
     cmos_printf("cmos start.\r\n");
 
-
-#if 1
+#if 0
     unsigned char val = 0;
     int i = 0;
     int iMax = 0;
@@ -93,7 +92,24 @@ int main(void)
         cmos_printf("0x%02x:0x%02x\r\n", bmp180_reg_addr[i], val);
     }
     while(TRUE);
-#endif
+#else 
 
+    cmos_i2c_addr_T bmp180_addr =
+    {
+        .dev_addr = 0x00,
+        .reg_offset = 0x00
+    };
+    cmos_int32_T read_bytes = 0;
+    cmos_uint8_T buf[10];
+
+    cmos_int32_T s_bmp180_fd = cmos_open(CMOS_IMU_I2CBUS_PATH, CMOS_O_RDWR);
+    status = cmos_ioctl(s_bmp180_fd, CMOS_I_SET_I2C_ADDR, &bmp180_addr);
+    read_bytes = cmos_read(s_bmp180_fd, buf, 10); 
+    
+    /* 写入待测试 */
+    /* static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes) */
+
+
+#endif
 }
 

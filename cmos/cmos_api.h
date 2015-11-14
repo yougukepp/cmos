@@ -27,8 +27,17 @@
 #define CMOS_O_RDWR             (0x00000000)
 /* 系统调用cmos_ioctl参数宏 */
 #define CMOS_I_SETBAUDRATE      (0x00000000)
+/* 系统调用cmos_ioctl参数宏 */
+#define CMOS_I_SET_I2C_ADDR     (0x00000001)
 
 /*--------------------------------- 接口声明区 --------------------------------*/
+
+/*********************************** 类型定义 **********************************/
+/* TODO: 想办法移入驱动 */
+typedef struct cmos_i2c_addr_T_tag{
+    cmos_uint8_T dev_addr;
+    cmos_uint8_T reg_offset;
+}cmos_i2c_addr_T;
 
 /*********************************** 全局变量 **********************************/
 

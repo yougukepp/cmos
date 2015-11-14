@@ -72,6 +72,8 @@
 #define CMOS_IMU_I2C_RATE                                       (100000)
 /* IMU I2C总线名字 */
 #define CMOS_IMU_I2CBUS_NAME                                    ((const cmos_uint8_T *)("imu_i2c"))
+/* IMU I2C总线路径 */
+#define CMOS_IMU_I2CBUS_PATH                                    ((const cmos_uint8_T *)("/dev/imu_i2c"))
 
 /************************************ USB配置 **********************************/
 /* 不使用USB */
