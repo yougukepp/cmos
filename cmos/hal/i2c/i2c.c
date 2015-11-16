@@ -6,7 +6,7 @@
  * 版本号  ： 1.0
  * 文件描述： cmos i2c 驱动程序实现
  * 版权说明： Copyright (c) GNU
- * 其    他： 无
+ * 其    他： 实现非阻塞
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -38,7 +38,14 @@ const cmos_hal_driver_T g_i2c_driver = {
 };
 
 /* STM32F4Cube HAL驱动 */
-I2C_HandleTypeDef s_i2c_handle;
+static I2C_HandleTypeDef s_i2c_handle;
+
+/* 从设备地址 */
+static cmos_i2c_addr_T s_i2c_addr =
+{
+    .dev_addr = 0xff,
+    .reg_offset = 0xff
+}
 
 /********************************** 函数声明区 *********************************/
 
@@ -101,24 +108,103 @@ void cmos_hal_i2c_init(void *para)
     return;
 }
 
+/* TODO:
+   1 实现 参数 管理 */
 static void *i2c_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 {
-    return NULL;
+    /* 由path返回相应的 s_uart_handle */
+    return (void *)(&s_i2c_handle);
 }
 
 static cmos_int32_T i2c_read(const void *dev_id, void *buf, cmos_int32_T n_bytes)
-{
-    return 0;
+{ 
+    if((0xff == s_i2c_addr.dev_addr)
+    || (0xff == s_i2c_addr.reg_offset))
+    {
+        CMOS_ERR_STR("please use ioctl set i2c dev addr first before i2c_read.");
+        return 0;
+    }
+    if(NULL == dev_id)
+    {
+        CMOS_ERR_STR("i2c_read with null pointer.");
+        return 0;
+    }
+    if((NULL == buf)
+    || (n_bytes <=0))
+    {
+        CMOS_ERR_STR("i2c_read with invalid buf.");
+        return 0;
+    }
+
+    if(HAL_OK != HAL_I2C_Mem_Read(dev_id, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
+                I2C_MEMADD_SIZE_8BIT, buf, (cmos_uint16_T)(n_bytes), HAL_MAX_DELAY))
+    {
+        cmos_err_log("HAL_I2C_Mem_Read err.");
+    }
+
+    return n_bytes;
 }
 
 static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
-{
-    return 0;
+{ 
+    if((0xff == s_i2c_addr.dev_addr)
+    || (0xff == s_i2c_addr.reg_offset))
+    {
+        CMOS_ERR_STR("please use ioctl set i2c dev addr first before i2c_write.");
+        return 0;
+    }
+    if(NULL == dev_id)
+    {
+        CMOS_ERR_STR("i2c_write with null pointer.");
+        return 0;
+    }
+    if((NULL == buf)
+    || (n_bytes <=0))
+    {
+        CMOS_ERR_STR("i2c_read with invalid buf.");
+        return 0;
+    } 
+    
+    if(HAL_OK != HAL_I2C_Mem_Write(&s_i2c_handle, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
+                I2C_MEMADD_SIZE_8BIT, (cmos_uint8_T *)buf, (cmos_uint16_T)(n_bytes), HAL_MAX_DELAY))
+    {
+        cmos_err_log("HAL_I2C_Mem_Write.");
+    } 
+
+    return n_bytes;
 }
 
 static cmos_status_T i2c_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode)
 {
-    return cmos_ERR_E;
+    cmos_i2c_addr_T *addr = NULL;
+
+    switch(request)
+    {
+
+        /* 设置从设备地址 */
+        case CMOS_I_SET_I2C_ADDR:
+            {
+                addr = (cmos_i2c_addr_T *)mode;
+                if(NULL == addr)
+                { 
+                    cmos_err_log("i2c_ioctl CMOS_I_SET_I2C_ADDR request with null addr.");
+                    goto err;
+                }
+                s_i2c_addr.dev_addr = addr->dev_addr;
+                s_i2c_addr.reg_offset = addr->reg_offset; 
+                break;
+            }
+        default:
+            {
+                cmos_err_log("i2c_ioctl not implement 0x%08x request.", request);
+                goto err;
+            }
+    } 
+    
+    return cmos_OK_E;
+
+err:
+    return cmos_PARA_E;
 }
 
 static cmos_status_T i2c_close(const void *dev_id)
