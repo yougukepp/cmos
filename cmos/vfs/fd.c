@@ -131,6 +131,11 @@ err:
 ******************************************************************************/
 cmos_int32_T vfs_fd_read(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
+    cmos_status_T status = cmos_ERR_E;
+    cmos_int32_T read_bytes = 0;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
     if((fd < 0)
     || (fd >= CMOS_VFS_FD_MAX))
     {
@@ -144,7 +149,25 @@ cmos_int32_T vfs_fd_read(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
         return 0;
     }
 
-    return n_bytes;
+    /* step1: 找到对应驱动及cmos hal底层句柄 */
+    status = vfs_fd_get_fd_list_item(&driver, &driver_id, fd);
+    if(cmos_OK_E != status)
+    {
+        return 0;
+    }
+
+    /* step2: 执行驱动对应write函数 */
+    if(NULL != driver)
+    { 
+        read_bytes = driver->read(driver_id, buf, n_bytes);
+    }
+    else
+    {
+        cmos_err_log("file %d driver is null.", fd);
+        return 0;
+    }
+
+    return read_bytes;
 }
 
 /*******************************************************************************
@@ -186,14 +209,12 @@ cmos_int32_T vfs_fd_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
         return 0;
     }
 
-    /* step1: 找到对应驱动及cmos hal底层句柄 */
     status = vfs_fd_get_fd_list_item(&driver, &driver_id, fd);
     if(cmos_OK_E != status)
     {
         return 0;
     }
 
-    /* step2: 执行驱动对应write函数 */
     if(NULL != driver)
     { 
         write_bytes = driver->write(driver_id, buf, n_bytes);
@@ -201,7 +222,7 @@ cmos_int32_T vfs_fd_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
     else
     {
         cmos_err_log("file %d driver is null.", fd);
-        write_bytes = 0;
+        return 0;
     }
 
     return write_bytes;
@@ -227,6 +248,10 @@ cmos_int32_T vfs_fd_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 ******************************************************************************/
 cmos_status_T vfs_fd_ioctl(cmos_int32_T fd, cmos_uint32_T request, cmos_uint32_T mode)
 {
+    cmos_status_T status = cmos_ERR_E;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
     if((fd < 0)
     || (fd >= CMOS_VFS_FD_MAX))
     {
@@ -234,7 +259,24 @@ cmos_status_T vfs_fd_ioctl(cmos_int32_T fd, cmos_uint32_T request, cmos_uint32_T
         return cmos_PARA_E;
     }
 
-    return cmos_OK_E;
+    status = vfs_fd_get_fd_list_item(&driver, &driver_id, fd);
+    if(cmos_OK_E != status)
+    {
+        goto out;
+    }
+
+    if(NULL != driver)
+    { 
+        status = driver->ioctl(driver_id, request, mode);
+    }
+    else
+    {
+        cmos_err_log("file %d driver is null.", fd);
+        status = cmos_NULL_E;
+    }
+
+out:
+    return status;
 }
 
 /*******************************************************************************
@@ -300,3 +342,4 @@ static cmos_status_T vfs_fd_get_fd_list_item(cmos_hal_driver_T **driver, void **
 
     return cmos_OK_E;
 }
+
