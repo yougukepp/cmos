@@ -88,7 +88,7 @@ typedef struct{
     cmos_priority_T   priority;   /* 优先级 */
     cmos_uint32_T     stack_size; /* 任务栈大小 */
     cmos_uint32_T     time_slice; /* 同一优先级有多个线程 该线程的运行时间 SysTick为单位 */
-}cmos_task_para_T;
+}cmos_task_attribute_T;
 
 /* 任务号 */
 typedef cmos_uint32_T cmos_task_id_T;

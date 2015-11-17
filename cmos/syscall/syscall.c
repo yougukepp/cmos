@@ -17,6 +17,7 @@
 #include <stdarg.h>
 
 #include "cmos_config.h"
+#include "idle.h"
 #include "cmos_api.h"
 #include "vfs.h"
 #include "hal.h"
@@ -26,13 +27,14 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+static cmos_task_id_T s_idle_task_id = 0;
 
 /********************************** 函数声明区 *********************************/
 static cmos_status_T cmos_start_c(void);
 static cmos_status_T cmos_task_create_c(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
         void *argv,
-        const cmos_task_para_T *task_para);
+        const cmos_task_attribute_T *task_para);
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 static cmos_status_T cmos_close_c(cmos_int32_T fd);
 static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
@@ -118,7 +120,7 @@ void syscall_c(cmos_uint32_T *sp)
                 sp[0] = cmos_task_create_c((cmos_task_id_T *)stacked_r0,
                         (cmos_func_T)stacked_r1, 
                         (void *)stacked_r1, 
-                        (const cmos_task_para_T *)stacked_r3);
+                        (const cmos_task_attribute_T *)stacked_r3);
                 break;
             }
 
@@ -203,7 +205,7 @@ static cmos_status_T cmos_start_c(void)
 static cmos_status_T cmos_task_create_c(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
         void *argv,
-        const cmos_task_para_T *task_attribute)
+        const cmos_task_attribute_T *task_attribute)
 {
     if((NULL == task_func)
     || (NULL == task_attribute))
@@ -445,7 +447,14 @@ cmos_status_T cmos_init(void)
     cmos_printf("cmos init done with vfs tree:\r\n");
     vfs_print();
 
-    /* TODO:创建idle任务 */
+    /* 创建idle任务 */
+    cmos_task_attribute_T idle_attribute =
+    {
+        .priority = CMOS_IDLE_PRIORITY,
+        .stack_size = CMOS_IDLE_STACK_SIZE,
+        .time_slice = CMOS_IDLE_TIME_SLICE
+    };
+    status = cmos_task_create(&s_idle_task_id, cmos_task_idle_task, NULL, &idle_attribute);
 
     /* 进入任务环境 */
     GOTO_TASK_CONTEXT;

@@ -910,7 +910,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\console;..\cmos\vfs;..\cmos\hal\cortex;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
+                      <IncludePath>..\cmos\hal;..\cmos\console;..\cmos\vfs;..\cmos\hal\cortex;..\cmos\task;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -1069,6 +1069,11 @@
               <FileName>task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\task\task.c</FilePath>
+            </File>
+            <File>
+              <FileName>idle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\task\idle.c</FilePath>
             </File>
           </Files>
         </Group>
