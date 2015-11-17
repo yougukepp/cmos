@@ -444,10 +444,10 @@ cmos_status_T cmos_init(void)
     cmos_printf("cmos init done with vfs tree:\r\n");
     vfs_print();
 
-
     /* TODO:创建idle任务 */
 
-    /* TODO:进入非特权级别 */
+    /* float使能 使用PSP 进非特权 */
+    __set_CONTROL(0x00000007);
 
     return cmos_OK_E;
 }
