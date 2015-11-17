@@ -910,7 +910,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\console;..\cmos\vfs</IncludePath>
+                      <IncludePath>..\cmos\hal;..\cmos\console;..\cmos\vfs;..\cmos\hal\cortex;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -1054,6 +1054,21 @@
               <FileName>path.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\cmos\vfs\path.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>task</GroupName>
+          <Files>
+            <File>
+              <FileName>switch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\task\switch.c</FilePath>
+            </File>
+            <File>
+              <FileName>task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\task\task.c</FilePath>
             </File>
           </Files>
         </Group>
