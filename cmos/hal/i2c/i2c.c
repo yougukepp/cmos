@@ -18,6 +18,7 @@
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f429idiscovery_hardware.h"
 #include "console.h"
+#include "cmos_api.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -45,7 +46,7 @@ static cmos_i2c_addr_T s_i2c_addr =
 {
     .dev_addr = 0xff,
     .reg_offset = 0xff
-}
+};
 
 /********************************** 函数声明区 *********************************/
 
@@ -136,7 +137,7 @@ static cmos_int32_T i2c_read(const void *dev_id, void *buf, cmos_int32_T n_bytes
         return 0;
     }
 
-    if(HAL_OK != HAL_I2C_Mem_Read(dev_id, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
+    if(HAL_OK != HAL_I2C_Mem_Read((I2C_HandleTypeDef *)dev_id, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
                 I2C_MEMADD_SIZE_8BIT, buf, (cmos_uint16_T)(n_bytes), HAL_MAX_DELAY))
     {
         cmos_err_log("HAL_I2C_Mem_Read err.");
