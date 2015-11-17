@@ -51,10 +51,8 @@ typedef struct vfs_fd_item_T_tag{
 /*********************************** 接口函数 **********************************/
 cmos_status_T vfs_init(void);
 cmos_status_T vfs_destroy(void);
-cmos_int32_T vfs_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
-cmos_int32_T vfs_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
-cmos_status_T vfs_ioctl(cmos_int32_T fd, cmos_uint32_T request, cmos_uint32_T mode);
 
+cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
 cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
         const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
 void vfs_print(void);

@@ -19,6 +19,7 @@
 #include "cmos_config.h"
 #include "idle.h"
 #include "cmos_api.h"
+#include "fd.h"
 #include "vfs.h"
 #include "hal.h"
 #include "cortex.h"
@@ -253,7 +254,7 @@ static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ..
     va_end(args);
 
     /* 返回的是指针 */
-    fd = vfs_open(path, flag, mode);
+    fd = vfs_fd_open(path, flag, mode);
 
     return fd;
 }
@@ -362,7 +363,7 @@ static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_byte
 
     cmos_int32_T n_writes = 0;
 
-    n_writes = vfs_write(fd, buf, n_bytes);
+    n_writes = vfs_fd_write(fd, buf, n_bytes);
 
     return n_writes;
 }
@@ -404,7 +405,7 @@ static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
     va_end(args);
 
     /* 返回的是指针 */
-    status = vfs_ioctl(fd, request, mode);
+    status = vfs_fd_ioctl(fd, request, mode);
     return status;
 }
 
