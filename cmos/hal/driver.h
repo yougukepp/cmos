@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_HAL_HARDWARE_DRIVER_H_
-#define _CMOS_HAL_HARDWARE_DRIVER_H_
+#ifndef _CMOS_HAL_DRIVER_H_
+#define _CMOS_HAL_DRIVER_H_
 
 /************************************ 头文件 ***********************************/
 
@@ -39,5 +39,5 @@ typedef struct cmos_hal_driver_T_tag{
 
 /*********************************** 接口函数 **********************************/
 
-#endif /* #ifndef _CMOS_HAL_HARDWARE_DRIVER_H_ */
+#endif /* #ifndef _CMOS_HAL_DRIVER_H_ */
 

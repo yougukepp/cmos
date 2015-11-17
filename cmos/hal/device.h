@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_HAL_HARDWARE_DEVICE_H_
-#define _CMOS_HAL_HARDWARE_DEVICE_H_
+#ifndef _CMOS_HAL_DEVICE_H_
+#define _CMOS_HAL_DEVICE_H_
 
 /************************************ 头文件 ***********************************/
 
@@ -29,5 +29,5 @@
 cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver);
 cmos_status_T hal_device_del(const cmos_uint8_T *path);
 
-#endif /* #ifndef _CMOS_HAL_HARDWARE_DEVICE_H_ */
+#endif /* #ifndef _CMOS_HAL_DEVICE_H_ */
 

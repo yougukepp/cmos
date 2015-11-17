@@ -11,8 +11,8 @@
 *
 ********************************************************************************/
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_CONSOLE_H_
-#define _CMOS_CONSOLE_H_
+#ifndef _CMOS_CONSOLE_CONSOLE_H_
+#define _CMOS_CONSOLE_CONSOLE_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
@@ -52,5 +52,5 @@
 cmos_status_T cmos_console_init(cmos_int32_T baud_rate);
 cmos_int32_T cmos_console_printf(char *fmt, ...);
 
-#endif /* _CMOS_HAL_UART_H_ */
+#endif /* _CMOS_CONSOLE_CONSOLE_H_ */
 

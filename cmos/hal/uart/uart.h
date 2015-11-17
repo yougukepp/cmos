@@ -11,8 +11,8 @@
 *
 ********************************************************************************/
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_HAL_UART_H_
-#define _CMOS_HAL_UART_H_
+#ifndef _CMOS_HAL_UART_UART_H_
+#define _CMOS_HAL_UART_UART_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
@@ -36,5 +36,5 @@ extern const cmos_hal_driver_T g_uart_driver; /* 驱动变量由vfs指示 */
 /* 初始化函数 */
 void cmos_hal_uart_init(void *para);
 
-#endif /* _CMOS_HAL_UART_H_ */
+#endif /* _CMOS_HAL_UART_UART_H_ */
 

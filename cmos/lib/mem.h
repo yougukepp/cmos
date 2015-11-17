@@ -26,5 +26,5 @@
 void *cmos_malloc(cmos_int32_T size);
 void cmos_free(void *ptr);
 
-#endif /* _CMOS_LIB_H_ */
+#endif /* _CMOS_LIB_MEM_H_ */
 

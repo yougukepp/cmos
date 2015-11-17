@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_VFS_H_
-#define _CMOS_VFS_H_
+#ifndef _CMOS_VFS_VFS_H_
+#define _CMOS_VFS_VFS_H_
 
 /************************************ 头文件 ***********************************/
 #include "tree.h"
@@ -59,5 +59,5 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
 void vfs_print(void);
 cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *now_node, const cmos_uint8_T *name);
 
-#endif /* #ifndef _CMOS_VFS_H_ */
+#endif /* #ifndef _CMOS_VFS_VFS_H_ */
 

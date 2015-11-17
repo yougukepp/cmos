@@ -20,6 +20,7 @@
 #include "cmos_api.h"
 #include "vfs.h"
 #include "hal.h"
+#include "cortex.h"
 #include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -446,8 +447,8 @@ cmos_status_T cmos_init(void)
 
     /* TODO:创建idle任务 */
 
-    /* float使能 使用PSP 进非特权 */
-    __set_CONTROL(0x00000007);
+    /* 进入任务环境 */
+    GOTO_TASK_CONTEXT;
 
     return cmos_OK_E;
 }

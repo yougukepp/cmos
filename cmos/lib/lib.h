@@ -11,8 +11,8 @@
 *
 ********************************************************************************/
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_LIB_H_
-#define _CMOS_LIB_H_
+#ifndef _CMOS_LIB_LIB_H_
+#define _CMOS_LIB_LIB_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
@@ -42,5 +42,5 @@ void assert_failed(uint8_t* file, uint32_t line);
 void *cmos_malloc(cmos_int32_T size);
 void cmos_free(void *ptr);
 
-#endif /* _CMOS_LIB_H_ */
+#endif /* _CMOS_LIB_LIB_H_ */
 
