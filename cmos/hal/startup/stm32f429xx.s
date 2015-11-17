@@ -22,13 +22,13 @@
 ;*******************************************************************************/
 
 ; 系统栈(MSP) 1kB
-Stack_Size      EQU     0x00004000
+Stack_Size      EQU     0x00000400
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
 __initial_sp
 
-; 堆 1kB
+; 堆 16kB
 ; 对比.map文件中
 Heap_Size       EQU     0x00004000
 
@@ -65,7 +65,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; PendSV Handler
                 DCD     SysTick_Handler         ; SysTick Handler
 
-                ; 外部中断 仅实现USART1作为控制台
+                ; TODO: 外部中断 仅实现USART1作为控制台
                 DCD     0                       ; Window WatchDog
                 DCD     0                       ; PVD through EXTI Line detection
                 DCD     0                       ; Tamper and TimeStamps through the EXTI line
