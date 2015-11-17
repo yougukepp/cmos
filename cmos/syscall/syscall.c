@@ -388,14 +388,24 @@ static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_byte
  *
  ******************************************************************************/
 static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
-{
+{ 
     if(fd < 0)
     {
-        CMOS_ERR_STR("write fd < 0.");
+        CMOS_ERR_STR("ioctl fd < 0.");
         return cmos_PARA_E;
     }
 
-    return cmos_OK_E;
+    cmos_status_T status = cmos_ERR_E;
+    cmos_uint32_T mode = 0;
+    va_list args;
+
+    va_start(args, request);
+    mode = va_arg(args, cmos_uint32_T);
+    va_end(args);
+
+    /* 返回的是指针 */
+    status = vfs_ioctl(fd, request, mode);
+    return status;
 }
 
 /*******************************************************************************

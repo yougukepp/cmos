@@ -624,3 +624,26 @@ cmos_int32_T vfs_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
     return write_bytes;
 }
 
+/*******************************************************************************
+*
+* 函数名  : vfs_ioctl
+* 负责人  : 彭鹏
+* 创建日期: 20151117
+* 函数功能: 控制fd指示的文件
+*
+* 输入参数: fd      文件句柄
+*           request 请求号码定义于cmos_api.h
+*           mode    控制模式(可选参数)
+*           参数规则见Linux ioctl
+* 输出参数: 无
+* 返回值  : 执行状态
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_status_T vfs_ioctl(cmos_int32_T fd, cmos_uint32_T request, cmos_uint32_T mode)
+{
+    ;
+}
+
