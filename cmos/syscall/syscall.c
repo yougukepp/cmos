@@ -176,6 +176,7 @@ void syscall_c(cmos_uint32_T *sp)
  ******************************************************************************/
 static cmos_status_T cmos_start_c(void)
 {
+    /* 开始调度 */
     return cmos_OK_E;
 }
 
@@ -443,8 +444,11 @@ cmos_status_T cmos_init(void)
     cmos_printf("cmos init done with vfs tree:\r\n");
     vfs_print();
 
-    /* 创建idle任务 */
+
+    /* TODO:创建idle任务 */
+
     /* TODO:进入非特权级别 */
+
     return cmos_OK_E;
 }
 
