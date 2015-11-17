@@ -28,8 +28,12 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/ 
-/* float使能 使用PSP 进非特权 */
-#define GOTO_TASK_CONTEXT __set_CONTROL(0x00000007)
+/* float使能  进非特权
+ *
+ * TODO: 使用PSP 
+ *
+ * */
+#define GOTO_TASK_CONTEXT __set_CONTROL(0x00000005)
 
 #endif /* #ifndef _CMOS_HAL_CORTEX_CORTEX_H_ */
 
