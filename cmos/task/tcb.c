@@ -140,14 +140,15 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
     }
 
     sp = stack_base;
-    /* TODO:浮点寄存器 */
+
+    /* total 52 字 208 字节 */
+#if (CMOS_DEBUG_LEVEL > 0)
     sp--;
-    *sp = 0xfefefefe; /* 双字节对齐 占位 */
+    *sp = 0xfefefefe; /* cm4要求 双字节对齐 占位 */
 
     sp--;
     *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
 
-#if (CMOS_DEBUG_LEVEL > 0)
     sp--;
     *sp = 0x0f150f15; /* S15 */
 
@@ -195,10 +196,6 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
 
     sp--;
     *sp = 0x0f000f00; /* S00 */
-#else
-    sp -= 16;
-#endif
-
 
     sp--;
     *sp = CMOS_INITIAL_XPSR; /* xPSR */
@@ -209,8 +206,6 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
     sp--;
     *sp = (cmos_word_T )err_loop; /* LR */
 
-    /* 保留寄存器 R12 R3 R2 R1 R0 的空间 */
-#if (CMOS_DEBUG_LEVEL > 0)
     sp--;
     *sp = 0x12121212; /* R12 */
 
@@ -225,16 +220,15 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
 
     sp--;
     *sp = (cmos_word_T)argv; /* R0 */
-#else /* 调试 */
-    sp -= 5;    /* R12, R3, R2 and R1. */
-    *sp = (cmos_word_T )argv; /* R0 */
-#endif
+
+    /* 任务切换时
+     * 以上内容硬件保存
+     * 以下内容软件保存 */
 
     /* 用于任务切换的中断返回 */
     sp--;
     *sp = CMOS_INITIAL_EXEC_RETURN;
-    /* 保留R11, R10, R9, R8, R7, R6, R5 and R4. */
-#if (CMOS_DEBUG_LEVEL > 0)
+
     sp--;
     *sp = 0x11111111; /* R11 */
 
@@ -258,8 +252,88 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
 
     sp--;
     *sp = 0x04040404; /* R4 */
-#else /* 调试 */
-    sp -= 8;
+
+    sp--;
+    *sp = 0x0f310f31; /* S31 */
+
+    sp--;
+    *sp = 0x0f300f30; /* S30 */
+
+    sp--;
+    *sp = 0x0f290f29; /* S29 */
+
+    sp--;
+    *sp = 0x0f280f28; /* S28 */
+
+    sp--;
+    *sp = 0x0f270f27; /* S27 */
+
+    sp--;
+    *sp = 0x0f260f26; /* S26 */
+
+    sp--;
+    *sp = 0x0f250f25; /* S25 */
+
+    sp--;
+    *sp = 0x0f240f24; /* S24 */
+
+    sp--;
+    *sp = 0x0f230f23; /* S23 */
+
+    sp--;
+    *sp = 0x0f220f22; /* S22 */
+
+    sp--;
+    *sp = 0x0f210f21; /* S21 */
+
+    sp--;
+    *sp = 0x0f200f20; /* S20 */
+
+    sp--;
+    *sp = 0x0f190f19; /* S19 */
+
+    sp--;
+    *sp = 0x0f180f18; /* S18 */
+
+    sp--;
+    *sp = 0x0f170f17; /* S17 */
+
+    sp--;
+    *sp = 0x0f160f16; /* S16 */
+
+    sp--;
+    *sp = 0xefefefef; /* cmos加入 双字节对齐 占位 */
+#else
+    sp--; /* cm4要求 双字节对齐 占位 */
+
+    sp--;
+    *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
+
+    sp -= 16; /* S15 - S0 */
+
+    sp--;
+    *sp = CMOS_INITIAL_XPSR; /* xPSR */
+
+    sp--;
+    *sp = (cmos_word_T)entry; /* PC */
+
+    sp--;
+    *sp = (cmos_word_T )err_loop; /* LR */
+
+    sp -= 4; /* R12 R3 R2 R1 */
+
+    sp--;
+    *sp = (cmos_word_T)argv; /* R0 */
+
+    /* 任务切换时
+     * 以上内容硬件保存
+     * 以下内容软件保存 */
+
+    /* 用于任务切换的中断返回 */
+    sp--;
+    *sp = CMOS_INITIAL_EXEC_RETURN;
+
+    sp -= 25; /* R11 - R0  and  S32 - S16  and cmos加入 双字节对齐 占位 */
 #endif
 
     *ptr_psp = sp;
