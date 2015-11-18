@@ -19,11 +19,6 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 
-/* 测试使用 */
-cmos_uint32_T cmos_i2c_read_buf(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr,
-        cmos_uint8_T *ptr_read_buf, cmos_uint32_T buf_len);
-
-
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
@@ -66,33 +61,7 @@ int main(void)
 
     cmos_printf("cmos start.\r\n");
 
-#if 0
-    unsigned char val = 0;
-    int i = 0;
-    int iMax = 0;
-    int read_num = 0;
-    unsigned char bmp180_reg_addr[] = {
-        0xAA, 0xAB,
-        0xAC, 0xAD,
-        0xAE, 0xAF,
-        0xBA, 0xBB,
-        0xBC, 0xBD,
-        0xBE, 0xBF,
-        0xD0, 0xE0, 0xF4, 0xF6, 0xF7, 0xF8};
-
-    cmos_printf("BMP180 REGS Values:\r\n");
-    iMax = sizeof(bmp180_reg_addr) /sizeof(bmp180_reg_addr[0]);
-    for(i=0;i<iMax;i++) 
-    { 
-        read_num = cmos_i2c_read_buf(0xEF, bmp180_reg_addr[i], &val, 1);
-        if(read_num != 1)
-        {
-            assert_failed(__FILE__, __LINE__);
-        }
-        cmos_printf("0x%02x:0x%02x\r\n", bmp180_reg_addr[i], val);
-    }
-#else 
-
+#if 1
     cmos_i2c_addr_T bmp180_addr =
     {
         .dev_addr = 0xEF,

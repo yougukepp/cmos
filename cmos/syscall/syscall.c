@@ -68,18 +68,12 @@ void syscall_c(cmos_uint32_T *sp)
         CMOS_ERR_STR("sp is null");
     }
 
-    cmos_uint32_T stacked_r0 = 0;
-    cmos_uint32_T stacked_r1 = 0;
-    cmos_uint32_T stacked_r2 = 0;
-    cmos_uint32_T stacked_r3 = 0;
+    cmos_uint8_T svc_number = ((cmos_uint8_T *) sp[6])[-2];
 
-    cmos_uint8_T svc_number = 0;
-
-    svc_number = ((cmos_uint8_T *) sp[6])[-2];
-    stacked_r0 = sp[0];
-    stacked_r1 = sp[1];
-    stacked_r2 = sp[2];
-    stacked_r3 = sp[3];
+    cmos_uint32_T stacked_r0 = sp[0];
+    cmos_uint32_T stacked_r1 = sp[1];
+    cmos_uint32_T stacked_r2 = sp[2];
+    cmos_uint32_T stacked_r3 = sp[3];
 
     /***************************************************************************
      *
@@ -121,7 +115,7 @@ void syscall_c(cmos_uint32_T *sp)
             { 
                 sp[0] = cmos_create_c((cmos_task_id_T *)stacked_r0,
                         (cmos_func_T)stacked_r1, 
-                        (void *)stacked_r1, 
+                        (void *)stacked_r2, 
                         (const cmos_task_attribute_T *)stacked_r3);
                 break;
             }

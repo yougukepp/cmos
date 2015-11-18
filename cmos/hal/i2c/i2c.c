@@ -137,13 +137,6 @@ static cmos_int32_T i2c_read(const void *dev_id, void *buf, cmos_int32_T n_bytes
         return 0;
     } 
     
-    /*
-    cmos_uint32_T cmos_i2c_read_buf(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr,
-            cmos_uint8_T *ptr_read_buf, cmos_uint32_T buf_len);
-
-    cmos_uint32_T bb = cmos_i2c_read_buf(s_i2c_addr.dev_addr, s_i2c_addr.reg_offset, (cmos_uint8_T *)buf, n_bytes);
-    */
-
     if(HAL_OK != HAL_I2C_Mem_Read((I2C_HandleTypeDef *)dev_id, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
                 I2C_MEMADD_SIZE_8BIT, buf, (cmos_uint16_T)(n_bytes), HAL_MAX_DELAY))
     {
@@ -218,81 +211,5 @@ err:
 static cmos_status_T i2c_close(const void *dev_id)
 {
     return cmos_ERR_E;
-}
-
-
-
-
-
-
-
-
-
-
-/* 测试使用 */
-/*******************************************************************************
-*
-* 函数名  : cmos_i2c_read_buf
-* 负责人  : 彭鹏
-* 创建日期: 20150704
-* 函数功能: i2c 读取多字节
-*
-* 输入参数: dev_addr 设备地址
-*           reg_addr 寄存器启始地址
-*           ptr_read_buf 读取的缓存
-*           buf_len 缓存大小
-*
-* 输出参数: 无
-*
-* 返回值  : 读取的字节数
-*           0    无数据读出
-*           其他 读取的字节数
-*
-* 调用关系: 无
-* 其 它   : buf_len过大(需要的数据过多会卡死)
-*
-******************************************************************************/
-cmos_uint32_T cmos_i2c_read_buf(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr,
-        cmos_uint8_T *ptr_read_buf, cmos_uint32_T buf_len)
-{
-  if(HAL_OK != HAL_I2C_Mem_Read(&s_i2c_handle, dev_addr, reg_addr,
-              I2C_MEMADD_SIZE_8BIT, ptr_read_buf, (cmos_uint16_T)(buf_len), HAL_MAX_DELAY))
-  {
-      assert_failed(__FILE__, __LINE__);
-  }
-
-  return buf_len;
-}
-
-/*******************************************************************************
-*
-* 函数名  : cmos_i2c_write_buf
-* 负责人  : 彭鹏
-* 创建日期: 20150704
-* 函数功能: i2c 读取多字节
-*
-* 输入参数: dev_addr 设备地址
-*           reg_addr 寄存器启始地址
-*           ptr_read_buf 写入的缓存
-*           buf_len 缓存大小
-*
-* 输出参数: 无
-*
-* 返回值  : 写入的字节数
-*
-* 调用关系: 无
-* 其 它   : buf_len过大(写入的数据过多会卡死)
-*
-******************************************************************************/
-cmos_uint32_T cmos_i2c_write_buf(cmos_uint8_T dev_addr, cmos_uint8_T reg_addr,
-        const cmos_uint8_T *ptr_write_buf, cmos_uint32_T buf_len)
-{
-  if(HAL_OK != HAL_I2C_Mem_Write(&s_i2c_handle, dev_addr, reg_addr,
-              I2C_MEMADD_SIZE_8BIT, (cmos_uint8_T *)ptr_write_buf, (cmos_uint16_T)(buf_len), HAL_MAX_DELAY))
-  {
-      assert_failed(__FILE__, __LINE__);
-  }
-
-  return buf_len;
 }
 
