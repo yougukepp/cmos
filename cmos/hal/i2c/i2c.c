@@ -135,7 +135,14 @@ static cmos_int32_T i2c_read(const void *dev_id, void *buf, cmos_int32_T n_bytes
     {
         CMOS_ERR_STR("i2c_read with invalid buf.");
         return 0;
-    }
+    } 
+    
+    /*
+    cmos_uint32_T cmos_i2c_read_buf(cmos_uint8_T dev_addr, cmos_uint16_T reg_addr,
+            cmos_uint8_T *ptr_read_buf, cmos_uint32_T buf_len);
+
+    cmos_uint32_T bb = cmos_i2c_read_buf(s_i2c_addr.dev_addr, s_i2c_addr.reg_offset, (cmos_uint8_T *)buf, n_bytes);
+    */
 
     if(HAL_OK != HAL_I2C_Mem_Read((I2C_HandleTypeDef *)dev_id, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
                 I2C_MEMADD_SIZE_8BIT, buf, (cmos_uint16_T)(n_bytes), HAL_MAX_DELAY))
@@ -165,7 +172,7 @@ static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T 
         CMOS_ERR_STR("i2c_read with invalid buf.");
         return 0;
     } 
-    
+
     if(HAL_OK != HAL_I2C_Mem_Write(&s_i2c_handle, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
                 I2C_MEMADD_SIZE_8BIT, (cmos_uint8_T *)buf, (cmos_uint16_T)(n_bytes), HAL_MAX_DELAY))
     {

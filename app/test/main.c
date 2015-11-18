@@ -91,27 +91,54 @@ int main(void)
         }
         cmos_printf("0x%02x:0x%02x\r\n", bmp180_reg_addr[i], val);
     }
-    while(TRUE);
 #else 
 
     cmos_i2c_addr_T bmp180_addr =
     {
-        .dev_addr = 0x00,
-        .reg_offset = 0x00
+        .dev_addr = 0xEF,
+        .reg_offset = 0xF4
     };
     cmos_int32_T read_bytes = 0;
-    cmos_uint8_T buf[10];
+    cmos_int32_T write_bytes = 0;
+    cmos_uint8_T buf[6] = {0};
 
     cmos_int32_T s_bmp180_fd = cmos_open(CMOS_IMU_I2CBUS_PATH, CMOS_O_RDWR);
-    status = cmos_ioctl(s_bmp180_fd, CMOS_I_SET_I2C_ADDR, &bmp180_addr);
-    read_bytes = cmos_read(s_bmp180_fd, buf, 10); 
-    
-    /* 写入待测试 */
-    /* static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes) */
 
-    cmos_printf("cmos read bmp180 %d.\r\n", read_bytes);
+    /* 读取测试 */
+    status = cmos_ioctl(s_bmp180_fd, CMOS_I_SET_I2C_ADDR, &bmp180_addr);
+    if(cmos_OK_E != status)
+    {
+        cmos_printf("cmos_ioctl err 0x%08x", status);
+        goto out;
+    }
+    read_bytes = cmos_read(s_bmp180_fd, buf, 6); 
+
+    cmos_printf("cmos read bmp180 %d:\r\n", read_bytes);
+    for(int i = 0; i< 6; i++)
+    {
+        cmos_printf("0x%02x:0x%02x\r\n", 0xF4 + i, buf[i]);
+    }
+
+
+
+    /* 写入测试 */
+    buf[0] = 0xC0;
+    write_bytes = cmos_write(s_bmp180_fd, buf, 1); 
+    cmos_printf("cmos write bmp180 %d:\r\n", write_bytes);
+
+    /* 回读 */
+    read_bytes = cmos_read(s_bmp180_fd, buf, 6); 
+
+    cmos_printf("cmos read bmp180 %d:\r\n", read_bytes);
+    for(int i = 0; i< 6; i++)
+    {
+        cmos_printf("0x%02x:0x%02x\r\n", 0xF4 + i, buf[i]);
+    }
 
 
 #endif
+
+out:
+    while(TRUE);
 }
 

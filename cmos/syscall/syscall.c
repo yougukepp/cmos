@@ -327,7 +327,11 @@ static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes
         return cmos_PARA_E;
     }
 
-    return 0;
+    cmos_int32_T n_reads = 0;
+
+    n_reads = vfs_fd_read(fd, buf, n_bytes);
+
+    return n_reads;
 }
 
 /*******************************************************************************
