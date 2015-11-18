@@ -17,7 +17,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "cmos_config.h"
-#include "lib.h"
+#include "misc.h"
 #include "console.h"
 #include "cmos_api.h"
 

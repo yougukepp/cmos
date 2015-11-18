@@ -18,7 +18,8 @@
 #include "cmos_config.h"
 #include "tcb.h"
 #include "console.h"
-
+#include "misc.h"
+#include "cortex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -26,7 +27,10 @@
 
 
 /********************************** 函数声明区 *********************************/
-
+static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
+        const cmos_func_T entry,
+        const void *argv, 
+        cmos_word_T *stack_bask);
 
 /********************************** 变量实现区 *********************************/
 
@@ -52,10 +56,10 @@
  *
  ******************************************************************************/
 cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
-        cmos_uint8_T *stack_base,
         cmos_func_T entry,
         void *argv,
-        const cmos_task_attribute_T *task_attribute)
+        const cmos_task_attribute_T *task_attribute,
+        cmos_word_T *stack_base)
 {
     cmos_int32_T stack_size = 0; /* 栈大小 Byte单位*/
     cmos_status_T status = cmos_ERR_E;
@@ -80,6 +84,7 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
         return cmos_PARA_E;
     }
 
+    /* TODO: 函数封装 */
     tcb->entry = entry;
     tcb->argv = argv;
     tcb->stack_size = stack_size;
@@ -90,33 +95,122 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
     tcb->tick = 0;
 
     /* 初始化任务栈 */
-    status = cmos_task_tcb_stack_init(tcb, stack_base);
+    status = cmos_task_tcb_stack_init(&(tcb->psp), tcb->entry, tcb->argv, stack_base);
     if(cmos_OK_E != status)
     {
         return status;
     }
 
-    tcb->psp = s_user_stack_base;
-
-    s_user_stack_base -= stack_size; /* 占用 */
+    return cmos_OK_E;
 }
 
-static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_uint8_T *stack_bask)
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_stack_init
+ * 负责人  : 彭鹏
+ * 创建日期：20151117 
+ * 函数功能: 初始化任务栈
+ *
+ * 输入参数: ptr_psp    任务栈指针的地址
+ *           entry      任务入口函数
+ *           argv       任务入口函数参数
+ *           stack_base 任务栈指针
+ *
+ * 输出参数: ptr_psp 任务栈指针的地址
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
+        const cmos_func_T entry,
+        const void *argv, 
+        cmos_word_T *stack_base)
 {
+    cmos_word_T *sp = NULL;      /* 任务sp指针 */
+
+    if((NULL == ptr_psp)
+    || (NULL == entry)
+    || (NULL == stack_base))
+    {
+        CMOS_ERR_STR("cmos_task_tcb_stack_init with null pointer.");
+        return cmos_NULL_E;
+    }
+
+    sp = stack_base;
+    /* TODO:浮点寄存器 */
+    sp--;
+    *sp = 0xfefefefe; /* 双字节对齐 占位 */
+
+    sp--;
+    *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
+
+#if (CMOS_DEBUG_LEVEL > 0)
+    sp--;
+    *sp = 0x0f150f15; /* S15 */
+
+    sp--;
+    *sp = 0x0f140f14; /* S14 */
+
+    sp--;
+    *sp = 0x0f130f13; /* S13 */
+
+    sp--;
+    *sp = 0x0f120f12; /* S12 */
+
+    sp--;
+    *sp = 0x0f110f11; /* S11 */
+
+    sp--;
+    *sp = 0x0f100f10; /* S10 */
+
+    sp--;
+    *sp = 0x0f090f09; /* S09 */
+
+    sp--;
+    *sp = 0x0f080f08; /* S08 */
+
+    sp--;
+    *sp = 0x0f070f07; /* S07 */
+
+    sp--;
+    *sp = 0x0f060f06; /* S06 */
+
+    sp--;
+    *sp = 0x0f050f05; /* S05 */
+
+    sp--;
+    *sp = 0x0f040f04; /* S04 */
+
+    sp--;
+    *sp = 0x0f030f03; /* S03 */
+
+    sp--;
+    *sp = 0x0f020f02; /* S02 */
+
+    sp--;
+    *sp = 0x0f010f01; /* S01 */
+
+    sp--;
+    *sp = 0x0f000f00; /* S00 */
+#else
+    sp -= 16;
+#endif
+
+
     sp--;
     *sp = CMOS_INITIAL_XPSR; /* xPSR */
 
     sp--;
-    *sp = (cm_uint32_t)funcName; /* PC */
+    *sp = (cmos_word_T)entry; /* PC */
 
     sp--;
-    *sp = (cm_uint32_t )Error_Handler; /* LR */
+    *sp = (cmos_word_T )err_loop; /* LR */
 
     /* 保留寄存器 R12 R3 R2 R1 R0 的空间 */
-#if 0
-    sp -= 5;    /* R12, R3, R2 and R1. */
-    *sp = (cm_uint32_t )argv; /* R0 */
-#else /* 调试 */
+#if (CMOS_DEBUG_LEVEL > 0)
     sp--;
     *sp = 0x12121212; /* R12 */
 
@@ -130,17 +224,17 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_uint8_T
     *sp = 0x01010101; /* R1 */
 
     sp--;
-    *sp = (cm_uint32_t)argv; /* R0 */
+    *sp = (cmos_word_T)argv; /* R0 */
+#else /* 调试 */
+    sp -= 5;    /* R12, R3, R2 and R1. */
+    *sp = (cmos_word_T )argv; /* R0 */
 #endif
 
     /* 用于任务切换的中断返回 */
     sp--;
     *sp = CMOS_INITIAL_EXEC_RETURN;
-
     /* 保留R11, R10, R9, R8, R7, R6, R5 and R4. */
-#if 0
-    sp -= 8;
-#else /* 调试 */
+#if (CMOS_DEBUG_LEVEL > 0)
     sp--;
     *sp = 0x11111111; /* R11 */
 
@@ -164,8 +258,39 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_uint8_T
 
     sp--;
     *sp = 0x04040404; /* R4 */
+#else /* 调试 */
+    sp -= 8;
 #endif
 
-    return sp;
+    *ptr_psp = sp;
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_stack_init
+ * 负责人  : 彭鹏
+ * 创建日期：20151117 
+ * 函数功能: 初始化任务栈
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 任务栈大小
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb)
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_get_stack_size with null tcb pointer.");
+        return -1;
+    }
+
+    return tcb->stack_size;
 }
 

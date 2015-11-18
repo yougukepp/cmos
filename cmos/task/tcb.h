@@ -31,7 +31,7 @@ struct cmos_task_tcb_T_tag{
     void            *argv;      /* 入口函数参数 */
 
     cmos_int32_T    stack_size; /* 栈大小 Byte单位*/
-    cmos_uint8_T    *psp;       /* 任务sp指针 */
+    cmos_word_T     *psp;       /* 任务psp指针 以字为单位 */
 
     cmos_priority_T priority;   /* 优先级 */
 
@@ -42,6 +42,12 @@ struct cmos_task_tcb_T_tag{
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
+        cmos_func_T entry,
+        void *argv,
+        const cmos_task_attribute_T *task_attribute,
+        cmos_word_T *stack_base);
+cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb);
 
 #endif // #ifndef _CMOS_TASK_TCB_H_
 

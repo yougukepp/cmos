@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include "lib.h"
+#include "misc.h"
 #include "mem.h"
 #include "tree.h"
 #include "path.h"

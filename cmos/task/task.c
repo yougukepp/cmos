@@ -26,7 +26,7 @@
 
 /********************************** 变量声明区 *********************************/
 /* 空闲的任务栈顶 */
-static cmos_uint8_T *s_user_stack_base = CMOS_TASK_STACK_BASE;
+static cmos_word_T *s_user_stack_base = CMOS_TASK_STACK_BASE;
 
 /********************************** 函数声明区 *********************************/
 
@@ -59,6 +59,7 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
         void *argv,
         const cmos_task_attribute_T *task_attribute)
 {
+    cmos_int32_T stack_size = 0;
     cmos_task_tcb_T *tcb = NULL;
     cmos_status_T status = cmos_ERR_E;
 
@@ -88,12 +89,15 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
         return status;
     }
 
-#if 0
     /* step3: 更新用户空间未用栈的顶 */
+    stack_size = cmos_task_tcb_get_stack_size(tcb);
+
+    stack_size >>= 2; /* 字节转为字 */
     s_user_stack_base -= stack_size;
 
+#if 0
     /* step3: 通知调度模块有新线程 */ 
-    switch_add(ptr_tcb);
+    cmos_task_switch_add(ptr_tcb);
 #endif
 
     return status;

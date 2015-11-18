@@ -19,6 +19,12 @@
 #include "stm32f4xx_hal.h"
 
 /************************************ 宏定义 ***********************************/
+/* xPSR寄存器初值 Thumb状态 */
+#define CMOS_INITIAL_XPSR                                   (0x01000000)
+/* LR初值 Thread mode with float and psp */
+#define CMOS_INITIAL_EXEC_RETURN                            (0xfffffffd)
+/* TODO:求取合适的值 FPSCR初值 */
+#define CMOS_INITIAL_FPSCR                                  (0x00000000)
 
 /*********************************** 类型定义 **********************************/
 
