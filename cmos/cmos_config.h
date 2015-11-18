@@ -81,7 +81,8 @@
 //#define CMOS_USB
 
 
-/********************************* 空闲任务属性 ********************************/
+/*********************************** 任务属性 **********************************/
+/* 空闲任务属性 */
 #define CMOS_IDLE_PRIORITY                                      (cmos_priority_idle)
 #define CMOS_IDLE_STACK_SIZE                                    (256)
 #define CMOS_IDLE_TICK_TOTAL                                    (1)

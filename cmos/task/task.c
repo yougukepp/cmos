@@ -16,14 +16,17 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "stm32f429idiscovery_hardware.h"
+#include "tcb.h"
 #include "task.h"
+#include "mem.h"
 #include "console.h"
-
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-
+/* 空闲的任务栈顶 */
+static cmos_uint8_T *s_user_stack_base = CMOS_TASK_STACK_BASE;
 
 /********************************** 函数声明区 *********************************/
 
@@ -52,22 +55,46 @@
  *
  ******************************************************************************/
 cmos_status_T cmos_task_create(cmos_task_id_T *task_id, 
-        cmos_func_T task_func,
+        cmos_func_T entry,
         void *argv,
         const cmos_task_attribute_T *task_attribute)
 {
+    cmos_task_tcb_T *tcb = NULL;
     cmos_status_T status = cmos_ERR_E;
-    if((NULL == task_func)
+
+    /* step0: 参数检查 */
+    if((NULL == entry)
     || (NULL == task_attribute))
     {
         CMOS_ERR_STR("task func and task attribute should not to be null.");
+        *task_id = NULL;
+        return cmos_PARA_E;
     }
 
+    /* TODO: 任务删除的时候释放 */
     /* step1: 分配 tcb(任务控制块) */
+    tcb = cmos_malloc(sizeof(cmos_task_tcb_T));
+    if(NULL == tcb)
+    {
+        *task_id = NULL;
+        return cmos_MEM_LACK_E;
+    }
 
     /* step2: 初始化任务栈 */
+    status = cmos_task_tcb_init(tcb, entry, argv, task_attribute, s_user_stack_base);
+    if(cmos_OK_E != status)
+    {
+        *task_id = NULL;
+        return status;
+    }
 
-    /* step3: 初始化 tcb(任务控制块) */
+#if 0
+    /* step3: 更新用户空间未用栈的顶 */
+    s_user_stack_base -= stack_size;
+
+    /* step3: 通知调度模块有新线程 */ 
+    switch_add(ptr_tcb);
+#endif
 
     return status;
 }
