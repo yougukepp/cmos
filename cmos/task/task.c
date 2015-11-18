@@ -15,6 +15,9 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include "cmos_config.h"
+#include "task.h"
+#include "console.h"
 
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -29,4 +32,43 @@
 
 
 /********************************** 函数实现区 *********************************/
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_create
+ * 负责人  : 彭鹏
+ * 创建日期：20151117 
+ * 函数功能: 创建任务
+ *
+ * 输入参数: task_func      任务入口
+ *           argv           任务参数
+ *           task_attribute 任务属性 堆栈 优先级 等
+ *
+ * 输出参数: task_id 任务id号
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_task_create(cmos_task_id_T *task_id, 
+        cmos_func_T task_func,
+        void *argv,
+        const cmos_task_attribute_T *task_attribute)
+{
+    cmos_status_T status = cmos_ERR_E;
+    if((NULL == task_func)
+    || (NULL == task_attribute))
+    {
+        CMOS_ERR_STR("task func and task attribute should not to be null.");
+    }
+
+    /* step1: 分配 tcb(任务控制块) */
+
+    /* step2: 初始化任务栈 */
+
+    /* step3: 初始化 tcb(任务控制块) */
+
+    return status;
+}
 

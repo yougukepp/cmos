@@ -109,6 +109,8 @@ int main(void)
     /* 写入待测试 */
     /* static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes) */
 
+    cmos_printf("cmos read bmp180 %d.\r\n", read_bytes);
+
 
 #endif
 }

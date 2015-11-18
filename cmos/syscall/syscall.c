@@ -18,6 +18,7 @@
 
 #include "cmos_config.h"
 #include "idle.h"
+#include "task.h"
 #include "cmos_api.h"
 #include "fd.h"
 #include "vfs.h"
@@ -32,7 +33,7 @@ static cmos_task_id_T s_idle_task_id = 0;
 
 /********************************** 函数声明区 *********************************/
 static cmos_status_T cmos_start_c(void);
-static cmos_status_T cmos_task_create_c(cmos_task_id_T *task_id, 
+static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
         void *argv,
         const cmos_task_attribute_T *task_para);
@@ -91,7 +92,7 @@ void syscall_c(cmos_uint32_T *sp)
      *        0x00 cmos_init 没有汇编部分
      *        0x01 cmos_start 没有汇编部分
      *      0x1 任务控制(参考CMSIS Thread Management)
-     *        0x10 cmos_task_create
+     *        0x10 cmos_create
      *      0xa 驱动系统调用(利用Linux VFS思想)
      *        0xa0 cmos_open
      *        0xa1 cmos_close
@@ -118,7 +119,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 任务控制 */
         case 0x10:
             { 
-                sp[0] = cmos_task_create_c((cmos_task_id_T *)stacked_r0,
+                sp[0] = cmos_create_c((cmos_task_id_T *)stacked_r0,
                         (cmos_func_T)stacked_r1, 
                         (void *)stacked_r1, 
                         (const cmos_task_attribute_T *)stacked_r3);
@@ -186,7 +187,7 @@ static cmos_status_T cmos_start_c(void)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_task_create_c
+ * 函数名  : cmos_create_c
  * 负责人  : 彭鹏
  * 创建日期：20151023 
  * 函数功能: 创建任务
@@ -203,18 +204,21 @@ static cmos_status_T cmos_start_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_task_create_c(cmos_task_id_T *task_id, 
+static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
         void *argv,
         const cmos_task_attribute_T *task_attribute)
 {
+    cmos_status_T status = cmos_ERR_E;
     if((NULL == task_func)
     || (NULL == task_attribute))
     {
         CMOS_ERR_STR("task func and task attribute should not to be null.");
     }
 
-    return cmos_OK_E;
+    status = cmos_task_create(task_id, task_func, argv, task_attribute);
+
+    return status;
 }
 
 /*******************************************************************************
@@ -458,17 +462,17 @@ cmos_status_T cmos_init(void)
     cmos_printf("cmos init done with vfs tree:\r\n");
     vfs_print();
 
-    /* 创建idle任务 */
+    /* 进入任务环境 */
+    GOTO_TASK_CONTEXT;
+
+    /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T idle_attribute =
     {
         .priority = CMOS_IDLE_PRIORITY,
         .stack_size = CMOS_IDLE_STACK_SIZE,
-        .time_slice = CMOS_IDLE_TIME_SLICE
+        .tick_total = CMOS_IDLE_TICK_TOTAL
     };
-    status = cmos_task_create(&s_idle_task_id, cmos_task_idle_task, NULL, &idle_attribute);
-
-    /* 进入任务环境 */
-    GOTO_TASK_CONTEXT;
+    status = cmos_create(&s_idle_task_id, cmos_task_idle_task, NULL, &idle_attribute);
 
     return cmos_OK_E;
 }

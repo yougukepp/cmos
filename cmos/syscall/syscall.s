@@ -31,8 +31,8 @@ cmos_start      PROC
                 BX  LR
                 ENDP
 
-cmos_task_create    PROC
-                EXPORT  cmos_task_create
+cmos_create     PROC
+                EXPORT  cmos_create
                 SVC 0x10
                 BX  LR
                 ENDP

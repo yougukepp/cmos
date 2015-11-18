@@ -47,7 +47,7 @@ cmos_status_T cmos_init(void);
 cmos_status_T cmos_start(void);
 
 /* 任务管理 */
-cmos_status_T cmos_task_create(cmos_task_id_T *task_id, 
+cmos_status_T cmos_create(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
         void *argv,
         const cmos_task_attribute_T *task_attribute);
