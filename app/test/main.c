@@ -61,7 +61,7 @@ int main(void)
 
     cmos_printf("cmos start.\r\n");
 
-#if 1
+#if 0
     cmos_i2c_addr_T bmp180_addr =
     {
         .dev_addr = 0xEF,
@@ -104,10 +104,9 @@ int main(void)
         cmos_printf("0x%02x:0x%02x\r\n", 0xF4 + i, buf[i]);
     }
 
-
+out:
 #endif
 
-out:
     while(TRUE);
 }
 

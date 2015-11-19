@@ -17,26 +17,26 @@
 #include <stdarg.h>
 
 #include "cmos_config.h"
-#include "idle.h"
-#include "task.h"
 #include "cmos_api.h"
-#include "fd.h"
-#include "vfs.h"
-#include "hal.h"
-#include "cortex.h"
+
 #include "console.h"
+#include "kernel.h"
+#include "fd.h"
+#include "task.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static cmos_task_id_T s_idle_task_id = 0;
 
 /********************************** 函数声明区 *********************************/
+cmos_status_T cmos_init_c(void); /* 汇编会调用 不加static */
 static cmos_status_T cmos_start_c(void);
+
 static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
         void *argv,
         const cmos_task_attribute_T *task_para);
+
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 static cmos_status_T cmos_close_c(cmos_int32_T fd);
 static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
@@ -100,13 +100,12 @@ void syscall_c(cmos_uint32_T *sp)
         /* 内核基本 */
         case 0x00:
             {
-                /* cmos_init 没有汇编部分 */
-                assert_failed(__FILE__, __LINE__);
+                CMOS_ERR_STR("syscall_c should not used by svc:0x00 asm.");
                 break;
             }
         case 0x01:
             { 
-                sp[0] = cmos_start_c(); 
+                sp[0] = cmos_start_c();
                 break;
             }
 
@@ -158,6 +157,28 @@ void syscall_c(cmos_uint32_T *sp)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_init_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151119 
+ * 函数功能: 内核初始化
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_init_c(void)
+{
+   return cmos_kernel_init();
+}
+
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_start_c
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -176,7 +197,7 @@ void syscall_c(cmos_uint32_T *sp)
 static cmos_status_T cmos_start_c(void)
 {
     /* 开始调度 */
-    return cmos_OK_E;
+    return cmos_kernel_start();
 }
 
 /*******************************************************************************
@@ -283,7 +304,7 @@ static cmos_status_T cmos_close_c(cmos_int32_T fd)
         return cmos_PARA_E;
     }
 
-    return cmos_OK_E;
+    return vfs_fd_close(fd);
 }
 
 /*******************************************************************************
@@ -409,69 +430,5 @@ static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
     /* 返回的是指针 */
     status = vfs_fd_ioctl(fd, request, mode);
     return status;
-}
-
-/*******************************************************************************
-*
-* 函数名  : cmos_init
-* 负责人  : 彭鹏
-* 创建日期: 20150321
-* 函数功能: CMOS 初始化
-*
-* 输入参数: 无
-*
-* 输出参数: 无
-*
-* 返回值  : 函数执行状态
-*
-* 调用关系: 无
-* 其 它   : 无需汇编实现
-*
-******************************************************************************/
-cmos_status_T cmos_init(void)
-{
-    cmos_status_T status = cmos_ERR_E;
-
-    /* cmos hal vfs初始化 */
-    status = vfs_init();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
-
-
-    /* cmos hal 硬件底层初始化 */
-    status = hal_init();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
-
-    /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
-    status = cmos_console_init(CMOS_CONSOLE_BAUDRATE);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return status;
-    }
-    /* 后面的初始化可以使用控制台输出了 */
-
-    /* 打印目录树 */
-    cmos_printf("cmos init done with vfs tree:\r\n");
-    vfs_print();
-
-    /* 进入任务环境 */
-    GOTO_TASK_CONTEXT;
-
-    /* 创建idle任务 使用cmos_create系统调用 */
-    cmos_task_attribute_T idle_attribute =
-    {
-        .priority = CMOS_IDLE_PRIORITY,
-        .stack_size = CMOS_IDLE_STACK_SIZE,
-        .tick_total = CMOS_IDLE_TICK_TOTAL
-    };
-    status = cmos_create(&s_idle_task_id, cmos_task_idle_task, NULL, &idle_attribute);
-
-    return cmos_OK_E;
 }
 

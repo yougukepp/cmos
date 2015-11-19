@@ -166,8 +166,8 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
 ; 复位句柄
 Reset_Handler    PROC
                  EXPORT  Reset_Handler
-        IMPORT  SystemInit
-        IMPORT  __main
+                 IMPORT  SystemInit
+                 IMPORT  __main
 
                  LDR     R0, =SystemInit
                  BLX     R0
