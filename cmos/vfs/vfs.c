@@ -32,7 +32,9 @@
 
 /********************************** 函数声明区 *********************************/
 static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
+static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
 static void node_print(cmos_lib_tree_node_T *node, void *para);
+static cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, const cmos_uint8_T *name);
 
 /********************************** 变量实现区 *********************************/
 /* 
@@ -286,7 +288,7 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
+static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
 {
     CMOS_TRACE_FUNC_IN;
     if(NULL == path) 
@@ -483,7 +485,7 @@ static void node_print(cmos_lib_tree_node_T *node, void *para)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, const cmos_uint8_T *name)
+static cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, const cmos_uint8_T *name)
 {
     if((NULL == tree_node) 
     || (NULL == name))
@@ -509,5 +511,53 @@ cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, co
     }while(NULL != go_node);
 
     return go_node;
+}
+
+/*******************************************************************************
+*
+* 函数名  : vfs_get_driver_by_path
+* 负责人  : 彭鹏
+* 创建日期: 20151119
+* 函数功能: 通过vfs路径找驱动
+*
+* 输入参数: path 路径
+* 输出参数: 无
+*
+* 返回值  : NULL 无有效驱动
+*           其他 驱动指针
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_hal_driver_T *vfs_get_driver_by_path(const cmos_uint8_T *path)
+{
+    cmos_lib_tree_node_T *tree_node = NULL;
+    vfs_node_T *vfs_node = NULL;
+    cmos_hal_driver_T *driver;
+
+    if(!vfs_path_is_valid(path))
+    {
+        CMOS_ERR_STR("vfs_get_driver_by_path get a invalid path.");
+        return NULL;
+    }
+
+    tree_node = vfs_get_tree_node(path);
+    if(NULL == tree_node)
+    {
+        cmos_err_log("path %s is a invalid tree node.", path);
+        return NULL;
+    }
+
+    vfs_node = cmos_lib_tree_node_data(tree_node);
+    if(NULL == vfs_node)
+    {
+        cmos_err_log("path %s do not have a valid vfs node.", path);
+        return NULL;
+    }
+
+    driver = vfs_node->driver;
+
+    return driver;
 }
 

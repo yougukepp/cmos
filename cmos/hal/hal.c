@@ -14,11 +14,12 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
+#include "cmos_config.h"
 #include "hal.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
-#include "vfs.h"
 #include "uart.h"
+#include "i2c.h"
 #include "stm32f429idiscovery_hardware.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/

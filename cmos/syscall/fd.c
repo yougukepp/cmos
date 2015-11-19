@@ -16,10 +16,9 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "tree.h"
-#include "path.h"
-#include "vfs.h"
 #include "console.h"
+#include "vfs.h"
+#include "fd.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -59,9 +58,6 @@ static cmos_int32_T s_syscall_fd_list_index = 0;                    /* fd 列表
 ******************************************************************************/
 cmos_int32_T syscall_fd_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 {
-    /* step1: 找到对应驱动 */
-    cmos_lib_tree_node_T *tree_node = NULL;
-    vfs_node_T *vfs_node = NULL;
     cmos_hal_driver_T *driver = NULL;
     void *driver_id = NULL;
 
@@ -83,10 +79,8 @@ cmos_int32_T syscall_fd_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_
         goto err;
     }
 
-    /* TODO: 封装 */
-    tree_node = vfs_get_tree_node(path);
-    vfs_node = cmos_lib_tree_node_data(tree_node);
-    driver = vfs_node->driver;
+    /* step1: 找到对应驱动 */
+    driver = vfs_get_driver_by_path(path);
 
     /* step2: 执行驱动对应open函数 获取驱动相关句柄 */
     if(NULL != driver)
