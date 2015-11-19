@@ -38,6 +38,7 @@ typedef void (*cmos_lib_list_walk_func_T)(cmos_lib_list_node_T *node, void *para
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data);
 
 #endif /* #ifndef _CMOS_LIB_LIST_H_ */
 

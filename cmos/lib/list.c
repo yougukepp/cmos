@@ -16,6 +16,8 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "list.h"
+#include "mem.h"
+#include "console.h"
 
 #ifdef _X64_PC_
 #include "pc.h"
@@ -30,4 +32,36 @@
 /********************************** 变量实现区 *********************************/
 
 /********************************** 函数实现区 *********************************/
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_node_malloc
+ * 负责人  : 彭鹏
+ * 创建日期：20151119 
+ * 函数功能: 新建list结点
+ *
+ * 输入参数: data 数据域指针
+ * 输出参数: 无
+ *
+ * 返回值  : 新建的list结点指针
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data)
+{
+    cmos_lib_list_node_T *node = NULL;
+
+    node = cmos_malloc(sizeof(cmos_lib_list_node_T));
+    if(NULL == node)
+    {
+        CMOS_ERR_STR("cmos_lib_list_node_malloc malloc failed.");
+        return NULL;
+    }
+
+    node->prev = NULL;
+    node->next = NULL;
+    node->data = (void *)data;
+
+    return node;
+}
 

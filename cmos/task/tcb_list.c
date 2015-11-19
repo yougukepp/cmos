@@ -16,7 +16,9 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "list.h"
 #include "tcb_list.h"
+#include "console.h"
 
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -31,6 +33,40 @@
 
 
 /********************************** 函数实现区 *********************************/
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_list_malloc_node
+ * 负责人  : 彭鹏
+ * 创建日期：20151119 
+ * 函数功能: 新建tcb_list结点
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 新建的tcb_list结点指针
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_task_tcb_list_node_T *cmos_task_tcb_list_malloc_node(const cmos_task_tcb_T *tcb)
+{
+    cmos_lib_list_node_T *list_node = NULL;
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_malloc_node with null tcb pointer.");
+        return NULL;
+    }
+
+    list_node = cmos_lib_list_node_malloc((const void *)tcb);
+    if(NULL == list_node)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_malloc_node malloc cmos_task_tcb_list_node failed.");
+        return NULL;
+    }
+
+    return list_node;
+}
+
 /*******************************************************************************
  *
  * 函数名  : cmos_task_tcb_list_add
@@ -50,6 +86,6 @@
  ******************************************************************************/
 void cmos_task_tcb_list_add(cmos_task_tcb_list_node_T *head, const cmos_task_tcb_T *tcb)
 {
-    ;
+    return;
 }
 
