@@ -368,3 +368,30 @@ cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb)
     return tcb->stack_size;
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_get_priority
+ * 负责人  : 彭鹏
+ * 创建日期：20151119 
+ * 函数功能: 获取任务优先级
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 任务优先级
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb)
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_get_stack_size with null tcb pointer.");
+        return cmos_priority_err;
+    }
+
+    return tcb->priority;
+}
+

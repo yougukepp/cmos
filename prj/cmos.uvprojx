@@ -1179,6 +1179,11 @@
                 </FileArmAds>
               </FileOption>
             </File>
+            <File>
+              <FileName>tcb_list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\task\tcb_list.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

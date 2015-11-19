@@ -33,7 +33,7 @@ static cmos_status_T syscall_fd_get_fd_list_item(cmos_hal_driver_T **driver, voi
 /*
  * FIXME:所有操作加锁 
  * */
-static vfs_fd_item_T s_syscall_fd_list[CMOS_VFS_FD_MAX] = {{0}};    /* fd 列表 */
+static syscall_fd_item_T s_syscall_fd_list[CMOS_VFS_FD_MAX] = {{0}};    /* fd 列表 */
 static cmos_int32_T s_syscall_fd_list_index = 0;                    /* fd 列表索引 */
 
 /********************************** 函数实现区 *********************************/
@@ -322,7 +322,7 @@ cmos_status_T syscall_fd_close(cmos_int32_T fd)
 ******************************************************************************/
 static cmos_status_T syscall_fd_get_fd_list_item(cmos_hal_driver_T **driver, void **driver_id, cmos_int32_T index)
 {
-    vfs_fd_item_T *fd_item = NULL;
+    syscall_fd_item_T *fd_item = NULL;
 
     if((index < 0)
     || (index >= CMOS_VFS_FD_MAX))

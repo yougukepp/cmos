@@ -38,12 +38,6 @@ typedef struct vfs_node_data_T_tag{
     cmos_hal_driver_T *driver; /* 驱动指针 */
 }vfs_node_T;
 
-/* vfs列表元素 */
-typedef struct vfs_fd_item_T_tag{
-    cmos_hal_driver_T *driver; /* 驱动指针 */
-    void *driver_id; /* 驱动底层句柄 */
-}vfs_fd_item_T;
-
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/

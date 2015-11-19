@@ -1,40 +1,29 @@
 /******************************************************************************
  *
- * 文件名  ： switch.h
+ * 文件名  ： tcb_list.h
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20151117 
+ * 创建日期： 20151119 
  * 版本号  ： v1.1
- * 文件描述： 任务切换头文件
- * 版权说明： Copyright (c) 2000-2020 GNU
+ * 文件描述： 任务控制块链表接口
+ * 版权说明： Copyright (c) 2000-2020   烽火通信科技股份有限公司
  * 其    他： 无
  * 修改日志： 无
  *
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_TASK_SWITCH_H_
-#define _CMOS_TASK_SWITCH_H_
+#ifndef _CMOS_TASK_TCB_LIST_H_
+#define _CMOS_TASK_TCB_LIST_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "tcb.h"
+#include "list.h"
 
 /************************************ 宏定义 ***********************************/
-/*******************************************************************************
- *
- * 7个 有效 优先级
- * cmos_priority_idle           0
- * cmos_priority_low            1
- * cmos_priority_below_normal   2
- * cmos_priority_normal         3
- * cmos_priority_above_normal   4
- * cmos_priority_high           5
- * cmos_priority_realtime       6
- *
- ******************************************************************************/
-#define CMOS_PRIORITY_NUMS                      (7)
 
 /*********************************** 类型定义 **********************************/
+typedef cmos_lib_list_node_T cmos_task_tcb_list_node_T;
 
 
 /*--------------------------------- 接口声明区 --------------------------------*/
@@ -42,7 +31,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb);
+void cmos_task_tcb_list_add(cmos_task_tcb_list_node_T *head, const cmos_task_tcb_T *tcb);
 
-#endif // #ifndef _CMOS_TASK_SWITCH_H_
+#endif // #ifndef _CMOS_TASK_TCB_LIST_H_
 

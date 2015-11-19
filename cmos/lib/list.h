@@ -20,6 +20,18 @@
 /************************************ 宏定义 ***********************************/
 
 /*********************************** 类型定义 **********************************/
+/* 链表结点定义 */
+typedef struct cmos_lib_list_node_T_tag cmos_lib_list_node_T;
+struct cmos_lib_list_node_T_tag{
+    cmos_lib_list_node_T *prev; /* 上一结点 */
+    cmos_lib_list_node_T *next; /* 下一结点 */
+    void *data;                 /* 结点数据指针 */
+};
+
+/* 树的定义 */
+typedef cmos_lib_list_node_T cmos_lib_list_T;
+/* 遍历时对于结点的回调函数 */
+typedef void (*cmos_lib_list_walk_func_T)(cmos_lib_list_node_T *node, void *para);
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

@@ -77,13 +77,13 @@ typedef enum{
 typedef cmos_uint32_T cmos_task_id_T;
 /* 任务优先级 */
 typedef enum{
-    cmos_priority_idle = 0x00,
-    cmos_priority_low = 0x01,
-    cmos_priority_below_normal = 0x02,
-    cmos_priority_normal = 0x04,
-    cmos_priority_above_normal = 0x08,
-    cmos_priority_high = 0x10,
-    cmos_priority_realtime = 0x20,
+    cmos_priority_idle = 0x01,
+    cmos_priority_low = 0x02,
+    cmos_priority_below_normal = 0x04,
+    cmos_priority_normal = 0x08,
+    cmos_priority_above_normal = 0x10,
+    cmos_priority_high = 0x20,
+    cmos_priority_realtime = 0x40,
     cmos_priority_err = 0xff
 }cmos_priority_T;
 /* 任务启动参数 */
