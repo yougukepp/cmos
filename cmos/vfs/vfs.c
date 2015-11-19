@@ -23,7 +23,6 @@
 #include "tree.h"
 #include "path.h"
 #include "vfs.h"
-#include "fd.h"
 #include "driver.h"
 #include "console.h"
 

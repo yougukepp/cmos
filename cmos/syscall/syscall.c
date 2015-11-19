@@ -273,7 +273,7 @@ static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ..
     va_end(args);
 
     /* 返回的是指针 */
-    fd = vfs_fd_open(path, flag, mode);
+    fd = syscall_fd_open(path, flag, mode);
 
     return fd;
 }
@@ -304,7 +304,7 @@ static cmos_status_T cmos_close_c(cmos_int32_T fd)
         return cmos_PARA_E;
     }
 
-    return vfs_fd_close(fd);
+    return syscall_fd_close(fd);
 }
 
 /*******************************************************************************
@@ -344,7 +344,7 @@ static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes
 
     cmos_int32_T n_reads = 0;
 
-    n_reads = vfs_fd_read(fd, buf, n_bytes);
+    n_reads = syscall_fd_read(fd, buf, n_bytes);
 
     return n_reads;
 }
@@ -386,7 +386,7 @@ static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_byte
 
     cmos_int32_T n_writes = 0;
 
-    n_writes = vfs_fd_write(fd, buf, n_bytes);
+    n_writes = syscall_fd_write(fd, buf, n_bytes);
 
     return n_writes;
 }
@@ -428,7 +428,7 @@ static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
     va_end(args);
 
     /* 返回的是指针 */
-    status = vfs_fd_ioctl(fd, request, mode);
+    status = syscall_fd_ioctl(fd, request, mode);
     return status;
 }
 

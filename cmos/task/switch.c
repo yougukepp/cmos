@@ -53,6 +53,8 @@ static cmos_uint8_T s_priority_index = 0x00;
  ******************************************************************************/
 cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
 {
+
+#if 0
     cmos_priority_T priority = 0;
     cmos_lib_list_node_T *first_tcb = NULL;
 
@@ -74,6 +76,8 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
     {
         cmos_task_switch_list_add(first_tcb, tcb);
     }
+
+#endif
 
     return cmos_OK_E;
 }
