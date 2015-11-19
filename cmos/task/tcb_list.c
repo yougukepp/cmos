@@ -84,8 +84,28 @@ cmos_task_tcb_list_node_T *cmos_task_tcb_list_malloc_node(const cmos_task_tcb_T 
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_task_tcb_list_add(cmos_task_tcb_list_node_T *head, const cmos_task_tcb_T *tcb)
+cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *head, const cmos_task_tcb_T *tcb)
 {
-    return;
+    cmos_status_T status = cmos_ERR_E;
+
+    if(NULL == head)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_add can not with null list.");
+        return cmos_NULL_E;
+    }
+
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_add can not with null tcb.");
+        return cmos_NULL_E;
+    }
+
+    status = cmos_lib_list_add(head, tcb);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+    return cmos_OK_E;
 }
 

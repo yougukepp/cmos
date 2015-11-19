@@ -24,6 +24,7 @@
 
 /*********************************** 类型定义 **********************************/
 typedef cmos_lib_list_node_T cmos_task_tcb_list_node_T;
+typedef cmos_task_tcb_list_node_T cmos_task_tcb_list_T;
 
 
 /*--------------------------------- 接口声明区 --------------------------------*/
@@ -32,7 +33,7 @@ typedef cmos_lib_list_node_T cmos_task_tcb_list_node_T;
 
 /*********************************** 接口函数 **********************************/
 cmos_task_tcb_list_node_T *cmos_task_tcb_list_malloc_node(const cmos_task_tcb_T *tcb);
-void cmos_task_tcb_list_add(cmos_task_tcb_list_node_T *head, const cmos_task_tcb_T *tcb);
+cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *head, const cmos_task_tcb_T *tcb);
 
 #endif // #ifndef _CMOS_TASK_TCB_LIST_H_
 

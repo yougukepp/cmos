@@ -30,8 +30,8 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static cmos_task_tcb_list_node_T *cmos_task_switch_get_tcb_list_head(cmos_priority_T priority);
-static void cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb);
+static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_head(cmos_priority_T priority);
+static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb);
 static cmos_int32_T cmos_task_switch_get_priority_bitmap_index(cmos_uint8_T priority);
 
 /********************************** 变量实现区 *********************************/
@@ -72,7 +72,7 @@ static cmos_uint8_T s_priority_index = 0x00;
  * cmos_priority_realtime       6
  *
  ******************************************************************************/
-static cmos_task_tcb_list_node_T *s_tcb_table_by_priority[CMOS_PRIORITY_NUMS] = {NULL};
+static cmos_task_tcb_list_T *s_tcb_table_by_priority[CMOS_PRIORITY_NUMS] = {NULL};
 
 /*******************************************************************************
  *
@@ -232,8 +232,9 @@ const static cmos_uint8_T s_priority_bitmap[] = {
  ******************************************************************************/
 cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
 {
+    cmos_status_T status = cmos_ERR_E;
     cmos_priority_T priority = cmos_priority_err;
-    cmos_task_tcb_list_node_T *head = NULL;
+    cmos_task_tcb_list_T *head = NULL;
 
     if(NULL == tcb)
     {
@@ -246,19 +247,19 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
 
     /* step2: 获取该优先级链表 */
     head = cmos_task_switch_get_tcb_list_head(priority); 
-
     if(NULL == head) /* tcb是该优先级头节点 */
     { 
         /* step3: 更新优先级索引 */
         s_priority_index |=  priority;
         cmos_task_switch_init_first_tcb(tcb);  /* step4/1: 加入到该优先级链表 */
+        status = cmos_OK_E;
     }
     else
     {
-        cmos_task_tcb_list_add(head, tcb);     /* step4/2: 加入到该优先级链表 */
+        status = cmos_task_tcb_list_add(head, tcb);     /* step4/2: 加入到该优先级链表 */
     }
 
-    return cmos_OK_E;
+    return status;
 }
 
 /*******************************************************************************
@@ -277,7 +278,7 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_task_tcb_list_node_T *cmos_task_switch_get_tcb_list_head(cmos_priority_T priority)
+static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_head(cmos_priority_T priority)
 { 
     cmos_int32_T index = 0;
 
@@ -301,7 +302,7 @@ static cmos_task_tcb_list_node_T *cmos_task_switch_get_tcb_list_head(cmos_priori
  * 其 它   : 无
  *
  ******************************************************************************/
-static void cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
+static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
 {
     cmos_priority_T priority = cmos_priority_err;
     cmos_task_tcb_list_node_T *ptr_tcb_list = NULL;
@@ -310,7 +311,7 @@ static void cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_switch_init_first_tcb with null tcb pointer.");
-        return;
+        return cmos_NULL_E;
     }
 
     /* step1: 获取该任务优先级*/
@@ -322,7 +323,7 @@ static void cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
     if(NULL == ptr_tcb_list)
     {
         CMOS_ERR_STR("cmos_task_tcb_list_malloc_node failed.");
-        return;
+        return cmos_MEM_LACK_E;
     }
 
     /* step3: 通过优先级获取索引 */
@@ -331,7 +332,7 @@ static void cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
     /* step4: 存入任务链表数组 */
     s_tcb_table_by_priority[index] = ptr_tcb_list;
 
-    return;
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
