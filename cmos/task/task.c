@@ -18,6 +18,7 @@
 #include "cmos_config.h"
 #include "stm32f429idiscovery_hardware.h"
 #include "tcb.h"
+#include "switch.h"
 #include "task.h"
 #include "mem.h"
 #include "console.h"
@@ -68,8 +69,8 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     || (NULL == task_attribute))
     {
         CMOS_ERR_STR("task func and task attribute should not to be null.");
-        *task_id = NULL;
-        return cmos_PARA_E;
+        status = cmos_PARA_E;
+        goto err;
     }
 
     /* TODO: 任务删除的时候释放 */
@@ -77,16 +78,15 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     tcb = cmos_malloc(sizeof(cmos_task_tcb_T));
     if(NULL == tcb)
     {
-        *task_id = NULL;
-        return cmos_MEM_LACK_E;
+        status = cmos_MEM_LACK_E;
+        goto err;
     }
 
     /* step2: 初始化任务栈 */
     status = cmos_task_tcb_init(tcb, entry, argv, task_attribute, s_user_stack_base);
     if(cmos_OK_E != status)
     {
-        *task_id = NULL;
-        return status;
+        goto err;
     }
 
     /* step3: 更新用户空间未用栈的顶 */
@@ -95,11 +95,18 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     stack_size >>= 2; /* 字节转为字 */
     s_user_stack_base -= stack_size;
 
-#if 0
     /* step4: 通知调度模块有新线程 */ 
-    cmos_task_switch_add(tcb);
-#endif
+    status = cmos_task_switch_add(tcb);
+    if(cmos_OK_E != status)
+    {
+        goto err;
+    }
 
+    *task_id = (cmos_task_id_T)tcb;
+    return cmos_OK_E;
+
+err: 
+    *task_id = NULL;
     return status;
 }
 
