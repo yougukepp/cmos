@@ -23,20 +23,19 @@
 
 /********************************** 变量声明区 *********************************/
 /* FIXME: 设备较多的话 占用较大堆内存 启动后 可以考虑释放 */
-static cmos_hal_uart_init_para_T s_uart_console_para =
+const static cmos_hal_uart_init_para_T s_uart_console_para =
 {
     .uart_index = CMOS_CONSOLE_INDEX,
     .baud_rate = CMOS_CONSOLE_BAUDRATE
 };
 
-static cmos_hal_i2c_init_para_T s_i2c_imu_para =
+const static cmos_hal_i2c_init_para_T s_i2c_imu_para =
 {
     .bus_num = CMOS_IMU_I2C_INDEX,
     .device_speed = CMOS_IMU_I2C_RATE
 };
 
-
-cmos_hardware_init_item_T g_hardware_init_list[] =
+const cmos_hardware_init_item_T g_hardware_init_list[] =
 { 
     {cmos_hal_uart_init, (void *)&s_uart_console_para},
     {cmos_hal_i2c_init, (void *)&s_i2c_imu_para},

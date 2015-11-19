@@ -96,8 +96,8 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     s_user_stack_base -= stack_size;
 
 #if 0
-    /* step3: 通知调度模块有新线程 */ 
-    cmos_task_switch_add(ptr_tcb);
+    /* step4: 通知调度模块有新线程 */ 
+    cmos_task_switch_add(tcb);
 #endif
 
     return status;

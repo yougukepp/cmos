@@ -9,6 +9,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 2. 所有函数参数检查
 3. 参数尽可能使用const inline
 4. 系统调用代码整理入syscall.s syscall.c syscall.h(实际为cmos\_api.h) 三个文件
+5. 部分静态变量使用const
 
 ## 计划
 ### 近期计划
