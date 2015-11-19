@@ -42,6 +42,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+void cmos_task_switch_start(void);
 cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb);
 
 #endif // #ifndef _CMOS_TASK_SWITCH_H_

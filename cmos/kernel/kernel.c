@@ -18,7 +18,7 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 #include "idle.h"
-#include "task.h"
+#include "switch.h"
 #include "vfs.h"
 #include "hal.h"
 #include "cortex.h"
@@ -118,8 +118,10 @@ cmos_status_T cmos_kernel_init(void)
 * 其 它   : 永不返回
 *
 ******************************************************************************/
-cmos_status_T cmos_kernel_start(void)
+void cmos_kernel_start(void)
 {
+    cmos_task_switch_start();
+
     /* 永不返回 */
-    return cmos_OK_E;
+    return;
 }

@@ -29,8 +29,8 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-cmos_status_T cmos_init_c(void); /* 汇编会调用 不加static */
-static cmos_status_T cmos_start_c(void);
+cmos_status_T cmos_init_c(void);
+static void cmos_start_c(void);
 
 static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
@@ -105,7 +105,7 @@ void syscall_c(cmos_uint32_T *sp)
             }
         case 0x01:
             { 
-                sp[0] = cmos_start_c();
+                cmos_start_c();
                 break;
             }
 
@@ -168,7 +168,7 @@ void syscall_c(cmos_uint32_T *sp)
  * 返回值  : 执行状态
  *          
  * 调用关系: 无
- * 其 它   : 无
+ * 其 它   : 汇编会调用 不加static
  *
  ******************************************************************************/
 cmos_status_T cmos_init_c(void)
@@ -182,22 +182,19 @@ cmos_status_T cmos_init_c(void)
  * 函数名  : cmos_start_c
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 内核启动
+ * 函数功能: 多任务启动
  *
  * 输入参数: 无
- *
  * 输出参数: 无
  *
- * 返回值  : 执行状态
- *          
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_start_c(void)
+static void cmos_start_c(void)
 {
-    /* 开始调度 */
-    return cmos_kernel_start();
+    cmos_kernel_start();
 }
 
 /*******************************************************************************
