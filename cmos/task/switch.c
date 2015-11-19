@@ -82,8 +82,7 @@ static cmos_task_tcb_list_node_T *s_tcb_table_by_priority[CMOS_PRIORITY_NUMS] = 
  * 每行的内容依次为: 最高优先级(即s_tcb_table_by_priority索引) s_priority_index值 cmos_priority_T值
  *
  ******************************************************************************/
-//const static const cmos_uint8_T s_priority_bitmap[] = {
-static const cmos_uint8_T s_priority_bitmap[] = {
+const static cmos_uint8_T s_priority_bitmap[] = {
     0,  /* 00000000 Idle 没有任何优先级线程就绪 这是不可能的情况 */
     0,  /* 00000001 Idle */
     1,  /* 00000010 Low */
