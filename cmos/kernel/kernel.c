@@ -100,7 +100,7 @@ cmos_status_T cmos_kernel_init(void)
     };
 
     status = cmos_create(&s_idle_task_id, cmos_task_idle_task, NULL, &idle_attribute); 
-    return cmos_OK_E;
+    return status;
 }
 
 /*******************************************************************************
