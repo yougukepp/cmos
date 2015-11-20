@@ -57,9 +57,9 @@ PendSV_Handler  PROC
                 MRS R0 , PSP
 
                 ; step 2
-                ;TST LR, #0x10               ; 测试bit4. =0, 需要入栈浮点寄存器
-                ;IT EQ
-                ;VSTMDBEQ R0!, {S16-S31}     ; 等效于PUSH {S16-S31}
+                TST LR, #0x10               ; 测试bit4. =0, 需要入栈浮点寄存器
+                IT EQ
+                VSTMDBEQ R0!, {S16-S31}     ; 等效于PUSH {S16-S31}
 
                 ; step 3
                 STMDB.W R0!, {R4-R11,LR}    ; 等效于PUSH {R4-R11, LR}
@@ -73,9 +73,9 @@ PendSV_Handler  PROC
 PendSV_Tail     LDMIA.W R0!, {R4-R11,LR}    ; 等效于POP {R4-R11, LR}
 
                 ; step 6
-                ;TST LR, #0x10               ; 测试bit4. =0, 需要出栈浮点寄存器
-                ;IT EQ
-                ;VLDMIAEQ R0!, {S16-S31}     ; 等效于POP {S16-S31}
+                TST LR, #0x10               ; 测试bit4. =0, 需要出栈浮点寄存器
+                IT EQ
+                VLDMIAEQ R0!, {S16-S31}     ; 等效于POP {S16-S31}
 
                 ; step 7
                 MSR PSP, R0

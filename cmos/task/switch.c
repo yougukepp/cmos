@@ -21,7 +21,6 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "cortex.h"
 #include "tcb.h"
 #include "tcb_list.h"
 #include "switch.h"
@@ -533,14 +532,10 @@ void cmos_task_switch_start(void)
 
     /* step1: 获取当前最高优先级任务PSP并设置psp寄存器 */ 
     psp = cmos_task_swtich_get_higghest_task_psp();
-    //cmos_hal_cortex_cortex_set_psp((cmos_int32_T)psp);
 
-    /* step2: 使能PSP */
-    //cmos_hal_cortex_cortex_enable_psp();
-
-    /* step3: 调用任务切换后半部分 */
+    /* step2: 调用任务切换后半部分 */
     void cmos_task_switch_start_s(cmos_task_tcb_psp_T psp); /* pendsv.s中定义 */
-    cmos_task_switch_start_s(psp);
+    cmos_task_switch_start_s(psp); /* 以R0传递给PendSV_Tail */
 
     /* 不会运行到此 */
 }

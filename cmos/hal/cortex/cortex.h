@@ -35,8 +35,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/ 
-void cmos_hal_cortex_cortex_enable_psp(void);
-void cmos_hal_cortex_cortex_set_psp(cmos_int32_T psp);
+void cmos_hal_cortex_cortex_goto_unprivileged(void);
 
 #endif /* #ifndef _CMOS_HAL_CORTEX_CORTEX_H_ */
 
