@@ -58,5 +58,7 @@ cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb);
 cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb);
 cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb);
 
+void cmos_task_tcb_stack_print(const cmos_task_tcb_psp_T psp, cmos_int32_T print_size);
+
 #endif // #ifndef _CMOS_TASK_TCB_H_
 

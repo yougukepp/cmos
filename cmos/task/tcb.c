@@ -498,3 +498,29 @@ static cmos_bool_T cmos_task_tcb_with_float(const cmos_task_tcb_T *tcb)
     }
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_print
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 调试使用 打印任务栈
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : tcb的psp
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_task_tcb_stack_print(const cmos_task_tcb_psp_T psp, cmos_int32_T print_size)
+{
+    cmos_int32_T i = 0;
+    cmos_task_tcb_psp_T sp = psp;
+
+    for(i = 0; i < print_size; i++)
+    { 
+        cmos_console_printf("0x%08x:0x%08x\r\n", sp, *sp);
+    }
+}
+
