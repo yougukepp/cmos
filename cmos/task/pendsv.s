@@ -70,7 +70,7 @@ PendSV_Handler  PROC
                 ; r0此时已经是最新的psp值
 
                 ; step 5
-                LDMIA.W R0!, {R4-R11,LR}    ; 等效于POP {R4-R11, LR}
+PendSV_Tail     LDMIA.W R0!, {R4-R11,LR}    ; 等效于POP {R4-R11, LR}
 
                 ; step 6
                 TST LR, #0x10               ; 测试bit4. =0, 需要出栈浮点寄存器
@@ -85,7 +85,14 @@ PendSV_Handler  PROC
                 BX LR
                 ENDP
 
+; 启动调度器
+cmos_task_switch_start_s PROC
+                EXPORT cmos_task_switch_start_s
+
+                LDR R1, =PendSV_Tail
+                BX R1
+                ENDP
+
                 ALIGN 
-                
                 END
 

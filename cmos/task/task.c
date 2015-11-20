@@ -27,7 +27,7 @@
 
 /********************************** 变量声明区 *********************************/
 /* 空闲的任务栈顶 */
-static cmos_word_T *s_user_stack_base = CMOS_TASK_STACK_BASE;
+static cmos_task_tcb_psp_T s_user_stack_base = CMOS_TASK_STACK_BASE;
 
 /********************************** 函数声明区 *********************************/
 

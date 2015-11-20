@@ -25,13 +25,15 @@
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 /* 任务控制块 */
+typedef cmos_uint32_T   cmos_word_T; /* 字 */
+typedef cmos_word_T     *cmos_task_tcb_psp_T; /* 栈指针 */
 typedef struct cmos_task_tcb_T_tag cmos_task_tcb_T;
 struct cmos_task_tcb_T_tag{
     cmos_func_T     entry;      /* 入口函数 */
     void            *argv;      /* 入口函数参数 */
 
     cmos_int32_T    stack_size; /* 栈大小 Byte单位*/
-    cmos_word_T     *psp;       /* 任务psp指针 以字为单位 */
+    cmos_task_tcb_psp_T psp;    /* 任务psp指针 以字为单位 */
 
     cmos_priority_T priority;   /* 优先级 */
 
@@ -48,7 +50,10 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
         cmos_func_T entry,
         void *argv,
         const cmos_task_attribute_T *task_attribute,
-        cmos_word_T *stack_base);
+        cmos_task_tcb_psp_T stack_base);
+
+void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp);
+cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb);
 
 cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb);
 cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb);

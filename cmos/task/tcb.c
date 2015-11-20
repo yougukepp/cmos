@@ -27,7 +27,7 @@
 
 
 /********************************** 函数声明区 *********************************/
-static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_word_T *stack_base);
+static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base);
 
 /********************************** 变量实现区 *********************************/
 
@@ -56,7 +56,7 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
         cmos_func_T entry,
         void *argv,
         const cmos_task_attribute_T *task_attribute,
-        cmos_word_T *stack_base)
+        cmos_task_tcb_psp_T stack_base)
 {
     cmos_int32_T stack_size = 0; /* 栈大小 Byte单位*/
     cmos_status_T status = cmos_ERR_E;
@@ -122,9 +122,9 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_word_T *stack_base)
+static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base)
 {
-    cmos_word_T *sp = NULL;      /* 任务sp指针 */
+    cmos_task_tcb_psp_T sp = NULL;      /* 任务sp指针 */
 
     if((NULL == tcb)
     || (NULL == stack_base))
@@ -201,7 +201,7 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_word_T 
     *sp = (cmos_word_T)entry; /* PC */
 
     sp--;
-    *sp = (cmos_word_T )err_loop; /* LR */
+    *sp = (cmos_word_T)err_loop; /* LR */
 
     sp--;
     *sp = 0x12121212; /* R12 */
@@ -390,5 +390,58 @@ cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb)
     }
 
     return tcb->priority;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_set_psp
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 设置当前任务栈指针
+ *
+ * 输入参数: cur_psp
+ * 输出参数: tcb 任务控制块指针
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp)
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
+        return;
+    }
+
+    tcb->psp = psp;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_get_psp
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 获取当前任务栈指针
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : tcb的psp
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb)
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_get_psp whit null tcb pointer.");
+        return NULL;
+    }
+
+    return tcb->psp;
 }
 

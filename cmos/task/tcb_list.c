@@ -109,3 +109,38 @@ cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *head, const cmos_task
     return cmos_OK_E;
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_list_get_head_tcb
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 获取tcb_list首结点的任务控制块指针
+ *
+ * 输入参数: head tcb_list链表
+ * 输出参数: 无
+ *
+ * 返回值  : 任务控制块指针
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_task_tcb_T *cmos_task_tcb_list_get_head_tcb(const cmos_task_tcb_list_T *list)
+{
+    cmos_task_tcb_list_node_T *head_node = NULL;
+    cmos_task_tcb_T *tcb = NULL;
+
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_get_head_tcb can not with null list.");
+        return NULL;
+    }
+
+    /* list指向头结点 */
+    head_node = (cmos_task_tcb_list_node_T *)list;
+
+    tcb = cmos_lib_list_node_get_data(head_node);
+
+    return tcb;
+}
+

@@ -22,7 +22,7 @@
 /************************************ 宏定义 ***********************************/
 /* 任务栈 顶部 */
 /* FIXME:与芯片的RAM空间大小相关 */
-#define CMOS_TASK_STACK_BASE                                ((cmos_word_T *)(0x20030000))
+#define CMOS_TASK_STACK_BASE                                ((cmos_task_tcb_psp_T)(0x20030000))
 
 /* 串口个数 控制台+ESP8266 */
 #define CMOS_HAL_UART_NUMS                      (2)

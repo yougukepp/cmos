@@ -34,12 +34,22 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/ 
-/* float使能  进非特权
- *
- * TODO: 使用PSP 
- *
+/* 
+ * float使能  进非特权
  * */
-#define GOTO_TASK_CONTEXT __set_CONTROL(0x00000005)
+#define CMOS_HAL_CORTEX_CORTEX_GOTO_TASK_CONTEXT() __set_CONTROL(0x00000005)
+/* 
+ * 设置psp
+ * */
+#define CMOS_HAL_CORTEX_CORTEX_SET_PSP(psp) __set_PSP(psp)
+/* 
+ * 使能
+ * */
+#define CMOS_HAL_CORTEX_CORTEX_ENABLE_PSP() \
+    do{ \
+        cmos_int32_T reg = __get_CONTROL(); \
+        __set_CONTROL(reg | 0x00000002); \
+    }while(0);
 
 #endif /* #ifndef _CMOS_HAL_CORTEX_CORTEX_H_ */
 

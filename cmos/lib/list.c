@@ -68,6 +68,32 @@ cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_lib_list_node_get_data
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 获取结点
+ *
+ * 输入参数: node 结点指针
+ * 输出参数: 无
+ *
+ * 返回值  : 结点数据域指针
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node)
+{
+    if(NULL == node)
+    {
+        CMOS_ERR_STR("cmos_lib_list_node_get_data can not with null node pointer.");
+        return NULL;
+    }
+
+    return node->data;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_lib_list_add
  * 负责人  : 彭鹏
  * 创建日期：20151119 

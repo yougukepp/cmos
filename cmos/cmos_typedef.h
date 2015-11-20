@@ -52,7 +52,6 @@ typedef short               cmos_int16_T;
 typedef int                 cmos_int32_T;
 typedef long long           cmos_int64_T;
 typedef unsigned char       cmos_bool_T;
-typedef int                 cmos_word_T; /* 字 */
 typedef void(*cmos_func_T)(void *argv);
 
 /* CMOS函数状态返回 */

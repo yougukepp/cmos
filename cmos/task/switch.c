@@ -21,6 +21,8 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "cortex.h"
+#include "tcb.h"
 #include "tcb_list.h"
 #include "switch.h"
 #include "console.h"
@@ -30,11 +32,18 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_head(cmos_priority_T priority);
+static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_head(cmos_int32_T priority);
 static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb);
-static cmos_int32_T cmos_task_switch_get_priority_bitmap_index(cmos_uint8_T priority);
+static void cmos_task_switch_set_tcb_list_head(cmos_priority_T priority, cmos_task_tcb_list_T *list);
+static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_uint8_T priority);
+static void cmos_task_switch_save_cur_psp(const cmos_task_tcb_psp_T cur_psp);
+static cmos_task_tcb_psp_T cmos_task_swtich_get_higghest_task_psp(void);
+static cmos_task_tcb_T *cmos_task_switch_get_highest_tcb(void);
 
 /********************************** 变量实现区 *********************************/
+/* 当前运行任务的tcb 用于任务恢复 */
+cmos_task_tcb_T *s_running_tcb = NULL;
+
 /*******************************************************************************
  *
  * 跟踪(|运算)系统所有任务的优先级,便于在位图表中查找最高优先级任务 
@@ -267,7 +276,31 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
  * 函数名  : cmos_task_switch_get_tcb_list_head
  * 负责人  : 彭鹏
  * 创建日期：20151119 
- * 函数功能: 获取本优先级tcb列表头
+ * 函数功能: 获取priority对应的tcb表头
+ *
+ * 输入参数: priority 优先级
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_head(cmos_int32_T priority)
+{ 
+    cmos_int32_T highest_priority = 0;
+
+    highest_priority = cmos_task_switch_get_highest_priority(priority);
+    return s_tcb_table_by_priority[highest_priority];
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_switch_get_tcb_list_head
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 设置priority对应的tcb表头
  *
  * 输入参数: tcb 任务控制块指针
  * 输出参数: 无
@@ -278,12 +311,26 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_head(cmos_priority_T priority)
+static void cmos_task_switch_set_tcb_list_head(cmos_priority_T priority, cmos_task_tcb_list_T *list)
 { 
     cmos_int32_T index = 0;
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_task_switch_set_tcb_list_head with null list.");
+        return;
+    }
 
-    index = cmos_task_switch_get_priority_bitmap_index(priority);
-    return s_tcb_table_by_priority[index];
+    index = cmos_task_switch_get_highest_priority(priority);
+    if((index < 0)
+    || (index >= CMOS_PRIORITY_NUMS)
+    || (NULL != s_tcb_table_by_priority[index]))
+    {
+        CMOS_ERR_STR("cmos_task_switch_set_tcb_list_head with err priority.");
+        return;
+    }
+
+    s_tcb_table_by_priority[index] = list;
+    return;
 }
 
 /*******************************************************************************
@@ -306,7 +353,6 @@ static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
 {
     cmos_priority_T priority = cmos_priority_err;
     cmos_task_tcb_list_node_T *ptr_tcb_list = NULL;
-    cmos_int32_T index = 0;
 
     if(NULL == tcb)
     {
@@ -326,18 +372,15 @@ static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
         return cmos_MEM_LACK_E;
     }
 
-    /* step3: 通过优先级获取索引 */
-    index = cmos_task_switch_get_priority_bitmap_index(priority);
-
-    /* step4: 存入任务链表数组 */
-    s_tcb_table_by_priority[index] = ptr_tcb_list;
+    /* step3: 存入任务链表数组 */
+    cmos_task_switch_set_tcb_list_head(priority, ptr_tcb_list);
 
     return cmos_OK_E;
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_task_switch_get_priority_bitmap_index
+ * 函数名  : cmos_task_switch_get_highest_priority
  * 负责人  : 彭鹏
  * 创建日期：20151119 
  * 函数功能: 通过优先级获取位图索引
@@ -345,35 +388,15 @@ static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
  * 输入参数: priority 优先级
  * 输出参数: 无
  *
- * 返回值  : 位图索引
+ * 返回值  : 最高优先级
  *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_int32_T cmos_task_switch_get_priority_bitmap_index(cmos_uint8_T priority)
+static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_uint8_T priority)
 {
     return s_priority_bitmap[priority];
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_task_switch_start
- * 负责人  : 彭鹏
- * 创建日期：20151119 
- * 函数功能: 调度器启动
- *
- * 输入参数: 无
- * 输出参数: 无
- *
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-void cmos_task_switch_start(void)
-{
-    ;
 }
 
 /*******************************************************************************
@@ -388,11 +411,137 @@ void cmos_task_switch_start(void)
  *
  * 返回值  : 最高优先级psp
  * 调用关系: 无
- * 其 它   : 无
+ * 其 它   : 所有调用的函数都是O(1)算法
  *
  ******************************************************************************/
-cmos_word_T *cmos_task_switch_switch(const cmos_word_T *cur_psp)
+cmos_task_tcb_psp_T cmos_task_switch_switch(const cmos_task_tcb_psp_T cur_psp)
 {
-    return NULL;
+    cmos_task_tcb_psp_T next_psp = NULL;
+    
+    /* O(1)算法 */
+    /* step1: 保存当前任务psp到tcb */
+    cmos_task_switch_save_cur_psp(cur_psp);
+
+    /* O(1)算法 */
+    /* step2: 获取最高优先级任务psp */
+    next_psp = cmos_task_swtich_get_higghest_task_psp();
+    if(NULL == next_psp)
+    {
+        CMOS_ERR_STR("cmos_task_switch_get_highest_task_psp get a null pointer.");
+    }
+
+    return next_psp;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_switch_save_cur_psp
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 保存将切出任务的psp到其tcb的psp域
+ *
+ * 输入参数: cur_psp 当前运行任务psp
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : O(1)算法
+ *
+ ******************************************************************************/
+static void cmos_task_switch_save_cur_psp(const cmos_task_tcb_psp_T cur_psp)
+{
+    if((NULL == s_running_tcb)
+    || (NULL == cur_psp))
+    {
+        CMOS_ERR_STR("cmos_task_switch_save_cur_psp with null pointer.");
+        return;
+    }
+
+    /* O(1)算法 */
+    cmos_task_tcb_set_psp(s_running_tcb, cur_psp);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_switch_get_highest_task_psp
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 获取最高优先级任务的psp
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 最高优先级psp
+ * 调用关系: 无
+ * 其 它   : O(1)算法
+ *
+ ******************************************************************************/
+static cmos_task_tcb_psp_T cmos_task_swtich_get_higghest_task_psp(void)
+{
+    cmos_task_tcb_T *tcb = NULL;
+    cmos_task_tcb_psp_T psp = NULL;
+
+    /* O(1)算法 */
+    tcb = cmos_task_switch_get_highest_tcb(); 
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_switch_get_highest_tcb get a null pointer.");
+        return NULL;
+    }
+
+    /* O(1)算法 */
+    psp = cmos_task_tcb_get_psp(tcb);
+    if(NULL == psp)
+    {
+        CMOS_ERR_STR("cmos_task_switch_get_highest_tcb get a null pointer.");
+        return NULL;
+    }
+
+
+    return psp;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_switch_get_highest_tcb
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 获取最高优先级任务tcb
+ *
+ * 输入参数: 无
+ * 输出参数: 最高优先级任务tcb
+ *
+ * 返回值  : 最高优先级psp
+ * 调用关系: 无
+ * 其 它   : O(1)算法
+ *
+ ******************************************************************************/ 
+static cmos_task_tcb_T *cmos_task_switch_get_highest_tcb(void)
+{ 
+    cmos_task_tcb_list_T *head = NULL;
+    cmos_task_tcb_T *tcb = NULL;
+
+    head = cmos_task_switch_get_tcb_list_head(s_priority_index); 
+    tcb = cmos_task_tcb_list_get_head_tcb(head);
+
+    return tcb;
+}
+
+void cmos_task_switch_start(void)
+{ 
+    cmos_task_tcb_psp_T psp = NULL;
+
+    /* step1: 获取当前最高优先级任务PSP并设置psp寄存器 */ 
+    psp = cmos_task_swtich_get_higghest_task_psp();
+    CMOS_HAL_CORTEX_CORTEX_SET_PSP((uint32_t)psp);
+
+    /* step2: 使能PSP */ 
+    CMOS_HAL_CORTEX_CORTEX_ENABLE_PSP();
+
+    /* step3: 调用任务切换后半部分 */
+    void cmos_task_switch_start_s(void); /* pendsv.s中定义 */
+    cmos_task_switch_start_s();
+
+    /* 不会运行到此 */
 }
 

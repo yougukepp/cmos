@@ -88,7 +88,7 @@ cmos_status_T cmos_kernel_init(void)
     vfs_print(); 
     
     /* 进入任务环境 */
-    GOTO_TASK_CONTEXT; 
+    CMOS_HAL_CORTEX_CORTEX_GOTO_TASK_CONTEXT();
     
     /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T idle_attribute =
