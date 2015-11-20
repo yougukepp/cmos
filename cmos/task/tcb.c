@@ -28,6 +28,7 @@
 
 /********************************** 函数声明区 *********************************/
 static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base);
+static cmos_bool_T cmos_task_tcb_with_float(const cmos_task_tcb_T *tcb);
 
 /********************************** 变量实现区 *********************************/
 
@@ -134,64 +135,70 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
 
     const cmos_func_T entry = tcb->entry;
     const void *argv = tcb->argv;
+    cmos_bool_T with_float = FALSE;
 
     sp = stack_base;
 
+    with_float = cmos_task_tcb_with_float(tcb);
+
     /* total 52 字 208 字节 */
-#if (CMOS_DEBUG_LEVEL > 0)
-    sp--;
-    *sp = 0xfefefefe; /* cm4要求 双字节对齐 占位 */
+#if (CMOS_DEBUG_LEVEL > 0) 
+    if(with_float) /* 需要浮点 */
+    {
+        sp--;
+        *sp = 0xfefefefe; /* cm4要求 双字节对齐 占位 */
 
-    sp--;
-    *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
+        sp--;
+        *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
 
-    sp--;
-    *sp = 0x0f150f15; /* S15 */
+        sp--;
+        *sp = 0x0f150f15; /* S15 */
 
-    sp--;
-    *sp = 0x0f140f14; /* S14 */
+        sp--;
+        *sp = 0x0f140f14; /* S14 */
 
-    sp--;
-    *sp = 0x0f130f13; /* S13 */
+        sp--;
+        *sp = 0x0f130f13; /* S13 */
 
-    sp--;
-    *sp = 0x0f120f12; /* S12 */
+        sp--;
+        *sp = 0x0f120f12; /* S12 */
 
-    sp--;
-    *sp = 0x0f110f11; /* S11 */
+        sp--;
+        *sp = 0x0f110f11; /* S11 */
 
-    sp--;
-    *sp = 0x0f100f10; /* S10 */
+        sp--;
+        *sp = 0x0f100f10; /* S10 */
 
-    sp--;
-    *sp = 0x0f090f09; /* S09 */
+        sp--;
+        *sp = 0x0f090f09; /* S09 */
 
-    sp--;
-    *sp = 0x0f080f08; /* S08 */
+        sp--;
+        *sp = 0x0f080f08; /* S08 */
 
-    sp--;
-    *sp = 0x0f070f07; /* S07 */
+        sp--;
+        *sp = 0x0f070f07; /* S07 */
 
-    sp--;
-    *sp = 0x0f060f06; /* S06 */
+        sp--;
+        *sp = 0x0f060f06; /* S06 */
 
-    sp--;
-    *sp = 0x0f050f05; /* S05 */
+        sp--;
+        *sp = 0x0f050f05; /* S05 */
 
-    sp--;
-    *sp = 0x0f040f04; /* S04 */
+        sp--;
+        *sp = 0x0f040f04; /* S04 */
 
-    sp--;
-    *sp = 0x0f030f03; /* S03 */
+        sp--;
+        *sp = 0x0f030f03; /* S03 */
 
-    sp--;
-    *sp = 0x0f020f02; /* S02 */
+        sp--;
+        *sp = 0x0f020f02; /* S02 */
 
-    sp--;
-    *sp = 0x0f010f01; /* S01 */
+        sp--;
+        *sp = 0x0f010f01; /* S01 */
 
-    sp--;
-    *sp = 0x0f000f00; /* S00 */
+        sp--;
+        *sp = 0x0f000f00; /* S00 */
+    }
 
     sp--;
     *sp = CMOS_INITIAL_XPSR; /* xPSR */
@@ -249,63 +256,69 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
     sp--;
     *sp = 0x04040404; /* R4 */
 
-    sp--;
-    *sp = 0x0f310f31; /* S31 */
+    if(with_float) /* 需要浮点 */
+    {
+        sp--;
+        *sp = 0x0f310f31; /* S31 */
 
-    sp--;
-    *sp = 0x0f300f30; /* S30 */
+        sp--;
+        *sp = 0x0f300f30; /* S30 */
 
-    sp--;
-    *sp = 0x0f290f29; /* S29 */
+        sp--;
+        *sp = 0x0f290f29; /* S29 */
 
-    sp--;
-    *sp = 0x0f280f28; /* S28 */
+        sp--;
+        *sp = 0x0f280f28; /* S28 */
 
-    sp--;
-    *sp = 0x0f270f27; /* S27 */
+        sp--;
+        *sp = 0x0f270f27; /* S27 */
 
-    sp--;
-    *sp = 0x0f260f26; /* S26 */
+        sp--;
+        *sp = 0x0f260f26; /* S26 */
 
-    sp--;
-    *sp = 0x0f250f25; /* S25 */
+        sp--;
+        *sp = 0x0f250f25; /* S25 */
 
-    sp--;
-    *sp = 0x0f240f24; /* S24 */
+        sp--;
+        *sp = 0x0f240f24; /* S24 */
 
-    sp--;
-    *sp = 0x0f230f23; /* S23 */
+        sp--;
+        *sp = 0x0f230f23; /* S23 */
 
-    sp--;
-    *sp = 0x0f220f22; /* S22 */
+        sp--;
+        *sp = 0x0f220f22; /* S22 */
 
-    sp--;
-    *sp = 0x0f210f21; /* S21 */
+        sp--;
+        *sp = 0x0f210f21; /* S21 */
 
-    sp--;
-    *sp = 0x0f200f20; /* S20 */
+        sp--;
+        *sp = 0x0f200f20; /* S20 */
 
-    sp--;
-    *sp = 0x0f190f19; /* S19 */
+        sp--;
+        *sp = 0x0f190f19; /* S19 */
 
-    sp--;
-    *sp = 0x0f180f18; /* S18 */
+        sp--;
+        *sp = 0x0f180f18; /* S18 */
 
-    sp--;
-    *sp = 0x0f170f17; /* S17 */
+        sp--;
+        *sp = 0x0f170f17; /* S17 */
 
-    sp--;
-    *sp = 0x0f160f16; /* S16 */
+        sp--;
+        *sp = 0x0f160f16; /* S16 */
 
-    sp--;
-    *sp = 0xefefefef; /* cmos加入 双字节对齐 占位 */
+        sp--;
+        *sp = 0xefefefef; /* cmos加入 双字节对齐 占位 */
+    }
 #else
-    sp--; /* cm4要求 双字节对齐 占位 */
+    if(with_float) /* 需要浮点 */
+    {
+        sp--; /* cm4要求 双字节对齐 占位 */
 
-    sp--;
-    *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
+        sp--;
+        *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
 
-    sp -= 16; /* S15 - S0 */
+        sp -= 16; /* S15 - S0 */
+    }
 
     sp--;
     *sp = CMOS_INITIAL_XPSR; /* xPSR */
@@ -329,7 +342,15 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
     sp--;
     *sp = CMOS_INITIAL_EXEC_RETURN;
 
-    sp -= 25; /* R11 - R0  and  S32 - S16  and cmos加入 双字节对齐 占位 */
+    if(with_float) /* 需要浮点 */
+    {
+        sp -= 25; /* R11 - R0  and  S32 - S16  and cmos加入 双字节对齐 占位 */
+    }
+    else
+    {
+        sp -= 8; /* R11 - R0*/
+    }
+
 #endif
 
     tcb->psp = sp;
@@ -442,5 +463,38 @@ cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb)
     }
 
     return tcb->psp;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_with_float
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 判断tcb是否需要浮点
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : tcb的psp
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_bool_T cmos_task_tcb_with_float(const cmos_task_tcb_T *tcb)
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_with_float whit null tcb pointer.");
+        return FALSE;
+    }
+
+    if(0 == cmos_task_with_float & tcb->flag)
+    {
+        return FALSE;
+    }
+    else
+    {
+        return TRUE;
+    }
 }
 
