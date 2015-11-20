@@ -53,7 +53,7 @@ void cmos_task_idle_task(void *argv)
 
     while(TRUE)
     { 
-        cmos_console_printf("idle running %d\n", times);
+        cmos_console_printf("idle running %d\r\n", times);
         times++;
     } 
     

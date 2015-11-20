@@ -20,6 +20,7 @@
 #include "stm32f4xx_hal.h"
 #include "uart.h"
 #include "i2c.h"
+#include "cortex.h"
 #include "stm32f429idiscovery_hardware.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -66,8 +67,11 @@ cmos_status_T hal_init(void)
     {
         assert_failed(__FILE__, __LINE__);
         return status;
-    }
+    } 
 		
+    /* 关闭时钟 避免错误调度 */
+    cmos_hal_cortex_cortex_systick_disable();
+
     /* 逐个初始化硬件 */
     while(NULL != g_hardware_init_list[i].init)
     {

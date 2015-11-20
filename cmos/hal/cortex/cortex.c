@@ -18,6 +18,7 @@
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
 #include "cortex.h"
+#include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -50,14 +51,20 @@ void SysTick_Handler(void)
 {
     /* tick自增 */
     HAL_IncTick();
+
+    /* step1: 处理 tcb_list 时间信息 */
+    /* switch_update_tcb_time(); */
+    
+    /* 调度 */
+    //cmos_task_switch_pend();
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_hal_cortex_cortex_enable_psp
+ * 函数名  : cmos_hal_cortex_cortex_goto_unprivileged
  * 负责人  : 彭鹏
  * 创建日期：20151120 
- * 函数功能: 使能psp
+ * 函数功能: 进入非特权级别
  *
  * 输入参数: 无
  * 输出参数: 无
@@ -67,19 +74,19 @@ void SysTick_Handler(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_hal_cortex_cortex_enable_psp(void)
+void cmos_hal_cortex_cortex_goto_unprivileged(void)
 {
-    __set_CONTROL(0x00000003);
+    __set_CONTROL(0x00000001);
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_hal_cortex_cortex_set_psp
+ * 函数名  : cmos_hal_cortex_cortex_set_pendsv
  * 负责人  : 彭鹏
- * 创建日期：20151120 
- * 函数功能: 设置psp
+ * 创建日期：20151121 
+ * 函数功能: 悬起任务切换中断 
  *
- * 输入参数: 欲设置的psp值
+ * 输入参数: 无
  * 输出参数: 无
  * 返回值  : 无
  *          
@@ -87,8 +94,57 @@ void cmos_hal_cortex_cortex_enable_psp(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_hal_cortex_cortex_set_psp(cmos_int32_T psp)
-{ 
-    __set_PSP(psp);
+void cmos_hal_cortex_cortex_set_pendsv(void)
+{
+    /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
+    SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_hal_cortex_cortex_systick_disable
+ * 负责人  : 彭鹏
+ * 创建日期：20151121 
+ * 函数功能: 关闭systick时钟
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_hal_cortex_cortex_systick_disable(void)
+{
+    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_hal_cortex_cortex_systick_start
+ * 负责人  : 彭鹏
+ * 创建日期：20151121 
+ * 函数功能: 启动systick时钟
+ *
+ * 输入参数: ticks_num systick中断间隔tick数 
+ * 输出参数: 无
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_hal_cortex_cortex_systick_start(cmos_int32_T ticks_num)
+{
+    if(0 == HAL_SYSTICK_Config(ticks_num))
+    {
+        return cmos_OK_E;
+    }
+    else
+    {
+        CMOS_ERR_STR("cmos_hal_cortex_cortex_systick_start set ticks.");
+        return cmos_ERR_E;
+    }
 }
 

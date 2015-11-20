@@ -527,20 +527,34 @@ static cmos_task_tcb_T *cmos_task_switch_get_highest_tcb(void)
     return tcb;
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_switch_start
+ * 负责人  : 彭鹏
+ * 创建日期：20151121 
+ * 函数功能: 启动内核
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
 void cmos_task_switch_start(void)
 { 
     cmos_task_tcb_psp_T psp = NULL;
 
+    /* step0: 启动systick */ 
+    cmos_hal_cortex_cortex_systick_start(CMOS_TICK_TIMES);
+
     /* step1: 获取当前最高优先级任务PSP并设置psp寄存器 */ 
     psp = cmos_task_swtich_get_higghest_task_psp();
-    //cmos_hal_cortex_cortex_set_psp((cmos_int32_T)psp);
 
-    /* step2: 使能PSP */
-    //cmos_hal_cortex_cortex_enable_psp();
-
-    /* step3: 调用任务切换后半部分 */
+    /* step2: 调用任务切换后半部分 */
     void cmos_task_switch_start_s(cmos_task_tcb_psp_T psp); /* pendsv.s中定义 */
-    cmos_task_switch_start_s(psp);
+    cmos_task_switch_start_s(psp); /* 以R0传递给PendSV_Tail */
 
     /* 不会运行到此 */
 }

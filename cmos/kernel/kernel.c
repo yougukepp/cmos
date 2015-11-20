@@ -22,6 +22,7 @@
 #include "vfs.h"
 #include "hal.h"
 #include "console.h"
+#include "cortex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -65,7 +66,6 @@ cmos_status_T cmos_kernel_init(void)
         assert_failed(__FILE__, __LINE__);
         return status;
     }
-
 
     /* cmos hal 硬件底层初始化 */
     status = hal_init();
@@ -117,6 +117,9 @@ cmos_status_T cmos_kernel_init(void)
         return status;
     }
 
+    /* 进入非特权级别 */
+    cmos_hal_cortex_cortex_goto_unprivileged();
+		
     return status;
 }
 
