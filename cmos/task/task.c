@@ -82,7 +82,7 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
         goto err;
     }
 
-    /* step2: 初始化任务栈 */
+    /* step2: 初始化任务tcb */
     status = cmos_task_tcb_init(tcb, entry, argv, task_attribute, s_user_stack_base);
     if(cmos_OK_E != status)
     {

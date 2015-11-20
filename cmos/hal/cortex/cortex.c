@@ -54,22 +54,22 @@ void SysTick_Handler(void)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_hal_cortex_cortex_goto_task_context
+ * 函数名  : cmos_hal_cortex_cortex_enable_psp
  * 负责人  : 彭鹏
  * 创建日期：20151120 
- * 函数功能: 进入非特权级别 使能float
+ * 函数功能: 使能psp
  *
  * 输入参数: 无
  * 输出参数: 无
  * 返回值  : 无
  *          
  * 调用关系: 无
- * 其 它   : 设置特权级别/float位
+ * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_hal_cortex_cortex_goto_task_context(void)
+void cmos_hal_cortex_cortex_enable_psp(void)
 {
-    __set_CONTROL(0x00000005);
+    __set_CONTROL(0x00000003);
 }
 
 /*******************************************************************************
@@ -90,26 +90,5 @@ void cmos_hal_cortex_cortex_goto_task_context(void)
 void cmos_hal_cortex_cortex_set_psp(cmos_int32_T psp)
 { 
     __set_PSP(psp);
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_hal_cortex_cortex_enable_psp
- * 负责人  : 彭鹏
- * 创建日期：20151120 
- * 函数功能: 使能PSP
- *
- * 输入参数: 无
- * 输出参数: 无
- * 返回值  : 无
- *          
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-void cmos_hal_cortex_cortex_enable_psp(void)
-{ 
-    cmos_int32_T reg = __get_CONTROL();
-    __set_CONTROL(reg | 0x00000002);
 }
 

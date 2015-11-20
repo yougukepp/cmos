@@ -21,7 +21,9 @@
 /* xPSR寄存器初值 Thumb状态 */
 #define CMOS_INITIAL_XPSR                                   (0x01000000)
 /* LR初值 Thread mode with float and psp */
-#define CMOS_INITIAL_EXEC_RETURN                            (0xfffffffd)
+#define CMOS_INITIAL_EXEC_RETURN_WITH_FLOAT                 (0xFFFFFFED)
+#define CMOS_INITIAL_EXEC_RETURN_WITHOUT_FLOAT              (0xFFFFFFFD)
+
 /* TODO:求取合适的值 FPSCR初值 */
 #define CMOS_INITIAL_FPSCR                                  (0x00000000)
 
@@ -33,9 +35,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/ 
-void cmos_hal_cortex_cortex_goto_task_context(void);
-void cmos_hal_cortex_cortex_set_psp(cmos_int32_T psp);
 void cmos_hal_cortex_cortex_enable_psp(void);
+void cmos_hal_cortex_cortex_set_psp(cmos_int32_T psp);
 
 #endif /* #ifndef _CMOS_HAL_CORTEX_CORTEX_H_ */
 

@@ -21,7 +21,6 @@
 #include "switch.h"
 #include "vfs.h"
 #include "hal.h"
-#include "cortex.h"
 #include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -64,6 +63,7 @@ cmos_status_T cmos_kernel_init(void)
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
+        return status;
     }
 
 
@@ -72,6 +72,7 @@ cmos_status_T cmos_kernel_init(void)
     if(cmos_OK_E != status)
     {
         assert_failed(__FILE__, __LINE__);
+        return status;
     }
 
     /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
@@ -86,10 +87,21 @@ cmos_status_T cmos_kernel_init(void)
     /* 打印目录树 */
     cmos_printf("cmos init done with vfs tree:\r\n");
     vfs_print(); 
-    
-    /* 进入任务环境 */
-    cmos_hal_cortex_cortex_goto_task_context();
-    
+
+#if 1 /* 初始化用户内存 便于调试 */
+#define CMOS_TASK_STACK_BASE  (0x20030000)
+    cmos_int32_T *sp = NULL;
+    cmos_int32_T i = 0;
+    cmos_int32_T iMax = 1024 * 10; /* 10kword 40kbyte */
+    sp = (int *)CMOS_TASK_STACK_BASE;
+    for(i = 1; i <= iMax; i++)
+    {
+        sp -= 1;
+        *sp = 0xA5A5A5A5;
+    }
+#undef CMOS_TASK_STACK_BASE
+#endif
+
     /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T idle_attribute =
     {
@@ -98,8 +110,13 @@ cmos_status_T cmos_kernel_init(void)
         .tick_total = CMOS_IDLE_TICK_TOTAL,
         .flag = cmos_task_with_default
     };
-
     status = cmos_create(&s_idle_task_id, cmos_task_idle_task, NULL, &idle_attribute); 
+    if(cmos_OK_E != status)
+    {
+        CMOS_ERR_STR("create idle task failed.");
+        return status;
+    }
+
     return status;
 }
 
@@ -119,10 +136,10 @@ cmos_status_T cmos_kernel_init(void)
 * 其 它   : 永不返回
 *
 ******************************************************************************/
-void cmos_kernel_start(void)
-{
+cmos_status_T cmos_kernel_start(void)
+{ 
     cmos_task_switch_start();
 
     /* 永不返回 */
-    return;
+    return cmos_OK_E;
 }

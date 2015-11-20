@@ -30,7 +30,7 @@
 
 /********************************** 函数声明区 *********************************/
 cmos_status_T cmos_init_c(void);
-static void cmos_start_c(void);
+static cmos_status_T cmos_start_c(void);
 
 static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         cmos_func_T task_func,
@@ -187,14 +187,14 @@ cmos_status_T cmos_init_c(void)
  * 输入参数: 无
  * 输出参数: 无
  *
- * 返回值  : 无
+ * 返回值  : 函数执行状态
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-static void cmos_start_c(void)
+cmos_status_T cmos_start_c(void)
 {
-    cmos_kernel_start();
+    return cmos_kernel_start();
 }
 
 /*******************************************************************************

@@ -1111,7 +1111,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal\cortex</IncludePath>
+                      <IncludePath>..\cmos\hal\cortex;..\cmos\hal\hardware;..\cmos\hal</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

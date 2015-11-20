@@ -28,17 +28,16 @@ SVC_Handler     PROC
 cmos_init       PROC
                 EXPORT  cmos_init 
                 IMPORT  cmos_init_c
-                ;PUSH {LR}
                 LDR     R0, = cmos_init_c
                 BX      R0
-                ;POP {LR}
-                ;BX  LR
                 ENDP
 
+                ; cmos_start的末尾使用中断返回 故必须使用 svc
 cmos_start      PROC
                 EXPORT  cmos_start
                 SVC 0x01
-                BX  LR
+                ; 出错才会执行到此
+                BX LR
                 ENDP
 
 cmos_create     PROC

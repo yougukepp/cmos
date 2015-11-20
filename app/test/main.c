@@ -55,6 +55,14 @@ int main(void)
         assert_failed(__FILE__, __LINE__);
     }
 
+    status = cmos_start();
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+    cmos_printf("cmos start.\r\n");
+
+#if 0
     cmos_task_id_T task1_id;
     /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T task1_attribute =
@@ -67,13 +75,7 @@ int main(void)
     cmos_int32_T argv1 = 100;
     status = cmos_create(&task1_id, task1, &argv1, &task1_attribute); 
     cmos_printf("task1 create %d:0x%08x.\r\n", status, (cmos_int32_T)task1_id);
-
-    status = cmos_start();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
-    cmos_printf("cmos start.\r\n");
+#endif
 
 #if 0
     cmos_i2c_addr_T bmp180_addr =
@@ -129,6 +131,7 @@ static void task1(void *argv)
     cmos_int32_T val = 0;
     val = *((cmos_int32_T *)argv);
 
+#if 0
 
     /* 新建任务2 */
     cmos_status_T status = cmos_ERR_E;
@@ -143,6 +146,7 @@ static void task1(void *argv)
     float argv2 = 200.0f;
     status = cmos_create(&task2_id, task2, &argv2, &task2_attribute); 
     cmos_printf("task2 create %d:0x%08x.\r\n", status, (cmos_int32_T)task2_id);
+#endif
 
 
     while(TRUE)

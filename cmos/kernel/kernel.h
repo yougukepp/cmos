@@ -29,7 +29,7 @@
 
 /*********************************** 接口函数 **********************************/
 cmos_status_T cmos_kernel_init(void);
-void cmos_kernel_start(void);
+cmos_status_T cmos_kernel_start(void);
 
 #endif // #ifndef _CMOS_KERNEL_KERNEL_H_
 
