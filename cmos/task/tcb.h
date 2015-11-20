@@ -37,6 +37,8 @@ struct cmos_task_tcb_T_tag{
 
     cmos_int32_T    tick_total; /* 时间片总数 */
     cmos_int32_T    tick;       /* 当前时间片 */
+
+    cmos_int32_T    flag;       /* 浮点 & 特权 ? */
 };
 
 /*********************************** 全局变量 **********************************/

@@ -27,10 +27,7 @@
 
 
 /********************************** 函数声明区 *********************************/
-static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
-        const cmos_func_T entry,
-        const void *argv, 
-        cmos_word_T *stack_bask);
+static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_word_T *stack_base);
 
 /********************************** 变量实现区 *********************************/
 
@@ -91,11 +88,12 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
 
     tcb->priority = task_attribute->priority;
     tcb->tick_total = task_attribute->tick_total;
+    tcb->flag = task_attribute->flag;
 
     tcb->tick = 0;
 
     /* 初始化任务栈 */
-    status = cmos_task_tcb_stack_init(&(tcb->psp), tcb->entry, tcb->argv, stack_base);
+    status = cmos_task_tcb_stack_init(tcb, stack_base);
     if(cmos_OK_E != status)
     {
         return status;
@@ -124,20 +122,19 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
-        const cmos_func_T entry,
-        const void *argv, 
-        cmos_word_T *stack_base)
+static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_word_T *stack_base)
 {
     cmos_word_T *sp = NULL;      /* 任务sp指针 */
 
-    if((NULL == ptr_psp)
-    || (NULL == entry)
+    if((NULL == tcb)
     || (NULL == stack_base))
     {
         CMOS_ERR_STR("cmos_task_tcb_stack_init with null pointer.");
         return cmos_NULL_E;
     }
+
+    const cmos_func_T entry = tcb->entry;
+    const void *argv = tcb->argv;
 
     sp = stack_base;
 
@@ -336,17 +333,17 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_int32_T **ptr_psp,
     sp -= 25; /* R11 - R0  and  S32 - S16  and cmos加入 双字节对齐 占位 */
 #endif
 
-    *ptr_psp = sp;
+    tcb->psp = sp;
 
     return cmos_OK_E;
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_task_tcb_stack_init
+ * 函数名  : cmos_task_tcb_get_stack_size
  * 负责人  : 彭鹏
  * 创建日期：20151117 
- * 函数功能: 初始化任务栈
+ * 函数功能: 获取任务栈
  *
  * 输入参数: tcb 任务控制块指针
  * 输出参数: 无

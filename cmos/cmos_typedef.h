@@ -86,11 +86,18 @@ typedef enum{
     cmos_priority_realtime = 0x40,
     cmos_priority_err = 0xff
 }cmos_priority_T;
+/* 任务优先级 */
+typedef enum{
+    cmos_task_with_default = 0x00,
+    cmos_task_with_float = 0x01,
+    cmos_task_with_privileged = 0x02,
+}cmos_tasK_flag_T;
 /* 任务启动参数 */
 typedef struct{
     cmos_priority_T   priority;   /* 优先级 */
     cmos_int32_T      stack_size; /* 任务栈大小 */
     cmos_int32_T      tick_total; /* 同一优先级有多个线程 该线程的运行时间 SysTick为单位 */
+    cmos_int32_T      flag;       /* 存放任务的参数:浮点 特权 */
 }cmos_task_attribute_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
