@@ -45,14 +45,6 @@
 ;*    返回地址保存在栈中,而我们把栈指针指向了另一个任务的栈,
 ;*    所以中断函数的返回地址就被我们偷偷地修改了
 ;*
-;* 任务切换算法(带浮点):
-;*    1. 把 S16-S32 R4-R11 LR(EXC_RETURN)压入PSP栈中, 保护寄存器原来的内容.
-;*    2. 更新当前的PSP栈指针为任务调度算法函数返回的栈指针.
-;*    3. 利用新的PSP栈指针, 从PSP栈中恢复 R4-R11 LR(EXC_RETURN)的内容.
-;*    4. 利用 bx lr 指令进行中断返回, 实现任务切换.
-;*    返回地址保存在栈中,而我们把栈指针指向了另一个任务的栈,
-;*    所以中断函数的返回地址就被我们偷偷地修改了
-;*
 ;*
 ;******************************************************************************/
                 AREA    |.text|, CODE, READONLY
@@ -63,22 +55,37 @@ PendSV_Handler  PROC
 
                 ; step 1
                 MRS R0 , PSP
-                STMDB.W R0!, {R4-R11,LR} ; 等效于PUSH {R4-R11, LR}
+
+                ; step 2
+                TST LR, #0x10               ; 测试bit4. =0, 需要入栈浮点寄存器
+                IT EQ
+                VSTMDBEQ R0!, {S16-S31}     ; 等效于PUSH {S16-S31}
+
+                ; step 3
+                STMDB.W R0!, {R4-R11,LR}    ; 等效于PUSH {R4-R11, LR}
                 ; r0此时已经是最新的psp值
 
-                ; step 2 r0作为参数和返回值
+                ; step 4 r0作为参数和返回值
                 BL cmos_task_switch_switch
                 ; r0此时已经是最新的psp值
 
-                ; step 3
-step3           LDMIA.W R0!, {R4-R11,LR} ; /* 等效于 POP {R4-R11, LR} */
+                ; step 5
+                LDMIA.W R0!, {R4-R11,LR}    ; 等效于POP {R4-R11, LR}
+
+                ; step 6
+                TST LR, #0x10               ; 测试bit4. =0, 需要出栈浮点寄存器
+                IT EQ
+                VLDMIAEQ R0!, {S16-S31}     ; 等效于POP {S16-S31}
+
+                ; step 7
                 MSR PSP, R0
                 ISB
 
-                ; step 4
+                ; step 8
                 BX LR
                 ENDP
 
                 ALIGN 
                 
                 END
+
