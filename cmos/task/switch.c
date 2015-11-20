@@ -533,10 +533,10 @@ void cmos_task_switch_start(void)
 
     /* step1: 获取当前最高优先级任务PSP并设置psp寄存器 */ 
     psp = cmos_task_swtich_get_higghest_task_psp();
-    CMOS_HAL_CORTEX_CORTEX_SET_PSP((uint32_t)psp);
+    cmos_hal_cortex_cortex_set_psp((cmos_int32_T)psp);
 
     /* step2: 使能PSP */ 
-    CMOS_HAL_CORTEX_CORTEX_ENABLE_PSP();
+    cmos_hal_cortex_cortex_enable_psp();
 
     /* step3: 调用任务切换后半部分 */
     void cmos_task_switch_start_s(void); /* pendsv.s中定义 */

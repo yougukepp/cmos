@@ -1111,7 +1111,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\console;..\cmos\vfs;..\cmos\hal\cortex;..\cmos\task;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
+                      <IncludePath>..\cmos\hal\cortex</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -1287,7 +1287,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\console;..\cmos\vfs;..\cmos\hal\cortex;..\cmos\task;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
+                      <IncludePath>..\cmos\task;..\cmos\vfs;..\cmos\hal;..\cmos\hal\cortex</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

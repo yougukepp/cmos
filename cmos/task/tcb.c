@@ -117,9 +117,8 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
  * 输出参数: ptr_psp 任务栈指针的地址
  *
  * 返回值  : 执行状态
- *          
  * 调用关系: 无
- * 其 它   : 无
+ * 其 它   : FIXME:目前仅使用非特权任务
  *
  ******************************************************************************/
 static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base)
