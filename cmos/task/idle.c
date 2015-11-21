@@ -18,6 +18,7 @@
 #include "cmos_config.h"
 #include "idle.h"
 #include "console.h"
+#include "cortex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -50,6 +51,12 @@
 void cmos_task_idle_task(void *argv)
 {
     static cmos_int32_T times = 0;
+
+    /* step0: 启动systick */ 
+    cmos_hal_cortex_cortex_systick_start(CMOS_TICK_TIMES);
+
+    /* 进入非特权级别 */
+    cmos_hal_cortex_cortex_goto_unprivileged();
 
     while(TRUE)
     { 

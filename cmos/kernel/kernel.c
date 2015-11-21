@@ -85,8 +85,8 @@ cmos_status_T cmos_kernel_init(void)
     /* 后面的初始化可以使用控制台输出了 */
 
     /* 打印目录树 */
-    cmos_printf("cmos init done with vfs tree:\r\n");
-    vfs_print(); 
+    cmos_printf("cmos init done with vfs tree: del for debug\r\n");
+    //vfs_print(); 
 
 #if 1 /* 初始化用户内存 便于调试 */
 #define CMOS_TASK_STACK_BASE  (0x20030000)
@@ -116,9 +116,6 @@ cmos_status_T cmos_kernel_init(void)
         CMOS_ERR_STR("create idle task failed.");
         return status;
     }
-
-    /* 进入非特权级别 */
-    cmos_hal_cortex_cortex_goto_unprivileged();
 		
     return status;
 }

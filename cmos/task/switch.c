@@ -546,9 +546,6 @@ void cmos_task_switch_start(void)
 { 
     cmos_task_tcb_psp_T psp = NULL;
 
-    /* step0: 启动systick */ 
-    cmos_hal_cortex_cortex_systick_start(CMOS_TICK_TIMES);
-
     /* step1: 获取当前最高优先级任务PSP并设置psp寄存器 */ 
     psp = cmos_task_swtich_get_higghest_task_psp();
 
