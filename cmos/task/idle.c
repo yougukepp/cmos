@@ -54,7 +54,7 @@ void cmos_task_idle_task(void *argv)
 {
     static cmos_int32_T times = 0;
 
-    /* 设置中断优先级 */
+    /* step1: 设置中断优先级 */
     HAL_NVIC_SetPriority(MemoryManagement_IRQn, MEM_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(BusFault_IRQn, BUS_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(UsageFault_IRQn, USAGE_INT_PRIORITY, 0);
@@ -62,9 +62,10 @@ void cmos_task_idle_task(void *argv)
     HAL_NVIC_SetPriority(PendSV_IRQn, PENDSV_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(SysTick_IRQn, TICK_INT_PRIORITY, 0);
 
-    /* step0: 启动systick */ 
+    /* step2: 启动systick 内部将重新设置 systick优先级 */ 
     cmos_hal_cortex_cortex_systick_start(CMOS_TICK_TIMES);
-    /* step1: 进入非特权级别 */
+
+    /* step3: 进入非特权级别 */
     cmos_hal_cortex_cortex_goto_unprivileged();
 
     while(TRUE)

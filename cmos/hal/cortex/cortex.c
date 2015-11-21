@@ -127,7 +127,7 @@ void cmos_hal_cortex_cortex_systick_disable(void)
  * 创建日期：20151121 
  * 函数功能: 启动systick时钟
  *
- * 输入参数: ticks_num systick中断间隔tick数 
+ * 输入参数: ticks_num systick中断间隔毫秒数 
  * 输出参数: 无
  * 返回值  : 执行状态
  *          
@@ -135,16 +135,14 @@ void cmos_hal_cortex_cortex_systick_disable(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_hal_cortex_cortex_systick_start(cmos_int32_T ticks_num)
-{
-    if(0 == HAL_SYSTICK_Config(ticks_num))
-    {
-        return cmos_OK_E;
-    }
-    else
-    {
-        CMOS_ERR_STR("cmos_hal_cortex_cortex_systick_start set ticks.");
-        return cmos_ERR_E;
-    }
+cmos_status_T cmos_hal_cortex_cortex_systick_start(cmos_int32_T ticks)
+{ 
+    /* ticks 毫秒中断一次 */
+    HAL_SYSTICK_Config(ticks * HAL_RCC_GetHCLKFreq()/1000); 
+    
+    /* 设置tick优先级 TICK_INT_PRIORITY 定义于 stm32f4xx_hal_conf.h */
+    HAL_NVIC_SetPriority(SysTick_IRQn, TICK_INT_PRIORITY,0);
+
+    return cmos_OK_E;
 }
 

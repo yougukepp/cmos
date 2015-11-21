@@ -444,11 +444,13 @@ cmos_task_tcb_psp_T cmos_task_switch_switch(const cmos_task_tcb_psp_T cur_psp)
 
     /* step4: 获取最高优先级任务psp */
     next_psp = cmos_task_tcb_get_psp(next_tcb);
+#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == next_psp)
     {
         CMOS_ERR_STR("cmos_task_switch_switch get a null pointer.");
         return NULL;
     }
+#endif
 
     return next_psp;
 }

@@ -433,13 +433,15 @@ cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp)
+inline void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp)
 {
+#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
         return;
     }
+#endif
 
     tcb->psp = psp;
 }
@@ -459,13 +461,15 @@ void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb)
+inline cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb)
 {
+#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_tcb_get_psp whit null tcb pointer.");
         return NULL;
     }
+#endif
 
     return tcb->psp;
 }
