@@ -68,7 +68,7 @@ cmos_status_T hal_init(void)
         assert_failed(__FILE__, __LINE__);
         return status;
     } 
-		
+
     /* 关闭时钟 避免错误调度 */
     cmos_hal_cortex_cortex_systick_disable();
 

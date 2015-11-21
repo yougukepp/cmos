@@ -93,12 +93,12 @@
 #define  DATA_CACHE_ENABLE            1
 
 /* Fault 0 > SVC 0 > SysTick 1 > PendSV 15 */
-#define  TICK_INT_PRIORITY            ((uint32_t)0x01) /* SysTick 中断优先级 */           
-#define  MEM_INT_PRIORITY             ((uint32_t)0x00) /* Memory Management 中断优先级 */
-#define  BUS_INT_PRIORITY             ((uint32_t)0x00) /* Bus Fault 中断优先级 */
-#define  USAGE_INT_PRIORITY           ((uint32_t)0x00) /* Usage Fault 中断优先级 */
-#define  SVC_INT_PRIORITY             ((uint32_t)0x00) /* 系统调用中断优先级 */
-#define  PENDSV_INT_PRIORITY          ((uint32_t)0x15) /* 任务切换优先级 最低级别保证不会延迟其他中断 到时deadline违反 */
+#define  TICK_INT_PRIORITY            ((uint32_t)1) /* SysTick 中断优先级 */           
+#define  MEM_INT_PRIORITY             ((uint32_t)0) /* Memory Management 中断优先级 */
+#define  BUS_INT_PRIORITY             ((uint32_t)0) /* Bus Fault 中断优先级 */
+#define  USAGE_INT_PRIORITY           ((uint32_t)0) /* Usage Fault 中断优先级 */
+#define  SVC_INT_PRIORITY             ((uint32_t)0) /* 系统调用中断优先级 */
+#define  PENDSV_INT_PRIORITY          ((uint32_t)15) /* 任务切换优先级 最低级别保证不会延迟其他中断 到时deadline违反 */
 
 /* include头文件 */
 #ifdef HAL_RCC_MODULE_ENABLED
