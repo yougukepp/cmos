@@ -21,7 +21,6 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "cortex.h"
 #include "tcb.h"
 #include "tcb_list.h"
 #include "switch.h"
