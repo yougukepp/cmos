@@ -9,15 +9,16 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 2. 所有函数参数检查
 3. 部分静态变量使用const
 4. 去除跨层次耦合
+5. 系统调用加用户空间运行部分
 
 ## 计划
 ### 近期计划
-1. 多线程
-2. 延迟
+0. 整理代码
+1. create系统调用入口函数及其参数装入属性结构体
+2. 实现延迟 可同级任务切换
 3. 互斥锁 参考 SignalManagement
 4. 实现串口命令行,参考CMSIS驱动模型
-5. 系统调用加用户空间运行部分
-6. 实现app/flyer/doc/README.md计划
+5. 实现app/flyer/doc/README.md计划
 
 ### 远期计划
 1. 整理TODO

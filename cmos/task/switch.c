@@ -26,6 +26,8 @@
 #include "switch.h"
 #include "console.h"
 #include "cortex.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_conf.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -530,6 +532,24 @@ void cmos_task_switch_start(void)
     /* step3: 将idle psp存入r0 */
     idle_psp = cmos_task_tcb_get_psp(idle_tcb);
 
+	
+
+    /* step1: 设置中断优先级 */
+    HAL_NVIC_SetPriority(MemoryManagement_IRQn, MEM_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(BusFault_IRQn, BUS_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(UsageFault_IRQn, USAGE_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(SVCall_IRQn, SVC_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(PendSV_IRQn, PENDSV_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(SysTick_IRQn, TICK_INT_PRIORITY, 0);
+
+    /* step2: 启动systick 内部将重新设置 systick优先级 */ 
+    cmos_hal_cortex_cortex_systick_start(CMOS_TICK_TIMES);
+
+    /* step3: 进入非特权级别 */
+    cmos_hal_cortex_cortex_goto_unprivileged();	
+	
+	
+	
     /* step4: 调用任务切换后半部分 */
     void cmos_task_switch_start_s(cmos_task_tcb_psp_T psp); /* pendsv.s中定义 */
     cmos_task_switch_start_s(idle_psp);

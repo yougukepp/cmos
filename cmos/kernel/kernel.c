@@ -85,10 +85,11 @@ cmos_status_T cmos_kernel_init(void)
     /* 后面的初始化可以使用控制台输出了 */
 
     /* 打印目录树 */
-    cmos_printf("cmos init done with vfs tree: del for debug\r\n");
-    //vfs_print(); 
-
-#if 1 /* 初始化用户内存 便于调试 */
+    cmos_printf("cmos init done with vfs tree:\r\n");
+    vfs_print(); 
+    
+    /* 初始化用户内存 便于调试 */
+#if (CMOS_DEBUG_LEVEL > 0) 
 #define CMOS_TASK_STACK_BASE  (0x20030000)
     cmos_int32_T *sp = NULL;
     cmos_int32_T i = 0;

@@ -55,19 +55,12 @@ int main(void)
         assert_failed(__FILE__, __LINE__);
     }
 
-    status = cmos_start();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
-    cmos_printf("cmos start.\r\n");
-
-#if 0
+#if 1
     cmos_task_id_T task1_id;
     /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T task1_attribute =
     {
-        .priority = cmos_priority_idle,
+        .priority = cmos_priority_low,
         .stack_size = 4096,
         .tick_total = 10,
         .flag = cmos_task_with_default
@@ -76,6 +69,13 @@ int main(void)
     status = cmos_create(&task1_id, task1, &argv1, &task1_attribute); 
     cmos_printf("task1 create %d:0x%08x.\r\n", status, (cmos_int32_T)task1_id);
 #endif
+
+    status = cmos_start();
+    if(cmos_OK_E != status)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+
 
 #if 0
     cmos_i2c_addr_T bmp180_addr =
@@ -151,7 +151,7 @@ static void task1(void *argv)
 
     while(TRUE)
     {
-        cmos_printf("task1: %d", val)
+        cmos_printf("task1: %d\r\n", val);
     }
 }
 
@@ -162,7 +162,7 @@ static void task2(void *argv)
 
     while(TRUE)
     {
-        cmos_printf("task2: %.2f", val)
+        cmos_printf("task2: %.2f", val);
     }
 }
 

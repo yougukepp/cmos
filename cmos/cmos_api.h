@@ -21,7 +21,7 @@
 
 /************************************ 宏定义 ***********************************/
 /* 控制台输出 */
-#define cmos_printf(...)        cmos_console_printf(__VA_ARGS__);
+#define cmos_printf(...)        cmos_console_printf(__VA_ARGS__)
 
 /* 系统调用cmos_open参数宏 */
 #define CMOS_O_RDWR             (0x00000000)
