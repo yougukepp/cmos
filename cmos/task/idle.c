@@ -54,8 +54,7 @@ void cmos_task_idle_task(void *argv)
 
     /* step0: 启动systick */ 
     cmos_hal_cortex_cortex_systick_start(CMOS_TICK_TIMES);
-
-    /* 进入非特权级别 */
+    /* step1: 进入非特权级别 */
     cmos_hal_cortex_cortex_goto_unprivileged();
 
     while(TRUE)

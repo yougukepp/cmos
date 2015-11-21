@@ -52,6 +52,7 @@
 PendSV_Handler  PROC
                 ; 导入调度算法
                 IMPORT cmos_task_switch_switch
+                EXPORT PendSV_Handler
 
                 ; step 1
                 MRS R0 , PSP
@@ -66,11 +67,11 @@ PendSV_Handler  PROC
                 ; r0此时已经是最新的psp值
 
                 ; step 4 r0作为参数和返回值
-                BL cmos_task_switch_switch
-                ; r0此时已经是最新的psp值
-
+PendSV_Tail     BL cmos_task_switch_switch
+                ; r0此时已经是最新的psp值 
+                
                 ; step 5
-PendSV_Tail     LDMIA.W R0!, {R4-R11,LR}    ; 等效于POP {R4-R11, LR}
+                LDMIA.W R0!, {R4-R11,LR}    ; 等效于POP {R4-R11, LR}
 
                 ; step 6
                 TST LR, #0x10               ; 测试bit4. =0, 需要出栈浮点寄存器

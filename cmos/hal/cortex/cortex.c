@@ -64,7 +64,7 @@ void SysTick_Handler(void)
  * 函数名  : cmos_hal_cortex_cortex_goto_unprivileged
  * 负责人  : 彭鹏
  * 创建日期：20151120 
- * 函数功能: 进入非特权级别 使能psp
+ * 函数功能: 进入非特权级别
  *
  * 输入参数: 无
  * 输出参数: 无
@@ -76,7 +76,7 @@ void SysTick_Handler(void)
  ******************************************************************************/
 void cmos_hal_cortex_cortex_goto_unprivileged(void)
 {
-    __set_CONTROL(0x00000003);
+    __set_CONTROL(0x00000001);
 }
 
 /*******************************************************************************

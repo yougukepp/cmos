@@ -42,7 +42,8 @@ __heap_limit
 
 ; 复位后的向量表
 ; 位于0x00000000
-                AREA    RESET, DATA, READONLY
+                AREA   RESET, DATA, READONLY
+                IMPORT PendSV_Handler
                 IMPORT SVC_Handler
                 EXPORT  __Vectors
                 EXPORT  __Vectors_End
@@ -62,7 +63,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     SVC_Handler             ; SVCall Handler
                 DCD     DebugMon_Handler        ; Debug Monitor Handler
                 DCD     0                       ; Reserved
-                DCD     0                       ; PendSV Handler
+                DCD     PendSV_Handler          ; PendSV Handler
                 DCD     SysTick_Handler         ; SysTick Handler
 
                 ; TODO: 外部中断 仅实现USART1作为控制台
