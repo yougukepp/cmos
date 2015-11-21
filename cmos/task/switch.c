@@ -25,6 +25,7 @@
 #include "tcb_list.h"
 #include "switch.h"
 #include "console.h"
+#include "cortex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 

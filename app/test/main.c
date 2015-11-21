@@ -62,7 +62,7 @@ int main(void)
     }
     cmos_printf("cmos start.\r\n");
 
-#if 0
+#if 1
     cmos_task_id_T task1_id;
     /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T task1_attribute =
