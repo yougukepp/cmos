@@ -47,6 +47,12 @@ cmos_create     PROC
                 BX  LR
                 ENDP
 
+cmos_delay      PROC
+                EXPORT  cmos_delay
+                SVC 0x20
+                BX  LR
+                ENDP
+
 cmos_open       PROC
                 EXPORT  cmos_open
                 SVC 0xa0

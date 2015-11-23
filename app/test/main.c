@@ -147,11 +147,10 @@ static void task1(void *argv)
     cmos_int32_T val = 0;
     val = *((cmos_int32_T *)argv);
 
-
-
     while(TRUE)
     {
         cmos_printf("task1: %d\r\n", val);
+        cmos_delay(10); /* 延迟10ms */
     }
 }
 

@@ -74,7 +74,7 @@ void SysTick_Handler(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_hal_cortex_cortex_goto_unprivileged(void)
+inline void cmos_hal_cortex_cortex_goto_unprivileged(void)
 {
     __set_CONTROL(0x00000003);
 }
@@ -94,7 +94,7 @@ void cmos_hal_cortex_cortex_goto_unprivileged(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_hal_cortex_cortex_set_pendsv(void)
+inline void cmos_hal_cortex_cortex_set_pendsv(void)
 {
     /* 悬起PendSV异常(此时必然为咬尾中断) 准备任务切换 */
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
@@ -115,7 +115,7 @@ void cmos_hal_cortex_cortex_set_pendsv(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_hal_cortex_cortex_systick_disable(void)
+inline void cmos_hal_cortex_cortex_systick_disable(void)
 {
     SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
 }

@@ -45,6 +45,9 @@ cmos_status_T cmos_start(void);
 cmos_status_T cmos_create(cmos_task_id_T *task_id, 
         const cmos_task_attribute_T *task_attribute);
 
+/* 时间管理 */
+cmos_status_T cmos_delay(cmos_int32_T ms);
+
 /* 外设驱动 */
 cmos_int32_T cmos_open(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 cmos_int32_T cmos_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);

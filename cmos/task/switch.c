@@ -532,8 +532,6 @@ void cmos_task_switch_start(void)
     /* step3: 将idle psp存入r0 */
     idle_psp = cmos_task_tcb_get_psp(idle_tcb);
 
-	
-
     /* step1: 设置中断优先级 */
     HAL_NVIC_SetPriority(MemoryManagement_IRQn, MEM_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(BusFault_IRQn, BUS_INT_PRIORITY, 0);
@@ -547,9 +545,7 @@ void cmos_task_switch_start(void)
 
     /* step3: 进入非特权级别 */
     cmos_hal_cortex_cortex_goto_unprivileged();	
-	
-	
-	
+
     /* step4: 调用任务切换后半部分 */
     void cmos_task_switch_start_s(cmos_task_tcb_psp_T psp); /* pendsv.s中定义 */
     cmos_task_switch_start_s(idle_psp);

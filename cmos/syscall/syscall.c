@@ -32,8 +32,9 @@
 cmos_status_T cmos_init_c(void);
 static cmos_status_T cmos_start_c(void);
 
-static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
-        const cmos_task_attribute_T *task_attribute);
+static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
+
+static cmos_status_T cmos_delay_c(cmos_int32_T millisec);
 
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 static cmos_status_T cmos_close_c(cmos_int32_T fd);
@@ -84,6 +85,8 @@ void syscall_c(cmos_uint32_T *sp)
      *        0x01 cmos_start 没有汇编部分
      *      0x1 任务控制(参考CMSIS Thread Management)
      *        0x10 cmos_create
+     *      0x2 时间管理(参考CMSIS Thread Management)
+     *        0x20 cmos_delay
      *      0xa 驱动系统调用(利用Linux VFS思想)
      *        0xa0 cmos_open
      *        0xa1 cmos_close
@@ -110,6 +113,13 @@ void syscall_c(cmos_uint32_T *sp)
         case 0x10:
             { 
                 sp[0] = cmos_create_c((cmos_task_id_T *)stacked_r0, (const cmos_task_attribute_T *)stacked_r1);
+                break;
+            }
+
+        /* 时间管理 */
+        case 0x20:
+            { 
+                sp[0] = cmos_delay_c((cmos_int32_T)stacked_r0);
                 break;
             }
 
@@ -220,6 +230,27 @@ static cmos_status_T cmos_create_c(cmos_task_id_T *task_id,
     status = cmos_task_create(task_id, task_attribute);
 
     return status;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_delay_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151123 
+ * 函数功能: 延迟当前任务
+ *
+ * 输入参数: 延迟时间(CMOS_TICK_TIMES)数
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
+ *
+ ******************************************************************************/
+static cmos_status_T cmos_delay_c(cmos_int32_T millisec)
+{
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
