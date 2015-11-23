@@ -44,6 +44,7 @@
 /*********************************** 接口函数 **********************************/
 void cmos_task_switch_start(void);
 cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb);
+cmos_status_T cmos_task_switch_update_tcb_time(void);
 
 #endif // #ifndef _CMOS_TASK_SWITCH_H_
 

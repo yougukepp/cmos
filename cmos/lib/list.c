@@ -103,7 +103,7 @@ void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node)
  *           data 数据域指针
  * 输出参数: 无
  *
- * 返回值  : 新建的list结点指针
+ * 返回值  : 执行状态
  * 调用关系: 无
  * 其 它   : 无
  *
@@ -128,6 +128,78 @@ cmos_status_T cmos_lib_list_add(cmos_lib_list_T *head, const void *data)
     /* step3: 链入 */
     tail->next = node;
     node->prev = tail;
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_del
+ * 负责人  : 彭鹏
+ * 创建日期：20151123 
+ * 函数功能: list中删除结点
+ *
+ * 输入参数: list 链表头
+ *           data 数据域指针
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ * 调用关系: 无
+ * 其 它   : TODO:其他地方释放
+ *
+ ******************************************************************************/
+cmos_status_T cmos_lib_list_del(cmos_lib_list_T *list, const void *data)
+{
+    cmos_lib_list_node_T *go_ptr = NULL;
+    cmos_lib_list_node_T *prev = NULL; /* go_ptr 前驱 */
+    cmos_lib_list_node_T *next = NULL; /* go_ptr 后继 */
+
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_get_tail can not with null list.");
+        return cmos_NULL_E;
+    } 
+    
+    go_ptr = (cmos_lib_list_node_T *)list;
+    do
+    { 
+        if(data == go_ptr->data) /* 找到,处理go_ptr结点 */
+        {
+            prev = go_ptr->prev;
+            next = go_ptr->next;
+           
+            /* list只有一个结点 go_ptr */
+            if((NULL == prev)
+            && (NULL == next))
+            {
+                list = NULL;
+                break;
+            } 
+            
+            /* go_ptr是头结点 */
+            if(NULL == prev)
+            {
+                list = (cmos_lib_list_T *)next;
+                break;
+            } 
+            
+            /* go_ptr是尾巴 */
+            if(NULL == next)
+            {
+                prev->next = NULL;
+                break;
+            }
+
+            /* go_ptr是中间结点 */
+            prev->next = next;
+            next->prev = prev; 
+            break;
+        }
+        else /* 继续向后找 */
+        {
+            go_ptr = next;
+        }
+    }while(NULL != go_ptr);
 
     return cmos_OK_E;
 }

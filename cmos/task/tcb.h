@@ -37,10 +37,14 @@ struct cmos_task_tcb_T_tag{
 
     cmos_priority_T priority;   /* 优先级 */
 
+    /* 同一优先级轮询 */
     cmos_int32_T    tick_total; /* 时间片总数 */
     cmos_int32_T    tick;       /* 当前时间片 */
 
-    cmos_int32_T    flag;       /* 浮点 & 特权 ? */
+    /* 支持定时功能 */
+    cmos_int32_T    delay_ms;   /* cmos_delay调用延迟时间 */
+
+    cmos_int32_T    flag;       /* 浮点 | 特权 或其他属性 ? */
 };
 
 /*********************************** 全局变量 **********************************/
@@ -49,6 +53,8 @@ struct cmos_task_tcb_T_tag{
 cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
         const cmos_task_attribute_T *task_attribute,
         cmos_task_tcb_psp_T stack_base);
+
+void cmos_task_tcb_set_delay_ms(cmos_task_tcb_T *tcb, cmos_int32_T ms);
 
 void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp);
 cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb);

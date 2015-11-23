@@ -89,6 +89,7 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
     tcb->flag = task_attribute->flag;
 
     tcb->tick = 0;
+    tcb->delay_ms = 0;
 
     /* 初始化任务栈 */
     status = cmos_task_tcb_stack_init(tcb, stack_base);
@@ -528,5 +529,34 @@ void cmos_task_tcb_stack_print(const cmos_task_tcb_psp_T psp, cmos_int32_T print
     { 
         cmos_console_printf("0x%08x:0x%08x\r\n", sp, *sp);
     }
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_set_delay_ms
+ * 负责人  : 彭鹏
+ * 创建日期：20151123 
+ * 函数功能: 设置当前任务延迟
+ *
+ * 输入参数: ms 延迟数
+ * 输出参数: tcb 任务控制块指针
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline void cmos_task_tcb_set_delay_ms(cmos_task_tcb_T *tcb, cmos_int32_T ms)
+{
+#if (CMOS_DEBUG_LEVEL > 0) 
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
+        return;
+    }
+#endif
+
+    tcb->delay_ms = ms;
 }
 

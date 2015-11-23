@@ -74,21 +74,20 @@ cmos_task_tcb_list_node_T *cmos_task_tcb_list_malloc_node(const cmos_task_tcb_T 
  * 创建日期：20151119 
  * 函数功能: 将tcb加入tcb链表
  *
- * 输入参数: head 任务链表
+ * 输入参数: list 任务链表
  *           tcb 任务控制块指针
  * 输出参数: 无
  *
- * 返回值  : 无
- *          
+ * 返回值  : 执行状态
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *head, const cmos_task_tcb_T *tcb)
+cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *list, const cmos_task_tcb_T *tcb)
 {
     cmos_status_T status = cmos_ERR_E;
 
-    if(NULL == head)
+    if(NULL == list)
     {
         CMOS_ERR_STR("cmos_task_tcb_list_add can not with null list.");
         return cmos_NULL_E;
@@ -100,7 +99,48 @@ cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *head, const cmos_task
         return cmos_NULL_E;
     }
 
-    status = cmos_lib_list_add(head, tcb);
+    status = cmos_lib_list_add(list, tcb);
+    if(cmos_OK_E != status)
+    {
+        return status;
+    }
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_list_del
+ * 负责人  : 彭鹏
+ * 创建日期：20151123 
+ * 函数功能: 删除list中的tcb结点
+ *
+ * 输入参数: list 任务链表
+ *           tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_task_tcb_list_del(cmos_task_tcb_list_T *list, const cmos_task_tcb_T *tcb)
+{
+    cmos_status_T status = cmos_ERR_E;
+
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_add can not with null list.");
+        return cmos_NULL_E;
+    }
+
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_add can not with null tcb.");
+        return cmos_NULL_E;
+    }
+
+    status = cmos_lib_list_del(list, tcb);
     if(cmos_OK_E != status)
     {
         return status;

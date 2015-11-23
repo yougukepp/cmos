@@ -11,6 +11,7 @@
  *            2. 位图表
  *            3. 每个优先级一个tcb链表
  *            TODO: s_打头的变量封装到statis读写函数
+ *            TODO: 加锁
  *
  * 修改日志： 无
  *
@@ -44,6 +45,9 @@ static void cmos_task_switch_set_running_tcb(const cmos_task_tcb_T *tcb);
 /********************************** 变量实现区 *********************************/
 /* 当前运行任务的tcb 用于任务恢复 */
 cmos_task_tcb_T *s_running_tcb = NULL;
+
+/* cmos_delay的任务链表 */
+static cmos_task_tcb_list_T *s_delay_tcb_list = NULL;
 
 /*******************************************************************************
  *
@@ -551,5 +555,83 @@ void cmos_task_switch_start(void)
     cmos_task_switch_start_s(idle_psp);
 
     /* 不会运行到此 */
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_switch_delay
+ * 负责人  : 彭鹏
+ * 创建日期：20151123 
+ * 函数功能: 延迟当前任务
+ *
+ * 输入参数: 延迟时间(CMOS_TICK_TIMES)数
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
+ *
+ ******************************************************************************/
+cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
+{ 
+    cmos_status_T status = cmos_ERR_E;
+    cmos_task_tcb_list_T *head = NULL;
+    if(millisec <=0 )
+    {
+        return cmos_PARA_E;
+    }
+
+    /* step1: 获取当前任务链表头 */
+    head = cmos_task_switch_get_tcb_list_head(s_priority_index);
+
+    /* step2: 将当前任务从就绪列表移入 delay链表 */
+    status = cmos_task_tcb_list_add(s_delay_tcb_list, s_running_tcb);
+    if(cmos_OK_E != status)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_add failed.");
+        return status;
+    }
+    status = cmos_task_tcb_list_del(head, s_running_tcb);
+    if(cmos_OK_E != status)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_del failed.");
+        return status;
+    }
+
+    /* step3: 设置millisec */ 
+    cmos_task_tcb_set_delay_ms(s_running_tcb, millisec);
+
+    /* step4: 开始调度 */ 
+    cmos_hal_cortex_cortex_set_pendsv();
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_switch_update_time
+ * 负责人  : 彭鹏
+ * 创建日期：20151123 
+ * 函数功能: 更新tcb的时间
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_task_switch_update_tcb_time(void)
+{
+
+    /* TODO:实现链表的遍历 */
+
+static cmos_task_tcb_list_T *s_delay_tcb_list = NULL;
+static cmos_task_tcb_list_T *s_tcb_table_by_priority[CMOS_PRIORITY_NUMS] = {NULL};
+
+    ;
 }
 

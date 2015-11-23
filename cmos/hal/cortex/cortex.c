@@ -52,8 +52,8 @@ void SysTick_Handler(void)
     /* tick自增 */
     HAL_IncTick();
 
-    /* step1: 处理 tcb_list 时间信息 */
-    /* switch_update_tcb_time(); */
+    /* step1: 处理switch中tcb时间信息 */
+    cmos_task_switch_update_tcb_time();
     
     /* 调度 */ 
     cmos_hal_cortex_cortex_set_pendsv();
