@@ -56,8 +56,6 @@ static cmos_task_tcb_psp_T s_user_stack_base = CMOS_TASK_STACK_BASE;
  *
  ******************************************************************************/
 cmos_status_T cmos_task_create(cmos_task_id_T *task_id, 
-        cmos_func_T entry,
-        void *argv,
         const cmos_task_attribute_T *task_attribute)
 {
     cmos_int32_T stack_size = 0;
@@ -65,10 +63,10 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     cmos_status_T status = cmos_ERR_E;
 
     /* step0: 参数检查 */
-    if((NULL == entry)
+    if((NULL == task_id)
     || (NULL == task_attribute))
     {
-        CMOS_ERR_STR("task func and task attribute should not to be null.");
+        CMOS_ERR_STR("task id and task attribute should not to be null.");
         status = cmos_PARA_E;
         goto err;
     }
@@ -83,7 +81,7 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     }
 
     /* step2: 初始化任务tcb */
-    status = cmos_task_tcb_init(tcb, entry, argv, task_attribute, s_user_stack_base);
+    status = cmos_task_tcb_init(tcb, task_attribute, s_user_stack_base);
     if(cmos_OK_E != status)
     {
         goto err;

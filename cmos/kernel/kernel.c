@@ -106,12 +106,14 @@ cmos_status_T cmos_kernel_init(void)
     /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T idle_attribute =
     {
+        .entry = cmos_task_idle_task,
+        .argv = NULL,
         .priority = CMOS_IDLE_PRIORITY,
         .stack_size = CMOS_IDLE_STACK_SIZE,
         .tick_total = CMOS_IDLE_TICK_TOTAL,
         .flag = cmos_task_with_default
     };
-    status = cmos_create(&s_idle_task_id, cmos_task_idle_task, NULL, &idle_attribute); 
+    status = cmos_create(&s_idle_task_id, &idle_attribute); 
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("create idle task failed.");

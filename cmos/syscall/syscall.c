@@ -33,9 +33,7 @@ cmos_status_T cmos_init_c(void);
 static cmos_status_T cmos_start_c(void);
 
 static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
-        cmos_func_T task_func,
-        void *argv,
-        const cmos_task_attribute_T *task_para);
+        const cmos_task_attribute_T *task_attribute);
 
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 static cmos_status_T cmos_close_c(cmos_int32_T fd);
@@ -73,7 +71,6 @@ void syscall_c(cmos_uint32_T *sp)
     cmos_uint32_T stacked_r0 = sp[0];
     cmos_uint32_T stacked_r1 = sp[1];
     cmos_uint32_T stacked_r2 = sp[2];
-    cmos_uint32_T stacked_r3 = sp[3];
 
     /***************************************************************************
      *
@@ -112,10 +109,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 任务控制 */
         case 0x10:
             { 
-                sp[0] = cmos_create_c((cmos_task_id_T *)stacked_r0,
-                        (cmos_func_T)stacked_r1, 
-                        (void *)stacked_r2, 
-                        (const cmos_task_attribute_T *)stacked_r3);
+                sp[0] = cmos_create_c((cmos_task_id_T *)stacked_r0, (const cmos_task_attribute_T *)stacked_r1);
                 break;
             }
 
@@ -204,10 +198,7 @@ cmos_status_T cmos_start_c(void)
  * 创建日期：20151023 
  * 函数功能: 创建任务
  *
- * 输入参数: task_func      任务入口
- *           argv           任务参数
- *           task_attribute 任务属性 堆栈 优先级 等
- *
+ * 输入参数: task_attribute 任务入口 任务参数 任务属性 堆栈 优先级 等
  * 输出参数: task_id 任务id号
  *
  * 返回值  : 执行状态
@@ -217,18 +208,16 @@ cmos_status_T cmos_start_c(void)
  *
  ******************************************************************************/
 static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
-        cmos_func_T task_func,
-        void *argv,
         const cmos_task_attribute_T *task_attribute)
 {
     cmos_status_T status = cmos_ERR_E;
-    if((NULL == task_func)
-    || (NULL == task_attribute))
+    if(NULL == task_attribute)
     {
-        CMOS_ERR_STR("task func and task attribute should not to be null.");
+        CMOS_ERR_STR("task attribute should not to be null.");
+        return cmos_NULL_E;
     }
 
-    status = cmos_task_create(task_id, task_func, argv, task_attribute);
+    status = cmos_task_create(task_id, task_attribute);
 
     return status;
 }

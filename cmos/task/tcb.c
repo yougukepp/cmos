@@ -54,8 +54,6 @@ static cmos_bool_T cmos_task_tcb_with_float(const cmos_task_tcb_T *tcb);
  *
  ******************************************************************************/
 cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
-        cmos_func_T entry,
-        void *argv,
         const cmos_task_attribute_T *task_attribute,
         cmos_task_tcb_psp_T stack_base)
 {
@@ -68,8 +66,7 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
         return cmos_NULL_E;
     }
 
-    if((NULL == entry)
-    || (NULL == task_attribute))
+    if(NULL == task_attribute)
     {
         CMOS_ERR_STR("task func and task attribute should not to be null.");
         return cmos_PARA_E;
@@ -83,8 +80,8 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
     }
 
     /* TODO: 函数封装 */
-    tcb->entry = entry;
-    tcb->argv = argv;
+    tcb->entry = task_attribute->entry;
+    tcb->argv = task_attribute->argv;
     tcb->stack_size = stack_size;
 
     tcb->priority = task_attribute->priority;

@@ -93,11 +93,22 @@ typedef enum{
 }cmos_tasK_flag_T;
 /* 任务启动参数 */
 typedef struct{
+    cmos_func_T       entry;
+    void              *argv;
     cmos_priority_T   priority;   /* 优先级 */
     cmos_int32_T      stack_size; /* 任务栈大小 */
     cmos_int32_T      tick_total; /* 同一优先级有多个线程 该线程的运行时间 SysTick为单位 */
     cmos_int32_T      flag;       /* 存放任务的参数:浮点 特权 */
 }cmos_task_attribute_T;
+
+
+
+/* i2c 相关 */
+/* TODO: 想办法移入驱动 */
+typedef struct cmos_i2c_addr_T_tag{
+    cmos_uint8_T dev_addr;
+    cmos_uint8_T reg_offset;
+}cmos_i2c_addr_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

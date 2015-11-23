@@ -33,11 +33,6 @@
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 类型定义 **********************************/
-/* TODO: 想办法移入驱动 */
-typedef struct cmos_i2c_addr_T_tag{
-    cmos_uint8_T dev_addr;
-    cmos_uint8_T reg_offset;
-}cmos_i2c_addr_T;
 
 /*********************************** 全局变量 **********************************/
 
@@ -48,8 +43,6 @@ cmos_status_T cmos_start(void);
 
 /* 任务管理 */
 cmos_status_T cmos_create(cmos_task_id_T *task_id, 
-        cmos_func_T task_func,
-        void *argv,
         const cmos_task_attribute_T *task_attribute);
 
 /* 外设驱动 */
