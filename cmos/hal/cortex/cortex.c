@@ -19,6 +19,7 @@
 #include "stm32f4xx_hal.h"
 #include "cortex.h"
 #include "console.h"
+#include "switch.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 

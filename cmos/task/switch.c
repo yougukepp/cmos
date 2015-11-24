@@ -248,7 +248,7 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
 {
     cmos_status_T status = cmos_ERR_E;
     cmos_priority_T priority = cmos_priority_err;
-    cmos_task_tcb_list_T *head = NULL;
+    cmos_task_tcb_list_T *tcb_list = NULL;
 
     if(NULL == tcb)
     {
@@ -260,8 +260,8 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
     priority = cmos_task_tcb_get_priority(tcb);
 
     /* step2: 获取该优先级链表 */
-    head = cmos_task_switch_get_tcb_list_head(priority); 
-    if(NULL == head) /* tcb是该优先级头节点 */
+    tcb_list = cmos_task_switch_get_tcb_list_head(priority); 
+    if(NULL == tcb_list) /* tcb是该优先级头节点 */
     { 
         /* step3: 更新优先级索引 */
         s_priority_index |=  priority;
@@ -270,7 +270,7 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
     }
     else
     {
-        status = cmos_task_tcb_list_add(head, tcb);     /* step4/2: 加入到该优先级链表 */
+        status = cmos_task_tcb_list_add(&tcb_list, tcb);     /* step4/2: 加入到该优先级链表 */
     }
 
     return status;
@@ -498,11 +498,11 @@ static void cmos_task_switch_set_running_tcb(const cmos_task_tcb_T *tcb)
  ******************************************************************************/ 
 static cmos_task_tcb_T *cmos_task_switch_get_highest_tcb(void)
 { 
-    cmos_task_tcb_list_T *head = NULL;
+    cmos_task_tcb_list_T *tcb_list = NULL;
     cmos_task_tcb_T *tcb = NULL;
 
-    head = cmos_task_switch_get_tcb_list_head(s_priority_index); 
-    tcb = cmos_task_tcb_list_get_head_tcb(head);
+    tcb_list = cmos_task_switch_get_tcb_list_head(s_priority_index); 
+    tcb = cmos_task_tcb_list_get_head_tcb(tcb_list);
 
     return tcb;
 }
@@ -576,23 +576,23 @@ void cmos_task_switch_start(void)
 cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
 { 
     cmos_status_T status = cmos_ERR_E;
-    cmos_task_tcb_list_T *head = NULL;
+    cmos_task_tcb_list_T *tcb_list = NULL;
     if(millisec <=0 )
     {
         return cmos_PARA_E;
     }
 
     /* step1: 获取当前任务链表头 */
-    head = cmos_task_switch_get_tcb_list_head(s_priority_index);
+    tcb_list = cmos_task_switch_get_tcb_list_head(s_priority_index);
 
     /* step2: 将当前任务从就绪列表移入 delay链表 */
-    status = cmos_task_tcb_list_add(s_delay_tcb_list, s_running_tcb);
+    status = cmos_task_tcb_list_add(&s_delay_tcb_list, s_running_tcb);
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("cmos_task_tcb_list_add failed.");
         return status;
     }
-    status = cmos_task_tcb_list_del(head, s_running_tcb);
+    status = cmos_task_tcb_list_del(&tcb_list, s_running_tcb);
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("cmos_task_tcb_list_del failed.");

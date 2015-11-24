@@ -83,9 +83,10 @@ cmos_task_tcb_list_node_T *cmos_task_tcb_list_malloc_node(const cmos_task_tcb_T 
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *list, const cmos_task_tcb_T *tcb)
+cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T **list, const cmos_task_tcb_T *tcb)
 {
     cmos_status_T status = cmos_ERR_E;
+    cmos_lib_list_node_T *node = NULL;
 
     if(NULL == list)
     {
@@ -99,7 +100,14 @@ cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *list, const cmos_task
         return cmos_NULL_E;
     }
 
-    status = cmos_lib_list_add(list, tcb);
+    node = cmos_task_tcb_list_malloc_node(tcb);
+    if(NULL == node)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_add malloc node failed.");
+        return cmos_PARA_E;
+    }
+
+    status = cmos_lib_list_append(list, node);
     if(cmos_OK_E != status)
     {
         return status;
@@ -124,9 +132,10 @@ cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T *list, const cmos_task
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_task_tcb_list_del(cmos_task_tcb_list_T *list, const cmos_task_tcb_T *tcb)
+cmos_status_T cmos_task_tcb_list_del(cmos_task_tcb_list_T **list, const cmos_task_tcb_T *tcb)
 {
-    cmos_status_T status = cmos_ERR_E;
+    cmos_status_T status = cmos_ERR_E; 
+    cmos_lib_list_node_T *node = NULL;
 
     if(NULL == list)
     {
@@ -140,7 +149,14 @@ cmos_status_T cmos_task_tcb_list_del(cmos_task_tcb_list_T *list, const cmos_task
         return cmos_NULL_E;
     }
 
-    status = cmos_lib_list_del(list, tcb);
+    node = cmos_lib_list_search_by_data(*list, tcb);
+    if(NULL == node)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_del search node failed.");
+        return cmos_NULL_E;
+    }
+
+    status = cmos_lib_list_del(list, node);
     if(cmos_OK_E != status)
     {
         return status;

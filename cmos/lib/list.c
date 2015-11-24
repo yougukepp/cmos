@@ -375,7 +375,6 @@ static cmos_lib_list_node_T *cmos_lib_list_get_head(const cmos_lib_list_T *list)
 static cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list)
 {
     cmos_lib_list_node_T *go_ptr = NULL;
-    cmos_lib_list_node_T *next_ptr = NULL;
     if(NULL == list)
     {
         CMOS_ERR_STR("cmos_lib_list_get_tail can not with null list.");
@@ -383,14 +382,46 @@ static cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list)
     } 
     
     go_ptr = (cmos_lib_list_node_T *)list;
-    next_ptr = go_ptr->next;
-    while(NULL != next_ptr)
+    while(NULL != go_ptr->next)
     {
-        go_ptr = next_ptr;
-        next_ptr = go_ptr->next;
+        go_ptr = go_ptr->next;
     }
 
     return go_ptr;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_search_by_data
+ * 负责人  : 彭鹏
+ * 创建日期：20151120 
+ * 函数功能: 查找list中数据域为data的结点
+ *
+ * 输入参数: list 链表
+ *           data 数据域指针
+ * 输出参数: 无
+ *
+ * 返回值  : 带查找的结点指针
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_lib_list_node_T *cmos_lib_list_search_by_data(const cmos_lib_list_T *list, const void *data)
+{
+    cmos_lib_list_node_T *go_ptr = NULL;
+
+    go_ptr = (cmos_lib_list_node_T *)list;
+    while(NULL != go_ptr)
+    {
+        if(data == go_ptr->data) /* 找到 */
+        {
+            return go_ptr;
+        }
+        go_ptr = go_ptr->next;
+    }
+
+    /* 未找到 */
+    return NULL;
 }
 
 /*******************************************************************************

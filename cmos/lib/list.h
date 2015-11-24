@@ -50,5 +50,7 @@ cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node
 
 void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para);
 
+cmos_lib_list_node_T *cmos_lib_list_search_by_data(const cmos_lib_list_T *list, const void *data);
+
 #endif /* #ifndef _CMOS_LIB_LIST_H_ */
 
