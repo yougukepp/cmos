@@ -16,12 +16,14 @@
 
 /************************************ 头文件 ***********************************/
 #include <stdarg.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "cmos_config.h"
 #include "pc.h"
 #include "tree.h"
+#include "list.h"
 #include "vfs.h"
 #include "console.h"
 
@@ -31,6 +33,7 @@
 
 
 /********************************** 函数声明区 *********************************/
+static void usage(void);
 
 
 /********************************** 变量实现区 *********************************/
@@ -58,23 +61,57 @@
 int main(int argc, char *argv[])
 { 
     cmos_status_T status = cmos_OK_E;
-    cmos_debug_log("start.\n");
-    status = vfs_init();
-    if(cmos_OK_E != status)
-    {
-        cmos_trace_log("status:0x%08X.", status);
-        assert_failed(__FILE__, __LINE__);
-    } 
+    char *type_str = NULL;
+    cmos_int32_T type = 0;
 
-    /* 加入i2c设备结点*/
-    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_DEV_DIR, (const cmos_uint8_T *)("i2c"), vfs_dev, (void *)0x123);
-    if(cmos_OK_E != status)
+    if(2 != argc)
     {
-        return status;
+        usage();
     }
 
-    vfs_print();
-    cmos_debug_log("done.\n");
+    type_str = argv[1];
+    if(0 == strcmp(type_str, "t"))
+    {
+        type = 0;
+    }
+    else if(0 == strcmp(type_str, "l"))
+    { 
+        type = 1;
+    }
+    else
+    {
+        type = -1;
+    }
+
+    if(0 == type) /* 测试树 */
+    { 
+        cmos_debug_log("tree test start.\n");
+        status = vfs_init();
+        if(cmos_OK_E != status)
+        {
+            cmos_trace_log("status:0x%08X.", status);
+            assert_failed(__FILE__, __LINE__);
+        }
+
+        /* 加入i2c设备结点*/
+        status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_DEV_DIR, (const cmos_uint8_T *)("i2c"), vfs_dev, (void *)0x123);
+        if(cmos_OK_E != status)
+        {
+            return status;
+        }
+
+        vfs_print();
+        cmos_debug_log("tree test done.\n");
+    }
+    else if(1 == type) /* 测试链表 */
+    {
+        cmos_debug_log("list test start.\n");
+        cmos_debug_log("list test done.\n");
+    }
+    else
+    {
+        cmos_debug_log("err test type.\n");
+    }
 
     return 0;
 }
@@ -181,5 +218,26 @@ void *cmos_malloc(cmos_int32_T size)
 void cmos_free(void *ptr)
 {
     free(ptr);
+}
+
+/*******************************************************************************
+*
+* 函数名  : usage
+* 负责人  : 彭鹏
+* 创建日期: 20151124
+* 函数功能: 打印使用方法
+*
+* 输入参数: 无
+* 输出参数: 无
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static void usage(void)
+{
+    printf("./test <t|l>\r\n");
+    exit(0);
 }
 

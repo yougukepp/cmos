@@ -6,14 +6,16 @@ CFLAGS=-c -Wall -D_X64_PC_
 all:clean test
 	@echo
 	@echo
-	@./test
+	#@./test t
+	@./test l
 
 test:tree.c main.c path.c vfs.c
 	$(CC) $(CFLAGS) $(INC) vfs.c -o vfs.o
 	$(CC) $(CFLAGS) $(INC) path.c -o path.o
 	$(CC) $(CFLAGS) $(INC) tree.c -o tree.o
+	$(CC) $(CFLAGS) $(INC) list.c -o list.o
 	$(CC) $(CFLAGS) $(INC) main.c -o main.o
-	$(LD) $(LDFLAGS) main.o tree.o vfs.o path.o -o test
+	$(LD) $(LDFLAGS) main.o tree.o list.o vfs.o path.o -o test
 
 .PHONY: clean
 clean:
