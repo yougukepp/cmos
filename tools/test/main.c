@@ -296,24 +296,82 @@ static cmos_status_T test_list(void)
 
     cmos_lib_list_T *list = NULL;
 
-    char *ptr_1 = "1";
-    char *ptr_2 = "2";
-    char *ptr_3 = "3";
+    char *ptr1 = "1";
+    char *ptr2 = "2";
+    char *ptr3 = "3";
 
     cmos_lib_list_node_T *node1 = NULL;
+    cmos_lib_list_node_T *node2 = NULL;
+    cmos_lib_list_node_T *node3 = NULL;
 
     cmos_lib_list_walk_func_T list_walk_func = print_node;
 
 
-    node1 = cmos_lib_list_node_malloc(ptr_1);
-    cmos_lib_list_init(&list, node1);
 
-    cmos_lib_list_add(list, ptr_2);
-    cmos_lib_list_add(list, ptr_3);
-    
-    cmos_debug_log("\nlist:\n");
+
+
+    cmos_debug_log("test append:\n");
+
+    node1 = cmos_lib_list_node_malloc(ptr1);
+    cmos_lib_list_init(&list, node1);
+    cmos_debug_log("init node1:\n");
     cmos_lib_list_walk(list, list_walk_func, NULL);
-    cmos_debug_log("\n\n");
+
+    node2 = cmos_lib_list_node_malloc(ptr2);
+    cmos_lib_list_append(&list, node2);
+    cmos_debug_log("append node2:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    node3 = cmos_lib_list_node_malloc(ptr3);
+    cmos_lib_list_append(&list, node3);
+    cmos_debug_log("append node3:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    cmos_debug_log("test append end.\n\n");
+
+
+
+
+
+    cmos_debug_log("test del:\n");
+
+    cmos_lib_list_del(&list, node1);
+    cmos_debug_log("del node1:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    cmos_lib_list_del(&list, node3);
+    cmos_debug_log("del node3:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    cmos_lib_list_del(&list, node2);
+    cmos_debug_log("del node2:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    cmos_debug_log("test del end\n\n");
+
+
+
+
+    cmos_debug_log("test insert:\n");
+
+    node3 = cmos_lib_list_node_malloc(ptr3);
+    cmos_lib_list_init(&list, node3);
+    cmos_debug_log("init node3:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    node2 = cmos_lib_list_node_malloc(ptr2);
+    cmos_lib_list_insert(&list, node2);
+    cmos_debug_log("insert node2:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    node1 = cmos_lib_list_node_malloc(ptr1);
+    cmos_lib_list_insert(&list, node1);
+    cmos_debug_log("insert node1:\n");
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    cmos_debug_log("test insert end.\n\n");
+
+
 
     cmos_debug_log("list test done.\n");
 
@@ -340,6 +398,13 @@ static void print_node(cmos_lib_list_node_T *node, void *para)
     char *str = cmos_lib_list_node_get_data(node);
 
     cmos_debug_log("%s", str);
-    cmos_debug_log("->", str);
+    if(NULL != node->next)
+    {
+        cmos_debug_log("->", str);
+    }
+    else
+    {
+        cmos_debug_log("\n");
+    }
 }
 
