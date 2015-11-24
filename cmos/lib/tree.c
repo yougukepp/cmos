@@ -52,7 +52,8 @@
 void cmos_lib_tree_init(cmos_lib_tree_T **tree, cmos_lib_tree_node_T *node)
 {
     CMOS_TRACE_FUNC_IN;
-    if(NULL == node)
+    if((NULL == node)
+    || (NULL == tree))
     {
         CMOS_ERR_STR("NULL pointer");
         return;

@@ -35,6 +35,62 @@ static cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *head)
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
  *
+ * 函数名  : cmos_lib_list_init
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: list指针的指针
+ *
+ * 输入参数: 头结点
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_lib_list_init(cmos_lib_list_T **list, cmos_lib_list_node_T *node)
+{
+    if((NULL == node)
+    || (NULL == list))
+    {
+        CMOS_ERR_STR("NULL pointer");
+        return;
+    }
+
+    *list = node;
+
+    return;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_destroy
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: list析构
+ *
+ * 输入参数: list指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T *list)
+{
+    cmos_status_T status = cmos_ERR_E;
+    if(NULL == list)
+    {
+        return cmos_NULL_E;
+    }
+
+    /* TODO:遍历树list每个结点 */
+    return status;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_lib_list_node_malloc
  * 负责人  : 彭鹏
  * 创建日期：20151119 
@@ -119,8 +175,12 @@ cmos_status_T cmos_lib_list_add(cmos_lib_list_T *head, const void *data)
         return cmos_NULL_E;
     }
 
+    cmos_debug_log("1111");
+
     /* step1: 分配结点 */ 
     node = cmos_lib_list_node_malloc(data);
+
+    cmos_debug_log("%s", data);
 
     /* step2: 找链表尾 */ 
     tail = cmos_lib_list_get_tail(head);
@@ -238,5 +298,40 @@ static cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *head)
     }
 
     return go_ptr;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_walk
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: 遍历list
+ *
+ * 输入参数: list 链表头
+ *           func 遍历函数
+ *           para 遍历函数参数
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para)
+{
+    cmos_lib_list_node_T *go_node = list;
+    if((NULL == list)
+    || (NULL == func))
+    {
+        CMOS_TRACE_STR("cmos_lib_list_walk with null pointer.");
+        return;
+    }
+
+    while(NULL != go_node)
+    {
+        func(go_node, para); /* 处理本节点 */
+
+        go_node = go_node->next; /* 下一结点 */
+    }
 }
 
