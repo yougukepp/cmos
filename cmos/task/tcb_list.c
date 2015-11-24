@@ -27,6 +27,8 @@
 
 
 /********************************** 函数声明区 *********************************/
+static void cmos_task_tcb_list_lib_list_walk_func(cmos_lib_list_node_T *lib_list_node,
+        cmos_task_tcb_list_walk_func_para_T *para);
 
 
 /********************************** 变量实现区 *********************************/
@@ -198,5 +200,82 @@ cmos_task_tcb_T *cmos_task_tcb_list_get_head_tcb(const cmos_task_tcb_list_T *lis
     tcb = cmos_lib_list_node_get_data(head_node);
 
     return tcb;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_list_walk
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: 遍历tcb_list链表
+ *
+ * 输入参数: tcb_list 链表
+ *           func     遍历函数
+ *           para     遍历函数参数
+ * 输出参数: 无
+ *
+ * 返回值  : 任务控制块指针
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_task_tcb_list_walk(cmos_task_tcb_list_T *tcb_list, cmos_task_tcb_list_walk_func_T func, void *para)
+{ 
+    if((NULL == tcb_list)
+    || (NULL == func))
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_walk can not with null pointer.");
+        return;
+    }
+
+    cmos_task_tcb_list_walk_func_para_T func_and_para =
+    {
+        .func = func,
+        .para = para
+    };
+
+    cmos_lib_list_walk((cmos_lib_list_T *)tcb_list,
+            (cmos_lib_list_walk_func_T)cmos_task_tcb_list_lib_list_walk_func,
+            &func_and_para);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_list_walk
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: 实现tcb_list到lib_list间walk函数的适配
+ *
+ * 输入参数: lib_list_node 链表结点
+ *           对于tcb的操作函数及其参数
+ * 输出参数: 无
+ *
+ * 返回值  : 任务控制块指针
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static void cmos_task_tcb_list_lib_list_walk_func(cmos_lib_list_node_T *lib_list_node,
+        cmos_task_tcb_list_walk_func_para_T *para)
+{ 
+    cmos_task_tcb_T *tcb = NULL;
+
+    if((NULL == lib_list_node)
+    || (NULL == para))
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_lib_list_walk_func can not with null pointer.");
+        return;
+    }
+
+    tcb = cmos_lib_list_node_get_data(lib_list_node);
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_lib_list_walk_func can not with null tcb pointer.");
+        return;
+    }
+
+    para->func(tcb, para->para);
 }
 

@@ -560,3 +560,68 @@ inline void cmos_task_tcb_set_delay_ms(cmos_task_tcb_T *tcb, cmos_int32_T ms)
     tcb->delay_ms = ms;
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_dec_delay_ms
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: 自减tcb中的delay_ms域
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline void cmos_task_tcb_dec_delay_ms(cmos_task_tcb_T *tcb)
+{
+#if (CMOS_DEBUG_LEVEL > 0) 
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
+        return;
+    }
+#endif
+
+    tcb->delay_ms--;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_zero_delay_ms
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: tcb中的delay_ms域是否为零
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline cmos_bool_T cmos_task_tcb_zero_delay_ms(cmos_task_tcb_T *tcb)
+{
+#if (CMOS_DEBUG_LEVEL > 0) 
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
+        return FALSE;
+    }
+#endif
+
+    if(0 == tcb->delay_ms)
+    {
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+

@@ -26,6 +26,13 @@
 typedef cmos_lib_list_node_T cmos_task_tcb_list_node_T;
 typedef cmos_task_tcb_list_node_T cmos_task_tcb_list_T;
 
+typedef void (*cmos_task_tcb_list_walk_func_T)(cmos_task_tcb_T *tcb, void *para);
+
+typedef struct cmos_task_tcb_list_walk_func_para_T_tag
+{
+    cmos_task_tcb_list_walk_func_T  func;
+    void                            *para;
+}cmos_task_tcb_list_walk_func_para_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -38,6 +45,8 @@ cmos_status_T cmos_task_tcb_list_add(cmos_task_tcb_list_T **list, const cmos_tas
 cmos_status_T cmos_task_tcb_list_del(cmos_task_tcb_list_T **list, const cmos_task_tcb_T *tcb);
 
 cmos_task_tcb_T *cmos_task_tcb_list_get_head_tcb(const cmos_task_tcb_list_T *list);
+
+void cmos_task_tcb_list_walk(cmos_task_tcb_list_T *tcb_list, cmos_task_tcb_list_walk_func_T func, void *para);
 
 #endif // #ifndef _CMOS_TASK_TCB_LIST_H_
 

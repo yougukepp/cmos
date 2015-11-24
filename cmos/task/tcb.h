@@ -55,6 +55,8 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
         cmos_task_tcb_psp_T stack_base);
 
 void cmos_task_tcb_set_delay_ms(cmos_task_tcb_T *tcb, cmos_int32_T ms);
+void cmos_task_tcb_dec_delay_ms(cmos_task_tcb_T *tcb);
+cmos_bool_T cmos_task_tcb_zero_delay_ms(cmos_task_tcb_T *tcb);
 
 void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp);
 cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb);

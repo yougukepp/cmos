@@ -13,7 +13,6 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 近期计划
-0. 加入延时系统调用 参考CMSIS
 1. 整理代码
 2. 实现延迟 可同级任务切换
 3. 互斥锁 参考 SignalManagement

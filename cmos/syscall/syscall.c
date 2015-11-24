@@ -23,6 +23,7 @@
 #include "kernel.h"
 #include "fd.h"
 #include "task.h"
+#include "switch.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -250,7 +251,7 @@ static cmos_status_T cmos_create_c(cmos_task_id_T *task_id,
  ******************************************************************************/
 static cmos_status_T cmos_delay_c(cmos_int32_T millisec)
 {
-    return cmos_OK_E;
+    return cmos_task_switch_delay(millisec);
 }
 
 /*******************************************************************************
