@@ -24,8 +24,8 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static void task1(void *argv);
-//static void task2(void *argv);
+static void task_int(void *argv);
+//static void task_float(void *argv);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -55,26 +55,29 @@ int main(void)
         assert_failed(__FILE__, __LINE__);
     }
 
-    cmos_task_id_T task1_id;
+    /* 定点任务 */
+#if 1
+    cmos_task_id_T task_int_id;
     cmos_int32_T argv1 = 1;
     /* 创建idle任务 使用cmos_create系统调用 */
-    cmos_task_attribute_T task1_attribute =
+    cmos_task_attribute_T task_int_attribute =
     {
-        .entry = task1,
+        .entry = task_int,
         .argv = &argv1,
         .priority = cmos_priority_low,
         .stack_size = 4096,
         .tick_total = 10,
         .flag = cmos_task_with_default
     };
-    status = cmos_create(&task1_id, &task1_attribute); 
-    cmos_printf("task1 create %d:0x%08x.\r\n", status, (cmos_int32_T)task1_id);
+    status = cmos_create(&task_int_id, &task_int_attribute); 
+    cmos_printf("task_int create %d:0x%08x.\r\n", status, (cmos_int32_T)task_int_id);
+#endif
 
+    /* 浮点任务 */
 #if 0
-    /* 新建任务2 */
     cmos_status_T status = cmos_ERR_E;
-    cmos_task_id_T task2_id;
-    cmos_task_attribute_T task2_attribute =
+    cmos_task_id_T task_float_id;
+    cmos_task_attribute_T task_float_attribute =
     {
         .priority = cmos_priority_low,
         .stack_size = 2048,
@@ -82,8 +85,8 @@ int main(void)
         .flag = cmos_task_with_float
     };
     float argv2 = 200.0f;
-    status = cmos_create(&task2_id, task2, &argv2, &task2_attribute); 
-    cmos_printf("task2 create %d:0x%08x.\r\n", status, (cmos_int32_T)task2_id);
+    status = cmos_create(&task_float_id, task_float, &argv2, &task_float_attribute); 
+    cmos_printf("task_float create %d:0x%08x.\r\n", status, (cmos_int32_T)task_float_id);
 #endif
 
     status = cmos_start();
@@ -92,7 +95,7 @@ int main(void)
         assert_failed(__FILE__, __LINE__);
     }
 
-
+    /* i2c测试 */
 #if 0
     cmos_i2c_addr_T bmp180_addr =
     {
@@ -120,8 +123,6 @@ int main(void)
         cmos_printf("0x%02x:0x%02x\r\n", 0xF4 + i, buf[i]);
     }
 
-
-
     /* 写入测试 */
     buf[0] = 0xC0;
     write_bytes = cmos_write(s_bmp180_fd, buf, 1); 
@@ -142,27 +143,27 @@ out:
     while(TRUE);
 }
 
-static void task1(void *argv)
+static void task_int(void *argv)
 {
     cmos_int32_T val = 0;
     val = *((cmos_int32_T *)argv);
 
     while(TRUE)
     {
-        cmos_printf("task1: %d\r\n", val);
+        cmos_printf("task_int: %d\r\n", val);
         cmos_delay(10); /* 延迟10ms */
     }
 }
 
 #if 0
-static void task2(void *argv)
+static void task_float(void *argv)
 {
     float val = 0;
     val = *((float *)argv);
 
     while(TRUE)
     {
-        cmos_printf("task2: %.2f", val);
+        cmos_printf("task_float: %.2f", val);
     }
 }
 #endif
