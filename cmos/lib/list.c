@@ -126,6 +126,30 @@ cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_lib_list_node_free
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: 释放list结点
+ *
+ * 输入参数: node 结点指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_lib_list_node_free(cmos_lib_list_node_T *node)
+{
+    node->prev = NULL;
+    node->next = NULL;
+    node->data = NULL;
+
+    cmos_free(node);
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_lib_list_node_get_data
  * 负责人  : 彭鹏
  * 创建日期：20151120 
