@@ -197,13 +197,19 @@ static cmos_status_T cmos_lib_list_add(cmos_lib_list_T **list, cmos_lib_list_nod
     cmos_lib_list_node_T *tail = NULL;
 
     if((NULL == list)
-    || (NULL == *list)
     || (NULL == node)
     || (flag > 1)
     || (flag < 0))
     {
         CMOS_ERR_STR("cmos_lib_list_add with err para.");
         return cmos_PARA_E;
+    }
+
+    /* 空链表 */
+    if(NULL == *list)
+    { 
+        cmos_lib_list_init(list, node); 
+        return cmos_OK_E;
     }
 
     if(0 == flag) /* append */
@@ -229,7 +235,6 @@ static cmos_status_T cmos_lib_list_add(cmos_lib_list_T **list, cmos_lib_list_nod
     }
 
     return cmos_OK_E;
-
 }
 
 /*******************************************************************************
@@ -356,9 +361,12 @@ cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node
         /* 消除引用 */
         go_ptr->prev = NULL;
         go_ptr->next = NULL;
-        return cmos_OK_E;
     }
 
+    /* 释放list结点 data域指向对象未释放 */
+    cmos_free(go_ptr); 
+    
+    return cmos_OK_E;
 }
 
 /*******************************************************************************

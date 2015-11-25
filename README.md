@@ -13,9 +13,8 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 测试计划
-1. delay系统调用
-2. 浮点任务切换
-3. 浮点定点任务混合切换
+1. 浮点任务切换
+2. 浮点定点任务混合切换
 
 ### 近期计划
 1. 互斥锁 参考 SignalManagement

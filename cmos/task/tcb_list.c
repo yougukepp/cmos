@@ -242,7 +242,7 @@ void cmos_task_tcb_list_walk(cmos_task_tcb_list_T *tcb_list, cmos_task_tcb_list_
 
 /*******************************************************************************
  *
- * 函数名  : cmos_task_tcb_list_walk
+ * 函数名  : cmos_task_tcb_list_lib_list_walk_func
  * 负责人  : 彭鹏
  * 创建日期：20151124 
  * 函数功能: 实现tcb_list到lib_list间walk函数的适配

@@ -36,12 +36,12 @@
 
 /********************************** 函数声明区 *********************************/
 static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_by_priority(cmos_int32_T priority);
-static void cmos_task_switch_set_tcb_list_by_priority(cmos_priority_T priority, cmos_task_tcb_list_T *list);
 static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb);
-static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_uint8_T priority);
+static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_int32_T priority);
 static cmos_task_tcb_T *cmos_task_switch_get_highest_tcb(void);
 static void cmos_task_switch_set_running_tcb(const cmos_task_tcb_T *tcb);
 static void cmos_task_switch_update_delay_tcb(cmos_task_tcb_T *tcb, void *para);
+static void cmos_task_switch_set_tcb_list_by_priority(cmos_int32_T priority, cmos_task_tcb_list_T *list);
 
 /********************************** 变量实现区 *********************************/
 /* 当前运行任务的tcb 用于任务恢复 */
@@ -71,7 +71,7 @@ static cmos_task_tcb_list_T *s_delay_tcb_list = NULL;
  * idle任务建立后 s_priority_index 变为 0x01
  *
  ******************************************************************************/
-static cmos_uint8_T s_priority_index = 0x00;
+static cmos_int32_T s_priority_index = 0x00;
 
 /*******************************************************************************
  *
@@ -293,7 +293,7 @@ cmos_status_T cmos_task_switch_add(const cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_by_priority(cmos_int32_T priority)
+inline static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_by_priority(cmos_int32_T priority)
 { 
     cmos_int32_T highest_priority = 0;
 
@@ -317,19 +317,15 @@ static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_by_priority(cmos_int3
  * 其 它   : 无
  *
  ******************************************************************************/
-static void cmos_task_switch_set_tcb_list_by_priority(cmos_priority_T priority, cmos_task_tcb_list_T *list)
+static void cmos_task_switch_set_tcb_list_by_priority(cmos_int32_T priority, cmos_task_tcb_list_T *list)
 { 
     cmos_int32_T index = 0;
-    if(NULL == list)
-    {
-        CMOS_ERR_STR("cmos_task_switch_set_tcb_list_by_priority with null list.");
-        return;
-    }
+    /* 需要删除就绪任务列表时 list为null */
+    /* if(NULL == list) */
 
     index = cmos_task_switch_get_highest_priority(priority);
     if((index < 0)
-    || (index >= CMOS_PRIORITY_NUMS)
-    || (NULL != s_tcb_table_by_priority[index]))
+    || (index >= CMOS_PRIORITY_NUMS))
     {
         CMOS_ERR_STR("cmos_task_switch_set_tcb_list_by_priority with err priority.");
         return;
@@ -400,7 +396,7 @@ static cmos_status_T cmos_task_switch_init_first_tcb(const cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_uint8_T priority)
+inline static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_int32_T priority)
 {
     return s_priority_bitmap[priority];
 }
@@ -477,7 +473,7 @@ cmos_task_tcb_psp_T cmos_task_switch_switch(const cmos_task_tcb_psp_T cur_psp)
  * 其 它   : 无
  *
  ******************************************************************************/
-static void cmos_task_switch_set_running_tcb(const cmos_task_tcb_T *tcb)
+inline static void cmos_task_switch_set_running_tcb(const cmos_task_tcb_T *tcb)
 {
     s_running_tcb = (cmos_task_tcb_T *)tcb;
 }
@@ -577,33 +573,43 @@ void cmos_task_switch_start(void)
 cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
 { 
     cmos_status_T status = cmos_ERR_E;
+    cmos_int32_T index = 0;
+    cmos_int32_T highest_priority = 0;
     cmos_task_tcb_list_T *tcb_list = NULL;
     if(millisec <=0 )
     {
         return cmos_PARA_E;
     }
 
-    /* step1: 获取当前任务链表头 */
-    tcb_list = cmos_task_switch_get_tcb_list_by_priority(s_priority_index);
-
-    /* step2: 将当前任务从就绪列表移入 delay链表 */
+    /* step1: 将当前任务从就绪列表移入 delay链表 */
     status = cmos_task_tcb_list_add(&s_delay_tcb_list, s_running_tcb);
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("cmos_task_tcb_list_add failed.");
         return status;
     }
-    status = cmos_task_tcb_list_del(&tcb_list, s_running_tcb);
+
+    /* step3: 从就绪表删除当前任务 */
+    index = cmos_task_switch_get_highest_priority(s_priority_index);
+    status = cmos_task_tcb_list_del(&s_tcb_table_by_priority[index], s_running_tcb);
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("cmos_task_tcb_list_del failed.");
         return status;
+    } 
+
+    /* step4: 更新 s_priority_index */
+    if(NULL == tcb_list) /* 该优先级已无就绪任务 */
+    {
+        /* 将最高优先级置零 */
+        highest_priority = (0x1 << index);
+        s_priority_index &= ~highest_priority;
     }
 
-    /* step3: 设置millisec */ 
+    /* step5: 设置millisec */ 
     cmos_task_tcb_set_delay_ms(s_running_tcb, millisec);
 
-    /* step4: 开始调度 */ 
+    /* step6: 开始调度 */ 
     cmos_hal_cortex_cortex_set_pendsv();
 
     return cmos_OK_E;
@@ -628,7 +634,12 @@ cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
  ******************************************************************************/
 cmos_status_T cmos_task_switch_update_tcb_time(void)
 {
-    cmos_task_tcb_list_walk(s_delay_tcb_list, cmos_task_switch_update_delay_tcb, s_tcb_table_by_priority);
+    /* 处理 s_delay_tcb_list 链表的任务 cmos_delay相关 */
+    if(NULL != s_delay_tcb_list)
+    {
+        cmos_task_tcb_list_walk(s_delay_tcb_list, cmos_task_switch_update_delay_tcb, s_tcb_table_by_priority);
+    }
+
     return cmos_OK_E;
 }
 
