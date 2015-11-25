@@ -18,16 +18,13 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 3. 浮点定点任务混合切换
 
 ### 近期计划
-1. 整理代码
-2. 实现延迟 可同级任务切换
-3. 互斥锁 参考 SignalManagement
-4. 实现串口命令行,参考CMSIS驱动模型
-5. 实现app/flyer/doc/README.md计划
+1. 互斥锁 参考 SignalManagement
+2. 实现串口命令行,参考CMSIS驱动模型
+3. 实现app/flyer/doc/README.md计划
 
 ### 远期计划
 1. 整理TODO
-4. TCB链表操作使用双链表
-5. HAL定义尽量靠近CMSIS驱动层定义 使用标准文件系统调用封装HAL层
+2. vfs与tree间加入中间层,参考tcb\_list.c
 6. Idle任务可以检查任务堆栈\(CPU占用率\)之后WFI处理器
 7. 实现文件系统 类似Linux一切皆文件的框架
 8. 实现网络协议栈(TCP/IP)
