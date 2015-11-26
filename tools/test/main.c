@@ -313,8 +313,8 @@ static cmos_status_T test_list(void)
     cmos_debug_log("test append:\n");
 
     node1 = cmos_lib_list_node_malloc(ptr1);
-    cmos_lib_list_init(&list, node1);
-    cmos_debug_log("init node1:\n");
+    cmos_lib_list_append(&list, node1);
+    cmos_debug_log("append node1:\n");
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
     node2 = cmos_lib_list_node_malloc(ptr2);
@@ -355,8 +355,8 @@ static cmos_status_T test_list(void)
     cmos_debug_log("test insert:\n");
 
     node3 = cmos_lib_list_node_malloc(ptr3);
-    cmos_lib_list_init(&list, node3);
-    cmos_debug_log("init node3:\n");
+    cmos_lib_list_insert(&list, node3);
+    cmos_debug_log("insert node3:\n");
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
     node2 = cmos_lib_list_node_malloc(ptr2);
