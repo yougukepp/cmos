@@ -52,10 +52,12 @@ cmos_lib_tree_node_T *cmos_lib_tree_node_parent(const cmos_lib_tree_node_T *node
 cmos_lib_tree_node_T *cmos_lib_tree_node_first_sun(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_node_next_brother(const cmos_lib_tree_node_T *node);
 void *cmos_lib_tree_node_data(const cmos_lib_tree_node_T *node);
-cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node);
+cmos_int32_T cmos_lib_tree_node_depth(const cmos_lib_tree_T *node);
 cmos_int32_T cmos_lib_tree_node_distance(cmos_lib_tree_node_T *node);
 void cmos_lib_tree_node_show(const cmos_lib_tree_node_T *node);
 cmos_lib_tree_node_T *cmos_lib_tree_node_malloc(const void *data);
+
+/* del 中需要包括free */
 
 #endif /* #ifndef _CMOS_LIB_TREE_H_ */
 

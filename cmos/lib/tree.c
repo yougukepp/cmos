@@ -343,7 +343,7 @@ void *cmos_lib_tree_node_data(const cmos_lib_tree_node_T *node)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_lib_tree_depth
+* 函数名  : cmos_lib_tree_node_depth
 * 负责人  : 彭鹏
 * 创建日期: 20151106
 * 函数功能: 获取树的深度
@@ -359,7 +359,7 @@ void *cmos_lib_tree_node_data(const cmos_lib_tree_node_T *node)
 * 其 它   : FIXME:递归算法 栈要求很高
 *
 ******************************************************************************/
-cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node)
+cmos_int32_T cmos_lib_tree_node_depth(const cmos_lib_tree_T *node)
 {
     CMOS_TRACE_FUNC_IN;
     cmos_int32_T depth_self = 0;
@@ -375,11 +375,11 @@ cmos_int32_T cmos_lib_tree_depth(const cmos_lib_tree_T *node)
 
     /* 1 子女 */
     node_first_sun = cmos_lib_tree_node_first_sun(node);
-    depth_sun = 1 + cmos_lib_tree_depth(node_first_sun);
+    depth_sun = 1 + cmos_lib_tree_node_depth(node_first_sun);
 
     /* 2 兄弟 */
     node_next_brother = cmos_lib_tree_node_next_brother(node);
-    depth_brother = cmos_lib_tree_depth(node_next_brother);
+    depth_brother = cmos_lib_tree_node_depth(node_next_brother);
 
     /* 2 自己 */
     depth_self = (depth_brother > depth_sun) ? depth_brother : depth_sun;

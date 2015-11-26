@@ -327,7 +327,7 @@ static cmos_status_T test_list(void)
     cmos_debug_log("append node3:\n");
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_debug_log("test append end.\n\n");
+    cmos_debug_log("test append end.\n");
 
 
 
@@ -347,7 +347,7 @@ static cmos_status_T test_list(void)
     cmos_debug_log("del node2:\n");
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_debug_log("test del end\n\n");
+    cmos_debug_log("test del end\n");
 
 
 
@@ -369,7 +369,7 @@ static cmos_status_T test_list(void)
     cmos_debug_log("insert node1:\n");
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_debug_log("test insert end.\n\n");
+    cmos_debug_log("test insert end.\n");
 
 
 

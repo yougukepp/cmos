@@ -364,7 +364,7 @@ cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node
         go_ptr->next = NULL;
     }
 
-    /* 释放list结点 data域指向对象未释放 */
+    /* 释放list结点避免内存泄露 data域指向对象未释放 */
     cmos_free(go_ptr); 
     
     return cmos_OK_E;
