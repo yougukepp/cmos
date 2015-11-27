@@ -105,7 +105,7 @@ int algo_start(void)
         }
 
 #ifdef ALGO_TRACE
-        algo_printf("陀螺仪线程id:0x%08x.\n", (int)gyro_tid);
+        algo_printf("陀螺仪线程id:%p.\n", (void *)gyro_tid);
 #endif
     }
 
@@ -119,7 +119,7 @@ int algo_start(void)
         }
 
 #ifdef ALGO_TRACE
-        algo_printf("加计线程id:0x%08x.\n", (int)accel_tid);
+        algo_printf("加计线程id:%p.\n", (void *)accel_tid);
 #endif
     }
 
@@ -133,7 +133,7 @@ int algo_start(void)
         }
 
 #ifdef ALGO_TRACE
-        algo_printf("磁计线程id:0x%08x.\n", (int)mag_tid);
+        algo_printf("磁计线程id:%p.\n", (void *)mag_tid);
 #endif
     }
 
