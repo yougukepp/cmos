@@ -42,8 +42,7 @@ cmos_status_T cmos_init(void);
 cmos_status_T cmos_start(void);
 
 /* 任务管理 */
-cmos_status_T cmos_create(cmos_task_id_T *task_id, 
-        const cmos_task_attribute_T *task_attribute);
+cmos_status_T cmos_create(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
 
 /* 时间管理 */
 cmos_status_T cmos_delay(cmos_int32_T ms);

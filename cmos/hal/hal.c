@@ -16,12 +16,12 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "hal.h"
-#include "stm32f4xx_hal_conf.h"
-#include "stm32f4xx_hal.h"
 #include "uart.h"
 #include "i2c.h"
 #include "cortex.h"
 #include "stm32f429idiscovery_hardware.h"
+#include "stm32f4xx_hal_conf.h"
+#include "stm32f4xx_hal.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 

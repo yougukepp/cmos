@@ -22,6 +22,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 3. 实现app/flyer/doc/README.md计划
 
 ### 远期计划
+0. 由于串口打印使用系统调用,故svc调用栈内的代码无法使用串口打印?
 1. 整理TODO
 2. vfs与tree间加入中间层,参考tcb\_list.c
 6. Idle任务可以检查任务堆栈\(CPU占用率\)之后WFI处理器

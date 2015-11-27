@@ -15,7 +15,6 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "misc.h"
 #include "vfs.h"
 #include "device.h"
 #include "console.h"
