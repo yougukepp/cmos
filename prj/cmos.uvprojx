@@ -1399,6 +1399,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>ipc</GroupName>
+          <Files>
+            <File>
+              <FileName>mutex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\cmos\ipc\mutex.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
   </Targets>
