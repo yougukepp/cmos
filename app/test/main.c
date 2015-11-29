@@ -24,7 +24,7 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-//static void task_int(void *argv);
+static void task_int(void *argv);
 static void task_float(void *argv);
 
 /********************************** 函数实现区 *********************************/
@@ -56,9 +56,9 @@ int main(void)
     }
 
     /* 定点任务 */
-#if 0
+#if 1
     cmos_task_id_T task_int_id;
-    cmos_int32_T argv1 = 1;
+    cmos_int32_T argv1 = 999999999;
     /* 创建idle任务 使用cmos_create系统调用 */
     cmos_task_attribute_T task_int_attribute =
     {
@@ -76,12 +76,12 @@ int main(void)
     /* 浮点任务 */
 #if 1
     cmos_task_id_T task_float_id;
-    float argv2 = 3.7f;
+    float argv2 = 7333333333333.3333333f;
     cmos_task_attribute_T task_float_attribute =
     {
         .entry = task_float,
         .argv = &argv2,
-        .priority = cmos_priority_low,
+        .priority = cmos_priority_below_normal,
         //.priority = cmos_priority_idle,
         .stack_size = 2048,
         .tick_total = 3,
@@ -145,14 +145,16 @@ out:
     while(TRUE);
 }
 
-#if 0
+#if 1
 static void task_int(void *argv)
 {
     cmos_int32_T val = 0;
+    cmos_int32_T val2 = 2;
     val = *((cmos_int32_T *)argv);
 
     while(TRUE)
     {
+        val /=  val2;
         cmos_printf("task_int: %d\r\n", val);
         cmos_delay(10); /* 延迟10ms */
     }
@@ -163,13 +165,13 @@ static void task_int(void *argv)
 static void task_float(void *argv)
 {
     float val = 0;
-    float val2 = 7.5f;
+    float val2 = 1.1f;
     val = *((float *)argv);
 
     while(TRUE)
     {
-        val2 *= val;
-        cmos_printf("task_float: %.2f\r\n", val2);
+        val /= val2;
+        cmos_printf("task_float: %.2f\r\n", val);
         cmos_delay(10); /* 延迟10ms */
     }
 }
