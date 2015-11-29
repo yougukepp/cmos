@@ -224,42 +224,6 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
     /* 任务切换时
      * 以上内容硬件保存
      * 以下内容软件保存 */
-
-    /* 用于任务切换的中断返回 */
-    sp--;
-    if(with_float)
-    {
-      *sp = CMOS_INITIAL_EXEC_RETURN_WITH_FLOAT;
-    }
-    else
-    {
-      *sp = CMOS_INITIAL_EXEC_RETURN_WITHOUT_FLOAT;
-    }
-
-    sp--;
-    *sp = 0x11111111; /* R11 */
-
-    sp--;
-    *sp = 0x10101010; /* R10 */
-
-    sp--;
-    *sp = 0x09090909; /* R9 */
-
-    sp--;
-    *sp = 0x08080808; /* R8 */
-
-    sp--;
-    *sp = 0x07070707; /* R7 */
-
-    sp--;
-    *sp = 0x06060606; /* R6 */
-
-    sp--;
-    *sp = 0x05050505; /* R5 */
-
-    sp--;
-    *sp = 0x04040404; /* R4 */
-
     if(with_float) /* 需要浮点 */
     {
         sp--;
@@ -309,10 +273,43 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
 
         sp--;
         *sp = 0x0f160f16; /* S16 */
-
-        sp--;
-        *sp = 0xefefefef; /* cmos加入 双字节对齐 占位 */
     }
+
+    /* 用于任务切换的中断返回 */
+    sp--;
+    if(with_float)
+    {
+      *sp = CMOS_INITIAL_EXEC_RETURN_WITH_FLOAT;
+    }
+    else
+    {
+      *sp = CMOS_INITIAL_EXEC_RETURN_WITHOUT_FLOAT;
+    }
+
+    sp--;
+    *sp = 0x11111111; /* R11 */
+
+    sp--;
+    *sp = 0x10101010; /* R10 */
+
+    sp--;
+    *sp = 0x09090909; /* R9 */
+
+    sp--;
+    *sp = 0x08080808; /* R8 */
+
+    sp--;
+    *sp = 0x07070707; /* R7 */
+
+    sp--;
+    *sp = 0x06060606; /* R6 */
+
+    sp--;
+    *sp = 0x05050505; /* R5 */
+
+    sp--;
+    *sp = 0x04040404; /* R4 */
+
 #else
     if(with_float) /* 需要浮点 */
     {

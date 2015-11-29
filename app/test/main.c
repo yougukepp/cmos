@@ -169,7 +169,7 @@ static void task_float(void *argv)
     while(TRUE)
     {
         val2 *= val;
-        cmos_printf("task_float: %.2f", val2);
+        cmos_printf("task_float: %.2f\r\n", val2);
         cmos_delay(10); /* 延迟10ms */
     }
 }
