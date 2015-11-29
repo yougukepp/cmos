@@ -139,7 +139,7 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
 
     with_float = cmos_task_tcb_with_float(tcb);
 
-    /* total 52 字 208 字节 */
+    /* 调试使用 寄存器写入特殊值 */
 #if (CMOS_DEBUG_LEVEL > 0) 
     if(with_float)
     {
@@ -310,12 +310,12 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
     sp--;
     *sp = 0x04040404; /* R4 */
 
+    /* 实际使用 FLOAT */
 #else
     if(with_float) /* 需要浮点 */
     {
-        sp--; /* cm4要求 双字节对齐 占位 */
+        sp -= 2; /* cm4要求 双字节对齐 占位 + FPSCR */
 
-        sp--;
         *sp = CMOS_INITIAL_FPSCR; /* FPSCR */
 
         sp -= 16; /* S15 - S0 */
@@ -328,7 +328,7 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
     *sp = (cmos_word_T)entry; /* PC */
 
     sp--;
-    *sp = (cmos_word_T )err_loop; /* LR */
+    *sp = (cmos_word_T)err_loop; /* LR */
 
     sp -= 4; /* R12 R3 R2 R1 */
 
@@ -339,18 +339,17 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
      * 以上内容硬件保存
      * 以下内容软件保存 */
 
-    /* 用于任务切换的中断返回 */
-    sp--;
-    *sp = CMOS_INITIAL_EXEC_RETURN;
-
     if(with_float) /* 需要浮点 */
     {
-        sp -= 25; /* R11 - R0  and  S32 - S16  and cmos加入 双字节对齐 占位 */
+        sp -= 17; /* S32 - S16 and LR */
+        *sp = CMOS_INITIAL_EXEC_RETURN_WITH_FLOAT;
     }
     else
     {
-        sp -= 8; /* R11 - R0*/
+        sp--; /* LR */
+        *sp = CMOS_INITIAL_EXEC_RETURN_WITHOUT_FLOAT;
     }
+    sp -= 8;
 #endif
 
     tcb->psp = sp;
