@@ -19,6 +19,9 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 
+#include <math.h>
+#include "arm_math.h"
+
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
@@ -155,7 +158,7 @@ static void task_int(void *argv)
     while(TRUE)
     {
         val /=  val2;
-        cmos_printf("task_int: %d\r\n", val);
+        //cmos_printf("task_int: %d\r\n", val);
         cmos_delay(10); /* 延迟10ms */
     }
 }
@@ -164,14 +167,29 @@ static void task_int(void *argv)
 #if 1
 static void task_float(void *argv)
 {
-    float val = 0;
-    float val2 = 1.1f;
-    val = *((float *)argv);
+    float pi = PI;
+    float delta = 0.01f;
+    float val = 0; 
+    float root = 0; 
+    arm_status status = ARM_MATH_SUCCESS;
+    
+    cmos_printf("val  sin  cos  squareroot.\r\n");
 
     while(TRUE)
     {
-        val /= val2;
-        cmos_printf("task_float: %.2f\r\n", val);
+        if(val >= pi)
+        {
+            val = 0;
+        }
+
+        status = arm_sqrt_f32(val, &root);
+        if(ARM_MATH_SUCCESS != status)
+        {
+            cmos_printf("arm_sqrt_f32 return %d.\r\n", status);
+        }
+
+        cmos_printf("%4.2f %4.2f %4.2f %4.2f\r\n", val, arm_sin_f32(val), arm_cos_f32(val), root);
+        val += delta;
         cmos_delay(10); /* 延迟10ms */
     }
 }
