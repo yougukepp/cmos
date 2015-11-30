@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * 文件名  ： mutex.c
+ * 文件名  ： semaphore.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20151127 
  * 版本号  ： v1.0
- * 文件描述： 互斥锁实现
+ * 文件描述： 信号量实现
  * 版权说明： Copyright (c) 2000-2020 GNU
  * 其    他： 无
  * 修改日志： 无
@@ -14,95 +14,133 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "mutex.h"
+#include "semaphore.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
+static cmos_bool_T cmos_ipc_semaphore_bit_band_is_empty(void);
 
 /********************************** 变量实现区 *********************************/
-cmos_int32_T s_ipc_mutex_bit_band[CMOS_IPC_MUTEX_BIT_BAND_SIZE] = {0};
+cmos_int32_T s_ipc_semaphore_bit_band[CMOS_IPC_SEMAPHORE_BIT_BAND_SIZE] = {0};
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
  *
- * 函数名  : cmos_ipc_mutex_malloc
+ * 函数名  : cmos_ipc_semaphore_malloc
  * 负责人  : 彭鹏
  * 创建日期：20151127 
  * 函数功能: 申请互斥量
  *
- * 输入参数: 无
+ * 输入参数: semaphore 信号量指针
+ *           init_count信号量初始值
  * 输出参数: 无
  *
- * 返回值  : 无
+ * 返回值  : 程序运行状态
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
+cmos_status_T cmos_ipc_semaphore_malloc(cmos_ipc_semaphore_T *semaphore, cmos_int32_T init_count)
 {
-    return NULL;
+    /* step0: 参数检查 */
+    if((NULL = semaphore)
+    || (count < 1))
+    {
+        CMOS_ERR_STR("cmos_ipc_semaphore_malloc err para.");
+        return cmos_PARA_E;
+    }
+
+    /* step1: s_ipc_semaphore_bit_band 用完 *//
+    if(cmos_ipc_semaphore_bit_band_is_empty())
+    {
+        CMOS_ERR_STR("cmos_ipc_semaphore_malloc should not support more semaphore.");
+        return cmos_RES_LACK_E;
+    }
+
+    return cmos_ERR_E;
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_ipc_mutex_lock
+ * 函数名  : cmos_ipc_semaphore_down
  * 负责人  : 彭鹏
  * 创建日期：20151127 
- * 函数功能: 上锁
+ * 函数功能: 申请信号量 P操作
  *
- * 输入参数: 无
+ * 输入参数: semaphore 信号量指针
  * 输出参数: 无
  *
- * 返回值  : 无
+ * 返回值  : 程序运行状态
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
+cmos_status_T cmos_ipc_semaphore_P(cmos_ipc_semaphore_T *semaphore)
 {
     return cmos_ERR_E;
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_ipc_mutex_unlock
+ * 函数名  : cmos_ipc_semaphore_V
  * 负责人  : 彭鹏
  * 创建日期：20151127 
- * 函数功能: 解锁
+ * 函数功能: 释放信号量 V操作
  *
- * 输入参数: 无
+ * 输入参数: semaphore 信号量指针
  * 输出参数: 无
  *
- * 返回值  : 无
+ * 返回值  : 程序运行状态
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
+cmos_status_T cmos_ipc_semaphore_V(cmos_ipc_semaphore_T *semaphore)
 {
     return cmos_ERR_E;
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_ipc_mutex_free
+ * 函数名  : cmos_ipc_semaphore_free
  * 负责人  : 彭鹏
  * 创建日期：20151127 
- * 函数功能: 释放互斥量
+ * 函数功能: 销毁信号量
  *
- * 输入参数: 无
+ * 输入参数: semaphore 信号量指针
  * 输出参数: 无
  *
- * 返回值  : 无
+ * 返回值  : 程序运行状态
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_ipc_mutex_free(cmos_ipc_mutex_T *mutex)
+cmos_status_T cmos_ipc_semaphore_free(cmos_ipc_semaphore_T *semaphore)
 {
-    return;
+    return cmos_ERR_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_ipc_semaphore_bit_band_is_empty
+ * 负责人  : 彭鹏
+ * 创建日期：20151127 
+ * 函数功能: 检查位段是否用光
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : TRUE  用光
+ *           FALSE 未用光
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_bool_T cmos_ipc_semaphore_bit_band_is_empty(void)
+{
+    return TRUE;
 }
 
