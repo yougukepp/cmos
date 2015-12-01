@@ -7,7 +7,7 @@
 ;* 文件描述： stm32f芯片的系统调用汇编(for MDK-ARM)
 ;*            它主要完成系统调用的汇编部分
 ;* 版权说明： Copyright (c) 2000-2020 GNU
-;* 其    他： 无
+;* 其    他： 详细的说明见syscall.c
 ;* 修改日志： 无
 ;*
 ;*******************************************************************************/
@@ -62,6 +62,18 @@ cmos_enable_interrupt PROC
 cmos_disable_interrupt PROC
                 EXPORT cmos_disable_interrupt
                 SVC 0x31
+                BX  LR
+                ENDP
+
+cmos_enable_switch PROC
+                EXPORT cmos_enable_switch
+                SVC 0x32
+                BX  LR
+                ENDP
+
+cmos_disable_switch PROC
+                EXPORT cmos_disable_switch
+                SVC 0x33
                 BX  LR
                 ENDP
 

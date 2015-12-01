@@ -39,6 +39,8 @@ static cmos_status_T cmos_delay_c(cmos_int32_T millisec);
 
 static void cmos_enable_interrupt_c(void);
 static void cmos_disable_interrupt_c(void);
+static void cmos_enable_switch_c(void);
+static void cmos_disable_switch_c(void);
 
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 static cmos_status_T cmos_close_c(cmos_int32_T fd);
@@ -92,8 +94,12 @@ void syscall_c(cmos_uint32_T *sp)
      *      0x2 时间管理(参考CMSIS Thread Management)
      *        0x20 cmos_delay
      *      0x3 任务通信与同步
-     *        0x30 开中断
+     *        最强IPC 对实时性(中断延迟)影响巨大 数条指令使用
+     *        0x30 开中断     
      *        0x31 关中断
+     *        任务同步IPC 对ISR无效 任务同步使用
+     *        0x32 开调度器锁
+     *        0x33 关调度器锁
      *      0xa 驱动系统调用(利用Linux VFS思想)
      *        0xa0 cmos_open
      *        0xa1 cmos_close
@@ -142,6 +148,19 @@ void syscall_c(cmos_uint32_T *sp)
                 cmos_disable_interrupt_c();
                 break;
             }
+
+        case 0x32:
+            {
+                cmos_enable_switch_c();
+                break;
+            }
+
+        case 0x33:
+            {
+                cmos_disable_switch_c();
+                break;
+            }
+
 
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
@@ -313,6 +332,48 @@ inline static void cmos_enable_interrupt_c(void)
 inline static void cmos_disable_interrupt_c(void)
 {
     cmos_hal_cortex_cortex_enable_interrupt();
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_enable_switch_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 开调度器锁
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_enable_switch_c(void)
+{
+    cmos_hal_cortex_cortex_enable_switch();
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_disable_switch_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 关调度器锁
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_disable_switch_c(void)
+{
+    cmos_hal_cortex_cortex_disalbe_switch();
 }
 
 /*******************************************************************************
