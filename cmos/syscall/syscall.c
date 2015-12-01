@@ -19,6 +19,7 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 
+#include "cortex.h"
 #include "console.h"
 #include "kernel.h"
 #include "fd.h"

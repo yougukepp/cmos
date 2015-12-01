@@ -15,6 +15,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "semaphore.h"
+#include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -46,14 +47,14 @@ cmos_int32_T s_ipc_semaphore_bit_band[CMOS_IPC_SEMAPHORE_BIT_BAND_SIZE] = {0};
 cmos_status_T cmos_ipc_semaphore_malloc(cmos_ipc_semaphore_T *semaphore, cmos_int32_T init_count)
 {
     /* step0: 参数检查 */
-    if((NULL = semaphore)
-    || (count < 1))
+    if((NULL == semaphore)
+    || (init_count < 1))
     {
         CMOS_ERR_STR("cmos_ipc_semaphore_malloc err para.");
         return cmos_PARA_E;
     }
 
-    /* step1: s_ipc_semaphore_bit_band 用完 *//
+    /* step1: s_ipc_semaphore_bit_band 用完 */
     if(cmos_ipc_semaphore_bit_band_is_empty())
     {
         CMOS_ERR_STR("cmos_ipc_semaphore_malloc should not support more semaphore.");

@@ -434,7 +434,7 @@
 
   <Group>
     <GroupName>app</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -874,63 +874,16 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
-  </Group>
-
-  <Group>
-    <GroupName>arm_math</GroupName>
-    <tvExp>0</tvExp>
-    <tvExpOptDlg>0</tvExpOptDlg>
-    <cbSel>0</cbSel>
-    <RteFlg>0</RteFlg>
     <File>
-      <GroupNumber>12</GroupNumber>
+      <GroupNumber>11</GroupNumber>
       <FileNumber>38</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\DSP_Lib\Source\FastMathFunctions\arm_cos_f32.c</PathWithFileName>
-      <FilenameWithoutPath>arm_cos_f32.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>12</GroupNumber>
-      <FileNumber>39</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\DSP_Lib\Source\FastMathFunctions\arm_sin_f32.c</PathWithFileName>
-      <FilenameWithoutPath>arm_sin_f32.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>12</GroupNumber>
-      <FileNumber>40</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\DSP_Lib\Source\CommonTables\arm_common_tables.c</PathWithFileName>
-      <FilenameWithoutPath>arm_common_tables.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>12</GroupNumber>
-      <FileNumber>41</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>E:\Keil_v5\STM32Cube_FW_F4\Drivers\CMSIS\DSP_Lib\Source\CommonTables\arm_const_structs.c</PathWithFileName>
-      <FilenameWithoutPath>arm_const_structs.c</FilenameWithoutPath>
+      <PathWithFileName>..\cmos\ipc\semaphore.c</PathWithFileName>
+      <FilenameWithoutPath>semaphore.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
