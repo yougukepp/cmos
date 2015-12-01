@@ -15,10 +15,14 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 ### 测试计划
 
 ### 近期计划
-0. 实现同优先级时间片轮转
-1. 互斥锁 参考 SignalManagement
-2. 实现串口命令行,参考CMSIS驱动模型
-3. 实现app/flyer/doc/README.md计划
+1. 实现同优先级时间片轮转
+2. 同步问题
+   a. 关中断
+   b. 调度器上锁
+   c. 自旋锁
+   d. 信号量(包含互斥量)
+3. 实现串口命令行
+4. 实现app/flyer/doc/README.md计划
 
 ### 远期计划
 0. 由于串口打印使用系统调用,故svc调用栈内的代码无法使用串口打印?
