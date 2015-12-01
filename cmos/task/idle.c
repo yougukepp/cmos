@@ -16,6 +16,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "cmos_api.h"
 #include "idle.h"
 #include "console.h"
 
@@ -49,11 +50,14 @@
  ******************************************************************************/
 void cmos_task_idle_task(void *argv)
 {
-    static cmos_int32_T times = 0;
+    static cmos_int32_T times = 0; 
+    
+    /* 调度器默认被锁 需要打开 */
+    cmos_enable_switch();
 
     while(TRUE)
     { 
-        //cmos_console_printf("idle running %d\r\n", times);
+        cmos_console_printf("idle running %d\r\n", times);
         times++;
     } 
     
