@@ -88,7 +88,7 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
     tcb->tick_total = task_attribute->tick_total;
     tcb->flag = task_attribute->flag;
 
-    tcb->tick = tick_total;
+    tcb->tick = tcb->tick_total;
     tcb->delay_ms = 0;
 
     /* 初始化任务栈 */
@@ -688,12 +688,12 @@ inline cmos_bool_T cmos_task_tcb_zero_tick(cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_task_tcb_reset_tick(cmos_task_tcb_T *tcb);
+void cmos_task_tcb_reset_tick(cmos_task_tcb_T *tcb)
 {
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_tcb_zero_tick whit null tcb pointer.");
-        return FALSE;
+        return;
     }
 
     tcb->tick = tcb->tick_total;

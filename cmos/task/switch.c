@@ -41,7 +41,6 @@ static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_int32_T priority)
 static cmos_task_tcb_T *cmos_task_switch_get_highest_tcb(void);
 static void cmos_task_switch_set_running_tcb(const cmos_task_tcb_T *tcb);
 static void cmos_task_switch_update_delay_tcb(cmos_task_tcb_T *tcb, void *para);
-static void cmos_task_switch_update_ready_tcb_list(cmos_task_tcb_T *tcb, void *para);
 static void cmos_task_switch_set_tcb_list_by_priority(cmos_int32_T priority, cmos_task_tcb_list_T *list);
 
 /********************************** 变量实现区 *********************************/
@@ -635,7 +634,6 @@ cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
  ******************************************************************************/
 cmos_status_T cmos_task_switch_update_tcb_time(void)
 {
-    cmos_int32_T i = 0;
     cmos_int32_T highest_priority = 0;
 
     /* 需要任务切换(被系统调用抢占) 先不处理时间问题 */

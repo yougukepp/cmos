@@ -298,6 +298,7 @@ static void cmos_task_tcb_list_lib_list_walk_func(cmos_lib_list_node_T *lib_list
 cmos_status_T cmos_task_tcb_list_head_move_to_tail(cmos_task_tcb_list_T **list)
 {
     cmos_task_tcb_list_node_T *head_node = NULL;
+    cmos_status_T status = cmos_ERR_E;
 
     if((NULL == list)
     || (NULL == *list))
@@ -321,5 +322,7 @@ cmos_status_T cmos_task_tcb_list_head_move_to_tail(cmos_task_tcb_list_T **list)
         CMOS_ERR_STR("cmos_lib_list_append err.");
         return status;
     }
+
+    return cmos_OK_E;
 }
 
