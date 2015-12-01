@@ -54,7 +54,7 @@ void SysTick_Handler(void)
     /* step1: 处理switch中tcb时间信息 */
     cmos_task_switch_update_tcb_time();
     
-    /* 调度 */ 
+    /* step2: 调度 */ 
     cmos_hal_cortex_cortex_set_pendsv();
 }
 

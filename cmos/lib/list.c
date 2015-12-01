@@ -29,8 +29,6 @@
 
 /********************************** 函数声明区 *********************************/
 static void cmos_lib_list_init(cmos_lib_list_T **list, cmos_lib_list_node_T *node);
-static cmos_lib_list_node_T *cmos_lib_list_get_head(const cmos_lib_list_T *list);
-static cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list);
 static cmos_status_T cmos_lib_list_add(cmos_lib_list_T **list, cmos_lib_list_node_T *node, cmos_int32_T flag);
 
 /********************************** 变量实现区 *********************************/
@@ -385,7 +383,7 @@ cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_lib_list_node_T *cmos_lib_list_get_head(const cmos_lib_list_T *list)
+cmos_lib_list_node_T *cmos_lib_list_get_head(const cmos_lib_list_T *list)
 {
     return (cmos_lib_list_node_T *)list;
 }
@@ -405,7 +403,7 @@ static cmos_lib_list_node_T *cmos_lib_list_get_head(const cmos_lib_list_T *list)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list)
+cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list)
 {
     cmos_lib_list_node_T *go_ptr = NULL;
     if(NULL == list)

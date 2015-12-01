@@ -44,6 +44,9 @@ cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data);
 void cmos_lib_list_node_free(cmos_lib_list_node_T *node);
 void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node);
 
+cmos_lib_list_node_T *cmos_lib_list_get_head(const cmos_lib_list_T *list);
+cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list);
+
 cmos_status_T cmos_lib_list_append(cmos_lib_list_T **list, cmos_lib_list_node_T *node);
 cmos_status_T cmos_lib_list_insert(cmos_lib_list_T **list, cmos_lib_list_node_T *node);
 cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node_T *node);

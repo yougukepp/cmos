@@ -48,5 +48,7 @@ cmos_task_tcb_T *cmos_task_tcb_list_get_head_tcb(const cmos_task_tcb_list_T *lis
 
 void cmos_task_tcb_list_walk(cmos_task_tcb_list_T *tcb_list, cmos_task_tcb_list_walk_func_T func, void *para);
 
+cmos_status_T cmos_task_tcb_list_head_move_to_tail(cmos_task_tcb_list_T **tcb_list);
+
 #endif // #ifndef _CMOS_TASK_TCB_LIST_H_
 

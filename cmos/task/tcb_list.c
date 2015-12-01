@@ -195,7 +195,7 @@ cmos_task_tcb_T *cmos_task_tcb_list_get_head_tcb(const cmos_task_tcb_list_T *lis
     }
 
     /* list指向头结点 */
-    head_node = (cmos_task_tcb_list_node_T *)list;
+    head_node = cmos_lib_list_get_head(list);
 
     tcb = cmos_lib_list_node_get_data(head_node);
 
@@ -277,5 +277,49 @@ static void cmos_task_tcb_list_lib_list_walk_func(cmos_lib_list_node_T *lib_list
     }
 
     para->func(tcb, para->para);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_list_head_move_to_tail
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 实现tcb_list中的头移动到尾
+ *
+ * 输入参数: list tcb链表指针的指针
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_task_tcb_list_head_move_to_tail(cmos_task_tcb_list_T **list)
+{
+    cmos_task_tcb_list_node_T *head_node = NULL;
+
+    if((NULL == list)
+    || (NULL == *list))
+    {
+        CMOS_ERR_STR("cmos_task_tcb_list_head_move_to_tail can not with null list.");
+        return cmos_NULL_E;
+    }
+
+    head_node = cmos_lib_list_get_head(*list);
+
+    status = cmos_lib_list_del(list, head_node);
+    if(cmos_OK_E != status)
+    {
+        CMOS_ERR_STR("cmos_lib_list_del err.");
+        return status;
+    }
+
+    status = cmos_lib_list_append(list, head_node);
+    if(cmos_OK_E != status)
+    {
+        CMOS_ERR_STR("cmos_lib_list_append err.");
+        return status;
+    }
 }
 

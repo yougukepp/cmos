@@ -88,7 +88,7 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
     tcb->tick_total = task_attribute->tick_total;
     tcb->flag = task_attribute->flag;
 
-    tcb->tick = 0;
+    tcb->tick = tick_total;
     tcb->delay_ms = 0;
 
     /* 初始化任务栈 */
@@ -373,7 +373,7 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb)
+inline cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb)
 {
     if(NULL == tcb)
     {
@@ -400,7 +400,7 @@ cmos_int32_T cmos_task_tcb_get_stack_size(const cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb)
+inline cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb)
 {
     if(NULL == tcb)
     {
@@ -429,13 +429,11 @@ cmos_priority_T cmos_task_tcb_get_priority(const cmos_task_tcb_T *tcb)
  ******************************************************************************/
 inline void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_T psp)
 {
-#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
         return;
     }
-#endif
 
     tcb->psp = psp;
 }
@@ -457,13 +455,11 @@ inline void cmos_task_tcb_set_psp(cmos_task_tcb_T *tcb, const cmos_task_tcb_psp_
  ******************************************************************************/
 inline cmos_task_tcb_psp_T cmos_task_tcb_get_psp(const cmos_task_tcb_T *tcb)
 {
-#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_tcb_get_psp whit null tcb pointer.");
         return NULL;
     }
-#endif
 
     return tcb->psp;
 }
@@ -545,13 +541,11 @@ void cmos_task_tcb_stack_print(const cmos_task_tcb_psp_T psp, cmos_int32_T print
  ******************************************************************************/
 inline void cmos_task_tcb_set_delay_ms(cmos_task_tcb_T *tcb, cmos_int32_T ms)
 {
-#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == tcb)
     {
-        CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
+        CMOS_ERR_STR("cmos_task_tcb_set_delay_ms whit null tcb pointer.");
         return;
     }
-#endif
 
     tcb->delay_ms = ms;
 }
@@ -574,13 +568,11 @@ inline void cmos_task_tcb_set_delay_ms(cmos_task_tcb_T *tcb, cmos_int32_T ms)
  ******************************************************************************/
 inline void cmos_task_tcb_dec_delay_ms(cmos_task_tcb_T *tcb)
 {
-#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == tcb)
     {
-        CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
+        CMOS_ERR_STR("cmos_task_tcb_dec_delay_ms whit null tcb pointer.");
         return;
     }
-#endif
 
     tcb->delay_ms--;
 }
@@ -603,13 +595,11 @@ inline void cmos_task_tcb_dec_delay_ms(cmos_task_tcb_T *tcb)
  ******************************************************************************/
 inline cmos_bool_T cmos_task_tcb_zero_delay_ms(cmos_task_tcb_T *tcb)
 {
-#if (CMOS_DEBUG_LEVEL > 0) 
     if(NULL == tcb)
     {
-        CMOS_ERR_STR("cmos_task_tcb_set_psp whit null tcb pointer.");
+        CMOS_ERR_STR("cmos_task_tcb_zero_delay_ms whit null tcb pointer.");
         return FALSE;
     }
-#endif
 
     if(0 == tcb->delay_ms)
     {
@@ -619,5 +609,93 @@ inline cmos_bool_T cmos_task_tcb_zero_delay_ms(cmos_task_tcb_T *tcb)
     {
         return FALSE;
     }
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_dec_tick
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: tcb中的tick域自减
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline void cmos_task_tcb_dec_tick(cmos_task_tcb_T *tcb)
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_dec_tick whit null tcb pointer.");
+        return;
+    }
+
+    tcb->tick--;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_zero_tick
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: tcb中的tick域是否为零
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline cmos_bool_T cmos_task_tcb_zero_tick(cmos_task_tcb_T *tcb)
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_zero_tick whit null tcb pointer.");
+        return FALSE;
+    }
+
+    if(0 == tcb->tick)
+    {
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tcb_reset_tick
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 复位tick值
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_task_tcb_reset_tick(cmos_task_tcb_T *tcb);
+{
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_tcb_zero_tick whit null tcb pointer.");
+        return FALSE;
+    }
+
+    tcb->tick = tcb->tick_total;
 }
 

@@ -41,11 +41,12 @@ static cmos_int32_T cmos_task_switch_get_highest_priority(cmos_int32_T priority)
 static cmos_task_tcb_T *cmos_task_switch_get_highest_tcb(void);
 static void cmos_task_switch_set_running_tcb(const cmos_task_tcb_T *tcb);
 static void cmos_task_switch_update_delay_tcb(cmos_task_tcb_T *tcb, void *para);
+static void cmos_task_switch_update_ready_tcb_list(cmos_task_tcb_T *tcb, void *para);
 static void cmos_task_switch_set_tcb_list_by_priority(cmos_int32_T priority, cmos_task_tcb_list_T *list);
 
 /********************************** 变量实现区 *********************************/
 /* 当前运行任务的tcb 用于任务恢复 */
-cmos_task_tcb_T *s_running_tcb = NULL;
+cmos_task_tcb_T *s_running_tcb = NULL; /* 需要加锁 */
 
 /* cmos_delay的任务链表 */
 static cmos_task_tcb_list_T *s_delay_tcb_list = NULL;
@@ -634,10 +635,31 @@ cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
  ******************************************************************************/
 cmos_status_T cmos_task_switch_update_tcb_time(void)
 {
-    /* 处理 s_delay_tcb_list 链表的任务 cmos_delay相关 */
+    cmos_int32_T i = 0;
+    cmos_int32_T highest_priority = 0;
+
+    /* 需要任务切换(被系统调用抢占) 先不处理时间问题 */
+    if(s_running_tcb != cmos_task_switch_get_highest_tcb())
+    {
+        return cmos_OK_E;
+    }
+    else
+    {
+        /* step1: 自减当前任务的时间片 */
+        cmos_task_tcb_dec_tick(s_running_tcb); 
+        /* 移动如队列尾 */
+        if(cmos_task_tcb_zero_tick(s_running_tcb)) /* step2: 移如就绪表尾 */
+        {
+            cmos_task_tcb_reset_tick(s_running_tcb);
+            highest_priority = cmos_task_switch_get_highest_priority(s_priority_index);
+            cmos_task_tcb_list_head_move_to_tail(&s_tcb_table_by_priority[highest_priority]);
+        }
+    }
+
+    /* step2: 处理s_delay_tcb_list(等待)链表的任务 所有的delay_ms域自减 并进行可能的就绪表更新 */
     if(NULL != s_delay_tcb_list)
     {
-        cmos_task_tcb_list_walk(s_delay_tcb_list, cmos_task_switch_update_delay_tcb, s_tcb_table_by_priority);
+        cmos_task_tcb_list_walk(s_delay_tcb_list, cmos_task_switch_update_delay_tcb, NULL);
     }
 
     return cmos_OK_E;
@@ -662,9 +684,16 @@ cmos_status_T cmos_task_switch_update_tcb_time(void)
  ******************************************************************************/
 static void cmos_task_switch_update_delay_tcb(cmos_task_tcb_T *tcb, void *para)
 { 
+    if((NULL == tcb)
+    || (NULL != para))
+    {
+        CMOS_ERR_STR("cmos_task_switch_update_delay_tcb para err.");
+        return;
+    }
+
     cmos_status_T status = cmos_ERR_E;
     cmos_task_tcb_dec_delay_ms(tcb); 
-    
+
     /* 定时到 从s_delay_tcb_list中删除 加入s_tcb_table_by_priority */
     if(cmos_task_tcb_zero_delay_ms(tcb))
     { 
@@ -682,5 +711,5 @@ static void cmos_task_switch_update_delay_tcb(cmos_task_tcb_T *tcb, void *para)
             return;
         } 
     }
-}
+} 
 
