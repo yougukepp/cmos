@@ -53,6 +53,18 @@ cmos_delay      PROC
                 BX  LR
                 ENDP
 
+cmos_enable_interrupt PROC
+                EXPORT cmos_enable_interrupt
+                SVC 0x30
+                BX  LR
+                ENDP
+
+cmos_disable_interrupt PROC
+                EXPORT cmos_disable_interrupt
+                SVC 0x31
+                BX  LR
+                ENDP
+
 cmos_open       PROC
                 EXPORT  cmos_open
                 SVC 0xa0

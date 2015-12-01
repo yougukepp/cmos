@@ -37,6 +37,9 @@ static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, const cmos_task_attr
 
 static cmos_status_T cmos_delay_c(cmos_int32_T millisec);
 
+static void cmos_enable_interrupt_c(void);
+static void cmos_disable_interrupt_c(void);
+
 static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
 static cmos_status_T cmos_close_c(cmos_int32_T fd);
 static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
@@ -88,6 +91,9 @@ void syscall_c(cmos_uint32_T *sp)
      *        0x10 cmos_create
      *      0x2 时间管理(参考CMSIS Thread Management)
      *        0x20 cmos_delay
+     *      0x3 任务通信与同步
+     *        0x30 开中断
+     *        0x31 关中断
      *      0xa 驱动系统调用(利用Linux VFS思想)
      *        0xa0 cmos_open
      *        0xa1 cmos_close
@@ -121,6 +127,19 @@ void syscall_c(cmos_uint32_T *sp)
         case 0x20:
             { 
                 sp[0] = cmos_delay_c((cmos_int32_T)stacked_r0);
+                break;
+            }
+
+        /* 任务通信与同步 */
+        case 0x30:
+            {
+                cmos_enable_interrupt_c();
+                break;
+            }
+
+        case 0x31:
+            {
+                cmos_disable_interrupt_c();
                 break;
             }
 
@@ -176,7 +195,7 @@ void syscall_c(cmos_uint32_T *sp)
  * 其 它   : 汇编会调用 不加static
  *
  ******************************************************************************/
-cmos_status_T cmos_init_c(void)
+inline cmos_status_T cmos_init_c(void)
 {
    return cmos_kernel_init();
 }
@@ -197,7 +216,7 @@ cmos_status_T cmos_init_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_start_c(void)
+inline cmos_status_T cmos_start_c(void)
 {
     return cmos_kernel_start();
 }
@@ -249,9 +268,51 @@ static cmos_status_T cmos_create_c(cmos_task_id_T *task_id,
  * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
  *
  ******************************************************************************/
-static cmos_status_T cmos_delay_c(cmos_int32_T millisec)
+inline static cmos_status_T cmos_delay_c(cmos_int32_T millisec)
 {
     return cmos_task_switch_delay(millisec);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_enable_interrupt_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 开中断
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_enable_interrupt_c(void)
+{
+    cmos_hal_cortex_cortex_disable_interrupt();
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_disable_interrupt_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 关中断
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_disable_interrupt_c(void)
+{
+    cmos_hal_cortex_cortex_enable_interrupt();
 }
 
 /*******************************************************************************

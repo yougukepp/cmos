@@ -116,3 +116,43 @@ cmos_status_T cmos_hal_cortex_cortex_systick_start(cmos_int32_T ticks)
     return cmos_OK_E;
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : cmos_hal_cortex_cortex_disable_interrupt
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 关中断
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline void cmos_hal_cortex_cortex_disable_interrupt(void)
+{
+    __disable_irq();
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_hal_cortex_cortex_enable_interrupt
+ * 负责人  : 彭鹏
+ * 创建日期：20151201 
+ * 函数功能: 开中断
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline void cmos_hal_cortex_cortex_enable_interrupt(void)
+{
+    __enable_irq();
+}
+
