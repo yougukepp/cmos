@@ -13,7 +13,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 测试计划
-无
+1. 同优先级时间片轮转
 
 ### 近期计划
 1. 实现app/flyer/doc/README.md计划
