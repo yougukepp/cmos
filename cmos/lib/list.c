@@ -308,7 +308,7 @@ cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node
         return cmos_NULL_E;
     } 
     
-    go_ptr = (cmos_lib_list_node_T *)(*list);
+    go_ptr = cmos_lib_list_get_head(*list);
     do
     { 
         if(go_ptr == node) /* 找到,处理go_ptr结点 */
@@ -355,15 +355,9 @@ cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node
         cmos_debug_log("cmos_lib_list_del not find valid node.\n");
         return cmos_PARA_E;
     }
-    else
-    {
-        /* 消除引用 */
-        go_ptr->prev = NULL;
-        go_ptr->next = NULL;
-    }
 
     /* 释放list结点避免内存泄露 data域指向对象未释放 */
-    cmos_free(go_ptr); 
+    cmos_lib_list_node_free(go_ptr);
     
     return cmos_OK_E;
 }
