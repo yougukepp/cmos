@@ -26,6 +26,7 @@
 /********************************** 变量声明区 *********************************/
 /* 控制台缓存 */
 static char s_printf_buf[CMOS_PRINTF_BUF_SIZE] = {0};
+
 /* 控制台文件句柄 */
 static cmos_int32_T s_console_uart_fd = 0;
 
@@ -88,14 +89,26 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
         return 0;
     }
 
-    /* FIXME: 合理使用s_printf_buf */
-
+    /* FIXME: 避免竞态 */
     va_list args;
     cmos_int32_T n = 0;
     cmos_int32_T n_writes = 0;
-   
-    va_start(args, fmt);
-    n = vsprintf(s_printf_buf, fmt, args);
+
+    /* 之前的打印未完成 休眠 */
+    while(NUL != s_printf_buf[0])
+    {
+        cmos_delay(CMOS_PRINTF_BUF_SIZE/10); /* 经验值 */
+    }
+
+    va_start(args, fmt); 
+    cmos_enable_switch(); /* 加锁避免竞态 */
+    n = vsnprintf(s_printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
+    cmos_disable_switch();
+    if( (n >= CMOS_PRINTF_BUF_SIZE) /* 出错 */
+      ||( n< 0))
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
     va_end(args);
 
     /* 传输 */
@@ -104,6 +117,12 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     {
         assert_failed(__FILE__, __LINE__);
     }
+
+
+    /* 清空buf */
+    cmos_enable_switch(); /* 加锁避免竞态 */
+    s_printf_buf[0] = NUL;
+    cmos_disable_switch();
 
     return n;
 }

@@ -185,7 +185,7 @@ inline void cmos_hal_cortex_cortex_disalbe_switch(void)
 {
     /* 需要使用关中断保护 */
     cmos_hal_cortex_cortex_disable_interrupt();
-    s_cmos_hal_cortex_cortex_pendsv_lock = 0;
+    s_cmos_hal_cortex_cortex_pendsv_lock = 1;
     cmos_hal_cortex_cortex_enable_interrupt();
 }
 
