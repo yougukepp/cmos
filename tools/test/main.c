@@ -24,6 +24,7 @@
 #include "pc.h"
 #include "tree.h"
 #include "list.h"
+#include "queue.h"
 #include "vfs.h"
 #include "console.h"
 
@@ -408,44 +409,49 @@ static cmos_status_T test_list(void)
 ******************************************************************************/
 static cmos_status_T test_ring_buffer(void)
 {
-    cmos_int32_T i = 0;
     cmos_status_T status = cmos_OK_E;
-    cmos_debug_log("ring_buffer test start.\n");
 #if 0
+    cmos_int32_T i = 0;
+    cmos_debug_log("ring_buffer test start.\n");
 
     cmos_lib_ring_queue_T *queue;
 
     status = cmos_lib_ring_queue_init(queue, 5);
-    if(cmos_OK_E ! = status)
+    if(cmos_OK_E != status) 
     {
         cmos_debug_log("cmos_lib_ring_queue_init failed.\n");
         return status;
     } 
     
     cmos_debug_log("ring queue all add all del start.\n");
-    /* */
-    for(i = 0;, i < 5; i++) 
+    cmos_debug_log("ring queue push:\n");
+    for(i = 0; i < 5; i++) 
     {
-        status = cmos_lib_ring_queue_push(queue, i+'0');
-        if(cmos_OK_E ! = status) 
+        c = i + '0';
+        status = cmos_lib_ring_queue_push(queue, c);
+        if(cmos_OK_E != status) 
         {
             cmos_debug_log("cmos_lib_ring_queue_push failed.\n");
             return status;
         }
+        cmos_debug_log("%c", c);
+    } 
+    
+    cmos_debug_log("cmos_lib_ring_queue_pop:\n");
+    for(i = 0; i < 5; i++) 
+    {
+        status = cmos_lib_ring_queue_pop(queue, &c);
+        if(cmos_OK_E != status) 
+        {
+            cmos_debug_log("cmos_lib_ring_queue_push failed.\n");
+            return status;
+        } 
+        cmos_debug_log("%c", c);
     }
-
-    status = cmos_lib_ring_queue_pop(queue, &c);
-
     cmos_debug_log("ring queue all add all del end.\n");
 
-    if(cmos_OK_E ! = status)
-    {
-        cmos_debug_log("cmos_lib_ring_queue_ged failed.\n");
-        return status;
-    }
-#endif
-
     cmos_debug_log("ring_queue test done.\n");
+#endif
     return status;
 }
 
