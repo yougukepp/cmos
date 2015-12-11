@@ -99,7 +99,7 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     va_end(args);
 
     /* 传输 */
-    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)s_printf_buf, n);
+    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)s_printf_buf, n); /* 此处肯能会任务切换 */
     if(n_writes != n)
     {
         assert_failed(__FILE__, __LINE__);

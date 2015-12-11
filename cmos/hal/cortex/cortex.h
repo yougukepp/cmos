@@ -37,7 +37,6 @@
 /*********************************** 接口函数 **********************************/ 
 void cmos_hal_cortex_cortex_goto_unprivileged(void);
 void cmos_hal_cortex_cortex_set_pendsv(void);
-void cmos_hal_cortex_cortex_systick_disable(void);
 cmos_status_T cmos_hal_cortex_cortex_systick_start(cmos_int32_T ticks_num);
 
 void cmos_hal_cortex_cortex_disable_interrupt(void);

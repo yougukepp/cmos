@@ -59,6 +59,9 @@ cmos_status_T cmos_kernel_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
 
+    /* 关闭任务切换 保证初始化的串行完成 */
+    cmos_hal_cortex_cortex_disalbe_switch();
+
     /* cmos hal vfs初始化 */
     status = vfs_init();
     if(cmos_OK_E != status)
