@@ -307,6 +307,12 @@ cmos_status_T cmos_task_tcb_list_head_move_to_tail(cmos_task_tcb_list_T **list)
         return cmos_NULL_E;
     }
 
+    /* 仅一个元素不变 */
+    if(1 == cmos_lib_list_length(*list))
+    {
+        return cmos_OK_E;
+    }
+
     head_node = cmos_lib_list_get_head(*list);
 
     status = cmos_lib_list_del(list, head_node);

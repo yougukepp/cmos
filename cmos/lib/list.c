@@ -92,6 +92,42 @@ cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T *list)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_lib_list_length
+ * 负责人  : 彭鹏
+ * 创建日期：20151211 
+ * 函数功能: 求list个数
+ *
+ * 输入参数: list指针
+ * 输出参数: 无
+ *
+ * 返回值  : list个数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list)
+{
+    cmos_int32_T length = 0;
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_length with null pointer.");
+        return 0;
+    }
+
+    cmos_lib_list_node_T *go_ptr = NULL;
+    go_ptr = cmos_lib_list_get_head(list);
+    while(NULL != go_ptr)
+    {
+        go_ptr = go_ptr->next;
+        length++;
+    }
+
+    /* 未找到 */
+    return length;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_lib_list_node_malloc
  * 负责人  : 彭鹏
  * 创建日期：20151119 
@@ -142,7 +178,8 @@ void cmos_lib_list_node_free(cmos_lib_list_node_T *node)
 {
     node->prev = NULL;
     node->next = NULL;
-    node->data = NULL;
+    /* 仅仅释放 指针域 数据域不变 */
+    /* node->data = NULL; */
 
     cmos_free(node);
 }
@@ -406,7 +443,7 @@ cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list)
         return NULL;
     } 
     
-    go_ptr = (cmos_lib_list_node_T *)list;
+    go_ptr = cmos_lib_list_get_head(list);
     while(NULL != go_ptr->next)
     {
         go_ptr = go_ptr->next;
@@ -435,7 +472,7 @@ cmos_lib_list_node_T *cmos_lib_list_search_by_data(const cmos_lib_list_T *list, 
 {
     cmos_lib_list_node_T *go_ptr = NULL;
 
-    go_ptr = (cmos_lib_list_node_T *)list;
+    go_ptr = cmos_lib_list_get_head(list);
     while(NULL != go_ptr)
     {
         if(data == go_ptr->data) /* 找到 */

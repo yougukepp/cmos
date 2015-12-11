@@ -631,7 +631,7 @@ cmos_status_T cmos_task_switch_update_tcb_time(void)
 {
     cmos_int32_T highest_priority = 0;
 
-#if 0
+#if 1
     /* 需要任务切换(被系统调用抢占) 先不处理时间问题 */
     if(s_running_tcb != cmos_task_switch_get_highest_tcb())
     {
