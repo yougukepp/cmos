@@ -36,6 +36,7 @@
 static void usage(void);
 static cmos_status_T test_tree(void);
 static cmos_status_T test_list(void);
+static cmos_status_T test_ring_buffer(void);
 static void print_node(cmos_lib_list_node_T *node, void *para);
 
 
@@ -81,6 +82,10 @@ int main(int argc, char *argv[])
     { 
         type = 1;
     }
+    else if(0 == strcmp(type_str, "rb"))
+    { 
+        type = 2;
+    }
     else
     {
         type = -1;
@@ -100,6 +105,14 @@ int main(int argc, char *argv[])
         if(cmos_OK_E != status)
         {
             cmos_debug_log("test_list return %d\n", status);
+        }
+    }
+    else if(2 == type) /* 测试环形缓冲 */
+    {
+        status = test_ring_buffer();
+        if(cmos_OK_E != status)
+        {
+            cmos_debug_log("test_ring_buffer return %d\n", status);
         }
     }
     else
@@ -375,6 +388,30 @@ static cmos_status_T test_list(void)
 
     cmos_debug_log("list test done.\n");
 
+    return status;
+}
+
+/*******************************************************************************
+*
+* 函数名  : test_ring_buffer
+* 负责人  : 彭鹏
+* 创建日期: 20151211
+* 函数功能: 测试环形缓冲
+*
+* 输入参数: 无
+* 输出参数: 无
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static cmos_status_T test_ring_buffer(void)
+{
+    cmos_status_T status = cmos_OK_E;
+    cmos_debug_log("ring_buffer test start.\n");
+
+    cmos_debug_log("ring_buffer test done.\n");
     return status;
 }
 
