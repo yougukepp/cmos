@@ -69,6 +69,14 @@ cmos_status_T hal_init(void)
         return status;
     } 
 
+    /* 设置核心中断优先级 */
+    HAL_NVIC_SetPriority(MemoryManagement_IRQn, MEM_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(BusFault_IRQn, BUS_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(UsageFault_IRQn, USAGE_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(SVCall_IRQn, SVC_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(PendSV_IRQn, PENDSV_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(SysTick_IRQn, TICK_INT_PRIORITY, 0);
+
     /* 逐个初始化硬件 */
     while(NULL != g_hardware_init_list[i].init)
     {
