@@ -104,7 +104,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; I2C2 Error
                 DCD     0                       ; SPI1
                 DCD     0                       ; SPI2
-                DCD     0                       ; USART1
+                DCD     UART1_IRQHandler        ; USART1
                 DCD     0                       ; USART2
                 DCD     0                       ; USART3
                 DCD     0                       ; External Line[15:10]s
@@ -218,6 +218,13 @@ SysTick_Handler PROC
                 EXPORT  SysTick_Handler            [WEAK]
                 B       .
                 ENDP
+
+; 控制台串口中断 C代码有重定义
+UART1_IRQHandler PROC
+                EXPORT  UART1_IRQHandler [WEAK]
+                B       .
+                ENDP
+
 
                 ALIGN
 

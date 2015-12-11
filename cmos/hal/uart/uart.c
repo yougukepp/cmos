@@ -115,12 +115,24 @@ static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_byte
 
 static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
-    /* 发送 */
+#if 0
+    /* 轮询 发送 */
     if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
     {
-        CMOS_ERR_STR("HAL_UART_Transmit failed.");
+        assert_failed(__FILE__, __LINE__);
         return 0;
     }	
+#else
+    /* 1、中断 发送 */
+    if(HAL_UART_Transmit_IT((UART_HandleTypeDef *)dev_id, (uint8_t *)buf, n_bytes)!= HAL_OK)
+    {
+        assert_failed(__FILE__, __LINE__);
+        return 0;
+    }
+
+    /* TODO:当前任务加入阻塞队列 */
+
+#endif
 
     return n_bytes;
 }
@@ -128,5 +140,11 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
 static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T para)
 {
     return cmos_ERR_E;
+}
+
+void UART1_IRQHandler(void)
+{ 
+    /* CONSOLE 使用的串口1 */
+    HAL_UART_IRQHandler(&s_uart_handle);
 }
 

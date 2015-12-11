@@ -40,7 +40,6 @@
 #define CONSOLE_UART_RX_GPIO_PORT               GPIOA
 #define CONSOLE_UART_RX_AF                      GPIO_AF7_USART1
 #define CONSOLE_UART_IRQn                       USART1_IRQn
-#define CONSOLE_UART_IRQHandler                 USART1_IRQHandler
 /* TODO:ESP82699串口定义 */
 
 /* I2C个数 MPU9250+功能板 */
