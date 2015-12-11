@@ -19,9 +19,9 @@ test:tree.c main.c path.c vfs.c
 	$(CC) $(CFLAGS) $(INC) path.c -o path.o
 	$(CC) $(CFLAGS) $(INC) tree.c -o tree.o
 	$(CC) $(CFLAGS) $(INC) list.c -o list.o
-	$(CC) $(CFLAGS) $(INC) ring_buffer.c -o ring_buffer.o
+	$(CC) $(CFLAGS) $(INC) ring_queue.c -o ring_queue.o
 	$(CC) $(CFLAGS) $(INC) main.c -o main.o
-	$(LD) $(LDFLAGS) main.o tree.o list.o vfs.o path.o ring_buffer.o -o test
+	$(LD) $(LDFLAGS) main.o tree.o list.o vfs.o path.o ring_queue.o -o test
 
 .PHONY: clean
 clean:
