@@ -631,6 +631,7 @@ cmos_status_T cmos_task_switch_update_tcb_time(void)
 {
     cmos_int32_T highest_priority = 0;
 
+#if 0
     /* 需要任务切换(被系统调用抢占) 先不处理时间问题 */
     if(s_running_tcb != cmos_task_switch_get_highest_tcb())
     {
@@ -648,6 +649,7 @@ cmos_status_T cmos_task_switch_update_tcb_time(void)
             cmos_task_tcb_list_head_move_to_tail(&s_tcb_table_by_priority[highest_priority]);
         }
     }
+#endif
 
     /* step2: 处理s_delay_tcb_list(等待)链表的任务 所有的delay_ms域自减 并进行可能的就绪表更新 */
     if(NULL != s_delay_tcb_list)

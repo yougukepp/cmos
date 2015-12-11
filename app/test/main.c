@@ -76,7 +76,7 @@ int main(void)
 #endif
 
     /* 浮点任务 */
-#if 0
+#if 1
     cmos_task_id_T task_float_id;
     float argv2 = 7333333333333.3333333f;
     cmos_task_attribute_T task_float_attribute =
