@@ -115,7 +115,7 @@ static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_byte
 
 static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
-#if 0
+#if 1
     /* 轮询 发送 */
     if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
     {

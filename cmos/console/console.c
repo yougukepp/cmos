@@ -94,6 +94,8 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     cmos_int32_T n = 0;
     cmos_int32_T n_writes = 0;
 
+#if 0
+
     /* 之前的打印未完成 休眠 */
     while(NUL != s_printf_buf[0])
     {
@@ -123,6 +125,23 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     cmos_enable_switch(); /* 加锁避免竞态 */
     s_printf_buf[0] = NUL;
     cmos_disable_switch();
+#else
+    va_start(args, fmt); 
+    n = vsnprintf(s_printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
+    if( (n >= CMOS_PRINTF_BUF_SIZE) /* 出错 */
+      ||( n< 0))
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+    va_end(args);
+
+    /* 传输 */
+    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)s_printf_buf, n); /* 此处肯能会任务切换 */
+    if(n_writes != n)
+    {
+        assert_failed(__FILE__, __LINE__);
+    }
+#endif
 
     return n;
 }

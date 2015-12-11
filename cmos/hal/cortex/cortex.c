@@ -77,6 +77,27 @@ inline void cmos_hal_cortex_cortex_set_pendsv(void)
     }
 }
 
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_hal_cortex_cortex_systick_disable
+ * 创建日期：20151121
+ * 函数功能: 关闭systick时钟
+ * 
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 无
+ * 
+ * 调用关系: 无
+ * 其 它   : 无
+ * 
+ * ******************************************************************************/
+inline void cmos_hal_cortex_cortex_systick_disable(void)
+{
+    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
+}
+  
+
 /*******************************************************************************
  *
  * 函数名  : cmos_hal_cortex_cortex_systick_start

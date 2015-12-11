@@ -76,6 +76,7 @@ cmos_status_T hal_init(void)
     HAL_NVIC_SetPriority(SVCall_IRQn, SVC_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(PendSV_IRQn, PENDSV_INT_PRIORITY, 0);
     HAL_NVIC_SetPriority(SysTick_IRQn, TICK_INT_PRIORITY, 0);
+    cmos_hal_cortex_cortex_systick_disable(); /* 避免进入时钟心跳 干扰初始化 */
 
     /* 逐个初始化硬件 */
     while(NULL != g_hardware_init_list[i].init)
