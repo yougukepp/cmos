@@ -16,7 +16,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cortex.h"
-#include "switch.h"
+#include "task.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_hal.h"
 
@@ -51,8 +51,8 @@ void SysTick_Handler(void)
     /* tick自增 */
     HAL_IncTick();
 
-    /* step1: 处理switch中tcb时间信息 */
-    cmos_task_switch_update_tcb_time();
+    /* step1: 通知task模块tick到达 */
+    cmos_task_tick_callback();
     
     /* step2: 调度 */ 
     cmos_hal_cortex_cortex_set_pendsv();

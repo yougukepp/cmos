@@ -290,7 +290,7 @@ static cmos_status_T cmos_create_c(cmos_task_id_T *task_id,
  ******************************************************************************/
 inline static cmos_status_T cmos_delay_c(cmos_int32_T millisec)
 {
-    return cmos_task_switch_delay(millisec);
+    return cmos_task_delay(millisec);
 }
 
 /*******************************************************************************

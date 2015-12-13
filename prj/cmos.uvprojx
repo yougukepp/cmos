@@ -1274,11 +1274,6 @@
               </FileOption>
             </File>
             <File>
-              <FileName>tcb_list.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\cmos\task\tcb_list.c</FilePath>
-            </File>
-            <File>
               <FileName>pendsv.s</FileName>
               <FileType>2</FileType>
               <FilePath>..\cmos\task\pendsv.s</FilePath>

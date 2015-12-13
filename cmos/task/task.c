@@ -31,7 +31,6 @@ static cmos_task_tcb_psp_T s_user_stack_base = CMOS_TASK_STACK_BASE;
 
 /********************************** 函数声明区 *********************************/
 
-
 /********************************** 变量实现区 *********************************/
 
 
@@ -94,7 +93,7 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     s_user_stack_base -= stack_size;
 
     /* step4: 通知调度模块有新线程 */ 
-    status = cmos_task_switch_add(tcb);
+    status = cmos_task_state_to_ready(tcb);
     if(cmos_OK_E != status)
     {
         goto err;

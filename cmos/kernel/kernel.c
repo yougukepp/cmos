@@ -17,8 +17,9 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cmos_api.h"
-#include "idle.h"
+#include "task.h"
 #include "switch.h"
+#include "idle.h"
 #include "vfs.h"
 #include "hal.h"
 #include "console.h"
