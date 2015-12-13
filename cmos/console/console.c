@@ -94,7 +94,7 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     cmos_int32_T n = 0;
     cmos_int32_T n_writes = 0;
 
-#if 1
+#if 0
 
     /* 之前的打印未完成 休眠 */
     while(NUL != s_printf_buf[0])
@@ -120,7 +120,7 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
         assert_failed(__FILE__, __LINE__);
     }
 
-    while(1);
+    //while(1);
 
     /* 清空buf */
     cmos_enable_switch(); /* 加锁避免竞态 */

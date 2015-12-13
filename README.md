@@ -13,7 +13,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 测试计划
-1. 测试中断方式的uart读写
+无
 
 ### 近期计划
 1. list实现queue、stack(暂时只搭建框架)
