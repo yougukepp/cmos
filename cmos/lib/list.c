@@ -28,8 +28,10 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static void cmos_lib_list_init(cmos_lib_list_T **list, cmos_lib_list_node_T *node);
-static cmos_status_T cmos_lib_list_add(cmos_lib_list_T **list, cmos_lib_list_node_T *node, cmos_int32_T flag);
+static cmos_lib_list_node_T *node_malloc(const void *data);
+static void node_free(cmos_lib_list_node_T *node);
+static cmos_lib_list_node_T *list_get_tail(const cmos_lib_list_T *list);
+static cmos_lib_list_node_T *list_get_head(const cmos_lib_list_T *list);
 
 /********************************** 变量实现区 *********************************/
 
@@ -41,7 +43,7 @@ static cmos_status_T cmos_lib_list_add(cmos_lib_list_T **list, cmos_lib_list_nod
  * 创建日期：20151124 
  * 函数功能: list指针的指针
  *
- * 输入参数: 头结点
+ * 输入参数: 链表双重指针
  * 输出参数: 无
  *
  * 返回值  : 无
@@ -49,18 +51,17 @@ static cmos_status_T cmos_lib_list_add(cmos_lib_list_T **list, cmos_lib_list_nod
  * 其 它   : 无
  *
  ******************************************************************************/
-static void cmos_lib_list_init(cmos_lib_list_T **list, cmos_lib_list_node_T *node)
+cmos_status_T cmos_lib_list_init(cmos_lib_list_T **list)
 {
-    if((NULL == node)
-    || (NULL == list))
+    if(NULL == list)
     {
-        CMOS_ERR_STR("NULL pointer");
-        return;
+        CMOS_ERR_STR("cmos_lib_list_init NULL pointer");
+        return cmos_NULL_E;
     }
 
-    *list = node;
+    *list = NULL;
 
-    return;
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
@@ -70,7 +71,7 @@ static void cmos_lib_list_init(cmos_lib_list_T **list, cmos_lib_list_node_T *nod
  * 创建日期：20151124 
  * 函数功能: list析构
  *
- * 输入参数: list指针
+ * 输入参数: list双重指针
  * 输出参数: 无
  *
  * 返回值  : 无
@@ -78,15 +79,17 @@ static void cmos_lib_list_init(cmos_lib_list_T **list, cmos_lib_list_node_T *nod
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T *list)
+cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T **list)
 {
     cmos_status_T status = cmos_ERR_E;
-    if(NULL == list)
+    if((NULL == list)
+    || (NULL == *list))
     {
+        CMOS_ERR_STR("cmos_lib_list_destroy NULL pointer");
         return cmos_NULL_E;
     }
 
-    /* TODO:遍历树list每个结点 */
+    /* TODO:遍历list每个结点 后 */
     return status;
 }
 
@@ -95,7 +98,7 @@ cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T *list)
  * 函数名  : cmos_lib_list_length
  * 负责人  : 彭鹏
  * 创建日期：20151211 
- * 函数功能: 求list个数
+ * 函数功能: 求list结点个数
  *
  * 输入参数: list指针
  * 输出参数: 无
@@ -108,14 +111,13 @@ cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T *list)
 cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list)
 {
     cmos_int32_T length = 0;
-    if(NULL == list)
+    if(NULL == list) /* 空表长度为0 */
     {
-        CMOS_ERR_STR("cmos_lib_list_length with null pointer.");
         return 0;
     }
 
     cmos_lib_list_node_T *go_ptr = NULL;
-    go_ptr = cmos_lib_list_get_head(list);
+    go_ptr = list_get_head(list);
     while(NULL != go_ptr)
     {
         go_ptr = go_ptr->next;
@@ -128,7 +130,200 @@ cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_lib_list_node_malloc
+ * 函数名  : cmos_lib_list_push_tail
+ * 负责人  : 彭鹏
+ * 创建日期：20151211 
+ * 函数功能: 尾部加入
+ *
+ * 输入参数: list 双重指针
+ *           data 待加入结点的数据域
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data)
+{
+    cmos_lib_list_node_T *node = NULL;
+    cmos_lib_list_node_T *tail = NULL;
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
+        return cmos_NULL_E;
+    }
+
+    /* step1: malloc结点 */ 
+    node = node_malloc(data);
+
+    /* step2: 找到尾部 */ 
+    tail = list_get_tail(*list);
+    if(NULL == tail) /* 空表 */
+    {
+        *list = node;
+        return cmos_OK_E;
+    }
+
+    /* step3: 操作指针 */ 
+    /* node->next = NULL malloc后已经为空 */
+    node->prev = tail;
+    tail->next = node;
+    /* tail->prev 保持不变 */
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_pop_tail
+ * 负责人  : 彭鹏
+ * 创建日期：20151211 
+ * 函数功能: 尾部弹出
+ *
+ * 输入参数: list 双重指针
+ *           data 待弹出结点的数据域指针的指针
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_lib_list_pop_tail(cmos_lib_list_T **list, void **data)
+{
+    cmos_lib_list_node_T *tail = NULL;
+    cmos_lib_list_node_T *new_tail = NULL;
+
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
+        return cmos_NULL_E;
+    }
+
+    /* 空链表 */
+    if(NULL == *list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_pop_tail can't call with null list.");
+        return cmos_PARA_E;
+    }
+
+    /* step1: 找到尾部 */ 
+    tail = list_get_tail(*list);
+
+    /* step2: 找到新尾部 */ 
+    new_tail = tail->prev;
+
+    /* step3: 操作指针 */ 
+    if(NULL == new_tail) /* tail是链表仅有的结点删除该结点链表变空 */
+    {
+        *list = NULL;
+    }
+    else
+    {
+        new_tail->next = NULL;
+        /* new_tail->prev; 不变 */
+    }
+
+    /* step4: 数据域赋值 */ 
+    *data = cmos_lib_list_node_get_data(tail);
+
+    /* step5: 释放tail */ 
+    node_free(tail);
+    tail = NULL;
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_pop_head
+ * 负责人  : 彭鹏
+ * 创建日期：20151211 
+ * 函数功能: 头部弹出
+ *
+ * 输入参数: list 双重指针
+ *           data 待弹出结点的数据域指针的指针
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data)
+{
+    cmos_lib_list_node_T *head = NULL;
+    cmos_lib_list_node_T *new_head = NULL;
+
+    /* step1: 找到头部 */ 
+    head = list_get_head(*list);
+
+    /* step2: 找到新头部 */ 
+    new_head = head->next;
+
+    /* step3: 操作指针 */ 
+    if(NULL == new_head) /* head是链表仅有的结点删除该结点链表变空 */
+    {
+        *list = NULL;
+    }
+    else
+    {
+        new_head->prev= NULL;
+        /* new_head->next; 不变 */
+        /* 链表新指针 */
+        *list = new_head;
+    }
+
+    /* step4: 数据域赋值 */ 
+    *data = cmos_lib_list_node_get_data(head);
+
+    /* step5: 释放head */ 
+    node_free(head);
+    head = NULL;
+
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_walk
+ * 负责人  : 彭鹏
+ * 创建日期：20151124 
+ * 函数功能: 遍历list
+ *
+ * 输入参数: list 链表头
+ *           func 遍历函数
+ *           para 遍历函数参数
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para)
+{
+    cmos_lib_list_node_T *go_node = NULL;
+    if((NULL == list)
+    || (NULL == func))
+    {
+        CMOS_TRACE_STR("cmos_lib_list_walk with null pointer.");
+        return;
+    }
+
+    go_node = list_get_head(list);
+    while(NULL != go_node)
+    { 
+        func(go_node, para); /* 处理本节点 */
+
+        go_node = go_node->next; /* 下一结点 */
+    }
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : node_malloc
  * 负责人  : 彭鹏
  * 创建日期：20151119 
  * 函数功能: 新建list结点
@@ -141,14 +336,14 @@ cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data)
+static cmos_lib_list_node_T *node_malloc(const void *data)
 {
     cmos_lib_list_node_T *node = NULL;
 
     node = cmos_malloc(sizeof(cmos_lib_list_node_T));
     if(NULL == node)
     {
-        CMOS_ERR_STR("cmos_lib_list_node_malloc malloc failed.");
+        CMOS_ERR_STR("node_malloc malloc failed.");
         return NULL;
     }
 
@@ -161,7 +356,7 @@ cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_lib_list_node_free
+ * 函数名  : node_free
  * 负责人  : 彭鹏
  * 创建日期：20151124 
  * 函数功能: 释放list结点
@@ -174,14 +369,65 @@ cmos_lib_list_node_T *cmos_lib_list_node_malloc(const void *data)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_lib_list_node_free(cmos_lib_list_node_T *node)
+static void node_free(cmos_lib_list_node_T *node)
 {
     node->prev = NULL;
     node->next = NULL;
     /* 仅仅释放 指针域 数据域不变 */
     /* node->data = NULL; */
-
     cmos_free(node);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : list_get_head
+ * 负责人  : 彭鹏
+ * 创建日期：20151119 
+ * 函数功能: 查找list中链表头结点
+ *
+ * 输入参数: list 链表
+ * 输出参数: 无
+ *
+ * 返回值  : 链表头结点
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_lib_list_node_T *list_get_head(const cmos_lib_list_T *list)
+{
+    return (cmos_lib_list_node_T *)list;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : list_get_tail
+ * 负责人  : 彭鹏
+ * 创建日期：20151119 
+ * 函数功能: 查找list中链表尾结点
+ *
+ * 输入参数: list 链表
+ * 输出参数: 无
+ *
+ * 返回值  : 链表尾巴
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_lib_list_node_T *list_get_tail(const cmos_lib_list_T *list)
+{
+    cmos_lib_list_node_T *go_ptr = NULL;
+    if(NULL == list) /* 空表尾结点为空 */
+    {
+        return NULL;
+    } 
+    
+    go_ptr = list_get_head(list);
+    while(NULL != go_ptr->next)
+    {
+        go_ptr = go_ptr->next;
+    }
+
+    return go_ptr;
 }
 
 /*******************************************************************************
@@ -208,316 +454,5 @@ void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node)
     }
 
     return node->data;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_add
- * 负责人  : 彭鹏
- * 创建日期：20151119 
- * 函数功能: list中加入结点
- *
- * 输入参数: list 链表指针的指针
- *           node 待增加的结点指针
- *           flag 0表示尾部加 1表示头部加
- * 输出参数: 无
- *
- * 返回值  : 执行状态
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-static cmos_status_T cmos_lib_list_add(cmos_lib_list_T **list, cmos_lib_list_node_T *node, cmos_int32_T flag)
-{
-    cmos_lib_list_node_T *head = NULL;
-    cmos_lib_list_node_T *tail = NULL;
-
-    if((NULL == list)
-    || (NULL == node)
-    || (flag > 1)
-    || (flag < 0))
-    {
-        CMOS_ERR_STR("cmos_lib_list_add with err para.");
-        return cmos_PARA_E;
-    }
-
-    /* 空链表 */
-    if(NULL == *list)
-    { 
-        cmos_lib_list_init(list, node); 
-        return cmos_OK_E;
-    }
-
-    if(0 == flag) /* append */
-    { 
-        /* step1: 找链表尾 */ 
-        tail = cmos_lib_list_get_tail(*list); 
-        
-        /* step2: 链入 */
-        tail->next = node;
-        node->prev = tail;
-    }
-    else /* insert */
-    {
-        /* step1: 找链表头 */ 
-        head = cmos_lib_list_get_head(*list);
-
-        /* step2: 链入 */
-        node->next = head;
-        head->prev = node;
-
-        /* step3: 更换头结点 */
-        *list = node;
-    }
-
-    return cmos_OK_E;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_append
- * 负责人  : 彭鹏
- * 创建日期：20151124 
- * 函数功能: list中尾加入结点
- *
- * 输入参数: list 链表指针的指针
- *           node 待增加的结点指针
- * 输出参数: 无
- *
- * 返回值  : 执行状态
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_status_T cmos_lib_list_append(cmos_lib_list_T **list, cmos_lib_list_node_T *node)
-{
-    return cmos_lib_list_add(list, node, 0);
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_insert
- * 负责人  : 彭鹏
- * 创建日期：20151124 
- * 函数功能: list中头加入结点
- *
- * 输入参数: list 链表指针的指针
- *           node 待增加的结点指针
- * 输出参数: 无
- *
- * 返回值  : 执行状态
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_status_T cmos_lib_list_insert(cmos_lib_list_T **list, cmos_lib_list_node_T *node)
-{
-    return cmos_lib_list_add(list, node, 1);
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_del
- * 负责人  : 彭鹏
- * 创建日期：20151123 
- * 函数功能: list中删除结点
- *
- * 输入参数: list 链表头
- *           data 数据域指针
- * 输出参数: 无
- *
- * 返回值  : 执行状态
- * 调用关系: 无
- * 其 它   : TODO:其他地方释放
- *
- ******************************************************************************/
-cmos_status_T cmos_lib_list_del(cmos_lib_list_T **list, const cmos_lib_list_node_T *node)
-{
-    cmos_lib_list_node_T *go_ptr = NULL;
-    cmos_lib_list_node_T *prev = NULL; /* go_ptr 前驱 */
-    cmos_lib_list_node_T *next = NULL; /* go_ptr 后继 */
-
-    if((NULL == list)
-    || (NULL == *list)
-    || (NULL == node))
-    {
-        CMOS_ERR_STR("cmos_lib_list_get_tail can not with null pointer.");
-        return cmos_NULL_E;
-    } 
-    
-    go_ptr = cmos_lib_list_get_head(*list);
-    do
-    { 
-        if(go_ptr == node) /* 找到,处理go_ptr结点 */
-        {
-            prev = go_ptr->prev;
-            next = go_ptr->next; 
-            
-            /* list只有一个结点 go_ptr */
-            if((NULL == prev)
-            && (NULL == next))
-            { 
-                *list = NULL;
-                break;
-            } 
-            
-            /* go_ptr是头结点 */
-            if(NULL == prev)
-            {
-                *list = (cmos_lib_list_T *)next;
-                next->prev = NULL;
-                break;
-            } 
-            
-            /* go_ptr是尾巴 */
-            if(NULL == next)
-            {
-                prev->next = NULL;
-                break;
-            }
-
-            /* go_ptr是中间结点 */
-            prev->next = next;
-            next->prev = prev; 
-            break;
-        }
-        else /* 继续向后找 */
-        { 
-            go_ptr = go_ptr->next;
-        }
-    }while(NULL != go_ptr);
-
-    if(NULL == go_ptr)
-    { 
-        cmos_debug_log("cmos_lib_list_del not find valid node.\n");
-        return cmos_PARA_E;
-    }
-
-    /* 释放list结点避免内存泄露 data域指向对象未释放 */
-    cmos_lib_list_node_free(go_ptr);
-    
-    return cmos_OK_E;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_get_head
- * 负责人  : 彭鹏
- * 创建日期：20151119 
- * 函数功能: 查找list中链表头结点
- *
- * 输入参数: list 链表
- * 输出参数: 无
- *
- * 返回值  : 链表头结点
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_lib_list_node_T *cmos_lib_list_get_head(const cmos_lib_list_T *list)
-{
-    return (cmos_lib_list_node_T *)list;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_get_tail
- * 负责人  : 彭鹏
- * 创建日期：20151119 
- * 函数功能: 查找list中链表尾结点
- *
- * 输入参数: list 链表
- * 输出参数: 无
- *
- * 返回值  : 链表尾巴
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_lib_list_node_T *cmos_lib_list_get_tail(const cmos_lib_list_T *list)
-{
-    cmos_lib_list_node_T *go_ptr = NULL;
-    if(NULL == list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_get_tail can not with null list.");
-        return NULL;
-    } 
-    
-    go_ptr = cmos_lib_list_get_head(list);
-    while(NULL != go_ptr->next)
-    {
-        go_ptr = go_ptr->next;
-    }
-
-    return go_ptr;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_search_by_data
- * 负责人  : 彭鹏
- * 创建日期：20151120 
- * 函数功能: 查找list中数据域为data的结点
- *
- * 输入参数: list 链表
- *           data 数据域指针
- * 输出参数: 无
- *
- * 返回值  : 带查找的结点指针
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_lib_list_node_T *cmos_lib_list_search_by_data(const cmos_lib_list_T *list, const void *data)
-{
-    cmos_lib_list_node_T *go_ptr = NULL;
-
-    go_ptr = cmos_lib_list_get_head(list);
-    while(NULL != go_ptr)
-    {
-        if(data == go_ptr->data) /* 找到 */
-        {
-            return go_ptr;
-        }
-        go_ptr = go_ptr->next;
-    }
-
-    /* 未找到 */
-    return NULL;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_lib_list_walk
- * 负责人  : 彭鹏
- * 创建日期：20151124 
- * 函数功能: 遍历list
- *
- * 输入参数: list 链表头
- *           func 遍历函数
- *           para 遍历函数参数
- * 输出参数: 无
- *
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para)
-{
-    cmos_lib_list_node_T *go_node = list;
-    if((NULL == list)
-    || (NULL == func))
-    {
-        CMOS_TRACE_STR("cmos_lib_list_walk with null pointer.");
-        return;
-    }
-
-    while(NULL != go_node)
-    {
-        func(go_node, para); /* 处理本节点 */
-
-        go_node = go_node->next; /* 下一结点 */
-    }
 }
 

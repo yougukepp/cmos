@@ -6,12 +6,12 @@ CFLAGS=-c -Wall -D_X64_PC_
 all:clean test
 	@echo
 	@echo
-	@./test t
-	@echo
-	@echo
+	#@./test t
+	#@echo
+	#@echo
 	@./test l
-	@echo
-	@echo
+	#@echo
+	#@echo
 
 test:tree.c main.c path.c vfs.c
 	$(CC) $(CFLAGS) $(INC) vfs.c -o vfs.o

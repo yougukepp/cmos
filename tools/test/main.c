@@ -306,84 +306,74 @@ static cmos_status_T test_tree(void)
 static cmos_status_T test_list(void)
 { 
     cmos_status_T status = cmos_OK_E;
-    cmos_debug_log("list test start.\n");
+    cmos_debug_log("list test start.\n\n");
 
     cmos_lib_list_T *list = NULL;
 
     char *ptr1 = "1";
     char *ptr2 = "2";
     char *ptr3 = "3";
-
-    cmos_lib_list_node_T *node1 = NULL;
-    cmos_lib_list_node_T *node2 = NULL;
-    cmos_lib_list_node_T *node3 = NULL;
+    char *ptr_val = NULL;
 
     cmos_lib_list_walk_func_T list_walk_func = print_node;
 
 
 
+    cmos_debug_log("test list as queue.\n");
 
-
-    cmos_debug_log("test append:\n");
-
-    node1 = cmos_lib_list_node_malloc(ptr1);
-    cmos_lib_list_append(&list, node1);
-    cmos_debug_log("append node1:\n");
+    cmos_lib_list_init(&list);
+    cmos_debug_log("init list(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    node2 = cmos_lib_list_node_malloc(ptr2);
-    cmos_lib_list_append(&list, node2);
-    cmos_debug_log("append node2:\n");
+    cmos_lib_list_push_tail(&list, ptr1);
+    cmos_debug_log("push 1 to tail(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    node3 = cmos_lib_list_node_malloc(ptr3);
-    cmos_lib_list_append(&list, node3);
-    cmos_debug_log("append node3:\n");
+    cmos_lib_list_push_tail(&list, ptr2);
+    cmos_debug_log("push 2 to tail(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_debug_log("test append end.\n");
-
-
-
-
-
-    cmos_debug_log("test del:\n");
-
-    cmos_lib_list_del(&list, node1);
-    cmos_debug_log("del node1:\n");
+    cmos_lib_list_push_tail(&list, ptr3);
+    cmos_debug_log("push 3 to tail(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_del(&list, node3);
-    cmos_debug_log("del node3:\n");
+    cmos_lib_list_pop_head(&list, (void **)(&ptr_val));
+    cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_del(&list, node2);
-    cmos_debug_log("del node2:\n");
+    cmos_lib_list_pop_head(&list, (void **)(&ptr_val));
+    cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_debug_log("test del end\n");
-
-
-
-
-    cmos_debug_log("test insert:\n");
-
-    node3 = cmos_lib_list_node_malloc(ptr3);
-    cmos_lib_list_insert(&list, node3);
-    cmos_debug_log("insert node3:\n");
+    cmos_lib_list_pop_head(&list, (void **)(&ptr_val));
+    cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    node2 = cmos_lib_list_node_malloc(ptr2);
-    cmos_lib_list_insert(&list, node2);
-    cmos_debug_log("insert node2:\n");
+    cmos_debug_log("test list as queue end.\n\n");
+
+
+
+
+    cmos_debug_log("test list as stack.\n");
+    cmos_lib_list_push_tail(&list, ptr1);
+    cmos_lib_list_push_tail(&list, ptr2);
+    cmos_lib_list_push_tail(&list, ptr3);
+    cmos_debug_log("list content with stack mode(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    node1 = cmos_lib_list_node_malloc(ptr1);
-    cmos_lib_list_insert(&list, node1);
-    cmos_debug_log("insert node1:\n");
+    cmos_lib_list_pop_tail(&list, (void **)(&ptr_val));
+    cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_debug_log("test insert end.\n");
+    cmos_lib_list_pop_tail(&list, (void **)(&ptr_val));
+    cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+
+    cmos_lib_list_pop_tail(&list, (void **)(&ptr_val));
+    cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("test list as stack end.\n\n");
+
 
 
 
@@ -471,10 +461,17 @@ static cmos_status_T test_ring_buffer(void)
 *
 ******************************************************************************/
 static void print_node(cmos_lib_list_node_T *node, void *para)
-{
-    char *str = cmos_lib_list_node_get_data(node);
+{ 
+    char *str = NULL;
 
-    cmos_debug_log("%s", str);
+    str = cmos_lib_list_node_get_data(node);
+    if(NULL == str)
+    {
+        cmos_debug_log("get null pointer.\r\n");
+        return;
+    }
+
+    cmos_debug_log("%c", *str);
     if(NULL != node->next)
     {
         cmos_debug_log("->", str);
