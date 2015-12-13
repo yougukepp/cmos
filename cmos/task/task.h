@@ -35,4 +35,3 @@ void cmos_task_tick_callback(void);
 
 #endif // #ifndef _CMOS_TASK_TASK_H_
 
-

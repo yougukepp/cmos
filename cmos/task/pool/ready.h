@@ -12,13 +12,27 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_TASK_STATE_READY_H_
-#define _CMOS_TASK_STATE_READY_H_
+#ifndef _CMOS_TASK_POOL_READY_H_
+#define _CMOS_TASK_POOL_READY_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "tcb.h"
 
 /************************************ 宏定义 ***********************************/
+/*******************************************************************************
+ *
+ * 7个 有效 优先级
+ * cmos_priority_idle           0
+ * cmos_priority_low            1
+ * cmos_priority_below_normal   2
+ * cmos_priority_normal         3
+ * cmos_priority_above_normal   4
+ * cmos_priority_high           5
+ * cmos_priority_realtime       6
+ *
+ ******************************************************************************/
+#define CMOS_PRIORITY_NUMS                      (7)
 
 /*********************************** 类型定义 **********************************/
 
@@ -28,6 +42,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb); /* 加入任务 */
+cmos_task_tcb_T *cmos_task_pool_ready_get_tcb(void); /* 获取最高优先级的就绪任务 */
 
-#endif // #ifndef _CMOS_TASK_STATE_READY_H_
+#endif // #ifndef _CMOS_TASK_POOL_READY_H_
 

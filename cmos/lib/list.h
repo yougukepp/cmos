@@ -49,6 +49,10 @@ cmos_status_T cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data);
 cmos_status_T cmos_lib_list_pop_tail(cmos_lib_list_T **list, void **data);      /* 2 尾部弹出 */
 cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data);      /* 3 头部弹出 */
 
+/* 单纯获取 不增删结点 */
+void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list);                 /* 获取头结点数据域指针 */
+//cmos_lib_list_node_T *cmos_lib_list_get_tail_data(const cmos_lib_list_T *list); /* 获取尾结点数据 */
+
 /* 遍历 */
 void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para);
 

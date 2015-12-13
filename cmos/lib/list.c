@@ -256,6 +256,19 @@ cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data)
     cmos_lib_list_node_T *head = NULL;
     cmos_lib_list_node_T *new_head = NULL;
 
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
+        return cmos_NULL_E;
+    }
+
+    /* 空链表 */
+    if(NULL == *list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_pop_tail can't call with null list.");
+        return cmos_PARA_E;
+    }
+
     /* step1: 找到头部 */ 
     head = list_get_head(*list);
 
@@ -287,6 +300,35 @@ cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_lib_list_get_head_data
+ * 负责人  : 彭鹏
+ * 创建日期：20151213 
+ * 函数功能: 获取头结点数据
+ *
+ * 输入参数: list 链表
+ * 输出参数: 无
+ *
+ * 返回值  : 头结点数据域指针
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list)
+{
+    cmos_lib_list_node_T *go_node = NULL;
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_get_head_data with null list.");
+        return NULL;
+    }
+
+    go_node = list_get_head(list);
+
+    return cmos_lib_list_node_get_data(go_node);
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_lib_list_walk
  * 负责人  : 彭鹏
  * 创建日期：20151124 
@@ -305,10 +347,11 @@ cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data)
 void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para)
 {
     cmos_lib_list_node_T *go_node = NULL;
-    if((NULL == list)
-    || (NULL == func))
+    /* NULL == list 该函数啥也不干 */
+
+    if(NULL == func)
     {
-        CMOS_TRACE_STR("cmos_lib_list_walk with null pointer.");
+        CMOS_ERR_STR("cmos_lib_list_walk with null pointer.");
         return;
     }
 

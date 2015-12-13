@@ -20,6 +20,7 @@
 #include "tcb.h"
 #include "switch.h"
 #include "task.h"
+#include "ready.h"
 #include "mem.h"
 #include "console.h"
 
@@ -30,6 +31,7 @@
 static cmos_task_tcb_psp_T s_user_stack_base = CMOS_TASK_STACK_BASE;
 
 /********************************** 函数声明区 *********************************/
+static cmos_status_T cmos_task_add_to_ready(const cmos_task_tcb_T *tcb);
 
 /********************************** 变量实现区 *********************************/
 
@@ -93,7 +95,7 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     s_user_stack_base -= stack_size;
 
     /* step4: 通知调度模块有新线程 */ 
-    status = cmos_task_state_to_ready(tcb);
+    status = cmos_task_add_to_ready(tcb);
     if(cmos_OK_E != status)
     {
         goto err;
@@ -105,5 +107,69 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
 err: 
     *task_id = NULL;
     return status;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_add
+ * 负责人  : 彭鹏
+ * 创建日期：20151119 
+ * 函数功能: 将任务加入调度器
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static cmos_status_T cmos_task_add_to_ready(const cmos_task_tcb_T *tcb)
+{
+    return cmos_task_pool_ready_add(tcb);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_delay
+ * 负责人  : 彭鹏
+ * 创建日期：20151213 
+ * 函数功能: 延迟当前任务
+ *
+ * 输入参数: 延迟时间(CMOS_TICK_TIMES)数
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
+ *
+ ******************************************************************************/
+cmos_status_T cmos_task_delay(cmos_int32_T millisec)
+{
+    return cmos_OK_E;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_tick_callback
+ * 负责人  : 彭鹏
+ * 创建日期：20151213 
+ * 函数功能: 时钟心跳回调此函数
+ *           此函数中需要更新系统中所有任务时间相关的字段
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_task_tick_callback(void)
+{
+    return;
 }
 

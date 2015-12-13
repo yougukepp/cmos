@@ -83,6 +83,7 @@ int main(void)
     {
         .entry = task_float,
         .argv = &argv2,
+        //.priority = cmos_priority_low,
         .priority = cmos_priority_below_normal,
         .stack_size = 2048,
         .tick_total = 3,
