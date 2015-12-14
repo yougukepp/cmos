@@ -21,6 +21,9 @@
 #include "switch.h"
 #include "task.h"
 #include "ready.h"
+#include "running.h"
+#include "blocked.h"
+#include "cortex.h"
 #include "mem.h"
 #include "console.h"
 
@@ -148,6 +151,23 @@ inline static cmos_status_T cmos_task_add_to_ready(const cmos_task_tcb_T *tcb)
  ******************************************************************************/
 cmos_status_T cmos_task_delay(cmos_int32_T millisec)
 {
+    cmos_status_T status = cmos_ERR_E;
+    cmos_task_tcb_T *tcb = NULL;
+
+    /* step1: 弹出就绪表 */
+    tcb = cmos_task_pool_ready_pop_tcb();
+
+    /* step2: 加入阻塞表 */ 
+    status = cmos_task_pool_blocked_add(tcb, cmos_blocked_delay_E);
+    if(cmos_OK_E != status)
+    {
+        CMOS_ERR_STR("cmos_task_pool_blocked_add failled.");
+        return status;
+    }
+
+    /* step3: 调用任务切换 */ 
+    cmos_hal_cortex_cortex_set_pendsv();
+
     return cmos_OK_E;
 }
 

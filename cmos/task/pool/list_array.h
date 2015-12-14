@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * 文件名  ： blocked.h
+ * 文件名  ： list_array.h
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20151211 
+ * 创建日期： 20151214 
  * 版本号  ： v1.0
- * 文件描述： 阻塞任务接口
+ * 文件描述： tcb链表数组通用接口
  * 版权说明： Copyright (c) 2000-2020 GNU
  * 其    他： 无
  * 修改日志： 无
@@ -12,35 +12,25 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_TASK_POOL_BLOCKED_H_
-#define _CMOS_TASK_POOL_BLOCKED_H_
+#ifndef _CMOS_TASK_POOL_LIST_ARRAY_H_
+#define _CMOS_TASK_POOL_LIST_ARRAY_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "tcb.h"
+#include "list.h"
 
 /************************************ 宏定义 ***********************************/
-/*******************************************************************************
- *
- * 阻塞类型
- * cmos_blocked_delay           0
- * cmos_blocked_uart_write      1
- *
- ******************************************************************************/
-#define CMOS_TASK_POOL_BLOCKED_TYPE_MAX (2)
 
 /*********************************** 类型定义 **********************************/
-typedef enum{
-    cmos_blocked_delay_E = 0x00,
-    cmos_blocked_uart_write_E = 0x01
-}cmos_blocked_type_T;
+
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/
 
-/*********************************** 接口函数 **********************************/
-cmos_status_T cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type); /* 加入阻塞任务 */
+/*********************************** 接口函数 **********************************/ 
+void cmos_task_pool_list_array_set(cmos_lib_list_T *tcb_list_array[], cmos_int32_T index, cmos_lib_list_T *tcb_list);
+cmos_lib_list_T *cmos_task_pool_list_array_get(cmos_lib_list_T *tcb_list_array[], cmos_int32_T index);
 
-#endif // #ifndef _CMOS_TASK_POOL_BLOCKED_H_
+#endif // #ifndef _CMOS_TASK_POOL_LIST_ARRAY_H_
 

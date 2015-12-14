@@ -46,17 +46,17 @@ cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list);           /* 链表长
 /* 1+2 = stack
  * 1+3 = queue */
 cmos_status_T cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data);/* 1 尾部加入 */
-cmos_status_T cmos_lib_list_pop_tail(cmos_lib_list_T **list, void **data);      /* 2 尾部弹出 */
-cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data);      /* 3 头部弹出 */
+void *cmos_lib_list_pop_tail(cmos_lib_list_T **list);                           /* 2 尾部弹出 */
+void *cmos_lib_list_pop_head(cmos_lib_list_T **list);                           /* 3 头部弹出 */
 
-/* 单纯获取 不增删结点 */
+/* 单纯获取 获取头中数据域指针 不增删结点 */
 void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list);                 /* 获取头结点数据域指针 */
 //cmos_lib_list_node_T *cmos_lib_list_get_tail_data(const cmos_lib_list_T *list); /* 获取尾结点数据 */
 
 /* 遍历 */
 void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para);
 
-/* 获取结点中数据域 */
+/* 获取结点中数据域指针 */
 void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node);
 
 #endif /* #ifndef _CMOS_LIB_LIST_H_ */

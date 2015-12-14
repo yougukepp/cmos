@@ -337,15 +337,15 @@ static cmos_status_T test_list(void)
     cmos_debug_log("push 3 to tail(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_pop_head(&list, (void **)(&ptr_val));
+    ptr_val = cmos_lib_list_pop_head(&list);
     cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_pop_head(&list, (void **)(&ptr_val));
+    ptr_val = cmos_lib_list_pop_head(&list);
     cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_pop_head(&list, (void **)(&ptr_val));
+    ptr_val = cmos_lib_list_pop_head(&list);
     cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
@@ -361,20 +361,18 @@ static cmos_status_T test_list(void)
     cmos_debug_log("list content with stack mode(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_pop_tail(&list, (void **)(&ptr_val));
+    ptr_val = cmos_lib_list_pop_tail(&list);
     cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_pop_tail(&list, (void **)(&ptr_val));
+    ptr_val = cmos_lib_list_pop_tail(&list);
     cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
 
-    cmos_lib_list_pop_tail(&list, (void **)(&ptr_val));
+    ptr_val = cmos_lib_list_pop_tail(&list);
     cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
     cmos_debug_log("test list as stack end.\n\n");
-
-
 
 
     cmos_debug_log("list test done.\n");

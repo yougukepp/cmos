@@ -182,30 +182,30 @@ cmos_status_T cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data)
  * 函数功能: 尾部弹出
  *
  * 输入参数: list 双重指针
- *           data 待弹出结点的数据域指针的指针
  * 输出参数: 无
  *
- * 返回值  : 执行状态
+ * 返回值  : 弹出结点的数据域指针的指针
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_pop_tail(cmos_lib_list_T **list, void **data)
+void *cmos_lib_list_pop_tail(cmos_lib_list_T **list)
 {
+    void *data = NULL;
     cmos_lib_list_node_T *tail = NULL;
     cmos_lib_list_node_T *new_tail = NULL;
 
     if(NULL == list)
     {
         CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
-        return cmos_NULL_E;
+        return NULL;
     }
 
     /* 空链表 */
     if(NULL == *list)
     {
         CMOS_ERR_STR("cmos_lib_list_pop_tail can't call with null list.");
-        return cmos_PARA_E;
+        return NULL;
     }
 
     /* step1: 找到尾部 */ 
@@ -226,13 +226,13 @@ cmos_status_T cmos_lib_list_pop_tail(cmos_lib_list_T **list, void **data)
     }
 
     /* step4: 数据域赋值 */ 
-    *data = cmos_lib_list_node_get_data(tail);
+    data = cmos_lib_list_node_get_data(tail);
 
     /* step5: 释放tail */ 
     node_free(tail);
     tail = NULL;
 
-    return cmos_OK_E;
+    return data;
 }
 
 /*******************************************************************************
@@ -246,27 +246,28 @@ cmos_status_T cmos_lib_list_pop_tail(cmos_lib_list_T **list, void **data)
  *           data 待弹出结点的数据域指针的指针
  * 输出参数: 无
  *
- * 返回值  : 执行状态
+ * 返回值  : 弹出结点的数据域指针的指针
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data)
+void *cmos_lib_list_pop_head(cmos_lib_list_T **list)
 {
+    void *data = NULL;
     cmos_lib_list_node_T *head = NULL;
     cmos_lib_list_node_T *new_head = NULL;
 
     if(NULL == list)
     {
         CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
-        return cmos_NULL_E;
+        return NULL;
     }
 
     /* 空链表 */
     if(NULL == *list)
     {
         CMOS_ERR_STR("cmos_lib_list_pop_tail can't call with null list.");
-        return cmos_PARA_E;
+        return NULL;
     }
 
     /* step1: 找到头部 */ 
@@ -289,13 +290,13 @@ cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data)
     }
 
     /* step4: 数据域赋值 */ 
-    *data = cmos_lib_list_node_get_data(head);
+    data = cmos_lib_list_node_get_data(head);
 
     /* step5: 释放head */ 
     node_free(head);
     head = NULL;
 
-    return cmos_OK_E;
+    return data;
 }
 
 /*******************************************************************************
@@ -313,7 +314,7 @@ cmos_status_T cmos_lib_list_pop_head(cmos_lib_list_T **list, void **data)
  * 其 它   : 无
  *
  ******************************************************************************/
-void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list)
+inline void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list)
 {
     cmos_lib_list_node_T *go_node = NULL;
     if(NULL == list)
@@ -412,7 +413,7 @@ static cmos_lib_list_node_T *node_malloc(const void *data)
  * 其 它   : 无
  *
  ******************************************************************************/
-static void node_free(cmos_lib_list_node_T *node)
+inline static void node_free(cmos_lib_list_node_T *node)
 {
     node->prev = NULL;
     node->next = NULL;
@@ -436,7 +437,7 @@ static void node_free(cmos_lib_list_node_T *node)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_lib_list_node_T *list_get_head(const cmos_lib_list_T *list)
+inline static cmos_lib_list_node_T *list_get_head(const cmos_lib_list_T *list)
 {
     return (cmos_lib_list_node_T *)list;
 }
@@ -488,7 +489,7 @@ static cmos_lib_list_node_T *list_get_tail(const cmos_lib_list_T *list)
  * 其 它   : 无
  *
  ******************************************************************************/
-void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node)
+inline void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node)
 {
     if(NULL == node)
     {

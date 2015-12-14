@@ -23,6 +23,7 @@
 #include "cmos_config.h"
 #include "ready.h"
 #include "list.h"
+#include "list_array.h"
 #include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -78,14 +79,14 @@ static cmos_int32_T s_priority_index = 0x00;
  * cmos_priority_realtime       6
  *
  ******************************************************************************/
-static cmos_lib_list_T *s_tcb_table_by_priority[CMOS_PRIORITY_NUMS] = {NULL};
+static cmos_lib_list_T *s_ready_tcb[CMOS_TASK_POOL_READY_PRIORITY_MAX] = {NULL};
 
 /*******************************************************************************
  *
  * 每个位置表示该s_priority_index对应的系统最高优先级
  * tools/generate_bitmap.py生成
  *
- * 每行的内容依次为: 最高优先级(即s_tcb_table_by_priority索引) s_priority_index值 cmos_priority_T值
+ * 每行的内容依次为: 最高优先级(即s_ready_tcb索引) s_priority_index值 cmos_priority_T值
  *
  ******************************************************************************/
 const static cmos_uint8_T s_priority_bitmap[] = 
@@ -259,6 +260,11 @@ cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
 
     /* tcb_list为空会自动将tcb作为头结点 */
     status = cmos_lib_list_push_tail(&tcb_list, tcb); /* 加入到该优先级链表 */
+    if(cmos_OK_E != status)
+    {
+        CMOS_ERR_STR("cmos_lib_list_push_tail failed.");
+        return status;
+    }
 
     /* 处理边界条件: tcb是该优先级首个任务 */
     if(NULL == get_tcb_table_by_priority(priority))
@@ -268,7 +274,7 @@ cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
         set_tcb_table_by_priority(priority, tcb_list);
     } 
 
-    return status;
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
@@ -303,6 +309,36 @@ cmos_task_tcb_T *cmos_task_pool_ready_get_tcb(void)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_task_pool_ready_pop_tcb
+ * 负责人  : 彭鹏
+ * 创建日期：20151214 
+ * 函数功能: 弹出最高优先级就绪任务tcb
+ *
+ * 输入参数: 无
+ * 输出参数: 最高优先级任务tcb
+ *
+ * 返回值  : 最高优先级psp
+ * 调用关系: 无
+ * 其 它   : O(1)算法
+ *
+ ******************************************************************************/
+cmos_task_tcb_T *cmos_task_pool_ready_pop_tcb(void)
+{ 
+    cmos_lib_list_T *tcb_list = NULL;
+    cmos_task_tcb_T *tcb = NULL;
+
+    tcb_list = get_tcb_table_by_priority(s_priority_index);
+    tcb = cmos_lib_list_pop_head(&tcb_list);
+    if(cmos_OK_E != tcb)
+    {
+        CMOS_ERR_STR("cmos_task_pool_ready_get_tcb get a null tcb pointer.");
+    } 
+    
+    return tcb;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : get_highest_priority
  * 负责人  : 彭鹏
  * 创建日期：20151119 
@@ -322,7 +358,7 @@ inline static void set_tcb_table_by_priority(cmos_uint8_T priority, cmos_lib_lis
     cmos_int32_T index = 0;
 
     index = get_bitmap_index(priority);
-    s_tcb_table_by_priority[index] = tcb_list;
+    cmos_task_pool_list_array_set(s_ready_tcb, index, tcb_list);
 }
 
 /*******************************************************************************
@@ -346,7 +382,7 @@ inline static cmos_lib_list_T *get_tcb_table_by_priority(cmos_int32_T priority)
     cmos_int32_T index = 0;
 
     index = get_bitmap_index(priority);
-    return s_tcb_table_by_priority[index];
+    return cmos_task_pool_list_array_get(s_ready_tcb, index);
 }
 
 /*******************************************************************************
@@ -462,14 +498,14 @@ static cmos_int32_T s_priority_index = 0x00;
  * cmos_priority_realtime       6
  *
  ******************************************************************************/
-static cmos_task_tcb_list_T *s_tcb_table_by_priority[CMOS_PRIORITY_NUMS] = {NULL};
+static cmos_task_tcb_list_T *s_ready_tcb[CMOS_PRIORITY_NUMS] = {NULL};
 
 /*******************************************************************************
  *
  * 每个位置表示该s_priority_index对应的系统最高优先级
  * tools/generate_bitmap.py生成
  *
- * 每行的内容依次为: 最高优先级(即s_tcb_table_by_priority索引) s_priority_index值 cmos_priority_T值
+ * 每行的内容依次为: 最高优先级(即s_ready_tcb索引) s_priority_index值 cmos_priority_T值
  *
  ******************************************************************************/
 const static cmos_uint8_T s_priority_bitmap[] = {
@@ -673,7 +709,7 @@ inline static cmos_task_tcb_list_T *cmos_task_switch_get_tcb_list_by_priority(cm
     cmos_int32_T highest_priority = 0;
 
     highest_priority = cmos_task_switch_get_highest_priority(priority);
-    return s_tcb_table_by_priority[highest_priority];
+    return s_ready_tcb[highest_priority];
 }
 
 /*******************************************************************************
@@ -706,7 +742,7 @@ static void cmos_task_switch_set_tcb_list_by_priority(cmos_int32_T priority, cmo
         return;
     }
 
-    s_tcb_table_by_priority[index] = list;
+    s_ready_tcb[index] = list;
     return;
 }
 
@@ -961,7 +997,7 @@ cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
 
     /* step3: 从就绪表删除当前任务 */
     index = cmos_task_switch_get_highest_priority(s_priority_index);
-    status = cmos_task_tcb_list_del(&s_tcb_table_by_priority[index], s_running_tcb);
+    status = cmos_task_tcb_list_del(&s_ready_tcb[index], s_running_tcb);
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("cmos_task_tcb_list_del failed.");
@@ -991,7 +1027,7 @@ cmos_status_T cmos_task_switch_delay(cmos_int32_T millisec)
  * 负责人  : 彭鹏
  * 创建日期：20151123 
  * 函数功能: 更新tcb的时间
- *           时间减为零的重新加入s_tcb_table_by_priority
+ *           时间减为零的重新加入s_ready_tcb
  *
  * 输入参数: 无
  * 输出参数: 无
@@ -1021,7 +1057,7 @@ cmos_status_T cmos_task_switch_update_tcb_time(void)
         {
             cmos_task_tcb_reset_tick(s_running_tcb);
             highest_priority = cmos_task_switch_get_highest_priority(s_priority_index);
-            cmos_task_tcb_list_head_move_to_tail(&s_tcb_table_by_priority[highest_priority]);
+            cmos_task_tcb_list_head_move_to_tail(&s_ready_tcb[highest_priority]);
         }
     }
 #endif
@@ -1043,7 +1079,7 @@ cmos_status_T cmos_task_switch_update_tcb_time(void)
  * 函数功能: 逐个处理s_delay_tcb_list中的tcb
  *
  * 输入参数: tcb s_delay_tcb_list中的tcb
- *           para s_tcb_table_by_priority
+ *           para s_ready_tcb
  * 输出参数: 无
  *
  * 返回值  : 执行状态
@@ -1064,7 +1100,7 @@ static void cmos_task_switch_update_delay_tcb(cmos_task_tcb_T *tcb, void *para)
     cmos_status_T status = cmos_ERR_E;
     cmos_task_tcb_dec_delay_ms(tcb); 
 
-    /* 定时到 从s_delay_tcb_list中删除 加入s_tcb_table_by_priority */
+    /* 定时到 从s_delay_tcb_list中删除 加入s_ready_tcb */
     if(cmos_task_tcb_zero_delay_ms(tcb))
     { 
         status = cmos_task_tcb_list_del(&s_delay_tcb_list, tcb);

@@ -32,7 +32,7 @@
  * cmos_priority_realtime       6
  *
  ******************************************************************************/
-#define CMOS_PRIORITY_NUMS                      (7)
+#define CMOS_TASK_POOL_READY_PRIORITY_MAX   (7)
 
 /*********************************** 类型定义 **********************************/
 
@@ -44,6 +44,7 @@
 /*********************************** 接口函数 **********************************/
 cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb); /* 加入任务 */
 cmos_task_tcb_T *cmos_task_pool_ready_get_tcb(void); /* 获取最高优先级的就绪任务 */
+cmos_task_tcb_T *cmos_task_pool_ready_pop_tcb(void); /* 弹出最高优先级的就绪任务 */
 
 #endif // #ifndef _CMOS_TASK_POOL_READY_H_
 
