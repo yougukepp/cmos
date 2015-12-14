@@ -13,11 +13,11 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 测试计划
-无
+1. 延迟系统调用
+2. 同优先级时间片轮转
 
 ### 近期计划
-1. list实现queue、stack(暂时只搭建框架)
-2. 同优先级时间片轮转(太混乱 先实现2)
+1. uart/i2c中断I/O
 3. 实现app/flyer/doc/README.md计划
 
 ### 优化计划
@@ -25,7 +25,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 2. 由于串口打印使用系统调用,故svc调用栈内的代码无法使用串口打印?
 3. 空指针检查用宏实现(优化性能)
 4. 实现串口命令行
-5. 整理TODO/FIXME 返回值检查使用断言 提高性能
+5. 整理TODO/FIXME返回值检查改为断言(提高性能)
 6. 同步问题
    a. 关中断(已经实现)
    b. 调度器上锁(已经实现)
