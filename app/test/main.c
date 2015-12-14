@@ -66,9 +66,10 @@ int main(void)
     {
         .entry = task_int,
         .argv = &argv1,
-        .priority = cmos_priority_low,
+        //.priority = cmos_priority_below_normal,
+        .priority = cmos_priority_idle,
         .stack_size = 4096,
-        .tick_total = 10,
+        .tick_total = 2,
         .flag = cmos_task_with_default
     };
     status = cmos_create(&task_int_id, &task_int_attribute); 
@@ -84,7 +85,7 @@ int main(void)
         .entry = task_float,
         .argv = &argv2,
         //.priority = cmos_priority_low,
-        .priority = cmos_priority_below_normal,
+        .priority = cmos_priority_idle,
         .stack_size = 2048,
         .tick_total = 3,
         .flag = cmos_task_with_float

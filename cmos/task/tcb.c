@@ -574,7 +574,11 @@ inline void cmos_task_tcb_dec_delay_ms(cmos_task_tcb_T *tcb)
         return;
     }
 
-    tcb->delay_ms--;
+    /* 避免多次减值溢出 */
+    if(0 < tcb->delay_ms)
+    {
+        tcb->delay_ms--;
+    }
 }
 
 /*******************************************************************************
@@ -635,7 +639,12 @@ inline void cmos_task_tcb_dec_tick(cmos_task_tcb_T *tcb)
         return;
     }
 
-    tcb->tick--;
+
+    /* 避免多次减值溢出 */
+    if(0 < tcb->tick)
+    {
+        tcb->tick--;
+    }
 }
 
 /*******************************************************************************
@@ -659,6 +668,11 @@ inline cmos_bool_T cmos_task_tcb_zero_tick(cmos_task_tcb_T *tcb)
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_tcb_zero_tick whit null tcb pointer.");
+        return FALSE;
+    }
+
+    if(0 == tcb->tick_total) /* 独占该优先级 */
+    {
         return FALSE;
     }
 

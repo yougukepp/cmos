@@ -337,12 +337,13 @@ cmos_task_tcb_T *cmos_task_pool_ready_pop_tcb(void)
         CMOS_ERR_STR("cmos_task_pool_ready_get_tcb get a null tcb pointer.");
     } 
 
-    /* 弹出的是该优先级最后一个任务 回写 s_ready_tcb */
+    /* 回写 s_ready_tcb */
+    index = get_bitmap_index(s_priority_index); 
+    cmos_task_pool_list_array_set(s_ready_tcb, index, tcb_list);
+
+    /* 弹出的是该优先级最后一个任务 处理优先级索引 */
     if(NULL == tcb_list)
     {
-        index = get_bitmap_index(s_priority_index); 
-        cmos_task_pool_list_array_set(s_ready_tcb, index, NULL);
-
         /* 将最高优先级置零 */
         highest_priority = (0x1 << index);
         s_priority_index &= ~highest_priority;
