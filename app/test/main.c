@@ -152,13 +152,16 @@ static void task_int(void *argv)
 {
     cmos_int32_T val = 0;
     cmos_int32_T val2 = 2;
+    static cmos_int32_T times = 0; 
+
     val = *((cmos_int32_T *)argv);
 
     while(TRUE)
     {
         val /=  val2;
-        cmos_printf("task_int: %d\r\n", val);
+        cmos_printf("task_int  [%d]: %d\r\n", times, val);
         cmos_delay(10); /* 延迟10ms */
+        times++;
     }
 }
 #endif
@@ -168,14 +171,16 @@ static void task_float(void *argv)
 {
     float val = 0; 
     float val2 = 1.1f; 
-
+    static cmos_int32_T times = 0; 
+	
     val = *((float *)argv);
     
     while(TRUE)
     {
         val /= val2;
-        cmos_printf("task_float: %4.2f \r\n", val);
+        cmos_printf("task_float[%d]: %4.2f \r\n", times, val);
         cmos_delay(5); /* 延迟5ms */
+        times++;
     }
 }
 #endif

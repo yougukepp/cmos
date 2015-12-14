@@ -302,6 +302,7 @@ cmos_task_tcb_T *cmos_task_pool_ready_get_tcb(void)
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_pool_ready_get_tcb get a null tcb pointer.");
+        return NULL;
     } 
     
     return tcb;
@@ -326,13 +327,26 @@ cmos_task_tcb_T *cmos_task_pool_ready_pop_tcb(void)
 { 
     cmos_lib_list_T *tcb_list = NULL;
     cmos_task_tcb_T *tcb = NULL;
+    cmos_uint8_T index = 0;
+    cmos_uint8_T highest_priority = 0;
 
     tcb_list = get_tcb_table_by_priority(s_priority_index);
     tcb = cmos_lib_list_pop_head(&tcb_list);
-    if(cmos_OK_E != tcb)
+    if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_pool_ready_get_tcb get a null tcb pointer.");
     } 
+
+    /* 弹出的是该优先级最后一个任务 回写 s_ready_tcb */
+    if(NULL == tcb_list)
+    {
+        index = get_bitmap_index(s_priority_index); 
+        cmos_task_pool_list_array_set(s_ready_tcb, index, NULL);
+
+        /* 将最高优先级置零 */
+        highest_priority = (0x1 << index);
+        s_priority_index &= ~highest_priority;
+    }
     
     return tcb;
 }
