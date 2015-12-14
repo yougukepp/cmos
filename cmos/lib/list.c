@@ -415,18 +415,14 @@ cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, void *data)
     go_node = list_get_head(*list);
     while(NULL != go_node)
     { 
-        printf("pp1\r\n");
         node_data = cmos_lib_list_node_get_data(go_node);
-        printf("pp2\r\n");
         if(node_data == data) /* 找到 */
         {
             prev = go_node->prev;
             next = go_node->next;
 
-            printf("pp3, go_node:%p, prev:%p, next:%p\r\n", go_node, prev, next);
             if((NULL == prev) && (NULL == next)) /* list仅有go_node结点 */
             { 
-                printf("pp4\r\n");
                 *list = NULL; /* 链表置空 */
             }
             else if(NULL == next) /* 尾结点 */
@@ -436,6 +432,7 @@ cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, void *data)
             else if(NULL == prev) /* 头结点 */
             {
                 *list = next; /* 头结点变为下一结点 */
+                next->prev = NULL;
             }
             else /* 中间结点 */
             { 
@@ -448,7 +445,6 @@ cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, void *data)
             node_free(go_node);
             go_node = NULL; 
             
-            printf("pp5\r\n");
             return cmos_OK_E;
         }
 

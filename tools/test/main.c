@@ -402,14 +402,11 @@ static cmos_status_T test_list(void)
     cmos_lib_list_walk(list, list_walk_func, NULL);
     cmos_debug_log("\n");
 
-    cmos_debug_log("pppppppppppppppppppppppppppppppppppppppppppppppppppppppppp1\n");
     cmos_lib_list_del_by_data(&list, ptr2);
-    cmos_debug_log("pppppppppppppppppppppppppppppppppppppppppppppppppppppppppp2\n");
     cmos_debug_log("list del only node %s(length:%d):\n", ptr2, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
     cmos_debug_log("\n");
 
-#if 0
     cmos_lib_list_push_tail(&list, ptr1);
     cmos_lib_list_push_tail(&list, ptr2);
     cmos_lib_list_push_tail(&list, ptr3);
@@ -421,7 +418,6 @@ static cmos_status_T test_list(void)
     cmos_debug_log("list del normal node %s(length:%d):\n", ptr2, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
     cmos_debug_log("\n");
-#endif
 
     cmos_debug_log("test list as pool end.\n\n");
 
