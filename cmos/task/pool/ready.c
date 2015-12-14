@@ -319,7 +319,7 @@ cmos_task_tcb_T *cmos_task_pool_ready_get_tcb(void)
  *
  * 返回值  : 最高优先级psp
  * 调用关系: 无
- * 其 它   : O(1)算法
+ * 其 它   : 无
  *
  ******************************************************************************/
 cmos_task_tcb_T *cmos_task_pool_ready_pop_tcb(void)
@@ -335,6 +335,52 @@ cmos_task_tcb_T *cmos_task_pool_ready_pop_tcb(void)
     } 
     
     return tcb;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_pool_ready_update_tick
+ * 负责人  : 彭鹏
+ * 创建日期：20151214 
+ * 函数功能: tick定时到 更新内部数据结构
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : 最高优先级psp
+ * 调用关系: 无
+ * 其 它   : running模块已经更新了当前(最高优先级就绪任务)任务的tick值
+ *           故此处不再自减
+ *
+ ******************************************************************************/
+void cmos_task_pool_ready_update_tick(void)
+{ 
+    cmos_status_T status = cmos_ERR_E;
+    cmos_task_tcb_T *tcb = NULL;
+    
+    tcb = cmos_task_pool_ready_get_tcb();
+    if(cmos_task_tcb_zero_tick(tcb)) /* 时间片运行完 */
+    {
+        /* 重置时间片 */
+        cmos_task_tcb_reset_tick(tcb);
+
+        /* 将当前任务移动到该优先级链表的末尾 */
+        tcb = cmos_task_pool_ready_pop_tcb();
+        if(NULL == tcb)
+        {
+            CMOS_ERR_STR("cmos_task_pool_ready_pop_tcb get a null pointer.");
+            return;
+        }
+        status = cmos_task_pool_ready_add(tcb);
+        if(cmos_OK_E != status)
+        {
+            CMOS_ERR_STR("cmos_task_pool_ready_add err.");
+            return;
+        }
+    }
+
+    /* 其他情况不处理 */
+    return;
 }
 
 /*******************************************************************************

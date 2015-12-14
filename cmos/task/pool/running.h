@@ -30,7 +30,10 @@
 
 /*********************************** 接口函数 **********************************/ 
 void cmos_task_pool_running_set_tcb(cmos_task_tcb_T *tcb); 
+cmos_task_tcb_T *cmos_task_pool_running_get_tcb(void); 
+void cmos_task_pool_running_set_delay(cmos_int32_T millisec);
 void cmos_task_pool_running_set_psp(cmos_task_tcb_psp_T cur_psp);
+void cmos_task_pool_running_update_tick(void);
 
 #endif // #ifndef _CMOS_TASK_POOL_RUNNING_H_
 

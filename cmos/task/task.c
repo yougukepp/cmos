@@ -156,6 +156,11 @@ cmos_status_T cmos_task_delay(cmos_int32_T millisec)
 
     /* step1: 弹出就绪表 */
     tcb = cmos_task_pool_ready_pop_tcb();
+    if(NULL == tcb)
+    {
+        CMOS_ERR_STR("cmos_task_delay get a null tcb!");
+        return cmos_NULL_E;
+    }
 
     /* step2: 加入阻塞表 */ 
     status = cmos_task_pool_blocked_add(tcb, cmos_blocked_delay_E);
@@ -164,6 +169,9 @@ cmos_status_T cmos_task_delay(cmos_int32_T millisec)
         CMOS_ERR_STR("cmos_task_pool_blocked_add failled.");
         return status;
     }
+
+    /* step2: 设置当前任务的延迟值 */
+    cmos_task_pool_running_set_delay(millisec);
 
     /* step3: 调用任务切换 */ 
     cmos_hal_cortex_cortex_set_pendsv();
@@ -190,6 +198,15 @@ cmos_status_T cmos_task_delay(cmos_int32_T millisec)
  ******************************************************************************/
 void cmos_task_tick_callback(void)
 {
+    /* step1: 处理当前任务 */
+    cmos_task_pool_running_update_tick();
+
+    /* step2: 处理阻塞任务 */
+    cmos_task_pool_blocked_update_tick();
+
+    /* step3: 处理就绪任务 */
+    cmos_task_pool_ready_update_tick();
+
     return;
 }
 

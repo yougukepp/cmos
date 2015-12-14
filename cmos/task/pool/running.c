@@ -16,6 +16,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "tcb.h"
 #include "running.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -50,6 +51,46 @@ inline void cmos_task_pool_running_set_tcb(cmos_task_tcb_T *tcb)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_task_pool_running_get_tcb
+ * 负责人  : 彭鹏
+ * 创建日期：20151214 
+ * 函数功能: 获取当前运行任务
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 当前运行任务
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline cmos_task_tcb_T *cmos_task_pool_running_get_tcb(void)
+{
+    return s_running_tcb;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_pool_running_set_delay
+ * 负责人  : 彭鹏
+ * 创建日期：20151213 
+ * 函数功能: 设置当前运行的延迟
+ *
+ * 输入参数: tcb 当前运行任务tcb
+ * 输出参数: 无
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline void cmos_task_pool_running_set_delay(cmos_int32_T millisec)
+{
+    cmos_task_tcb_set_delay_ms(s_running_tcb, millisec);
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_task_pool_running_set_psp
  * 负责人  : 彭鹏
  * 创建日期：20151213 
@@ -66,5 +107,25 @@ inline void cmos_task_pool_running_set_tcb(cmos_task_tcb_T *tcb)
 inline void cmos_task_pool_running_set_psp(cmos_task_tcb_psp_T psp)
 { 
     cmos_task_tcb_set_psp(s_running_tcb, psp);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_pool_running_update_tick
+ * 负责人  : 彭鹏
+ * 创建日期：20151214 
+ * 函数功能: 更新当前运行任务的tick
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline void cmos_task_pool_running_update_tick(void)
+{
+    cmos_task_tcb_dec_tick(s_running_tcb);
 }
 

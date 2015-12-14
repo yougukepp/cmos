@@ -41,6 +41,7 @@ typedef enum{
 
 /*********************************** 接口函数 **********************************/
 cmos_status_T cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type); /* 加入阻塞任务 */
+void cmos_task_pool_blocked_update_tick(void); /* tick定时到 更新相关数据结构 */
 
 #endif // #ifndef _CMOS_TASK_POOL_BLOCKED_H_
 

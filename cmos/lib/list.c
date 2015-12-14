@@ -197,7 +197,7 @@ void *cmos_lib_list_pop_tail(cmos_lib_list_T **list)
 
     if(NULL == list)
     {
-        CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
+        CMOS_ERR_STR("cmos_lib_list_pop_tail with null pointer.");
         return NULL;
     }
 
@@ -259,7 +259,7 @@ void *cmos_lib_list_pop_head(cmos_lib_list_T **list)
 
     if(NULL == list)
     {
-        CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
+        CMOS_ERR_STR("cmos_lib_list_pop_head with null pointer.");
         return NULL;
     }
 
@@ -348,7 +348,14 @@ inline void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list)
 void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para)
 {
     cmos_lib_list_node_T *go_node = NULL;
-    /* NULL == list 该函数啥也不干 */
+    cmos_lib_list_node_T *next = NULL;
+    cmos_lib_list_node_T *data = NULL;
+
+    
+    if(NULL == list) /* NULL == list 该函数啥也不干 */
+    {
+        return;
+    }
 
     if(NULL == func)
     {
@@ -359,10 +366,97 @@ void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, v
     go_node = list_get_head(list);
     while(NULL != go_node)
     { 
-        func(go_node, para); /* 处理本节点 */
+        /* 注意: 此处需要在调用func前获取next指针 否则func中若删除go_node则逻辑出错 */
+        next = go_node->next; /* 下一结点 */
+        data = cmos_lib_list_node_get_data(go_node);
 
-        go_node = go_node->next; /* 下一结点 */
+        func(data, para); /* 处理本节点数据域 */
+
+        go_node = next;
     }
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_lib_list_del_by_data
+ * 负责人  : 彭鹏
+ * 创建日期：20151214 
+ * 函数功能: 删除list 数据域为data的结点
+ *
+ * 输入参数: list 链表指针的指针
+ *           data 数据域指针
+ * 输出参数: 无
+ *
+ * 返回值  : 执行状态
+ * 调用关系: 无
+ * 其 它   : 未找到则不删除任何结点
+ *
+ ******************************************************************************/
+cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, void *data)
+{
+    cmos_lib_list_node_T *go_node = NULL;
+    cmos_lib_list_node_T *prev = NULL;
+    cmos_lib_list_node_T *next = NULL;
+    void *node_data = NULL;
+
+    if(NULL == list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_del_by_data with null pointer.");
+        return cmos_NULL_E;
+    }
+
+    /* 空链表 */
+    if(NULL == *list)
+    {
+        CMOS_ERR_STR("cmos_lib_list_del_by_data can't call with null list.");
+        return cmos_NULL_E;
+    }
+
+    go_node = list_get_head(*list);
+    while(NULL != go_node)
+    { 
+        printf("pp1\r\n");
+        node_data = cmos_lib_list_node_get_data(go_node);
+        printf("pp2\r\n");
+        if(node_data == data) /* 找到 */
+        {
+            prev = go_node->prev;
+            next = go_node->next;
+
+            printf("pp3, go_node:%p, prev:%p, next:%p\r\n", go_node, prev, next);
+            if((NULL == prev) && (NULL == next)) /* list仅有go_node结点 */
+            { 
+                printf("pp4\r\n");
+                *list = NULL; /* 链表置空 */
+            }
+            else if(NULL == next) /* 尾结点 */
+            {
+                prev->next = NULL; /* 次尾结点边尾结点 */
+            }
+            else if(NULL == prev) /* 头结点 */
+            {
+                *list = next; /* 头结点变为下一结点 */
+            }
+            else /* 中间结点 */
+            { 
+                /* 跳过 go_node */
+                prev->next = next;
+                next->prev = prev;
+            } 
+
+            /* 释放内存 */
+            node_free(go_node);
+            go_node = NULL; 
+            
+            printf("pp5\r\n");
+            return cmos_OK_E;
+        }
+
+        go_node = go_node->next;
+    } 
+
+    CMOS_ERR_STR("cmos_lib_list_del_by_data can't find data");
+    return cmos_PARA_E;
 }
 
 /*******************************************************************************

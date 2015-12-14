@@ -38,7 +38,7 @@ static void usage(void);
 static cmos_status_T test_tree(void);
 static cmos_status_T test_list(void);
 static cmos_status_T test_ring_buffer(void);
-static void print_node(cmos_lib_list_node_T *node, void *para);
+static void print_node(void *data, void *para);
 
 
 /********************************** 变量实现区 *********************************/
@@ -324,32 +324,38 @@ static cmos_status_T test_list(void)
     cmos_lib_list_init(&list);
     cmos_debug_log("init list(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     cmos_lib_list_push_tail(&list, ptr1);
     cmos_debug_log("push 1 to tail(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
+
 
     cmos_lib_list_push_tail(&list, ptr2);
     cmos_debug_log("push 2 to tail(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     cmos_lib_list_push_tail(&list, ptr3);
     cmos_debug_log("push 3 to tail(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     ptr_val = cmos_lib_list_pop_head(&list);
     cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     ptr_val = cmos_lib_list_pop_head(&list);
     cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     ptr_val = cmos_lib_list_pop_head(&list);
     cmos_debug_log("pop %s from list(with queue mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
-
-    cmos_debug_log("test list as queue end.\n\n");
+    cmos_debug_log("test list as queue end.\n\n\n\n");
 
 
 
@@ -360,19 +366,64 @@ static cmos_status_T test_list(void)
     cmos_lib_list_push_tail(&list, ptr3);
     cmos_debug_log("list content with stack mode(length:%d):\n", cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     ptr_val = cmos_lib_list_pop_tail(&list);
     cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     ptr_val = cmos_lib_list_pop_tail(&list);
     cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
 
     ptr_val = cmos_lib_list_pop_tail(&list);
     cmos_debug_log("pop %s from list(with stack mode) length:%d:\n", ptr_val, cmos_lib_list_length(list));
     cmos_lib_list_walk(list, list_walk_func, NULL);
-    cmos_debug_log("test list as stack end.\n\n");
+    cmos_debug_log("test list as stack end.\n\n\n\n\n");
+
+
+    cmos_debug_log("test list as pool begin.\n");
+    cmos_lib_list_push_tail(&list, ptr1);
+    cmos_lib_list_push_tail(&list, ptr2);
+    cmos_lib_list_push_tail(&list, ptr3);
+    cmos_debug_log("list content init(length:%d):\n", cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
+
+    cmos_lib_list_del_by_data(&list, ptr1);
+    cmos_debug_log("list del head %s(length:%d):\n", ptr1, cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
+
+    cmos_lib_list_del_by_data(&list, ptr3);
+    cmos_debug_log("list del tail %s(length:%d):\n", ptr3, cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
+
+    cmos_debug_log("pppppppppppppppppppppppppppppppppppppppppppppppppppppppppp1\n");
+    cmos_lib_list_del_by_data(&list, ptr2);
+    cmos_debug_log("pppppppppppppppppppppppppppppppppppppppppppppppppppppppppp2\n");
+    cmos_debug_log("list del only node %s(length:%d):\n", ptr2, cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
+
+#if 0
+    cmos_lib_list_push_tail(&list, ptr1);
+    cmos_lib_list_push_tail(&list, ptr2);
+    cmos_lib_list_push_tail(&list, ptr3);
+    cmos_debug_log("list content init again(length:%d):\n", cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
+
+    cmos_lib_list_del_by_data(&list, ptr2);
+    cmos_debug_log("list del normal node %s(length:%d):\n", ptr2, cmos_lib_list_length(list));
+    cmos_lib_list_walk(list, list_walk_func, NULL);
+    cmos_debug_log("\n");
+#endif
+
+    cmos_debug_log("test list as pool end.\n\n");
 
 
     cmos_debug_log("list test done.\n");
@@ -458,25 +509,18 @@ static cmos_status_T test_ring_buffer(void)
 * 其 它   : 无
 *
 ******************************************************************************/
-static void print_node(cmos_lib_list_node_T *node, void *para)
+static void print_node(void *data, void *para)
 { 
     char *str = NULL;
 
-    str = cmos_lib_list_node_get_data(node);
+    str = (char *)data;
     if(NULL == str)
     {
         cmos_debug_log("get null pointer.\r\n");
         return;
     }
 
-    cmos_debug_log("%c", *str);
-    if(NULL != node->next)
-    {
-        cmos_debug_log("->", str);
-    }
-    else
-    {
-        cmos_debug_log("\n");
-    }
+    cmos_debug_log("%c", *str); 
+    cmos_debug_log("->", str);
 }
 
