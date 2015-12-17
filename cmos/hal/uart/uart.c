@@ -40,6 +40,14 @@ const cmos_hal_driver_T g_uart_driver = {
 /* STM32F4Cube HAL驱动 */
 static UART_HandleTypeDef s_uart_handle;
 
+/* 写互斥锁 */
+cmos_ipc_mutex_T *s_mutex_write;
+cmos_task_tcb_T *s_tcb_write;
+
+/* 读互斥锁 */
+cmos_ipc_mutex_T *s_mutex_read;
+cmos_task_tcb_T *s_tcb_read;
+
 /********************************** 函数声明区 *********************************/
 
 /********************************** 函数实现区 *********************************/
@@ -62,6 +70,8 @@ static UART_HandleTypeDef s_uart_handle;
 void cmos_hal_uart_init(void *para)
 { 
     const cmos_hal_uart_init_para_T *init_para = para;
+
+    cmos_ipc_mutex_init(s_mutex);
 
     /* 仅实现一个串口 */
     switch(init_para->uart_index)
@@ -123,15 +133,18 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
         return 0;
     }	
 #else
-    /* 1、中断 发送 */
+    /* 1、锁定uart输出 避免多次访问 */ 
+    cmos_ipc_mutex_lock(s_mutex_write);
+
+    /* 2、中断 发送 */
     if(HAL_UART_Transmit_IT((UART_HandleTypeDef *)dev_id, (uint8_t *)buf, n_bytes)!= HAL_OK)
     {
         assert_failed(__FILE__, __LINE__);
         return 0;
     }
 
-    /* TODO:当前任务加入阻塞队列 */
-
+    /* 3、阻塞 等待传输完成(HAL_UART_TxCpltCallback通知) */
+    cmos_task_suspend(s_tcb_write);
 #endif
 
     return n_bytes;
@@ -153,4 +166,11 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     int i = 0;
     i = 1;
+
+    /* 1、恢复发送任务 */
+    cmos_task_resume(s_tcb_write);
+
+    /* 2、解锁发送功能 */
+    cmos_ipc_mutex_unlock(s_mutex_write);
 }
+
