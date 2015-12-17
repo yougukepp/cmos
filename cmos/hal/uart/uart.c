@@ -18,6 +18,8 @@
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f429idiscovery_hardware.h"
 #include "console.h"
+#include "task.h"
+#include "mutex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -41,12 +43,12 @@ const cmos_hal_driver_T g_uart_driver = {
 static UART_HandleTypeDef s_uart_handle;
 
 /* 写互斥锁 */
-cmos_ipc_mutex_T *s_mutex_write;
-cmos_task_tcb_T *s_tcb_write;
+cmos_ipc_mutex_T *s_mutex_write = NULL;
+cmos_task_tcb_T *s_tcb_write = NULL;
 
 /* 读互斥锁 */
-cmos_ipc_mutex_T *s_mutex_read;
-cmos_task_tcb_T *s_tcb_read;
+cmos_ipc_mutex_T *s_mutex_read = NULL;
+cmos_task_tcb_T *s_tcb_read = NULL;
 
 /********************************** 函数声明区 *********************************/
 
@@ -71,7 +73,20 @@ void cmos_hal_uart_init(void *para)
 { 
     const cmos_hal_uart_init_para_T *init_para = para;
 
-    cmos_ipc_mutex_init(s_mutex);
+    /* 申请读写互斥量 */
+    s_mutex_write = cmos_ipc_mutex_malloc();
+    if(NULL == s_mutex_write)
+    {
+        CMOS_ERR_STR("cmos_ipc_mutex_malloc failed.");
+        return;
+    }
+
+    s_mutex_read = cmos_ipc_mutex_malloc();
+    if(NULL == s_mutex_write)
+    {
+        CMOS_ERR_STR("cmos_ipc_mutex_malloc failed.");
+        return;
+    }
 
     /* 仅实现一个串口 */
     switch(init_para->uart_index)
@@ -164,9 +179,6 @@ void UART1_IRQHandler(void)
 /* 串口传输完成回调 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    int i = 0;
-    i = 1;
-
     /* 1、恢复发送任务 */
     cmos_task_resume(s_tcb_write);
 
