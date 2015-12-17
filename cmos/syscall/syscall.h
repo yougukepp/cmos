@@ -28,7 +28,6 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_create_c(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
 
 #endif // #ifndef _CMOS_SYSCALL_SYSCALL_H_
 

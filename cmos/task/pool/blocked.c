@@ -51,7 +51,7 @@ static cmos_lib_list_T *s_blocked_tcb[CMOS_TASK_POOL_BLOCKED_TYPE_MAX] = {NULL};
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type)
+void cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type)
 { 
     cmos_status_T status = cmos_ERR_E;
     cmos_lib_list_T *tcb_list = NULL;
@@ -64,7 +64,7 @@ cmos_status_T cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocke
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("cmos_lib_list_push_tail failed.");
-        return status;
+        return;
     }
 
     /* 处理边界条件: tcb是该阻塞链表首个任务 */
@@ -73,7 +73,28 @@ cmos_status_T cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocke
         cmos_task_pool_list_array_set(s_blocked_tcb, type, tcb_list);
     }
 
-    return cmos_OK_E;
+    return;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_pool_blocked_del
+ * 负责人  : 彭鹏
+ * 创建日期：20151217 
+ * 函数功能: 将任务移出阻塞表
+ *
+ * 输入参数: tcb  任务控制块指针
+ *           type 阻塞类型
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_task_pool_blocked_del(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type)
+{
+    cmos_lib_list_del_by_data(&s_blocked_tcb[type], (const void *)tcb);
 }
 
 /*******************************************************************************
@@ -133,12 +154,7 @@ inline static void dec_delay(cmos_task_tcb_T *tcb, void *para)
             return;
         }
 
-        status = cmos_task_pool_ready_add(tcb);
-        if(cmos_OK_E != status)
-        {
-            CMOS_ERR_STR("cmos_lib_list_del_by_data err.");
-            return;
-        }
+        cmos_task_pool_ready_add(tcb);
     }
 }
 

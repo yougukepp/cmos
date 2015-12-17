@@ -118,7 +118,7 @@ cmos_status_T cmos_kernel_init(void)
         .tick_total = CMOS_IDLE_TICK_TOTAL,
         .flag = cmos_task_with_default
     };
-    status = cmos_create_c(&s_idle_task_id, &idle_attribute);
+    status = cmos_task_create(&s_idle_task_id, &idle_attribute);
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("create idle task failed.");

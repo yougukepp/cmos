@@ -24,7 +24,7 @@
  *
  * 阻塞类型
  * cmos_blocked_delay           0
- * cmos_blocked_uart_write      1
+ * cmos_blocked_suspend         1
  *
  ******************************************************************************/
 #define CMOS_TASK_POOL_BLOCKED_TYPE_MAX (2)
@@ -32,7 +32,7 @@
 /*********************************** 类型定义 **********************************/
 typedef enum{
     cmos_blocked_delay_E = 0x00,
-    cmos_blocked_uart_write_E = 0x01
+    cmos_blocked_suspend_E = 0x01
 }cmos_blocked_type_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
@@ -40,7 +40,8 @@ typedef enum{
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type); /* 加入阻塞任务 */
+void cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type); /* 加入阻塞任务 */
+void cmos_task_pool_blocked_del(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type); /* 移出阻塞任务 */
 void cmos_task_pool_blocked_update_tick(void); /* tick定时到 更新相关数据结构 */
 
 #endif // #ifndef _CMOS_TASK_POOL_BLOCKED_H_

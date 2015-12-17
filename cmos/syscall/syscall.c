@@ -32,8 +32,10 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-cmos_status_T cmos_init_c(void);
+static cmos_status_T cmos_init_c(void);
 static cmos_status_T cmos_start_c(void);
+
+static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
 
 static cmos_status_T cmos_delay_c(cmos_int32_T millisec);
 
@@ -256,7 +258,7 @@ inline cmos_status_T cmos_start_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
+static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         const cmos_task_attribute_T *task_attribute)
 {
     cmos_status_T status = cmos_ERR_E;

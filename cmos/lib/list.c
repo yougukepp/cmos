@@ -392,7 +392,7 @@ void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, v
  * 其 它   : 未找到则不删除任何结点
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, void *data)
+cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, const void *data)
 {
     cmos_lib_list_node_T *go_node = NULL;
     cmos_lib_list_node_T *prev = NULL;

@@ -40,7 +40,6 @@ static cmos_lib_list_T *get_tcb_table_by_priority(cmos_int32_T priority);
 static cmos_uint8_T get_bitmap_index(cmos_int32_T priority);
 static void add_priority(cmos_priority_T priority);
 
-
 /********************************** 变量实现区 *********************************/
 /*******************************************************************************
  *
@@ -242,7 +241,7 @@ const static cmos_uint8_T s_priority_bitmap[] =
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
+void cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
 {
     cmos_status_T status = cmos_ERR_E;
     cmos_priority_T priority = cmos_priority_err;
@@ -251,7 +250,7 @@ cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
     if(NULL == tcb)
     {
         CMOS_ERR_STR("cmos_task_pool_ready_add with null tcb pointer.");
-        return cmos_NULL_E;
+        return;
     }
 
     priority = cmos_task_tcb_get_priority(tcb);
@@ -263,7 +262,7 @@ cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("cmos_lib_list_push_tail failed.");
-        return status;
+        return;
     }
 
     /* 处理边界条件: tcb是该优先级首个任务 */
@@ -274,7 +273,38 @@ cmos_status_T cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
         set_tcb_table_by_priority(priority, tcb_list);
     } 
 
-    return cmos_OK_E;
+    return;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_task_pool_ready_del
+ * 负责人  : 彭鹏
+ * 创建日期：20151217 
+ * 函数功能: 将任务移出就绪任务链表
+ *
+ * 输入参数: tcb 任务控制块指针
+ * 输出参数: 无
+ *
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_task_pool_ready_del(const cmos_task_tcb_T *tcb)
+{
+    cmos_priority_T priority = cmos_priority_err;
+    cmos_lib_list_T *tcb_list = NULL;
+
+    /* 获取链表 */
+    priority = cmos_task_tcb_get_priority(tcb);
+    tcb_list = get_tcb_table_by_priority(priority);
+
+    /* 删除tcb */
+    cmos_lib_list_del_by_data(&tcb_list, tcb); 
+    
+    /* 回写 */
+    set_tcb_table_by_priority(priority, tcb_list);
 }
 
 /*******************************************************************************
@@ -370,7 +400,6 @@ cmos_task_tcb_T *cmos_task_pool_ready_pop_tcb(void)
  ******************************************************************************/
 void cmos_task_pool_ready_update_tick(void)
 { 
-    cmos_status_T status = cmos_ERR_E;
     cmos_task_tcb_T *tcb = NULL;
     
     tcb = cmos_task_pool_ready_get_tcb();
@@ -386,12 +415,7 @@ void cmos_task_pool_ready_update_tick(void)
             CMOS_ERR_STR("cmos_task_pool_ready_pop_tcb get a null pointer.");
             return;
         }
-        status = cmos_task_pool_ready_add(tcb);
-        if(cmos_OK_E != status)
-        {
-            CMOS_ERR_STR("cmos_task_pool_ready_add err.");
-            return;
-        }
+        cmos_task_pool_ready_add(tcb);
     }
 
     /* 其他情况不处理 */

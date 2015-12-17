@@ -61,7 +61,7 @@ void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node);
 
 /* 目前blocked中专用:删除链表中数据域为data的元素 
  * TODO: 考虑字典或者缓冲池数据结构 */
-cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, void *data); 
+cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, const void *data); 
 
 #endif /* #ifndef _CMOS_LIB_LIST_H_ */
 
