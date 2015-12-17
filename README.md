@@ -17,7 +17,10 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ### 近期计划
 1. uart/i2c中断I/O
-3. 实现app/flyer/doc/README.md计划
+   a、STM32CUBE4 HALXXXX\_IT之前信号量lock
+   b、STM32CUBE4 HALXXXX\_IT之后suspend 当前任务
+   c、对应的中断resume当前任务并且信号量unlock
+2. 实现app/flyer/doc/README.md计划
 
 ### 优化计划
 1. 由于串口打印使用系统调用,故svc调用栈内的代码无法使用串口打印?
@@ -33,6 +36,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 7. vfs与tree间加入中间层,参考tcb\_list.c
 
 ### 远期计划
+0. 只实现基本的调度(支持浮点定点混合切换),少比多好
 1. 实现网络协议栈(TCP/IP)
 2. 实现文件系统 类似Linux一切皆文件的框架
 3. 清理对HAL层的调用 直接调用寄存器级别 工程仅依赖于 CMSIS BSP目录
