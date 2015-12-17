@@ -181,6 +181,26 @@ void cmos_task_tick_callback(void)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_task_self
+ * 负责人  : 彭鹏
+ * 创建日期：20151217 
+ * 函数功能: 获取当前任务id(tcb指针)
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 当前任务id
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline cmos_task_id_T cmos_task_self(void)
+{
+    return (cmos_task_id_T)cmos_task_pool_running_get_tcb();
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_task_suspend
  * 负责人  : 彭鹏
  * 创建日期：20151217 
@@ -195,13 +215,13 @@ void cmos_task_tick_callback(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_task_suspend(const cmos_task_tcb_T *tcb)
+void cmos_task_suspend(cmos_task_id_T task_id)
 {
     /* step 1: 从就绪表中移出tcb */
-    cmos_task_pool_ready_del(tcb);
+    cmos_task_pool_ready_del((const cmos_task_tcb_T *)task_id);
 
     /* step 2: 将tcb移入阻塞表 */
-    cmos_task_pool_blocked_add(tcb, cmos_blocked_suspend_E);
+    cmos_task_pool_blocked_add((const cmos_task_tcb_T *)task_id, cmos_blocked_suspend_E);
 
     /* step 3: 调度 */
     cmos_hal_cortex_cortex_set_pendsv();
@@ -223,13 +243,13 @@ void cmos_task_suspend(const cmos_task_tcb_T *tcb)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_task_resume(const cmos_task_tcb_T *tcb)
+void cmos_task_resume(cmos_task_id_T task_id)
 {
     /* step 1: 将tcb移出阻塞表 */
-    cmos_task_pool_blocked_del(tcb, cmos_blocked_suspend_E);
+    cmos_task_pool_blocked_del((const cmos_task_tcb_T *)task_id, cmos_blocked_suspend_E);
 
     /* step 2: 将tcb移入就绪表 */
-    cmos_task_pool_ready_add(tcb);
+    cmos_task_pool_ready_add((const cmos_task_tcb_T *)task_id);
 
     /* step 3: 调度 */
     cmos_hal_cortex_cortex_set_pendsv();

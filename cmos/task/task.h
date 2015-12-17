@@ -32,8 +32,10 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id, const cmos_task_attribut
 
 cmos_status_T cmos_task_delay(cmos_int32_T millisec); /* 延迟当前任务 */
 
-void cmos_task_suspend(const cmos_task_tcb_T *tcb); /* 挂起tcb任务 */
-void cmos_task_resume(const cmos_task_tcb_T *tcb); /* 恢复tcb任务 */
+void cmos_task_suspend(cmos_task_id_T task_id); /* 挂起tcb任务 */
+void cmos_task_resume(cmos_task_id_T task_id); /* 恢复tcb任务 */
+
+cmos_task_id_T cmos_task_self(void); /* 获取当前任务 */
 
 void cmos_task_tick_callback(void); /* Systick回调 */
 

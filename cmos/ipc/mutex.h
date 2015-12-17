@@ -19,9 +19,11 @@
 #include "cmos_config.h"
 
 /************************************ 宏定义 ***********************************/
+#define CMOS_IPC_MUTEX_UNLOCKED     (0)
+#define CMOS_IPC_MUTEX_LOCKED       (1)
 
 /*********************************** 类型定义 **********************************/
-typedef void* cmos_ipc_mutex_T;
+typedef cmos_int32_T cmos_ipc_mutex_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -29,8 +31,8 @@ typedef void* cmos_ipc_mutex_T;
 
 /*********************************** 接口函数 **********************************/
 cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void);
-cmos_status_T cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex);
-cmos_status_T cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex);
+void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex);
+void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex);
 void cmos_ipc_mutex_free(cmos_ipc_mutex_T *mutex);
 
 #endif /* #ifndef _CMOS_IPC_MUTEX_H_ */
