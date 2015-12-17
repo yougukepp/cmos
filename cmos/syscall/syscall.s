@@ -23,12 +23,10 @@ SVC_Handler     PROC
                 B     syscall_c                     ; 调用C语言主逻辑
                 ENDP
 
-                ; 内部调用创建任务(idle任务)的系统调用不可嵌套,故不使用svc机制
+                ; 内部调用 cmos_create_c
 cmos_init       PROC
                 EXPORT  cmos_init 
-                IMPORT  cmos_init_c
-                LDR     R0, = cmos_init_c
-                BX      R0
+                SVC 0x00
                 ENDP
 
                 ; 执行完成后MUC切换到idle任务,idle任务中进入特权级别

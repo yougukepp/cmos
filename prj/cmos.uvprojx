@@ -1537,7 +1537,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\task;..\cmos\vfs;..\cmos\hal;..\cmos\hal\cortex</IncludePath>
+                      <IncludePath>..\cmos\task;..\cmos\vfs;..\cmos\hal;..\cmos\hal\cortex;..\cmos\syscall</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

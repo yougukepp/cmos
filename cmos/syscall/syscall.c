@@ -19,6 +19,7 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 
+#include "syscall.h"
 #include "cortex.h"
 #include "console.h"
 #include "kernel.h"
@@ -33,8 +34,6 @@
 /********************************** 函数声明区 *********************************/
 cmos_status_T cmos_init_c(void);
 static cmos_status_T cmos_start_c(void);
-
-static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
 
 static cmos_status_T cmos_delay_c(cmos_int32_T millisec);
 
@@ -88,12 +87,12 @@ void syscall_c(cmos_uint32_T *sp)
      *  - 低四位指示系统调用类别中的不同调用 
      *    目前已经定义的系统调用号：
      *      0x0 内核基本控制(参考CMSIS Kernel Information and Control)
-     *        0x00 cmos_init 没有汇编部分
-     *        0x01 cmos_start 没有汇编部分
+     *        0x00 初始化
+     *        0x01 多任务启动
      *      0x1 任务控制(参考CMSIS Thread Management)
-     *        0x10 cmos_create
+     *        0x10 创建任务
      *      0x2 时间管理(参考CMSIS Thread Management)
-     *        0x20 cmos_delay
+     *        0x20 延迟
      *      0x3 任务通信与同步
      *        最强IPC 对实时性(中断延迟)影响巨大 数条指令使用
      *        0x30 开中断     
@@ -102,11 +101,11 @@ void syscall_c(cmos_uint32_T *sp)
      *        0x32 开调度器锁
      *        0x33 关调度器锁
      *      0xa 驱动系统调用(利用Linux VFS思想)
-     *        0xa0 cmos_open
-     *        0xa1 cmos_close
-     *        0xa2 cmos_read
-     *        0xa3 cmos_write
-     *        0xa4 cmos_ioctl
+     *        0xa0 打开文件
+     *        0xa1 关闭文件
+     *        0xa2 读文件
+     *        0xa3 写文件
+     *        0xa4 文件杂项 类似Linux ioctl
      *
      **************************************************************************/
     switch(svc_number)
@@ -114,7 +113,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 内核基本 */
         case 0x00:
             {
-                CMOS_ERR_STR("syscall_c should not used by svc:0x00 asm.");
+                cmos_init_c();
                 break;
             }
         case 0x01:
@@ -257,7 +256,7 @@ inline cmos_status_T cmos_start_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
+cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         const cmos_task_attribute_T *task_attribute)
 {
     cmos_status_T status = cmos_ERR_E;

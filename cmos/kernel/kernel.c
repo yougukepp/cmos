@@ -17,6 +17,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cmos_api.h"
+#include "syscall.h"
 #include "task.h"
 #include "switch.h"
 #include "idle.h"
@@ -107,7 +108,7 @@ cmos_status_T cmos_kernel_init(void)
 #undef CMOS_TASK_STACK_BASE
 #endif
 
-    /* 创建idle任务 使用cmos_create系统调用 */
+    /* 创建idle任务 使用cmos_create_c */
     cmos_task_attribute_T idle_attribute =
     {
         .entry = cmos_task_idle_task,
@@ -117,7 +118,7 @@ cmos_status_T cmos_kernel_init(void)
         .tick_total = CMOS_IDLE_TICK_TOTAL,
         .flag = cmos_task_with_default
     };
-    status = cmos_create(&s_idle_task_id, &idle_attribute); 
+    status = cmos_create_c(&s_idle_task_id, &idle_attribute);
     if(cmos_OK_E != status)
     {
         CMOS_ERR_STR("create idle task failed.");
