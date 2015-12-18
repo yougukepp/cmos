@@ -27,8 +27,9 @@
 /*********************************** 类型定义 **********************************/
 typedef struct{ 
     cmos_uint8_T lock;
-    cmos_lib_list_T *blocked_tcb_list;
-    cmos_task_tcb_T *highest_blocked_tcb;
+
+    cmos_task_tcb_T *highest_blocked_tcb; /* 阻塞的最高优先级tcb */
+    cmos_lib_list_T *blocked_tcb_list; /* 阻塞tcb链表 */
 }cmos_ipc_mutex_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
