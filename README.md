@@ -13,13 +13,12 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 
 ## 计划
 ### 测试计划
-无
+1. 休眠与唤醒
+2. 阻塞互斥锁
+3. 非阻塞互斥锁
 
 ### 近期计划
-1. uart/i2c中断I/O
-   a、STM32CUBE4 HALXXXX\_IT之前信号量lock
-   b、STM32CUBE4 HALXXXX\_IT之后suspend 当前任务
-   c、对应的中断resume当前任务并且信号量unlock
+1. 实现I2C的轮询与阻塞读写
 2. 实现app/flyer/doc/README.md计划
 
 ### 优化计划
