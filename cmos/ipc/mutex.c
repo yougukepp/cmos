@@ -6,7 +6,7 @@
  * 版本号  ： v1.0
  * 文件描述： 互斥锁实现
  * 版权说明： Copyright (c) 2000-2020 GNU
- * 其    他： 无
+ * 其 它   :  svc(优先级高与外部中断)中执行等效于关中断 故无需要互斥访问
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -15,6 +15,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "mem.h"
+#include "misc.h"
 #include "mutex.h"
 #include "task.h"
 #include "console.h"
@@ -49,13 +50,9 @@ cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
     cmos_ipc_mutex_T *mutex = NULL;
 
     mutex = cmos_malloc(sizeof(cmos_ipc_mutex_T));
-    if(NULL == mutex)
-    {
-        CMOS_ERR_STR("cmos_malloc failed.");
-        return NULL;
-    }
-    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
+    cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
+    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
     mutex->highest_blocked_tcb = NULL;
     cmos_lib_list_init(&(mutex->blocked_tcb_list));
 
@@ -74,16 +71,12 @@ cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
 *
 * 返回值  : 无
 * 调用关系: 无
-* 其 它   : svc(优先级高与外部中断)中执行等效于关中断 故无需要互斥访问
+* 其 它   : 无
 *
 ******************************************************************************/
 void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
 {
-    if(NULL == mutex)
-    {
-        CMOS_ERR_STR("cmos_ipc_mutex_lock get a null mutex.");
-        return;
-    }
+    cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
     cmos_task_tcb_T *tcb = NULL;
     cmos_priority_T highest_priority = cmos_priority_err;
@@ -91,6 +84,7 @@ void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
 
     if(CMOS_IPC_MUTEX_UNLOCKED == mutex->lock)
     { 
+        mutex->lock = CMOS_IPC_MUTEX_LOCKED;
         /* 此后为关键域 */
         return;
     }
@@ -98,11 +92,7 @@ void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
     {
         /* step1: 获取当前任务 */
         tcb = cmos_task_self(); 
-        if(NULL == tcb)
-        {
-            CMOS_ERR_STR("cmos_ipc_mutex_lock get a null current tcb.");
-            return;
-        }
+        cmos_assert(NULL != tcb, __FILE__, __LINE__);
         
         /* step2: 更新阻塞tcb链表中最高优先级任务 */
         if(NULL == mutex->highest_blocked_tcb) /* 链表首任务 */
@@ -125,6 +115,9 @@ void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
 
         /* step4: 阻塞当前任务 */
         cmos_task_suspend(tcb);
+
+        /* TODO: 查找原因 此处需要实现无条件(无论是否在svc中)立即调度 */
+        /* TODO: 是否无法实现 */
     }
 }
 
@@ -145,21 +138,11 @@ void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
 ******************************************************************************/
 void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
 {
-    /* TODO: 恢复已&mutex作为键的链表中的一个任务 */
-    /*cmos_task_resume(task_id); */
-    if(NULL == mutex)
-    {
-        CMOS_ERR_STR("cmos_ipc_mutex_unlock get a null mutex.");
-        return;
-    }
+    cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
     /* step1: 获取唤醒任务 阻塞列表中最高优先级任务 */
     cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
-    if(NULL == next_tcb)
-    {
-        CMOS_ERR_STR("cmos_ipc_mutex_unlock get a null highest_blocked_tcb.");
-        return;
-    }
+    cmos_assert(NULL != next_tcb, __FILE__, __LINE__);
 
     /* step2: 唤醒的任务从阻塞列表中删除 */
     cmos_lib_list_del_by_data(&(mutex->blocked_tcb_list), next_tcb); 
@@ -174,29 +157,42 @@ void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_ipc_mutex_try_lock
+* 函数名  : cmos_ipc_mutex_spin_lock
 * 负责人  : 彭鹏
 * 创建日期: 20151218
-* 函数功能: 非阻塞加锁
+* 函数功能: 自旋加锁
 *
 * 输入参数: mutex 互斥锁
 * 输出参数: 无
 *
-* 返回值  : TRUE  加锁成功
-*           FALSE 加锁失败
+* 返回值  : 无
 * 调用关系: 无
 * 其 它   : 立即返回
 *
 ******************************************************************************/
-cmos_bool_T cmos_ipc_mutex_try_lock(cmos_ipc_mutex_T *mutex)
+inline void cmos_ipc_mutex_spin_lock(cmos_ipc_mutex_T *mutex)
 {
-    if(CMOS_IPC_MUTEX_UNLOCKED == mutex->lock)
-    { 
-        return TRUE;
-    }
-    else
-    {
-        return FALSE;
-    }
+    while(CMOS_IPC_MUTEX_LOCKED == mutex->lock);
+    mutex->lock = CMOS_IPC_MUTEX_LOCKED;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_ipc_mutex_spin_unlock
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: 解自旋锁
+*
+* 输入参数: mutex 互斥锁
+* 输出参数: 无
+*
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 立即返回
+*
+******************************************************************************/
+inline void cmos_ipc_mutex_spin_unlock(cmos_ipc_mutex_T *mutex)
+{
+    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
 }
 

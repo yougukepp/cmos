@@ -50,8 +50,9 @@
 
 /*********************************** 接口函数 **********************************/
 void cmos_console_init(cmos_int32_T baud_rate);
-cmos_int32_T cmos_console_printf(char *fmt, ...);        /* 同步阻塞 */
-cmos_int32_T cmos_console_printf_poll(char *fmt, ...);   /* 同步轮询 */
+cmos_int32_T cmos_console_printf(char *fmt, ...);       /* 同步阻塞 */
+cmos_int32_T cmos_console_printf_poll(char *fmt, ...);  /* 同步轮询 */
+cmos_int32_T cmos_console_printf_svc(char *fmt, ...);   /* svc中使用 类似printk */
 
 #endif /* _CMOS_CONSOLE_CONSOLE_H_ */
 

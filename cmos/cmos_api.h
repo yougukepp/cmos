@@ -38,8 +38,9 @@
 
 /*********************************** 接口函数 **********************************/
 /* 内核基本 */
-cmos_status_T cmos_init(void);
-cmos_status_T cmos_start(void);
+void cmos_init(void);
+void cmos_start(void);
+cmos_bool_T cmos_running(void);
 
 /* 任务管理 */
 cmos_status_T cmos_create(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);

@@ -51,8 +51,8 @@ int main(void)
 {
     cmos_status_T status = cmos_ERR_E;
 
-    status = cmos_init(); 
-    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
+    /* 初始化 */
+    cmos_init(); 
 
     /* 定点任务 */
 #if 1
@@ -93,8 +93,7 @@ int main(void)
     cmos_printf("task_float create %d:0x%08x.\r\n", status, (cmos_int32_T)task_float_id);
 #endif
 
-    status = cmos_start();
-    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
+    cmos_start();
 
     /* i2c测试 */
 #if 0

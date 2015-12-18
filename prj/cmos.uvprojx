@@ -994,7 +994,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\lib;..\cmos</IncludePath>
+                      <IncludePath>..\cmos\hal;..\cmos\lib;..\cmos;..\cmos\syscall</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

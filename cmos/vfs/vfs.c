@@ -447,7 +447,7 @@ static void node_print(cmos_lib_tree_node_T *node, void *para)
 
     for(i = 0; i < space_num; i++)
     {
-        cmos_console_printf(" ");
+        cmos_console_printf(" "); 
     }
 
     if(0 == distance)

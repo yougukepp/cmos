@@ -142,40 +142,19 @@ static cmos_int32_T uart_read_poll(const void *dev_id, void *buf, cmos_int32_T n
 
 static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
-#if 1
-    /* 轮询 发送 */
-    if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
-    {
-        cmos_assert(FALSE, __FILE__, __LINE__);
-        return 0;
-    }	
-#else
-    /* 1、锁定uart输出 避免多次访问 */ 
-    cmos_ipc_mutex_lock(s_mutex_write);
-
-    /* 2、中断 发送 */
     if(HAL_UART_Transmit_IT((UART_HandleTypeDef *)dev_id, (uint8_t *)buf, n_bytes)!= HAL_OK)
     {
         cmos_assert(FALSE, __FILE__, __LINE__);
         return 0;
     }
 
-    /* 3、阻塞 等待传输完成(HAL_UART_TxCpltCallback通知) */
-    s_tcb_write = cmos_task_self();
-    cmos_task_suspend(s_tcb_write);
-#endif
-
     return n_bytes;
 }
 
 static cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
-    cmos_bool_T locked = TRUE;
     /* step1: 自旋锁定 避免多次访问 */ 
-    do
-    {
-        locked = cmos_ipc_mutex_try_lock(s_mutex_write);
-    }while(locked);
+    cmos_ipc_mutex_spin_lock(s_mutex_write);
 
     /* step2: 轮询 发送 */
     if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
@@ -185,7 +164,7 @@ static cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_in
     }	
 
     /* step3: 解锁 */ 
-    cmos_ipc_mutex_lock(s_mutex_write);
+    cmos_ipc_mutex_spin_unlock(s_mutex_write);
 
     return n_bytes;
 }

@@ -32,26 +32,6 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static cmos_status_T cmos_init_c(void);
-static cmos_status_T cmos_start_c(void);
-
-static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
-
-static cmos_status_T cmos_delay_c(cmos_int32_T millisec);
-
-static void cmos_enable_interrupt_c(void);
-static void cmos_disable_interrupt_c(void);
-static void cmos_enable_switch_c(void);
-static void cmos_disable_switch_c(void);
-
-static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
-static cmos_status_T cmos_close_c(cmos_int32_T fd);
-static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
-static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
-static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...);
-
-static cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
-static cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -94,6 +74,7 @@ void syscall_c(cmos_uint32_T *sp)
      *      0x0 内核基本控制(参考CMSIS Kernel Information and Control)
      *        0x00 初始化
      *        0x01 多任务启动
+     *        0x02 多任务是否启动
      *      0x1 任务控制(参考CMSIS Thread Management)
      *        0x10 创建任务
      *      0x2 时间管理(参考CMSIS Thread Management)
@@ -127,6 +108,11 @@ void syscall_c(cmos_uint32_T *sp)
         case 0x01:
             { 
                 cmos_start_c();
+                break;
+            }
+        case 0x02:
+            { 
+                sp[0] = cmos_running_c();
                 break;
             }
 
@@ -229,12 +215,12 @@ void syscall_c(cmos_uint32_T *sp)
  * 返回值  : 执行状态
  *          
  * 调用关系: 无
- * 其 它   : 汇编会调用 不加static
+ * 其 它   : 无
  *
  ******************************************************************************/
-inline cmos_status_T cmos_init_c(void)
+inline void cmos_init_c(void)
 {
-   return cmos_kernel_init();
+   cmos_kernel_init();
 }
 
 
@@ -253,9 +239,30 @@ inline cmos_status_T cmos_init_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline cmos_status_T cmos_start_c(void)
+inline void cmos_start_c(void)
 {
-    return cmos_kernel_start();
+    cmos_kernel_start();
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_running_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151218 
+ * 函数功能: 多任务是否启动
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ *
+ * 返回值  : TRUE  多任务启动
+ *           FALSE 多任务未启动
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline cmos_bool_T cmos_running_c(void)
+{
+    return cmos_kernel_running();
 }
 
 /*******************************************************************************
@@ -274,7 +281,7 @@ inline cmos_status_T cmos_start_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
+cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
         const cmos_task_attribute_T *task_attribute)
 {
     cmos_status_T status = cmos_ERR_E;
@@ -305,7 +312,7 @@ static cmos_status_T cmos_create_c(cmos_task_id_T *task_id,
  * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
  *
  ******************************************************************************/
-inline static cmos_status_T cmos_delay_c(cmos_int32_T millisec)
+inline cmos_status_T cmos_delay_c(cmos_int32_T millisec)
 {
     return cmos_task_delay(millisec);
 }
@@ -326,7 +333,7 @@ inline static cmos_status_T cmos_delay_c(cmos_int32_T millisec)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline static void cmos_enable_interrupt_c(void)
+inline void cmos_enable_interrupt_c(void)
 {
     cmos_hal_cortex_cortex_disable_interrupt();
 }
@@ -347,7 +354,7 @@ inline static void cmos_enable_interrupt_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline static void cmos_disable_interrupt_c(void)
+inline void cmos_disable_interrupt_c(void)
 {
     cmos_hal_cortex_cortex_enable_interrupt();
 }
@@ -368,7 +375,7 @@ inline static void cmos_disable_interrupt_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline static void cmos_enable_switch_c(void)
+inline void cmos_enable_switch_c(void)
 {
     cmos_hal_cortex_cortex_enable_switch();
 }
@@ -389,7 +396,7 @@ inline static void cmos_enable_switch_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline static void cmos_disable_switch_c(void)
+inline void cmos_disable_switch_c(void)
 {
     cmos_hal_cortex_cortex_disalbe_switch();
 }
@@ -413,7 +420,7 @@ inline static void cmos_disable_switch_c(void)
  * 其 它   : TODO: 完成 实际功能
  *
  ******************************************************************************/
-static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
+cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
 { 
     if(NULL == path)
     {
@@ -454,7 +461,7 @@ static cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ..
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_close_c(cmos_int32_T fd)
+cmos_status_T cmos_close_c(cmos_int32_T fd)
 {
     if(fd < 0)
     {
@@ -485,7 +492,7 @@ static cmos_status_T cmos_close_c(cmos_int32_T fd)
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -527,7 +534,7 @@ static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -569,7 +576,7 @@ static cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -611,7 +618,7 @@ static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_byte
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -653,7 +660,7 @@ static cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n
  * 其 它   : 无
  *
  ******************************************************************************/
-static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
+cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
 { 
     if(fd < 0)
     {

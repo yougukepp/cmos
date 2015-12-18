@@ -27,6 +27,7 @@ SVC_Handler     PROC
 cmos_init       PROC
                 EXPORT  cmos_init 
                 SVC 0x00
+                BX LR
                 ENDP
 
                 ; 执行完成后MUC切换到idle任务,idle任务中进入特权级别
@@ -36,6 +37,12 @@ cmos_start      PROC
                 EXPORT  cmos_start
                 SVC 0x01
                 ; 出错才会执行到此
+                BX LR
+                ENDP
+
+cmos_running    PROC
+                EXPORT  cmos_running
+                SVC 0x02
                 BX LR
                 ENDP
 
@@ -94,8 +101,15 @@ cmos_read       PROC
                 BX  LR
                 ENDP
 
+                ; 研究write加锁 
 cmos_write      PROC
-                EXPORT  cmos_write
+                EXPORT cmos_write
+                ; svc之前加锁
+                ;IMPORT cmos_write_before_c 
+                ;cmos_ipc_mutex_lock(s_mutex_write);
+                LDR     R0, =cmos_write_before_c
+                BLX     R0
+                ; svc之前加锁
                 SVC 0xa3
                 BX  LR
                 ENDP

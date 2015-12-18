@@ -17,6 +17,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "cmos_api.h"
+#include "kernel.h"
 #include "syscall.h"
 #include "task.h"
 #include "switch.h"
@@ -57,7 +58,7 @@ static cmos_task_id_T s_idle_task_id = 0;
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_kernel_init(void)
+void cmos_kernel_init(void)
 {
     cmos_status_T status = cmos_ERR_E;
 
@@ -78,8 +79,7 @@ cmos_status_T cmos_kernel_init(void)
     /* 后面的初始化可以使用控制台输出了 */
 
     /* 打印目录树 */
-    cmos_printf("cmos init done with vfs tree:\r\n");
-    vfs_print(); 
+    cmos_console_printf_svc("cmos init done with vfs tree:\r\n");
     
     /* 初始化用户内存 便于调试 */
 #if (CMOS_DEBUG_LEVEL > 0) 
@@ -109,7 +109,7 @@ cmos_status_T cmos_kernel_init(void)
     status = cmos_task_create(&s_idle_task_id, &idle_attribute);
     cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
-    return status;
+    return;
 }
 
 /*******************************************************************************
@@ -128,10 +128,35 @@ cmos_status_T cmos_kernel_init(void)
 * 其 它   : 永不返回
 *
 ******************************************************************************/
-cmos_status_T cmos_kernel_start(void)
+void cmos_kernel_start(void)
 { 
     cmos_task_switch_start();
-
-    /* 永不返回 */
-    return cmos_OK_E;
 }
+
+/*******************************************************************************
+*
+* 函数名  : cmos_kernel_running
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: CMOS 是否启动(已经开始多任务)
+*
+* 输入参数: 无
+* 输出参数: 无
+*
+* 返回值  : TRUE  多任务
+*           FALSE 尚未开始多任务
+* 调用关系: 无
+* 其 它   : 永不返回
+*
+******************************************************************************/
+inline cmos_bool_T cmos_kernel_running(void)
+{ 
+    /* 获取当前任务 */
+    cmos_task_tcb_T *s_current_tcb = cmos_task_self();
+    if(NULL == s_current_tcb)
+    {
+        return FALSE;
+    }
+    return TRUE;
+}
+
