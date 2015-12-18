@@ -66,27 +66,15 @@ cmos_status_T cmos_kernel_init(void)
 	
     /* cmos hal vfs初始化 */
     status = vfs_init();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return status;
-    }
+    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
     /* cmos hal 硬件底层初始化 */
     status = hal_init();
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return status;
-    }
+    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
     /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
-    status = cmos_console_init(CMOS_CONSOLE_BAUDRATE);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return status;
-    }
+    cmos_console_init(CMOS_CONSOLE_BAUDRATE);
+
     /* 后面的初始化可以使用控制台输出了 */
 
     /* 打印目录树 */
@@ -119,12 +107,8 @@ cmos_status_T cmos_kernel_init(void)
         .flag = cmos_task_with_default
     };
     status = cmos_task_create(&s_idle_task_id, &idle_attribute);
-    if(cmos_OK_E != status)
-    {
-        CMOS_ERR_STR("create idle task failed.");
-        return status;
-    }
-		
+    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
+
     return status;
 }
 

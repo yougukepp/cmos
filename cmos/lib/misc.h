@@ -39,6 +39,7 @@
 
 /*********************************** 接口函数 **********************************/
 void assert_failed(uint8_t* file, uint32_t line);
+void cmos_assert(cmos_bool_T flag, uint8_t* file, uint32_t line);
 void err_loop(void);
 
 #endif /* _CMOS_LIB_MISC_H_ */
