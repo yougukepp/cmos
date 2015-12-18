@@ -51,17 +51,17 @@ static cmos_lib_list_node_T *list_get_head(const cmos_lib_list_T *list);
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_init(cmos_lib_list_T **list)
+void cmos_lib_list_init(cmos_lib_list_T **list)
 {
     if(NULL == list)
     {
         CMOS_ERR_STR("cmos_lib_list_init NULL pointer");
-        return cmos_NULL_E;
+        return;
     }
 
     *list = NULL;
 
-    return cmos_OK_E;
+    return;
 }
 
 /*******************************************************************************

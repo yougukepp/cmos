@@ -17,13 +17,19 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "tcb.h"
+#include "list.h"
 
 /************************************ 宏定义 ***********************************/
 #define CMOS_IPC_MUTEX_UNLOCKED     (0)
 #define CMOS_IPC_MUTEX_LOCKED       (1)
 
 /*********************************** 类型定义 **********************************/
-typedef cmos_int32_T cmos_ipc_mutex_T;
+typedef struct{ 
+    cmos_uint8_T lock;
+    cmos_lib_list_T *blocked_tcb_list;
+    cmos_task_tcb_T *highest_blocked_tcb;
+}cmos_ipc_mutex_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

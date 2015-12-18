@@ -44,11 +44,11 @@ static UART_HandleTypeDef s_uart_handle;
 
 /* 写互斥锁 */
 cmos_ipc_mutex_T *s_mutex_write = NULL;
-cmos_task_id_T s_write_task_id = 0;
+cmos_task_tcb_T *s_tcb_write = NULL;
 
 /* 读互斥锁 */
 cmos_ipc_mutex_T *s_mutex_read = NULL;
-cmos_task_id_T s_read_task_id = 0;
+cmos_task_tcb_T *s_tcb_read = NULL;
 
 /********************************** 函数声明区 *********************************/
 
@@ -160,7 +160,7 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
 
     /* 3、阻塞 等待传输完成(HAL_UART_TxCpltCallback通知) */
     s_write_task_id = cmos_task_self();
-    cmos_task_suspend(s_write_task_id);
+    cmos_task_suspend(s_tcb_write);
 #endif
 
     return n_bytes;
@@ -181,7 +181,7 @@ void UART1_IRQHandler(void)
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     /* 1、恢复发送任务 */
-    cmos_task_resume(s_write_task_id);
+    cmos_task_resume(s_tcb_write);
 
     /* 2、解锁发送功能 */
     cmos_ipc_mutex_unlock(s_mutex_write);

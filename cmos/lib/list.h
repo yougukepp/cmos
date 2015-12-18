@@ -39,7 +39,7 @@ typedef void (*cmos_lib_list_walk_func_T)(void *data, void *para);
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_lib_list_init(cmos_lib_list_T **list);           /* 初始化 */
+void cmos_lib_list_init(cmos_lib_list_T **list);                    /* 初始化 */
 cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T **list);        /* 销毁 */
 cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list);           /* 链表长度 节点数 */
 

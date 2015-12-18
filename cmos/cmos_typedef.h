@@ -102,8 +102,6 @@ typedef struct{
     cmos_int32_T      flag;       /* 存放任务的参数:浮点 特权 */
 }cmos_task_attribute_T;
 
-
-
 /* i2c 相关 */
 /* TODO: 想办法移入驱动 */
 typedef struct cmos_i2c_addr_T_tag{

@@ -17,6 +17,7 @@
 #include "mem.h"
 #include "mutex.h"
 #include "task.h"
+#include "console.h"
 #include "stm32f4xx_hal_conf.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -45,8 +46,21 @@
 ******************************************************************************/
 cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
 { 
-    /* 分配1个字的空间供mutex互斥访问使用 */
-    return cmos_malloc(sizeof(cmos_uint32_T));
+    cmos_ipc_mutex_T *mutex = NULL;
+
+    mutex = cmos_malloc(sizeof(cmos_ipc_mutex_T));
+    if(NULL == mutex)
+    {
+        CMOS_ERR_STR("cmos_malloc failed.");
+        return NULL;
+    }
+    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
+    mutex->highest_blocked_tcb = NULL;
+
+    cmos_lib_list_init(&(mutex->blocked_tcb_list));
+
+
+    return mutex;
 }
 
 /*******************************************************************************
@@ -66,29 +80,35 @@ cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
 ******************************************************************************/
 void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
 {
-    cmos_task_id_T task_id = 0;
+    cmos_task_tcb_T *tcb = NULL;
     cmos_uint32_T rst = 0;
 
-    rst = __LDREXW(mutex);
+    rst = __LDREXW(&(mutex->lock));
     if(CMOS_IPC_MUTEX_LOCKED == rst) /* 已有任务锁定 */
     {
         goto suspend;
     }
 
-    rst = __STREXW(CMOS_IPC_MUTEX_LOCKED, mutex);
+    rst = __STREXW(CMOS_IPC_MUTEX_LOCKED, &(mutex->lock));
     if(0 != rst) /* 已有任务锁定 */
     {
         goto suspend;
     }
 
     /* 正常 */
+    /* 此后为关键域 */
     return;
 
     /* 阻塞 */
 suspend:
-    task_id = cmos_task_self();
-    cmos_task_suspend(task_id);
+    /* FIXME: 如何保证此处的互斥？*/
     /* TODO: 保存task_id到 以&mutex作为键的链表 便于unlock的恢复 */
+    mutex->highest_blocked_tcb = NULL;
+    &(mutex->blocked_tcb_list);
+
+    tcb = cmos_task_self();
+    cmos_task_suspend(tcb);
+
 }
 
 /*******************************************************************************
@@ -108,9 +128,10 @@ suspend:
 ******************************************************************************/
 void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
 {
-    *mutex = CMOS_IPC_MUTEX_UNLOCKED;
-
     /* TODO: 恢复已&mutex作为键的链表中的一个任务 */
     /*cmos_task_resume(task_id); */
+
+    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
+    /* 此后出关键域 */
 }
 

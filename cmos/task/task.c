@@ -194,9 +194,9 @@ void cmos_task_tick_callback(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline cmos_task_id_T cmos_task_self(void)
+inline cmos_task_tcb_T *cmos_task_self(void)
 {
-    return (cmos_task_id_T)cmos_task_pool_running_get_tcb();
+    return cmos_task_pool_running_get_tcb();
 }
 
 /*******************************************************************************
@@ -215,13 +215,13 @@ inline cmos_task_id_T cmos_task_self(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_task_suspend(cmos_task_id_T task_id)
+void cmos_task_suspend(cmos_task_tcb_T *tcb)
 {
     /* step 1: 从就绪表中移出tcb */
-    cmos_task_pool_ready_del((const cmos_task_tcb_T *)task_id);
+    cmos_task_pool_ready_del(tcb);
 
     /* step 2: 将tcb移入阻塞表 */
-    cmos_task_pool_blocked_add((const cmos_task_tcb_T *)task_id, cmos_blocked_suspend_E);
+    cmos_task_pool_blocked_add(tcb, cmos_blocked_suspend_E);
 
     /* step 3: 调度 */
     cmos_hal_cortex_cortex_set_pendsv();
@@ -243,13 +243,13 @@ void cmos_task_suspend(cmos_task_id_T task_id)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_task_resume(cmos_task_id_T task_id)
+void cmos_task_resume(cmos_task_tcb_T *tcb)
 {
     /* step 1: 将tcb移出阻塞表 */
-    cmos_task_pool_blocked_del((const cmos_task_tcb_T *)task_id, cmos_blocked_suspend_E);
+    cmos_task_pool_blocked_del(tcb, cmos_blocked_suspend_E);
 
     /* step 2: 将tcb移入就绪表 */
-    cmos_task_pool_ready_add((const cmos_task_tcb_T *)task_id);
+    cmos_task_pool_ready_add(tcb);
 
     /* step 3: 调度 */
     cmos_hal_cortex_cortex_set_pendsv();
