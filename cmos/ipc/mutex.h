@@ -40,6 +40,7 @@ typedef struct{
 cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void);
 void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex);
 void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex);
+cmos_bool_T cmos_ipc_mutex_try_lock(cmos_ipc_mutex_T *mutex);
 void cmos_ipc_mutex_free(cmos_ipc_mutex_T *mutex);
 
 #endif /* #ifndef _CMOS_IPC_MUTEX_H_ */

@@ -59,6 +59,8 @@ cmos_int32_T cmos_read(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_write(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
 cmos_status_T cmos_ioctl(cmos_int32_T dev_id, cmos_uint32_T request, ...);
 cmos_status_T cmos_close(cmos_int32_T dev_id);
+cmos_int32_T cmos_read_poll(cmos_int32_T dev_id, void *buf, cmos_int32_T n_bytes);
+cmos_int32_T cmos_write_poll(cmos_int32_T dev_id, const void *buf, cmos_int32_T n_bytes);
 
 #endif /* _CMOS_API_H_ */
 

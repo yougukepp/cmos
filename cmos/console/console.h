@@ -18,22 +18,22 @@
 #include "cmos_config.h"
 
 /************************************ 宏定义 ***********************************/
-#define  cmos_err_log(...)  cmos_console_printf("ERR: ") ;\
-                            cmos_console_printf(__VA_ARGS__);\
-                            cmos_console_printf("\r\n");
+#define  cmos_err_log(...)  cmos_console_printf_poll("ERR: ") ;\
+                            cmos_console_printf_poll(__VA_ARGS__);\
+                            cmos_console_printf_poll("\r\n");
 
 /* CMOS_DEBUG_LEVEL > 0 输出基础打印信息 */
 #if (CMOS_DEBUG_LEVEL > 0)
-#define cmos_debug_log(...) cmos_console_printf(__VA_ARGS__);
+#define cmos_debug_log(...) cmos_console_printf_poll(__VA_ARGS__);
 #else
 #define cmos_debug_log(...)
 #endif
 
 /* CMOS_DEBUG_LEVEL > 1 输出跟踪信息 */
 #if (CMOS_DEBUG_LEVEL > 1)
-#define cmos_trace_log(...) cmos_console_printf("TRACE : ") ;\
-                            cmos_console_printf(__VA_ARGS__);\
-                            cmos_console_printf("\r\n");
+#define cmos_trace_log(...) cmos_console_printf_poll("TRACE : ") ;\
+                            cmos_console_printf_poll(__VA_ARGS__);\
+                            cmos_console_printf_poll("\r\n");
 #else
 #define cmos_trace_log(...)
 #endif
@@ -49,8 +49,9 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_console_init(cmos_int32_T baud_rate);
-cmos_int32_T cmos_console_printf(char *fmt, ...);
+void cmos_console_init(cmos_int32_T baud_rate);
+cmos_int32_T cmos_console_printf(char *fmt, ...);        /* 同步阻塞 */
+cmos_int32_T cmos_console_printf_poll(char *fmt, ...);   /* 同步轮询 */
 
 #endif /* _CMOS_CONSOLE_CONSOLE_H_ */
 

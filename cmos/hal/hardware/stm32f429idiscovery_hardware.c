@@ -14,6 +14,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "stm32f429idiscovery_hardware.h"
+#include "misc.h"
 #include "console.h"
 #include "device.h"
 #include "uart.h"
@@ -93,11 +94,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
     HAL_NVIC_EnableIRQ(CONSOLE_UART_IRQn);
 
     status = hal_device_add(CMOS_CONSOLE_NAME, &g_uart_driver);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return;
-    }
+    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
     /**************************** 其他串口初始化 ****************************/
 }
@@ -138,11 +135,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
     HAL_NVIC_DisableIRQ(CONSOLE_UART_IRQn);
 
     status = hal_device_del(CMOS_CONSOLE_NAME);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return;
-    }
+    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
     /*************************** 其他串口解初始化 ***************************/
 }
@@ -212,11 +205,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 
     /* 加入总线设备 */
     status = hal_device_add(CMOS_IMU_I2CBUS_NAME, &g_i2c_driver);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return;
-    }
+    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
     /************************** 其他I2C总线初始化 ***************************/
 }
@@ -248,11 +237,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
     cmos_status_T status = cmos_ERR_E;
 
     status = hal_device_del(CMOS_IMU_I2CBUS_NAME);
-    if(cmos_OK_E != status)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return;
-    }
+    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
     /************************ 其他I2C总线解除初始化 *************************/
 }

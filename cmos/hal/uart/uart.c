@@ -29,6 +29,8 @@ static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_byte
 static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
 static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode);
 static cmos_status_T uart_close(const void *dev_id);
+static cmos_int32_T uart_read_poll(const void *dev_id, void *buf, cmos_int32_T n_bytes);
+static cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
 
 /* 驱动变量 加入到vfs */
 const cmos_hal_driver_T g_uart_driver = {
@@ -36,7 +38,9 @@ const cmos_hal_driver_T g_uart_driver = {
     .read = uart_read,
     .write = uart_write,
     .ioctl = uart_ioctl,
-    .close = uart_close
+    .close = uart_close,
+    .read_poll = uart_read_poll,
+    .write_poll = uart_write_poll
 };
 
 /* STM32F4Cube HAL驱动 */
@@ -138,6 +142,11 @@ static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_byte
     return 0;
 }
 
+static cmos_int32_T uart_read_poll(const void *dev_id, void *buf, cmos_int32_T n_bytes)
+{
+    return 0;
+}
+
 static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
 #if 1
@@ -162,6 +171,28 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
     s_write_task_id = cmos_task_self();
     cmos_task_suspend(s_tcb_write);
 #endif
+
+    return n_bytes;
+}
+
+static cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
+{ 
+    cmos_bool_T locked = TRUE;
+    /* step1: 自旋锁定 避免多次访问 */ 
+    do
+    {
+        locked = cmos_ipc_mutex_try_lock(s_mutex_write);
+    }while(locked);
+
+    /* step2: 轮询 发送 */
+    if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
+    {
+        assert_failed(__FILE__, __LINE__);
+        return 0;
+    }	
+
+    /* step3: 解锁 */ 
+    cmos_ipc_mutex_lock(s_mutex_write);
 
     return n_bytes;
 }

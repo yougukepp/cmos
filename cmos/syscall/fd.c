@@ -167,6 +167,65 @@ cmos_int32_T syscall_fd_read(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
 *
+* 函数名  : syscall_fd_read_poll
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: 读取fd指示的文件(轮询)
+*
+* 输入参数: fd      文件句柄
+*           buf     缓冲
+*           n_bytes 缓冲大小
+*           参数规则见Linux read
+* 输出参数: 无
+*
+* 返回值  : 读取字节数
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T syscall_fd_read_poll(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_status_T status = cmos_ERR_E;
+    cmos_int32_T read_bytes = 0;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
+    if((fd < 0)
+    || (fd >= CMOS_VFS_FD_MAX))
+    {
+        CMOS_ERR_STR("syscall_fd_read_poll with invalid fd.");
+        return 0;
+    }
+    if((NULL == buf)
+    || (n_bytes < 0))
+    {
+        CMOS_ERR_STR("syscall_fd_read_poll with invalid buf.");
+        return 0;
+    }
+
+    /* step1: 找到对应驱动及cmos hal底层句柄 */
+    status = syscall_fd_get_fd_list_item(&driver, &driver_id, fd);
+    if(cmos_OK_E != status)
+    {
+        return 0;
+    }
+
+    /* step2: 执行驱动对应write函数 */
+    if(NULL != driver)
+    { 
+        read_bytes = driver->read_poll(driver_id, buf, n_bytes);
+    }
+    else
+    {
+        cmos_err_log("file %d driver is null.", fd);
+        return 0;
+    }
+
+    return read_bytes;
+}
+
+/*******************************************************************************
+*
 * 函数名  : syscall_fd_write
 * 负责人  : 彭鹏
 * 创建日期: 20151110
@@ -213,6 +272,64 @@ cmos_int32_T syscall_fd_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
     if(NULL != driver)
     { 
         write_bytes = driver->write(driver_id, buf, n_bytes);
+    }
+    else
+    {
+        cmos_err_log("file %d driver is null.", fd);
+        return 0;
+    }
+
+    return write_bytes;
+}
+
+/*******************************************************************************
+*
+* 函数名  : syscall_fd_write_poll
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: 写入fd指示的文件(轮询)
+*
+* 输入参数: fd      文件句柄
+*           buf     缓冲
+*           n_bytes 缓冲大小
+*           参数规则见Linux write
+* 输出参数: 无
+*
+* 返回值  : 写入字节数
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T syscall_fd_write_poll(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_status_T status = cmos_ERR_E;
+    cmos_int32_T write_bytes = 0;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
+    if((fd < 0)
+    || (fd >= CMOS_VFS_FD_MAX))
+    {
+        CMOS_ERR_STR("syscall_fd_write_poll with invalid fd.");
+        return 0;
+    }
+    if((NULL == buf)
+    || (n_bytes < 0))
+    {
+        CMOS_ERR_STR("syscall_fd_write_poll with invalid buf.");
+        return 0;
+    }
+
+    status = syscall_fd_get_fd_list_item(&driver, &driver_id, fd);
+    if(cmos_OK_E != status)
+    {
+        return 0;
+    }
+
+    if(NULL != driver)
+    { 
+        write_bytes = driver->write_poll(driver_id, buf, n_bytes);
     }
     else
     {

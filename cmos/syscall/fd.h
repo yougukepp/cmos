@@ -38,6 +38,8 @@ cmos_int32_T syscall_fd_read(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T syscall_fd_write(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
 cmos_status_T syscall_fd_ioctl(cmos_int32_T fd, cmos_uint32_T request, cmos_uint32_T mode);
 cmos_status_T syscall_fd_close(cmos_int32_T fd);
+cmos_int32_T syscall_fd_read_poll(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
+cmos_int32_T syscall_fd_write_poll(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
 
 #endif // #ifndef _CMOS_VFS_FD_H_
 

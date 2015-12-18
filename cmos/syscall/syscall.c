@@ -50,6 +50,9 @@ static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes
 static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
 static cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...);
 
+static cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
+static cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes);
+
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
  *
@@ -108,6 +111,9 @@ void syscall_c(cmos_uint32_T *sp)
      *        0xa2 读文件
      *        0xa3 写文件
      *        0xa4 文件杂项 类似Linux ioctl
+     *        0xa5 读文件(轮询)
+     *        0xa6 写文件(轮询)
+     *
      *
      **************************************************************************/
     switch(svc_number)
@@ -190,9 +196,19 @@ void syscall_c(cmos_uint32_T *sp)
                 sp[0] = cmos_ioctl_c((cmos_int32_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
                 break;
             }
+        case 0xa5:
+            {
+                sp[0] = cmos_read_poll_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                break;
+            }
+        case 0xa6:
+            {
+                sp[0] = cmos_write_poll_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                break;
+            }
         default:
             {
-                assert_failed(__FILE__, __LINE__);
+                cmos_assert(FALSE, __FILE__, __LINE__);
                 break;
             }
     }
@@ -493,6 +509,48 @@ static cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_read_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read_poll的C语言主逻辑
+ *
+ * 输入参数: 
+ *           fd      文件句柄
+ *           buf     读取数据的缓存
+ *           n_bytes 要求读取的字节数
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 实际读取字节数
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+{
+    if(fd < 0)
+    {
+        CMOS_ERR_STR("read fd < 0.");
+        return cmos_PARA_E;
+    }
+
+    if((NULL == buf)
+    || (n_bytes <= 0))
+    {
+        CMOS_ERR_STR("read buf err.");
+        return cmos_PARA_E;
+    }
+
+    cmos_int32_T n_reads = 0;
+
+    n_reads = syscall_fd_read_poll(fd, buf, n_bytes);
+
+    return n_reads;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_write_c
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -529,6 +587,48 @@ static cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_byte
     cmos_int32_T n_writes = 0;
 
     n_writes = syscall_fd_write(fd, buf, n_bytes);
+
+    return n_writes;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_write_poll_c
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_write_poll的C语言主逻辑
+ *
+ * 输入参数: 
+ *           fd      文件句柄
+ *           buf     写入数据的缓存
+ *           n_bytes 要求写入的字节数
+ *
+ * 输出参数: 无
+ *
+ * 返回值  : 实际写入字节数
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+static cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+{
+    if(fd < 0)
+    {
+        CMOS_ERR_STR("write fd < 0.");
+        return cmos_PARA_E;
+    }
+
+    if((NULL == buf)
+    || (n_bytes <= 0))
+    {
+        CMOS_ERR_STR("write buf err.");
+        return cmos_PARA_E;
+    }
+
+    cmos_int32_T n_writes = 0;
+
+    n_writes = syscall_fd_write_poll(fd, buf, n_bytes);
 
     return n_writes;
 }

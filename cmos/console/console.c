@@ -18,16 +18,15 @@
 #include <stdio.h>
 #include "cmos_config.h"
 #include "misc.h"
+#include "mem.h"
 #include "console.h"
 #include "cmos_api.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-/* 控制台缓存 */
-static char s_printf_buf[CMOS_PRINTF_BUF_SIZE] = {0};
-
 /* 控制台文件句柄 */
+/* 仅init(单任务)中写 其他都是读 故无需锁 */
 static cmos_int32_T s_console_uart_fd = 0;
 
 /********************************** 函数声明区 *********************************/
@@ -50,19 +49,16 @@ static cmos_int32_T s_console_uart_fd = 0;
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_console_init(cmos_int32_T baud_rate)
+void cmos_console_init(cmos_int32_T baud_rate)
 {
-    s_console_uart_fd = cmos_open(CMOS_CONSOLE_PATH, CMOS_O_RDWR);
-    if(-1 == s_console_uart_fd)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
+    s_console_uart_fd = cmos_open(CMOS_CONSOLE_PATH, CMOS_O_RDWR); 
+    cmos_assert(-1 != s_console_uart_fd, __FILE__, __LINE__);
 
     /* FIXME:暂时未实现uart ioctl系统调用 */
     /* 波特率的设置位于 hal/hardware/stm32f429idiscovery_hardware.c */
     /* status = cmos_ioctl(s_console_uart_fd, CMOS_I_SETBAUDRATE, baud_rate); */
 
-    return cmos_OK_E;
+    return;
 }
 
 /*******************************************************************************
@@ -73,13 +69,11 @@ cmos_status_T cmos_console_init(cmos_int32_T baud_rate)
 * 函数功能: 控制台打印
 *
 * 输入参数: 与printf参数含义一致
-*
 * 输出参数: 无
 *
-* 返回值  : 函数执行状态
-*
+* 返回值  : 输出的字节数
 * 调用关系: 无
-* 其 它   : 系统错误或调试打印需要第一时间输出 采用轮询方式输出
+* 其 它   : 有阻塞可能
 *
 ******************************************************************************/
 cmos_int32_T cmos_console_printf(char *fmt, ...)
@@ -89,60 +83,68 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
         return 0;
     }
 
+    char *printf_buf = cmos_malloc(CMOS_PRINTF_BUF_SIZE);
+    cmos_assert(NULL != printf_buf, __FILE__, __LINE__);
+
     /* FIXME: 避免竞态 */
     va_list args;
     cmos_int32_T n = 0;
     cmos_int32_T n_writes = 0;
 
-#if 0
-
-    /* 之前的打印未完成 休眠 */
-    while(NUL != s_printf_buf[0])
-    {
-        cmos_delay(CMOS_PRINTF_BUF_SIZE/10); /* 经验值 */
-    }
-
     va_start(args, fmt); 
-    cmos_enable_switch(); /* 加锁避免竞态 */
-    n = vsnprintf(s_printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
-    cmos_disable_switch();
-    if( (n >= CMOS_PRINTF_BUF_SIZE) /* 出错 */
-      ||( n< 0))
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
+    n = vsnprintf(printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
+    cmos_assert( (n >= CMOS_PRINTF_BUF_SIZE) /* 出错 */ ||( n< 0), __FILE__, __LINE__);
     va_end(args);
 
     /* 传输 */
-    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)s_printf_buf, n); /* 此处肯能会任务切换 */
-    if(n_writes != n)
+    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
+    cmos_assert( (n_writes != n), __FILE__, __LINE__);
+
+    cmos_free(printf_buf);
+
+    return n;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_console_printf_poll
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: 控制台打印
+*
+* 输入参数: 与printf参数含义一致
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : 某些情况下打印不可阻塞,如idle任务
+*
+******************************************************************************/
+cmos_int32_T cmos_console_printf_poll(char *fmt, ...)
+{ 
+    if(NULL == fmt) /* 无需打印 */
     {
-        assert_failed(__FILE__, __LINE__);
+        return 0;
     }
+    char *printf_buf = cmos_malloc(CMOS_PRINTF_BUF_SIZE);
+    cmos_assert(NULL != printf_buf, __FILE__, __LINE__);
 
-    //while(1);
+    va_list args;
+    cmos_int32_T n = 0;
+    cmos_int32_T n_writes = 0;
 
-    /* 清空buf */
-    cmos_enable_switch(); /* 加锁避免竞态 */
-    s_printf_buf[0] = NUL;
-    cmos_disable_switch();
-#else
     va_start(args, fmt); 
-    n = vsnprintf(s_printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
-    if( (n >= CMOS_PRINTF_BUF_SIZE) /* 出错 */
-      ||( n< 0))
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
+    n = vsnprintf(printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
+    cmos_assert( (n >= CMOS_PRINTF_BUF_SIZE) /* 出错 */ ||( n< 0), __FILE__, __LINE__);
     va_end(args);
 
     /* 传输 */
-    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)s_printf_buf, n); /* 此处肯能会任务切换 */
-    if(n_writes != n)
-    {
-        assert_failed(__FILE__, __LINE__);
-    }
-#endif
+    n_writes = cmos_write_poll(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
+    cmos_assert( (n_writes != n), __FILE__, __LINE__);
+
+    cmos_free(printf_buf);
 
     return n;
 }

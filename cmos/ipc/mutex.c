@@ -172,3 +172,31 @@ void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
     /* 此后出关键域 */
 }
 
+/*******************************************************************************
+*
+* 函数名  : cmos_ipc_mutex_try_lock
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: 非阻塞加锁
+*
+* 输入参数: mutex 互斥锁
+* 输出参数: 无
+*
+* 返回值  : TRUE  加锁成功
+*           FALSE 加锁失败
+* 调用关系: 无
+* 其 它   : 立即返回
+*
+******************************************************************************/
+cmos_bool_T cmos_ipc_mutex_try_lock(cmos_ipc_mutex_T *mutex)
+{
+    if(CMOS_IPC_MUTEX_UNLOCKED == mutex->lock)
+    { 
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+

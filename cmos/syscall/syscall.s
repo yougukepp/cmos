@@ -100,10 +100,21 @@ cmos_write      PROC
                 BX  LR
                 ENDP
 
-
 cmos_ioctl      PROC
                 EXPORT  cmos_ioctl
                 SVC 0xa4
+                BX  LR
+                ENDP
+
+cmos_read_poll  PROC
+                EXPORT  cmos_read_poll
+                SVC 0xa5
+                BX  LR
+                ENDP
+
+cmos_write_poll PROC
+                EXPORT  cmos_write_poll
+                SVC 0xa6
                 BX  LR
                 ENDP
 
