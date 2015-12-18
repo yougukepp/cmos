@@ -121,7 +121,7 @@ cmos_status_T vfs_destroy(void)
     cmos_status_T status = cmos_ERR_E;
 
     status = cmos_lib_tree_destroy(s_vfs_tree);
-    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
+    cmos_assert(cmos_OK_E == status, (uint8_t *)__FILE__, __LINE__);
 
     CMOS_TRACE_FUNC_OUT;
     return cmos_OK_E;

@@ -153,10 +153,40 @@ void assert_failed(char *file, cmos_int32_T line)
 
 /*******************************************************************************
 *
+* 函数名  : assert_failed
+* 负责人  : 彭鹏
+* 创建日期: 20151030
+* 函数功能: 断言
+*
+* 输入参数: 断言的bool变量
+*           file 出错源文件名字
+*           line 出错源文件行数
+*
+* 输出参数: 无
+*
+* 返回值  : 无
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void cmos_assert(int flag, char *file, cmos_int32_T line)
+{
+    if(!flag)
+    {
+        printf("%s,%d: assert failed!\n", file, line);
+        fflush(stderr);
+        fflush(stdout);
+        exit(0);
+    }
+}
+
+/*******************************************************************************
+*
 * 函数名  : cmos_console_printf
 * 负责人  : 彭鹏
 * 创建日期: 20151030
-* 函数功能: 控制台打印 模式cmos输出行为
+* 函数功能: 控制台打印 模拟cmos输出行为
 *
 * 输入参数: 与printf参数含义一致
 *
@@ -169,6 +199,39 @@ void assert_failed(char *file, cmos_int32_T line)
 *
 ******************************************************************************/
 cmos_int32_T cmos_console_printf(char *fmt, ...)
+{ 
+    char printf_buf[1024];
+    va_list args;
+    cmos_int32_T n = 0;
+   
+    va_start(args, fmt);
+    n = vsprintf(printf_buf, fmt, args);
+    va_end(args);
+
+    printf(printf_buf);
+    fflush(stdout);
+
+    return n;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_console_printf_poll
+* 负责人  : 彭鹏
+* 创建日期: 20151030
+* 函数功能: 控制台打印 模拟cmos poll输出行为
+*
+* 输入参数: 与printf参数含义一致
+*
+* 输出参数: 无
+*
+* 返回值  : 函数执行状态
+*
+* 调用关系: 无
+* 其 它   : 轮询方式输出
+*
+******************************************************************************/
+cmos_int32_T cmos_console_printf_poll(char *fmt, ...)
 { 
     char printf_buf[1024];
     va_list args;
