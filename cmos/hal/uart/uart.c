@@ -17,6 +17,7 @@
 #include "uart.h"
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f429idiscovery_hardware.h"
+#include "misc.h"
 #include "console.h"
 #include "task.h"
 #include "mutex.h"
@@ -47,12 +48,12 @@ const cmos_hal_driver_T g_uart_driver = {
 static UART_HandleTypeDef s_uart_handle;
 
 /* 写互斥锁 */
-cmos_ipc_mutex_T *s_mutex_write = NULL;
-cmos_task_tcb_T *s_tcb_write = NULL;
+static cmos_ipc_mutex_T *s_mutex_write = NULL;
+static cmos_task_tcb_T *s_tcb_write = NULL;
 
-/* 读互斥锁 */
-cmos_ipc_mutex_T *s_mutex_read = NULL;
-cmos_task_tcb_T *s_tcb_read = NULL;
+/* 读互斥锁 暂未使用 */
+/*static cmos_ipc_mutex_T *s_mutex_read = NULL;
+static cmos_task_tcb_T *s_tcb_read = NULL;*/
 
 /********************************** 函数声明区 *********************************/
 
@@ -79,18 +80,10 @@ void cmos_hal_uart_init(void *para)
 
     /* 申请读写互斥量 */
     s_mutex_write = cmos_ipc_mutex_malloc();
-    if(NULL == s_mutex_write)
-    {
-        CMOS_ERR_STR("cmos_ipc_mutex_malloc failed.");
-        return;
-    }
+    cmos_assert(NULL != s_mutex_write, __FILE__, __LINE__);
 
-    s_mutex_read = cmos_ipc_mutex_malloc();
-    if(NULL == s_mutex_write)
-    {
-        CMOS_ERR_STR("cmos_ipc_mutex_malloc failed.");
-        return;
-    }
+    /*s_mutex_read = cmos_ipc_mutex_malloc();
+    cmos_assert(NULL != s_mutex_read, __FILE__, __LINE__);*/
 
     /* 仅实现一个串口 */
     switch(init_para->uart_index)
@@ -153,7 +146,7 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
     /* 轮询 发送 */
     if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
     {
-        assert_failed(__FILE__, __LINE__);
+        cmos_assert(FALSE, __FILE__, __LINE__);
         return 0;
     }	
 #else
@@ -163,12 +156,12 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
     /* 2、中断 发送 */
     if(HAL_UART_Transmit_IT((UART_HandleTypeDef *)dev_id, (uint8_t *)buf, n_bytes)!= HAL_OK)
     {
-        assert_failed(__FILE__, __LINE__);
+        cmos_assert(FALSE, __FILE__, __LINE__);
         return 0;
     }
 
     /* 3、阻塞 等待传输完成(HAL_UART_TxCpltCallback通知) */
-    s_write_task_id = cmos_task_self();
+    s_tcb_write = cmos_task_self();
     cmos_task_suspend(s_tcb_write);
 #endif
 
