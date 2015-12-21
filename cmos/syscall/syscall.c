@@ -6,7 +6,16 @@
  * 版本号  ： 1.1
  * 文件描述： 封装CMOS内部各模块 对应用层提供统一接口
  * 版权说明： Copyright (c) GNU
- * 其    他： 无
+ * 其    他： 系统调用包含3部分:
+ *            1. 用户态  执行类似锁定等需要用户态执行的逻辑
+ *            2. svc执行 状态切换
+ *            3. 内核态  执行特权级下执行的逻辑 由于svc中的级别很高 等效于关中断
+ *
+ *            _u 用户态代码
+ *            _p 内核态代码
+ *            syscall.s 中完成svc指令
+ *
+ *            目前仅实现write系统调用
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -102,56 +111,56 @@ void syscall_c(cmos_uint32_T *sp)
         /* 内核基本 */
         case 0x00:
             {
-                cmos_init_c();
+                cmos_init_p();
                 break;
             }
         case 0x01:
             { 
-                cmos_start_c();
+                cmos_start_p();
                 break;
             }
         case 0x02:
             { 
-                sp[0] = cmos_running_c();
+                sp[0] = cmos_running_p();
                 break;
             }
 
         /* 任务控制 */
         case 0x10:
             { 
-                sp[0] = cmos_create_c((cmos_task_id_T *)stacked_r0, (const cmos_task_attribute_T *)stacked_r1);
+                sp[0] = cmos_create_p((cmos_task_id_T *)stacked_r0, (const cmos_task_attribute_T *)stacked_r1);
                 break;
             }
 
         /* 时间管理 */
         case 0x20:
             { 
-                sp[0] = cmos_delay_c((cmos_int32_T)stacked_r0);
+                sp[0] = cmos_delay_p((cmos_int32_T)stacked_r0);
                 break;
             }
 
         /* 任务通信与同步 */
         case 0x30:
             {
-                cmos_enable_interrupt_c();
+                cmos_enable_interrupt_p();
                 break;
             }
 
         case 0x31:
             {
-                cmos_disable_interrupt_c();
+                cmos_disable_interrupt_p();
                 break;
             }
 
         case 0x32:
             {
-                cmos_enable_switch_c();
+                cmos_enable_switch_p();
                 break;
             }
 
         case 0x33:
             {
-                cmos_disable_switch_c();
+                cmos_disable_switch_p();
                 break;
             }
 
@@ -159,37 +168,37 @@ void syscall_c(cmos_uint32_T *sp)
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
             { 
-                sp[0] = cmos_open_c((const cmos_uint8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
+                sp[0] = cmos_open_p((const cmos_uint8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
                 break;
             }
         case 0xa1:
             {
-                sp[0] = cmos_close_c((cmos_uint32_T)stacked_r0); 
+                sp[0] = cmos_close_p((cmos_uint32_T)stacked_r0); 
                 break;
             }
         case 0xa2:
             {
-                sp[0] = cmos_read_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_read_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa3:
             {
-                sp[0] = cmos_write_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_write_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa4:
             {
-                sp[0] = cmos_ioctl_c((cmos_int32_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
+                sp[0] = cmos_ioctl_p((cmos_int32_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
                 break;
             }
         case 0xa5:
             {
-                sp[0] = cmos_read_poll_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_read_poll_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa6:
             {
-                sp[0] = cmos_write_poll_c((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_write_poll_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         default:
@@ -204,21 +213,19 @@ void syscall_c(cmos_uint32_T *sp)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_init_c
+ * 函数名  : cmos_init_p
  * 负责人  : 彭鹏
  * 创建日期：20151119 
- * 函数功能: 内核初始化
+ * 函数功能: 内核初始化 特权
  *
  * 输入参数: 无
  * 输出参数: 无
- *
- * 返回值  : 执行状态
- *          
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-inline void cmos_init_c(void)
+inline void cmos_init_p(void)
 {
    cmos_kernel_init();
 }
@@ -226,20 +233,19 @@ inline void cmos_init_c(void)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_start_c
+ * 函数名  : cmos_start_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 多任务启动
+ * 函数功能: 多任务启动 特权
  *
  * 输入参数: 无
  * 输出参数: 无
- *
- * 返回值  : 函数执行状态
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-inline void cmos_start_c(void)
+inline void cmos_start_p(void)
 {
     cmos_kernel_start();
 }
@@ -249,7 +255,7 @@ inline void cmos_start_c(void)
  * 函数名  : cmos_running_c
  * 负责人  : 彭鹏
  * 创建日期：20151218 
- * 函数功能: 多任务是否启动
+ * 函数功能: 多任务是否启动 特权
  *
  * 输入参数: 无
  * 输出参数: 无
@@ -260,17 +266,17 @@ inline void cmos_start_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline cmos_bool_T cmos_running_c(void)
+inline cmos_bool_T cmos_running_p(void)
 {
     return cmos_kernel_running();
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_create_c
+ * 函数名  : cmos_create_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 创建任务
+ * 函数功能: 创建任务 特权
  *
  * 输入参数: task_attribute 任务入口 任务参数 任务属性 堆栈 优先级 等
  * 输出参数: task_id 任务id号
@@ -281,7 +287,7 @@ inline cmos_bool_T cmos_running_c(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_create_c(cmos_task_id_T *task_id, 
+cmos_status_T cmos_create_p(cmos_task_id_T *task_id, 
         const cmos_task_attribute_T *task_attribute)
 {
     cmos_status_T status = cmos_ERR_E;
@@ -298,10 +304,10 @@ cmos_status_T cmos_create_c(cmos_task_id_T *task_id,
 
 /*******************************************************************************
  *
- * 函数名  : cmos_delay_c
+ * 函数名  : cmos_delay_p
  * 负责人  : 彭鹏
  * 创建日期：20151123 
- * 函数功能: 延迟当前任务
+ * 函数功能: 延迟当前任务 特权
  *
  * 输入参数: 延迟时间(CMOS_TICK_TIMES)数
  * 输出参数: 无
@@ -312,101 +318,93 @@ cmos_status_T cmos_create_c(cmos_task_id_T *task_id,
  * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
  *
  ******************************************************************************/
-inline cmos_status_T cmos_delay_c(cmos_int32_T millisec)
+inline cmos_status_T cmos_delay_p(cmos_int32_T millisec)
 {
     return cmos_task_delay(millisec);
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_enable_interrupt_c
+ * 函数名  : cmos_enable_interrupt_p
  * 负责人  : 彭鹏
  * 创建日期：20151201 
- * 函数功能: 开中断
+ * 函数功能: 开中断 特权
  *
  * 输入参数: 无
  * 输出参数: 无
- *
  * 返回值  : 无
- *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-inline void cmos_enable_interrupt_c(void)
+inline void cmos_enable_interrupt_p(void)
 {
     cmos_hal_cortex_cortex_disable_interrupt();
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_disable_interrupt_c
+ * 函数名  : cmos_disable_interrupt_p
  * 负责人  : 彭鹏
  * 创建日期：20151201 
- * 函数功能: 关中断
+ * 函数功能: 关中断 特权
  *
  * 输入参数: 无
  * 输出参数: 无
- *
  * 返回值  : 无
- *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-inline void cmos_disable_interrupt_c(void)
+inline void cmos_disable_interrupt_p(void)
 {
     cmos_hal_cortex_cortex_enable_interrupt();
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_enable_switch_c
+ * 函数名  : cmos_enable_switch_p
  * 负责人  : 彭鹏
  * 创建日期：20151201 
- * 函数功能: 开调度器锁
+ * 函数功能: 开调度器锁 特权
  *
  * 输入参数: 无
  * 输出参数: 无
- *
  * 返回值  : 无
- *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-inline void cmos_enable_switch_c(void)
+inline void cmos_enable_switch_p(void)
 {
     cmos_hal_cortex_cortex_enable_switch();
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_disable_switch_c
+ * 函数名  : cmos_disable_switch_p
  * 负责人  : 彭鹏
  * 创建日期：20151201 
- * 函数功能: 关调度器锁
+ * 函数功能: 关调度器锁 特权
  *
  * 输入参数: 无
  * 输出参数: 无
- *
  * 返回值  : 无
- *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-inline void cmos_disable_switch_c(void)
+inline void cmos_disable_switch_p(void)
 {
     cmos_hal_cortex_cortex_disalbe_switch();
 }
 
 /*******************************************************************************
  *
- * 函数名  : cmos_open_c
+ * 函数名  : cmos_open_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 系统调用cmos_open的C语言主逻辑
+ * 函数功能: 系统调用cmos_open 特权
  *
  * 输入参数: path vfs的路径
  *           flag 调用标记
@@ -420,7 +418,7 @@ inline void cmos_disable_switch_c(void)
  * 其 它   : TODO: 完成 实际功能
  *
  ******************************************************************************/
-cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
+cmos_int32_T cmos_open_p(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
 { 
     if(NULL == path)
     {
@@ -445,23 +443,20 @@ cmos_int32_T cmos_open_c(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_close_c
+ * 函数名  : cmos_close_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 系统调用cmos_close的C语言主逻辑
+ * 函数功能: 系统调用cmos_close 特权
  *
- * 输入参数: 
- *           fd      文件句柄
+ * 输入参数: fd 文件句柄
  *
  * 输出参数: 无
- *
- * 返回值  : 实际写入字节数
- *          
+ * 返回值  : 执行状态
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_close_c(cmos_int32_T fd)
+cmos_status_T cmos_close_p(cmos_int32_T fd)
 {
     if(fd < 0)
     {
@@ -474,10 +469,10 @@ cmos_status_T cmos_close_c(cmos_int32_T fd)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_read_c
+ * 函数名  : cmos_read_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 系统调用cmos_read的C语言主逻辑
+ * 函数功能: 系统调用cmos_read 特权
  *
  * 输入参数: 
  *           fd      文件句柄
@@ -485,14 +480,12 @@ cmos_status_T cmos_close_c(cmos_int32_T fd)
  *           n_bytes 要求读取的字节数
  *
  * 输出参数: 无
- *
  * 返回值  : 实际读取字节数
- *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_read_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -516,10 +509,10 @@ cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_read_c
+ * 函数名  : cmos_read_poll_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 系统调用cmos_read_poll的C语言主逻辑
+ * 函数功能: 系统调用cmos_read_poll 特权
  *
  * 输入参数: 
  *           fd      文件句柄
@@ -527,14 +520,12 @@ cmos_int32_T cmos_read_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  *           n_bytes 要求读取的字节数
  *
  * 输出参数: 无
- *
  * 返回值  : 实际读取字节数
- *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_read_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -558,10 +549,10 @@ cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_write_c
+ * 函数名  : cmos_write_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 系统调用cmos_write的C语言主逻辑
+ * 函数功能: 系统调用cmos_write 特权
  *
  * 输入参数: 
  *           fd      文件句柄
@@ -569,14 +560,12 @@ cmos_int32_T cmos_read_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  *           n_bytes 要求写入的字节数
  *
  * 输出参数: 无
- *
  * 返回值  : 实际写入字节数
- *          
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_write_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -600,10 +589,30 @@ cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_write_poll_c
+ * 函数名  : cmos_write_u
+ * 负责人  : 彭鹏
+ * 创建日期：20151221 
+ * 函数功能: 系统调用cmos_write 用户
+ *           处理锁定相关等需要用户态处理的逻辑
+ *
+ * 输入参数: 无 (栈留给_p处理)
+ * 输出参数: 无
+ * 返回值  : 实际写入字节数
+ * 调用关系: syscall.s中使用
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_write_u(void)
+{
+    ;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_write_poll_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 系统调用cmos_write_poll的C语言主逻辑
+ * 函数功能: 系统调用cmos_write_poll 特权
  *
  * 输入参数: 
  *           fd      文件句柄
@@ -618,7 +627,7 @@ cmos_int32_T cmos_write_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_write_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 {
     if(fd < 0)
     {
@@ -642,10 +651,10 @@ cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_ioctl_c
+ * 函数名  : cmos_ioctl_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
- * 函数功能: 系统调用cmos_ioctl的C语言主逻辑
+ * 函数功能: 系统调用cmos_ioctl 特权
  *
  * 输入参数: 
  *           fd      文件句柄
@@ -660,7 +669,7 @@ cmos_int32_T cmos_write_poll_c(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_ioctl_c(cmos_int32_T fd, cmos_uint32_T request, ...)
+cmos_status_T cmos_ioctl_p(cmos_int32_T fd, cmos_uint32_T request, ...)
 { 
     if(fd < 0)
     {

@@ -101,15 +101,14 @@ cmos_read       PROC
                 BX  LR
                 ENDP
 
-                ; 研究write加锁 
 cmos_write      PROC
                 EXPORT cmos_write
-                ; svc之前加锁
-                ;IMPORT cmos_write_before_c 
-                ;cmos_ipc_mutex_lock(s_mutex_write);
-                LDR     R0, =cmos_write_before_c
+                ; TODO: 参数的问题?
+                IMPORT cmos_write_u
+                ;PUSH    R0
+                LDR     R0, =cmos_write_u       ; svc之前加锁
                 BLX     R0
-                ; svc之前加锁
+                ;POP     R0
                 SVC 0xa3
                 BX  LR
                 ENDP
