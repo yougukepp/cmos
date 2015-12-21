@@ -6,7 +6,14 @@
  * 版本号  ： v1.1
  * 文件描述： 实现文件描述符列表
  * 版权说明： Copyright (c) 2000-2020 GNU
- * 其    他： 无
+ * 其    他： cmos_fd_open
+ *            cmos_fd_read
+ *            cmos_fd_write
+ *            cmos_fd_ioctl
+ *            cmos_fd_close
+ *            cmos_fd_read_poll
+ *            cmos_fd_write_poll
+ *            7个操作在svc后调用 所以不考虑锁
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -19,6 +26,7 @@
 #include "console.h"
 #include "vfs.h"
 #include "fd.h"
+#include "misc.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -46,6 +54,44 @@
 ******************************************************************************/
 cmos_fd_fcb_T *cmos_fd_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 {
+    cmos_assert(NULL != path, __FILE__, __LINE__);
+
+    cmos_fd_fcb_T *fcb = NULL;
+
+    cmos_int32_T path_length = 0;
+    cmos_uint8_T *path_str = NULL;
+
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+    cmos_fd_mutex_T *mutex_lock = NULL;
+
+#if 0
+    /* step1: 分配文件控制块 */
+    fcb = cmos_malloc(sizeof(cmos_fd_fcb_T));
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+
+    /* step2: 存储path路径 */
+    path_length = strlen(path);
+    path_str = cmos_malloc(path_length + 1);
+    cmos_strcat(path_str, path, path_length);
+    cmos_fd_fcb_set_path(fcb, path_str);
+
+    /* step3: 设置对应驱动 */
+    driver = vfs_get_driver_by_path(path);
+    cmos_assert(NULL != driver, __FILE__, __LINE__);
+    cmos_fd_fcb_set_driver(fcb, driver);
+
+    /* step4: 执行驱动对应open函数 获取驱动相关句柄 */
+    driver_id = driver->open(path, flag, mode);
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__);
+    cmos_fd_fcb_set_driver_id(fcb, driver_id);
+
+    /* step5: 初始化锁 */
+    mutex_lock = cmos_fd_mutex_malloc();
+    cmos_assert(NULL != mutex_lock, __FILE__, __LINE__);
+    cmos_fd_fcb_set_lock(fcb, mutex_lock);
+#endif
+
     return NULL;
 }
 

@@ -15,6 +15,7 @@
 #define _CMOS_LIB_MISC_H_
 
 /************************************ 头文件 ***********************************/
+#include "string.h"
 #include "cmos_config.h"
 
 /************************************ 宏定义 ***********************************/
@@ -41,6 +42,7 @@
 void assert_failed(uint8_t* file, uint32_t line);
 void cmos_assert(cmos_bool_T flag, uint8_t* file, uint32_t line);
 void err_loop(void);
+void cmos_strcat(cmos_uint8_T *dst, const cmos_uint8_T *src, cmos_int32_T len);
 
 #endif /* _CMOS_LIB_MISC_H_ */
 
