@@ -24,7 +24,170 @@
 
 /********************************** 变量声明区 *********************************/
 
+/********************************** 函数声明区 *********************************/
 
+/********************************** 函数实现区 *********************************/
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_open
+* 负责人  : 彭鹏
+* 创建日期: 20151221
+* 函数功能: 打开path指示的文件
+*
+* 输入参数: path 文件路径
+*           flag 打开flag
+*           mode 模式
+*           参数规则参考Linux open
+* 输出参数: 无
+* 返回值  : 文件句柄
+* 调用关系: 无
+* 其 它   : TODO: 实现多设备管理
+*
+******************************************************************************/
+cmos_fd_fcb_T *cmos_fd_open(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
+{
+    return NULL;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_read
+* 负责人  : 彭鹏
+* 创建日期: 20151221
+* 函数功能: 读取fd指示的文件
+*
+* 输入参数: fd      文件句柄
+*           buf     缓冲
+*           n_bytes 缓冲大小
+*           参数规则见Linux read
+* 输出参数: 无
+*
+* 返回值  : 读取字节数
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T cmos_fd_read(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes)
+{
+    return 0;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_write
+* 负责人  : 彭鹏
+* 创建日期: 20151221
+* 函数功能: 写入fd指示的文件
+*
+* 输入参数: fd      文件句柄
+*           buf     缓冲
+*           n_bytes 缓冲大小
+*           参数规则见Linux write
+* 输出参数: 无
+*
+* 返回值  : 写入字节数
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T cmos_fd_write(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes)
+{
+    return 0;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_ioctl
+* 负责人  : 彭鹏
+* 创建日期: 20151221
+* 函数功能: 控制fd指示的文件
+*
+* 输入参数: fd      文件句柄
+*           request 请求号码定义于cmos_api.h
+*           mode    控制模式(可选参数)
+*           参数规则见Linux ioctl
+* 输出参数: 无
+* 返回值  : 执行状态
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_status_T cmos_fd_ioctl(cmos_fd_fcb_T *fd, cmos_uint32_T request, cmos_uint32_T mode)
+{
+    return cmos_ERR_E;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_close
+* 负责人  : 彭鹏
+* 创建日期: 20151221
+* 函数功能: 关闭fd指示的文件
+*
+* 输入参数: fd 文件句柄
+* 输出参数: 无
+* 返回值  : 执行状态
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_status_T cmos_fd_close(cmos_fd_fcb_T *fd)
+{
+    return cmos_ERR_E;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_read_poll
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: 读取fd指示的文件(轮询)
+*
+* 输入参数: fd      文件句柄
+*           buf     缓冲
+*           n_bytes 缓冲大小
+*           参数规则见Linux read
+* 输出参数: 无
+*
+* 返回值  : 读取字节数
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T cmos_fd_read_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes)
+{
+    return 0;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_write_poll
+* 负责人  : 彭鹏
+* 创建日期: 20151218
+* 函数功能: 写入fd指示的文件(轮询)
+*
+* 输入参数: fd      文件句柄
+*           buf     缓冲
+*           n_bytes 缓冲大小
+*           参数规则见Linux write
+* 输出参数: 无
+*
+* 返回值  : 写入字节数
+*
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes)
+{
+    return 0;
+}
+
+
+#if 0
 /********************************** 函数声明区 *********************************/
 static cmos_status_T syscall_fd_get_fd_list_item(cmos_hal_driver_T **driver, void **driver_id, cmos_int32_T index);
 
@@ -33,7 +196,7 @@ static cmos_status_T syscall_fd_get_fd_list_item(cmos_hal_driver_T **driver, voi
 /*
  * FIXME:所有操作加锁 
  * */
-static syscall_fd_item_T s_syscall_fd_list[CMOS_VFS_FD_MAX] = {{0}};    /* fd 列表 */
+static cmos_syscall_fd_T s_syscall_fd_list[CMOS_VFS_FD_MAX] = {{0}};    /* fd 列表 */
 static cmos_int32_T s_syscall_fd_list_index = 0;                    /* fd 列表索引 */
 
 /********************************** 函数实现区 *********************************/
@@ -49,9 +212,7 @@ static cmos_int32_T s_syscall_fd_list_index = 0;                    /* fd 列表
 *           mode 模式
 *           参数规则参考Linux open
 * 输出参数: 无
-*
 * 返回值  : 文件句柄
-*
 * 调用关系: 无
 * 其 它   : TODO: 实现多设备管理
 *
@@ -439,7 +600,7 @@ cmos_status_T syscall_fd_close(cmos_int32_T fd)
 ******************************************************************************/
 static cmos_status_T syscall_fd_get_fd_list_item(cmos_hal_driver_T **driver, void **driver_id, cmos_int32_T index)
 {
-    syscall_fd_item_T *fd_item = NULL;
+    cmos_syscall_fd_T *fd_item = NULL;
 
     if((index < 0)
     || (index >= CMOS_VFS_FD_MAX))
@@ -454,4 +615,4 @@ static cmos_status_T syscall_fd_get_fd_list_item(cmos_hal_driver_T **driver, voi
 
     return cmos_OK_E;
 }
-
+#endif

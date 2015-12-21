@@ -29,7 +29,7 @@ typedef cmos_int32_T (*write_func_T)(cmos_int32_T fd, void *buf, cmos_int32_T n_
 /********************************** 变量声明区 *********************************/
 /* 控制台文件句柄 */
 /* 仅init(单任务)中写 其他都是读 故无需锁 */
-static cmos_int32_T s_console_uart_fd = 0;
+static cmos_fd_T s_console_uart_fd = 0;
 
 /********************************** 函数声明区 *********************************/
 
@@ -54,7 +54,7 @@ static cmos_int32_T s_console_uart_fd = 0;
 void cmos_console_init(cmos_int32_T baud_rate)
 {
     s_console_uart_fd = cmos_open_p(CMOS_CONSOLE_PATH, CMOS_O_RDWR); 
-    cmos_assert(-1 != s_console_uart_fd, __FILE__, __LINE__);
+    cmos_assert(NULL == s_console_uart_fd, __FILE__, __LINE__);
 
     /* FIXME:暂时未实现uart ioctl系统调用 */
     /* 波特率的设置位于 hal/hardware/stm32f429idiscovery_hardware.c */

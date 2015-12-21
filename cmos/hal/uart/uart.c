@@ -20,7 +20,6 @@
 #include "misc.h"
 #include "console.h"
 #include "task.h"
-#include "mutex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -47,14 +46,6 @@ const cmos_hal_driver_T g_uart_driver = {
 /* STM32F4Cube HAL驱动 */
 static UART_HandleTypeDef s_uart_handle;
 
-/* 写互斥锁 */
-static cmos_ipc_mutex_T *s_mutex_write = NULL;
-static cmos_task_tcb_T *s_tcb_write = NULL;
-
-/* 读互斥锁 暂未使用 */
-/*static cmos_ipc_mutex_T *s_mutex_read = NULL;
-static cmos_task_tcb_T *s_tcb_read = NULL;*/
-
 /********************************** 函数声明区 *********************************/
 
 /********************************** 函数实现区 *********************************/
@@ -77,13 +68,6 @@ static cmos_task_tcb_T *s_tcb_read = NULL;*/
 void cmos_hal_uart_init(void *para)
 { 
     const cmos_hal_uart_init_para_T *init_para = para;
-
-    /* 申请读写互斥量 */
-    s_mutex_write = cmos_ipc_mutex_malloc();
-    cmos_assert(NULL != s_mutex_write, __FILE__, __LINE__);
-
-    /*s_mutex_read = cmos_ipc_mutex_malloc();
-    cmos_assert(NULL != s_mutex_read, __FILE__, __LINE__);*/
 
     /* 仅实现一个串口 */
     switch(init_para->uart_index)
@@ -153,18 +137,12 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
 
 static cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
-    /* step1: 自旋锁定 避免多次访问 */ 
-    cmos_ipc_mutex_spin_lock(s_mutex_write);
-
-    /* step2: 轮询 发送 */
+    /* 轮询 发送 */
     if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
     {
         assert_failed(__FILE__, __LINE__);
         return 0;
     }	
-
-    /* step3: 解锁 */ 
-    cmos_ipc_mutex_spin_unlock(s_mutex_write);
 
     return n_bytes;
 }
@@ -183,10 +161,8 @@ void UART1_IRQHandler(void)
 /* 串口传输完成回调 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
+    /* TODO: */
     /* 1、恢复发送任务 */
-    cmos_task_resume(s_tcb_write);
-
     /* 2、解锁发送功能 */
-    cmos_ipc_mutex_unlock(s_mutex_write);
 }
 

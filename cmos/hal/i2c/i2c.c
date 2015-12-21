@@ -21,7 +21,6 @@
 #include "misc.h"
 #include "console.h"
 #include "task.h"
-#include "mutex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -55,14 +54,6 @@ static cmos_i2c_addr_T s_i2c_addr =
     .reg_offset = 0xff
 };
 
-/* 写互斥锁 暂未使用 */
-/*static cmos_ipc_mutex_T *s_mutex_write = NULL;
-static cmos_task_tcb_T *s_tcb_write = NULL; */
-
-/* 读互斥锁 */
-static cmos_ipc_mutex_T *s_mutex_read = NULL;
-static cmos_task_tcb_T *s_tcb_read = NULL;
-
 /********************************** 函数声明区 *********************************/
 
 /********************************** 函数实现区 *********************************/
@@ -85,9 +76,6 @@ static cmos_task_tcb_T *s_tcb_read = NULL;
 void cmos_hal_i2c_init(void *para)
 {
     const cmos_hal_i2c_init_para_T *init_para = para;
-
-    s_mutex_read = cmos_ipc_mutex_malloc();
-    cmos_assert(NULL != s_mutex_read, __FILE__, __LINE__);
 
     if(HAL_I2C_STATE_RESET != HAL_I2C_GetState(&s_i2c_handle))
     {
@@ -141,19 +129,12 @@ static cmos_int32_T i2c_read(const void *dev_id, void *buf, cmos_int32_T n_bytes
     cmos_assert((NULL != buf) && (n_bytes > 0), __FILE__, __LINE__);
     cmos_assert(((0xff != s_i2c_addr.dev_addr) && (0xff != s_i2c_addr.reg_offset)), __FILE__, __LINE__); 
 
-    /* 1、锁定i2c 避免多次访问 */ 
-    cmos_ipc_mutex_lock(s_mutex_read);
-
-    /* 2、中断 读取 */
+    /* 中断 读取 */
     if(HAL_OK != HAL_I2C_Mem_Read_IT((I2C_HandleTypeDef *)dev_id, s_i2c_addr.dev_addr, s_i2c_addr.reg_offset,
                 I2C_MEMADD_SIZE_8BIT, buf, (cmos_uint16_T)(n_bytes)))
     {
         cmos_assert(FALSE, __FILE__, __LINE__);
     }
-
-    /* 3、阻塞 等待传输完成(HAL_I2C_TxCpltCallback通知) */
-    s_tcb_read = cmos_task_self();
-    cmos_task_suspend(s_tcb_read);
 
     return 0;
 }
@@ -241,10 +222,8 @@ void I2C3_EV_IRQHandler(void)
 /* I2C读取完成回调 */
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
+    /* TODO: */
     /* 1、恢复接收任务 */
-    cmos_task_resume(s_tcb_read);
-
     /* 2、解锁接收功能 */
-    cmos_ipc_mutex_unlock(s_mutex_read);
 }
 

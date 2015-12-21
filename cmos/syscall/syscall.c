@@ -32,7 +32,6 @@
 #include "cortex.h"
 #include "console.h"
 #include "kernel.h"
-#include "fd.h"
 #include "task.h"
 #include "switch.h"
 
@@ -168,37 +167,37 @@ void syscall_c(cmos_uint32_T *sp)
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
             { 
-                sp[0] = cmos_open_p((const cmos_uint8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
+                sp[0] = (cmos_fd_T)cmos_open_p((const cmos_uint8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
                 break;
             }
         case 0xa1:
             {
-                sp[0] = cmos_close_p((cmos_uint32_T)stacked_r0); 
+                sp[0] = cmos_close_p((cmos_fd_T)stacked_r0); 
                 break;
             }
         case 0xa2:
             {
-                sp[0] = cmos_read_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_read_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa3:
             {
-                sp[0] = cmos_write_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_write_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa4:
             {
-                sp[0] = cmos_ioctl_p((cmos_int32_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
+                sp[0] = cmos_ioctl_p((cmos_fd_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
                 break;
             }
         case 0xa5:
             {
-                sp[0] = cmos_read_poll_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_read_poll_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa6:
             {
-                sp[0] = cmos_write_poll_p((cmos_int32_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_write_poll_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         default:
@@ -418,15 +417,11 @@ inline void cmos_disable_switch_p(void)
  * 其 它   : TODO: 完成 实际功能
  *
  ******************************************************************************/
-cmos_int32_T cmos_open_p(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
+cmos_fd_T cmos_open_p(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
 { 
-    if(NULL == path)
-    {
-        CMOS_ERR_STR("open path is null.");
-        return -1;
-    }
+    cmos_assert(NULL != path, __FILE__, __LINE__);
 
-    cmos_int32_T fd = 0;
+    cmos_fd_T fd = 0;
     cmos_uint32_T mode = 0;
 
     va_list args;
@@ -436,7 +431,7 @@ cmos_int32_T cmos_open_p(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
     va_end(args);
 
     /* 返回的是指针 */
-    fd = syscall_fd_open(path, flag, mode);
+    fd = (cmos_fd_T)cmos_fd_open(path, flag, mode);
 
     return fd;
 }
@@ -456,15 +451,11 @@ cmos_int32_T cmos_open_p(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_close_p(cmos_int32_T fd)
+cmos_status_T cmos_close_p(cmos_fd_T fd)
 {
-    if(fd < 0)
-    {
-        CMOS_ERR_STR("close fd < 0.");
-        return cmos_PARA_E;
-    }
+    cmos_assert(0 != fd, __FILE__, __LINE__);
 
-    return syscall_fd_close(fd);
+    return cmos_fd_close((cmos_fd_fcb_T *)fd);
 }
 
 /*******************************************************************************
@@ -474,8 +465,7 @@ cmos_status_T cmos_close_p(cmos_int32_T fd)
  * 创建日期：20151023 
  * 函数功能: 系统调用cmos_read 特权
  *
- * 输入参数: 
- *           fd      文件句柄
+ * 输入参数: fd      文件句柄
  *           buf     读取数据的缓存
  *           n_bytes 要求读取的字节数
  *
@@ -485,24 +475,15 @@ cmos_status_T cmos_close_p(cmos_int32_T fd)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_read_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_read_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
 {
-    if(fd < 0)
-    {
-        CMOS_ERR_STR("read fd < 0.");
-        return cmos_PARA_E;
-    }
-
-    if((NULL == buf)
-    || (n_bytes <= 0))
-    {
-        CMOS_ERR_STR("read buf err.");
-        return cmos_PARA_E;
-    }
+    cmos_assert(0 != fd, __FILE__, __LINE__);
+    cmos_assert(NULL != buf, __FILE__, __LINE__);
+    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
 
     cmos_int32_T n_reads = 0;
 
-    n_reads = syscall_fd_read(fd, buf, n_bytes);
+    n_reads = cmos_fd_read((cmos_fd_fcb_T *)fd, buf, n_bytes);
 
     return n_reads;
 }
@@ -514,8 +495,7 @@ cmos_int32_T cmos_read_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 创建日期：20151023 
  * 函数功能: 系统调用cmos_read_poll 特权
  *
- * 输入参数: 
- *           fd      文件句柄
+ * 输入参数: fd      文件句柄
  *           buf     读取数据的缓存
  *           n_bytes 要求读取的字节数
  *
@@ -525,24 +505,15 @@ cmos_int32_T cmos_read_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_read_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_read_poll_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
 {
-    if(fd < 0)
-    {
-        CMOS_ERR_STR("read fd < 0.");
-        return cmos_PARA_E;
-    }
-
-    if((NULL == buf)
-    || (n_bytes <= 0))
-    {
-        CMOS_ERR_STR("read buf err.");
-        return cmos_PARA_E;
-    }
+    cmos_assert(0 != fd, __FILE__, __LINE__);
+    cmos_assert(NULL != buf, __FILE__, __LINE__);
+    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
 
     cmos_int32_T n_reads = 0;
 
-    n_reads = syscall_fd_read_poll(fd, buf, n_bytes);
+    n_reads = cmos_fd_read_poll((cmos_fd_fcb_T *)fd, buf, n_bytes);
 
     return n_reads;
 }
@@ -554,8 +525,7 @@ cmos_int32_T cmos_read_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 创建日期：20151023 
  * 函数功能: 系统调用cmos_write 特权
  *
- * 输入参数: 
- *           fd      文件句柄
+ * 输入参数: fd      文件句柄
  *           buf     写入数据的缓存
  *           n_bytes 要求写入的字节数
  *
@@ -565,24 +535,15 @@ cmos_int32_T cmos_read_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_write_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_write_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
 {
-    if(fd < 0)
-    {
-        CMOS_ERR_STR("write fd < 0.");
-        return cmos_PARA_E;
-    }
-
-    if((NULL == buf)
-    || (n_bytes <= 0))
-    {
-        CMOS_ERR_STR("write buf err.");
-        return cmos_PARA_E;
-    }
+    cmos_assert(0 != fd, __FILE__, __LINE__);
+    cmos_assert(NULL != buf, __FILE__, __LINE__);
+    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
 
     cmos_int32_T n_writes = 0;
 
-    n_writes = syscall_fd_write(fd, buf, n_bytes);
+    n_writes = cmos_fd_write((cmos_fd_fcb_T *)fd, buf, n_bytes);
 
     return n_writes;
 }
@@ -627,24 +588,15 @@ void cmos_write_u(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_int32_T cmos_write_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_write_poll_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
 {
-    if(fd < 0)
-    {
-        CMOS_ERR_STR("write fd < 0.");
-        return cmos_PARA_E;
-    }
-
-    if((NULL == buf)
-    || (n_bytes <= 0))
-    {
-        CMOS_ERR_STR("write buf err.");
-        return cmos_PARA_E;
-    }
+    cmos_assert(0 != fd, __FILE__, __LINE__);
+    cmos_assert(NULL != buf, __FILE__, __LINE__);
+    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
 
     cmos_int32_T n_writes = 0;
 
-    n_writes = syscall_fd_write_poll(fd, buf, n_bytes);
+    n_writes = cmos_fd_write_poll((cmos_fd_fcb_T *)fd, buf, n_bytes);
 
     return n_writes;
 }
@@ -656,8 +608,7 @@ cmos_int32_T cmos_write_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 创建日期：20151023 
  * 函数功能: 系统调用cmos_ioctl 特权
  *
- * 输入参数: 
- *           fd      文件句柄
+ * 输入参数: fd      文件句柄
  *           buf     操作类型
  *           n_bytes 由操作类型决定
  *
@@ -669,13 +620,9 @@ cmos_int32_T cmos_write_poll_p(cmos_int32_T fd, void *buf, cmos_int32_T n_bytes)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_ioctl_p(cmos_int32_T fd, cmos_uint32_T request, ...)
+cmos_status_T cmos_ioctl_p(cmos_fd_T fd, cmos_uint32_T request, ...)
 { 
-    if(fd < 0)
-    {
-        CMOS_ERR_STR("ioctl fd < 0.");
-        return cmos_PARA_E;
-    }
+    cmos_assert(0 != fd, __FILE__, __LINE__);
 
     cmos_status_T status = cmos_ERR_E;
     cmos_uint32_T mode = 0;
@@ -686,7 +633,7 @@ cmos_status_T cmos_ioctl_p(cmos_int32_T fd, cmos_uint32_T request, ...)
     va_end(args);
 
     /* 返回的是指针 */
-    status = syscall_fd_ioctl(fd, request, mode);
+    status = cmos_fd_ioctl((cmos_fd_fcb_T *)fd, request, mode);
     return status;
 }
 

@@ -19,7 +19,6 @@
 #include "mutex.h"
 #include "task.h"
 #include "console.h"
-#include "stm32f4xx_hal_conf.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -32,7 +31,7 @@
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
 *
-* 函数名  : cmos_ipc_mutex_malloc
+* 函数名  : cmos_fd_mutex_malloc
 * 负责人  : 彭鹏
 * 创建日期: 20151217
 * 函数功能: 分配一个互斥量
@@ -45,14 +44,14 @@
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
+cmos_fd_mutex_T *cmos_fd_mutex_malloc(void)
 { 
-    cmos_ipc_mutex_T *mutex = NULL;
+    cmos_fd_mutex_T *mutex = NULL;
 
-    mutex = cmos_malloc(sizeof(cmos_ipc_mutex_T));
+    mutex = cmos_malloc(sizeof(cmos_fd_mutex_T));
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
-    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
+    mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
     mutex->highest_blocked_tcb = NULL;
     cmos_lib_list_init(&(mutex->blocked_tcb_list));
 
@@ -61,7 +60,7 @@ cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_ipc_mutex_lock
+* 函数名  : cmos_fd_mutex_lock
 * 负责人  : 彭鹏
 * 创建日期: 20151217
 * 函数功能: 互斥加锁
@@ -74,7 +73,7 @@ cmos_ipc_mutex_T *cmos_ipc_mutex_malloc(void)
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
+void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 {
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
@@ -82,9 +81,9 @@ void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
     cmos_priority_T highest_priority = cmos_priority_err;
     cmos_priority_T curr_priority = cmos_priority_err;
 
-    if(CMOS_IPC_MUTEX_UNLOCKED == mutex->lock)
+    if(CMOS_FD_MUTEX_UNLOCKED == mutex->lock)
     { 
-        mutex->lock = CMOS_IPC_MUTEX_LOCKED;
+        mutex->lock = CMOS_FD_MUTEX_LOCKED;
         /* 此后为关键域 */
         return;
     }
@@ -123,7 +122,7 @@ void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_ipc_mutex_unlock
+* 函数名  : cmos_fd_mutex_unlock
 * 负责人  : 彭鹏
 * 创建日期: 20151217
 * 函数功能: 互斥解锁
@@ -136,7 +135,7 @@ void cmos_ipc_mutex_lock(cmos_ipc_mutex_T *mutex)
 * 其 它   : svc(优先级高与外部中断)中执行等效于关中断 故无法互斥访问
 *
 ******************************************************************************/
-void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
+void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 {
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
@@ -151,13 +150,13 @@ void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
     cmos_task_resume(next_tcb);
 
     /* step4: 解锁 */ 
-    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
+    mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
     /* 此后出关键域 */
 }
 
 /*******************************************************************************
 *
-* 函数名  : cmos_ipc_mutex_spin_lock
+* 函数名  : cmos_fd_mutex_spin_lock
 * 负责人  : 彭鹏
 * 创建日期: 20151218
 * 函数功能: 自旋加锁
@@ -170,15 +169,15 @@ void cmos_ipc_mutex_unlock(cmos_ipc_mutex_T *mutex)
 * 其 它   : 立即返回
 *
 ******************************************************************************/
-inline void cmos_ipc_mutex_spin_lock(cmos_ipc_mutex_T *mutex)
+inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
 {
-    while(CMOS_IPC_MUTEX_LOCKED == mutex->lock);
-    mutex->lock = CMOS_IPC_MUTEX_LOCKED;
+    while(CMOS_FD_MUTEX_LOCKED == mutex->lock);
+    mutex->lock = CMOS_FD_MUTEX_LOCKED;
 }
 
 /*******************************************************************************
 *
-* 函数名  : cmos_ipc_mutex_spin_unlock
+* 函数名  : cmos_fd_mutex_spin_unlock
 * 负责人  : 彭鹏
 * 创建日期: 20151218
 * 函数功能: 解自旋锁
@@ -191,8 +190,8 @@ inline void cmos_ipc_mutex_spin_lock(cmos_ipc_mutex_T *mutex)
 * 其 它   : 立即返回
 *
 ******************************************************************************/
-inline void cmos_ipc_mutex_spin_unlock(cmos_ipc_mutex_T *mutex)
+inline void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex)
 {
-    mutex->lock = CMOS_IPC_MUTEX_UNLOCKED;
+    mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
 }
 
