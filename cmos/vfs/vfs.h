@@ -34,7 +34,7 @@ typedef enum{
 /* vfs结点data域值定义 */
 typedef struct vfs_node_data_T_tag{
     vfs_node_type_E type;
-    cmos_uint8_T    *name;
+    cmos_int8_T     *name;
     cmos_hal_driver_T *driver; /* 驱动指针 */
 }vfs_node_T;
 
@@ -45,10 +45,10 @@ typedef struct vfs_node_data_T_tag{
 /*********************************** 接口函数 **********************************/
 cmos_status_T vfs_init(void);
 cmos_status_T vfs_destroy(void);
-cmos_hal_driver_T *vfs_get_driver_by_path(const cmos_uint8_T *path);
+cmos_hal_driver_T *vfs_get_driver_by_path(const cmos_int8_T *path);
 void vfs_print(void);
-cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
-        const cmos_uint8_T *name, vfs_node_type_E type, const void *dirver);
+cmos_status_T vfs_node_add(const cmos_int8_T *dir_path,
+        const cmos_int8_T *name, vfs_node_type_E type, const void *dirver);
 
 #endif /* #ifndef _CMOS_VFS_VFS_H_ */
 

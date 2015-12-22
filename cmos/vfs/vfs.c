@@ -31,10 +31,10 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver);
-static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path);
+static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_int8_T *name, const void *driver);
+static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_int8_T *path);
 static void node_print(cmos_lib_tree_node_T *node, void *para);
-static cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, const cmos_uint8_T *name);
+static cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, const cmos_int8_T *name);
 
 /********************************** 变量实现区 *********************************/
 /* 
@@ -146,7 +146,7 @@ cmos_status_T vfs_destroy(void)
 * 其 它   : TODO:需要对应free否则内存泄露
 *
 ******************************************************************************/
-static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_uint8_T *name, const void *driver)
+static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cmos_int8_T *name, const void *driver)
 {
     CMOS_TRACE_FUNC_IN;
 
@@ -178,7 +178,7 @@ static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cm
         return NULL;
     }
     data->type = type;
-    data->name = (cmos_uint8_T *)name;
+    data->name = (cmos_int8_T *)name;
     data->driver = (void *)driver;
 
     /* 树结点 */
@@ -214,8 +214,8 @@ static cmos_lib_tree_node_T *vfs_tree_node_malloc(vfs_node_type_E type, const cm
 * 其 它   : TODO:需要对应free否则内存泄露
 *
 ******************************************************************************/
-cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
-        const cmos_uint8_T *name, 
+cmos_status_T vfs_node_add(const cmos_int8_T *dir_path,
+        const cmos_int8_T *name, 
         vfs_node_type_E type,
         const void *driver)
 {
@@ -285,7 +285,7 @@ cmos_status_T vfs_node_add(const cmos_uint8_T *dir_path,
 * 其 它   : 无
 *
 ******************************************************************************/
-static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
+static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_int8_T *path)
 {
     CMOS_TRACE_FUNC_IN;
     if(NULL == path) 
@@ -299,12 +299,12 @@ static cmos_lib_tree_node_T *vfs_get_tree_node(const cmos_uint8_T *path)
     }
 
     cmos_status_T status = cmos_ERR_E;
-    const cmos_uint8_T *go_path = path;
+    const cmos_int8_T *go_path = path;
     cmos_lib_tree_node_T *last_node = NULL;
     cmos_lib_tree_node_T *now_node = NULL;
     cmos_int32_T i = 0;
     cmos_int32_T depth = 0;
-    cmos_uint8_T name[CMOS_VFS_NAME_MAX] = {0};
+    cmos_int8_T name[CMOS_VFS_NAME_MAX] = {0};
 
     /* 初始为根结点 */
     last_node = cmos_lib_tree_root(s_vfs_tree);
@@ -367,7 +367,7 @@ found:
 * 其 它   : 无
 *
 ******************************************************************************/
-const cmos_uint8_T *vfs_node_name(vfs_node_T *node)
+const cmos_int8_T *vfs_node_name(vfs_node_T *node)
 {
     CMOS_TRACE_FUNC_IN;
 
@@ -482,7 +482,7 @@ static void node_print(cmos_lib_tree_node_T *node, void *para)
 * 其 它   : 无
 *
 ******************************************************************************/
-static cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, const cmos_uint8_T *name)
+static cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_node, const cmos_int8_T *name)
 {
     if((NULL == tree_node) 
     || (NULL == name))
@@ -527,7 +527,7 @@ static cmos_lib_tree_node_T *vfs_name_compare(const cmos_lib_tree_node_T *tree_n
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_hal_driver_T *vfs_get_driver_by_path(const cmos_uint8_T *path)
+cmos_hal_driver_T *vfs_get_driver_by_path(const cmos_int8_T *path)
 {
     cmos_lib_tree_node_T *tree_node = NULL;
     vfs_node_T *vfs_node = NULL;

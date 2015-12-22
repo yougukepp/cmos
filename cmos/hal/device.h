@@ -26,8 +26,8 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/ 
-cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver);
-cmos_status_T hal_device_del(const cmos_uint8_T *path);
+cmos_status_T hal_device_add(const cmos_int8_T *name, const void *driver);
+cmos_status_T hal_device_del(const cmos_int8_T *path);
 
 #endif /* #ifndef _CMOS_HAL_DEVICE_H_ */
 

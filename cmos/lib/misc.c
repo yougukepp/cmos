@@ -112,7 +112,7 @@ void err_loop(void)
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_strcat(cmos_uint8_T *dst, const cmos_uint8_T *src, cmos_int32_T len)
+void cmos_strcat(cmos_int8_T *dst, const cmos_int8_T *src, cmos_int32_T len)
 {
     strcat((char*)dst, (char*)src);
     dst[len] = NULL;

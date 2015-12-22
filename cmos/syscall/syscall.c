@@ -167,7 +167,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
             { 
-                sp[0] = (cmos_fd_T)cmos_open_p((const cmos_uint8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
+                sp[0] = (cmos_fd_T)cmos_open_p((const cmos_int8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
                 break;
             }
         case 0xa1:
@@ -417,7 +417,7 @@ inline void cmos_disable_switch_p(void)
  * 其 它   : TODO: 完成 实际功能
  *
  ******************************************************************************/
-cmos_fd_T cmos_open_p(const cmos_uint8_T *path, cmos_uint32_T flag, ...)
+cmos_fd_T cmos_open_p(const cmos_int8_T *path, cmos_uint32_T flag, ...)
 { 
     cmos_assert(NULL != path, __FILE__, __LINE__);
 

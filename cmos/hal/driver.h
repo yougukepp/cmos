@@ -20,7 +20,7 @@
 /************************************ 宏定义 ***********************************/
 
 /*********************************** 类型定义 **********************************/
-typedef void *(*cmos_open_func_T)(const cmos_uint8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
+typedef void *(*cmos_open_func_T)(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
 typedef cmos_int32_T (*cmos_read_func_T)(const void *dev_id, void *buf, cmos_int32_T n_bytes);
 typedef cmos_int32_T (*cmos_write_func_T)(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
 typedef cmos_status_T (*cmos_ioctl_func_T)(const void *dev_id, cmos_uint32_T request, cmos_uint32_T para);

@@ -32,11 +32,11 @@
 /* 可打开的文件数 */
 #define CMOS_VFS_FD_MAX                                         (8)
 /* 文件系统路径 */
-#define CMOS_VFS_ROOT                                           ((const cmos_uint8_T *)("/"))
-#define CMOS_VFS_DEV                                            ((const cmos_uint8_T *)("dev"))
-#define CMOS_VFS_PROC                                           ((const cmos_uint8_T *)("proc"))
-#define CMOS_VFS_DEV_DIR                                        ((const cmos_uint8_T *)("/dev"))
-#define CMOS_VFS_PROC_DIR                                       ((const cmos_uint8_T *)("/proc"))
+#define CMOS_VFS_ROOT                                           ((const cmos_int8_T *)("/"))
+#define CMOS_VFS_DEV                                            ((const cmos_int8_T *)("dev"))
+#define CMOS_VFS_PROC                                           ((const cmos_int8_T *)("proc"))
+#define CMOS_VFS_DEV_DIR                                        ((const cmos_int8_T *)("/dev"))
+#define CMOS_VFS_PROC_DIR                                       ((const cmos_int8_T *)("/proc"))
 #define CMOS_VFS_SEPARATOR                                      (CMOS_VFS_ROOT)
 #define CMOS_VFS_ROOT_LEN                                       (1)
 #define CMOS_VFS_SEPARATOR_LEN                                  (CMOS_VFS_ROOT_LEN)
@@ -69,9 +69,9 @@
 /* 波特率 */
 #define CMOS_CONSOLE_BAUDRATE                                   (115200)
 /* 调试串口名 */
-#define CMOS_CONSOLE_NAME                                       ((const cmos_uint8_T *)("console"))
+#define CMOS_CONSOLE_NAME                                       ((const cmos_int8_T *)("console"))
 /* 调试串口路径 */
-#define CMOS_CONSOLE_PATH                                       ((const cmos_uint8_T *)("/dev/console"))
+#define CMOS_CONSOLE_PATH                                       ((const cmos_int8_T *)("/dev/console"))
 /* 阻塞发送串口数据超时参数 */ 
 #define CMOS_UART_TIMEOUT_DIV                                   (1)
 
@@ -81,9 +81,9 @@
 /* IMU I2C 速度 */
 #define CMOS_IMU_I2C_RATE                                       (100000)
 /* IMU I2C总线名字 */
-#define CMOS_IMU_I2CBUS_NAME                                    ((const cmos_uint8_T *)("imu_i2c"))
+#define CMOS_IMU_I2CBUS_NAME                                    ((const cmos_int8_T *)("imu_i2c"))
 /* IMU I2C总线路径 */
-#define CMOS_IMU_I2CBUS_PATH                                    ((const cmos_uint8_T *)("/dev/imu_i2c"))
+#define CMOS_IMU_I2CBUS_PATH                                    ((const cmos_int8_T *)("/dev/imu_i2c"))
 
 /************************************ USB配置 **********************************/
 /* 不使用USB */

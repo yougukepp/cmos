@@ -35,7 +35,17 @@ typedef struct{
 
 /*********************************** 全局变量 **********************************/
 
-/*********************************** 接口函数 **********************************/
+/*********************************** 接口函数 **********************************/ 
+void cmos_fd_fcb_init(cmos_fd_fcb_T *fcb,
+        const cmos_int8_T *path_str, 
+        const cmos_hal_driver_T *driver, 
+        const void *driver_id, 
+        const cmos_fd_mutex_T *mutex_lock);
+
+void cmos_fd_fcb_set_path(cmos_fd_fcb_T *fcb, const cmos_int8_T *path_str);
+void cmos_fd_fcb_set_driver(cmos_fd_fcb_T *fcb, const cmos_hal_driver_T *driver);
+void cmos_fd_fcb_set_driver_id(cmos_fd_fcb_T *fcb, const void *driver_id);
+void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mutex_lock);
 
 #endif // #ifndef _CMOS_FD_FCB_H_
 

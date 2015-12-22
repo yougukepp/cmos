@@ -48,7 +48,7 @@
 * 其 它   : TODO:实现
 *
 ******************************************************************************/
-cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
+cmos_bool_T vfs_path_is_valid(const cmos_int8_T *path)
 {
     int c = 0;
     char *go_path = (char *)path;
@@ -99,7 +99,7 @@ cmos_bool_T vfs_path_is_valid(const cmos_uint8_T *path)
 * 其 它   : 根算一级
 *
 ******************************************************************************/
-cmos_int32_T vfs_path_depth(const cmos_uint8_T *path)
+cmos_int32_T vfs_path_depth(const cmos_int8_T *path)
 {
     if(!vfs_path_is_valid(path))
     {
@@ -107,7 +107,7 @@ cmos_int32_T vfs_path_depth(const cmos_uint8_T *path)
         return 0;
     }
 
-    const cmos_uint8_T *go_path = path;
+    const cmos_int8_T *go_path = path;
     cmos_int32_T path_len = 0;
     cmos_int32_T separator_count = 0;
     cmos_int32_T separator_len = 0;
@@ -117,7 +117,7 @@ cmos_int32_T vfs_path_depth(const cmos_uint8_T *path)
     /* 查找CMOS_VFS_SEPARATOR个数 */
     do
     {
-        go_path = (const cmos_uint8_T *)strstr((const char *)go_path, (const char *)CMOS_VFS_SEPARATOR);
+        go_path = (const cmos_int8_T *)strstr((const char *)go_path, (const char *)CMOS_VFS_SEPARATOR);
         cmos_bool_T over = ((NULL == go_path) || (NUL == *go_path));
         if(over)
         {
@@ -158,8 +158,8 @@ cmos_int32_T vfs_path_depth(const cmos_uint8_T *path)
 * 其 它   : TODO:实现
 *
 ******************************************************************************/
-cmos_status_T vfs_path_sub_name(cmos_uint8_T *name, cmos_int32_T name_max, 
-        const cmos_uint8_T *path, cmos_int32_T count)
+cmos_status_T vfs_path_sub_name(cmos_int8_T *name, cmos_int32_T name_max, 
+        const cmos_int8_T *path, cmos_int32_T count)
 {
     cmos_int32_T depth = 0;
     char *head = NULL;

@@ -42,7 +42,7 @@ void cmos_disable_interrupt_p(void);
 void cmos_enable_switch_p(void);
 void cmos_disable_switch_p(void);
 
-cmos_fd_T cmos_open_p(const cmos_uint8_T *path, cmos_uint32_T flag, ...);
+cmos_fd_T cmos_open_p(const cmos_int8_T *path, cmos_uint32_T flag, ...);
 cmos_status_T cmos_close_p(cmos_fd_T fd);
 cmos_int32_T cmos_read_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_write_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes);

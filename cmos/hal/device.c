@@ -46,7 +46,7 @@
 * 其 它   : TODO:del中需要对应的内存释放
 *
 ******************************************************************************/
-cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver)
+cmos_status_T hal_device_add(const cmos_int8_T *name, const void *driver)
 {
     if((NULL == name)
     || (NULL == driver))
@@ -85,7 +85,7 @@ cmos_status_T hal_device_add(const cmos_uint8_T *name, const void *driver)
 * 其 它   : 释放内存
 *
 ******************************************************************************/
-cmos_status_T hal_device_del(const cmos_uint8_T *name)
+cmos_status_T hal_device_del(const cmos_int8_T *name)
 {
     if(NULL == name)
     {
