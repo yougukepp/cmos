@@ -1051,7 +1051,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\kernel;..\cmos\vfs;..\cmos\hal;..\cmos\task;..\cmos\hal\cortex;..\cmos\fd</IncludePath>
+                      <IncludePath>..\cmos\kernel;..\cmos\vfs;..\cmos\hal;..\cmos\task;..\cmos\hal\cortex;..\cmos\fd;E:\Keil_v5\STM32Cube_FW_F4\Drivers\STM32F4xx_HAL_Driver\Inc</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

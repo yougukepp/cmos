@@ -28,13 +28,20 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
+/* 标准文件操作 */
+/* 注意:以下函数 运行与内核态 svc之后 */
 cmos_fd_fcb_T *cmos_fd_open(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
 cmos_int32_T cmos_fd_read(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_fd_write(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes);
 cmos_status_T cmos_fd_ioctl(cmos_fd_fcb_T *fd, cmos_uint32_T request, cmos_uint32_T mode);
-cmos_status_T cmos_fd_close(cmos_fd_fcb_T *fd);
+void cmos_fd_close(cmos_fd_fcb_T *fd);
 cmos_int32_T cmos_fd_read_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes);
+
+/* 处理锁问题 */
+/* 注意:以下函数 运行与用户态 */
+void cmos_fd_write_u(const cmos_fd_fcb_T *fcb);
+void cmos_fd_read_u(const cmos_fd_fcb_T *fcb);
 
 #endif // #ifndef _CMOS_FD_FD_H_
 

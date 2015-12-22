@@ -178,9 +178,26 @@ cmos_status_T cmos_fd_ioctl(cmos_fd_fcb_T *fd, cmos_uint32_T request, cmos_uint3
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_fd_close(cmos_fd_fcb_T *fd)
+void cmos_fd_close(cmos_fd_fcb_T *fd)
 {
-    return cmos_ERR_E;
+    cmos_assert(NULL != fd, __FILE__, __LINE__);
+
+    cmos_int8_T *path = NULL;
+    cmos_fd_mutex_T *mutex_lock = NULL;
+
+    /* step1: 释放锁内存 */
+    mutex_lock = cmos_fd_fcb_get_lock(fd);
+    cmos_fd_mutex_free(mutex_lock);
+    mutex_lock = NULL;
+
+    /* step2: 释放path路径 */
+    path = cmos_fd_fcb_get_path(fd);
+    cmos_free(path);
+    path = NULL;
+
+    /* step3: 释放文件控制块 */
+    cmos_free(fd);
+    fd = NULL;
 }
 
 /*******************************************************************************
@@ -230,6 +247,46 @@ cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_byt
     return 0;
 }
 
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_fcb_can_write
+* 负责人  : 彭鹏
+* 创建日期: 20151222
+* 函数功能: 判断fcb文件是否可写
+*
+* 输入参数: fcb  文件控制块指针
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 可能会阻塞并调度其他任务
+*
+******************************************************************************/
+void cmos_fd_write_u(const cmos_fd_fcb_T *fcb)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    cmos_fd_mutex_T *mutex_lock = cmos_fd_fcb_get_lock(fcb); 
+    
+    cmos_fd_mutex_lock(mutex_lock);
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_fcb_can_read
+* 负责人  : 彭鹏
+* 创建日期: 20151222
+* 函数功能: 判断fcb文件是否可读
+*
+* 输入参数: fcb  文件控制块指针
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 可能会阻塞并调度其他任务
+*
+******************************************************************************/
+void cmos_fd_read_u(const cmos_fd_fcb_T *fcb)
+{
+    ;
+}
 
 #if 0
 /********************************** 函数声明区 *********************************/

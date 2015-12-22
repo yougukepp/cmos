@@ -24,7 +24,7 @@
 /*********************************** 类型定义 **********************************/
 /* 文件控制块 */
 typedef struct{
-    const cmos_int8_T   *path;      /* vfs路径 */
+    cmos_int8_T         *path;      /* vfs路径 */
     cmos_hal_driver_T   *driver;    /* 驱动指针 如uart等 */
     void                *driver_id; /* 驱动底层句柄 如STM32Cube4 HAL Handle等 */
     cmos_fd_mutex_T     *mutex_lock;/* 互斥锁 */
@@ -46,6 +46,9 @@ void cmos_fd_fcb_set_path(cmos_fd_fcb_T *fcb, const cmos_int8_T *path_str);
 void cmos_fd_fcb_set_driver(cmos_fd_fcb_T *fcb, const cmos_hal_driver_T *driver);
 void cmos_fd_fcb_set_driver_id(cmos_fd_fcb_T *fcb, const void *driver_id);
 void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mutex_lock);
+
+cmos_fd_mutex_T *cmos_fd_fcb_get_lock(const cmos_fd_fcb_T *fcb);
+cmos_int8_T *cmos_fd_fcb_get_path(const cmos_fd_fcb_T *fcb);
 
 #endif // #ifndef _CMOS_FD_FCB_H_
 

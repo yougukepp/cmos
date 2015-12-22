@@ -77,10 +77,10 @@ void cmos_fd_fcb_init(cmos_fd_fcb_T *fcb,
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_fd_fcb_set_path(cmos_fd_fcb_T *fcb, const cmos_int8_T *path)
+inline void cmos_fd_fcb_set_path(cmos_fd_fcb_T *fcb, const cmos_int8_T *path)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
-    fcb->path = path;
+    fcb->path = (cmos_int8_T *)path;
 }
 
 /*******************************************************************************
@@ -97,7 +97,7 @@ void cmos_fd_fcb_set_path(cmos_fd_fcb_T *fcb, const cmos_int8_T *path)
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_fd_fcb_set_driver(cmos_fd_fcb_T *fcb, const cmos_hal_driver_T *driver)
+inline void cmos_fd_fcb_set_driver(cmos_fd_fcb_T *fcb, const cmos_hal_driver_T *driver)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
     fcb->driver = (cmos_hal_driver_T *)driver;
@@ -117,7 +117,7 @@ void cmos_fd_fcb_set_driver(cmos_fd_fcb_T *fcb, const cmos_hal_driver_T *driver)
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_fd_fcb_set_driver_id(cmos_fd_fcb_T *fcb, const void *driver_id)
+inline void cmos_fd_fcb_set_driver_id(cmos_fd_fcb_T *fcb, const void *driver_id)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
     fcb->driver_id = (void *)driver_id;
@@ -137,9 +137,49 @@ void cmos_fd_fcb_set_driver_id(cmos_fd_fcb_T *fcb, const void *driver_id)
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mutex_lock)
+inline void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mutex_lock)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
     fcb->mutex_lock = (cmos_fd_mutex_T *)mutex_lock;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_fcb_get_lock
+* 负责人  : 彭鹏
+* 创建日期: 20151222
+* 函数功能: 获取fcb的互斥锁
+*
+* 输入参数: fcb         文件控制块指针
+* 输出参数: 无
+* 返回值  : mutex_lock  互斥锁
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+inline cmos_fd_mutex_T *cmos_fd_fcb_get_lock(const cmos_fd_fcb_T *fcb)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__); 
+    return fcb->mutex_lock;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_fcb_get_path
+* 负责人  : 彭鹏
+* 创建日期: 20151222
+* 函数功能: 获取fcb的vfs路径
+*
+* 输入参数: fcb  文件控制块指针
+* 输出参数: 无
+* 返回值  : path vfs路径
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+inline cmos_int8_T *cmos_fd_fcb_get_path(const cmos_fd_fcb_T *fcb)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__); 
+    return fcb->path;
 }
 

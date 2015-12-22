@@ -27,7 +27,7 @@
 
 #include "cmos_config.h"
 #include "cmos_api.h"
-
+#include "stm32f4xx_hal_conf.h"
 #include "syscall.h"
 #include "cortex.h"
 #include "console.h"
@@ -454,8 +454,8 @@ cmos_fd_T cmos_open_p(const cmos_int8_T *path, cmos_uint32_T flag, ...)
 cmos_status_T cmos_close_p(cmos_fd_T fd)
 {
     cmos_assert(0 != fd, __FILE__, __LINE__);
-
-    return cmos_fd_close((cmos_fd_fcb_T *)fd);
+    cmos_fd_close((cmos_fd_fcb_T *)fd);
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
@@ -560,12 +560,20 @@ cmos_int32_T cmos_write_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
  * 输出参数: 无
  * 返回值  : 实际写入字节数
  * 调用关系: syscall.s中使用
- * 其 它   : 无
+ * 其 它   : cmos_int32_T cmos_write(cmos_fd_T dev_id, const void *buf, cmos_int32_T n_bytes);
+ *           系统调用栈结构 sp[0]为fd
  *
  ******************************************************************************/
 void cmos_write_u(void)
 {
-    ;
+    /* step1:获取fcb */
+    cmos_uint32_T *sp = (cmos_uint32_T *)__get_PSP();
+    cmos_fd_fcb_T *fcb = (cmos_fd_fcb_T *)sp[0];
+
+    /* step2: 判断是否可写 决定是否睡眠 */
+    cmos_fd_write_u(fcb); /* 此处可能会阻塞并调度其他任务 */
+
+    return;
 }
 
 /*******************************************************************************

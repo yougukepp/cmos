@@ -38,6 +38,7 @@ typedef struct{
 
 /*********************************** 接口函数 **********************************/
 cmos_fd_mutex_T *cmos_fd_mutex_malloc(void);
+void cmos_fd_mutex_free(cmos_fd_mutex_T *mutex);
 
 void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex);
 void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex);
@@ -45,7 +46,6 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex);
 void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex);
 void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex);
 
-void cmos_fd_mutex_free(cmos_fd_mutex_T *mutex);
 
 #endif /* #ifndef _CMOS_FD_MUTEX_H_ */
 

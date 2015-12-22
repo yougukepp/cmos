@@ -103,8 +103,8 @@ cmos_read       PROC
 
 cmos_write      PROC
                 EXPORT cmos_write
-                ; TODO: 参数的问题?
                 IMPORT cmos_write_u
+                ; TODO: 参数的问题?
                 ;PUSH    R0
                 LDR     R0, =cmos_write_u       ; svc之前加锁
                 BLX     R0
