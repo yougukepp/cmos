@@ -32,9 +32,10 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static cmos_lib_list_T *s_mutex_list = NULL;
+static cmos_lib_list_T *s_fcb_list = NULL;
 
 /********************************** 函数声明区 *********************************/
+static void work(cmos_fd_fcb_T *fcb, cmos_fd_compare_para_T *para);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -91,6 +92,8 @@ cmos_fd_fcb_T *cmos_fd_open(const cmos_int8_T *path, cmos_uint32_T flag, cmos_ui
     /* step6: fcb初始化 */
     cmos_fd_fcb_init(fcb, path_str, driver, driver_id, mutex_lock);
 
+    /* step6: 加入fcb链表 */
+    cmos_lib_list_push_tail(&s_fcb_list, fcb);
     return fcb;
 }
 
@@ -316,16 +319,52 @@ void cmos_fd_read_u(const cmos_fd_fcb_T *fcb)
 * 输出参数: 无
 * 返回值  : 无
 * 调用关系: 无
-* 其 它   : TODO:实现mutex链表
+* 其 它   : 无
 *
 ******************************************************************************/
 void cmos_fd_unlock_by_tcb(const cmos_task_tcb_T *tcb)
 {
     cmos_assert(NULL != tcb, __FILE__, __LINE__);
+    cmos_fd_mutex_T *mutex = NULL;
 
-    /* step1: 遍历mutex查找highest_blocked_tcb为tcb的mutex*/
+    /* step1: 遍历fcb_list查找highest_blocked_tcb为tcb的mutex */
+    cmos_fd_compare_para_T compare_para = {(cmos_task_tcb_T *)tcb, NULL};
+    cmos_lib_list_walk(s_fcb_list, (cmos_lib_list_walk_func_T)work, &compare_para); /* 遍历tcb链表 */
+    mutex = compare_para.mutex;
+    cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
     /* step2: 解锁mutex*/
+    cmos_fd_mutex_unlock(mutex);
+}
+
+/*******************************************************************************
+*
+* 函数名  : work
+* 负责人  : 彭鹏
+* 创建日期: 20151223
+* 函数功能: 供cmos_fd_unlock_by_tcb中 获取tcb对应的mutex
+*
+* 输入参数: data tcb结点
+*           para 定制化参数
+*
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static void work(cmos_fd_fcb_T *fcb, cmos_fd_compare_para_T *para)
+{
+    cmos_fd_mutex_T *mutex = cmos_fd_fcb_get_lock(fcb);
+    cmos_assert(NULL != mutex, __FILE__, __LINE__);
+
+    cmos_task_tcb_T *tcb = cmos_fd_mutex_get_highest_blocked_tcb(mutex);
+    cmos_assert(NULL != tcb, __FILE__, __LINE__);
+
+    if(tcb == para->tcb)
+    {
+        para->mutex = mutex;
+    }
 }
 
 #if 0

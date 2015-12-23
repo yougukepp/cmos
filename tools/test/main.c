@@ -339,7 +339,7 @@ static cmos_status_T test_tree(void)
     }
 
     /* 加入i2c设备结点*/
-    status = vfs_node_add((const cmos_uint8_T *)CMOS_VFS_DEV_DIR, (const cmos_uint8_T *)("i2c"), vfs_dev, (void *)0x123);
+    status = vfs_node_add((const cmos_int8_T *)CMOS_VFS_DEV_DIR, (const cmos_int8_T *)("i2c"), vfs_dev, (void *)0x123);
     if(cmos_OK_E != status)
     {
         return status;

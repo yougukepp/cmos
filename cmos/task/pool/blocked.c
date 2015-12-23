@@ -53,19 +53,13 @@ static cmos_lib_list_T *s_blocked_tcb[CMOS_TASK_POOL_BLOCKED_TYPE_MAX] = {NULL};
  ******************************************************************************/
 void cmos_task_pool_blocked_add(const cmos_task_tcb_T *tcb, cmos_blocked_type_T type)
 { 
-    cmos_status_T status = cmos_ERR_E;
     cmos_lib_list_T *tcb_list = NULL;
 
     /* step1: 获取对应的阻塞链表 */
     tcb_list = cmos_task_pool_list_array_get(s_blocked_tcb, type);
 
     /* step2: 将tcb加入该链表 */
-    status = cmos_lib_list_push_tail(&tcb_list, tcb); /* 加入到该优先级链表 */
-    if(cmos_OK_E != status)
-    {
-        CMOS_ERR_STR("cmos_lib_list_push_tail failed.");
-        return;
-    }
+    cmos_lib_list_push_tail(&tcb_list, tcb); /* 加入到该优先级链表 */
 
     /* 处理边界条件: tcb是该阻塞链表首个任务 */
     if(NULL == cmos_task_pool_list_array_get(s_blocked_tcb, type))

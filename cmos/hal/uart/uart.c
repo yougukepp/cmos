@@ -20,6 +20,7 @@
 #include "misc.h"
 #include "console.h"
 #include "task.h"
+#include "fd.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 

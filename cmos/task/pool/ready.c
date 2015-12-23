@@ -243,7 +243,6 @@ const static cmos_uint8_T s_priority_bitmap[] =
  ******************************************************************************/
 void cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
 {
-    cmos_status_T status = cmos_ERR_E;
     cmos_priority_T priority = cmos_priority_err;
     cmos_lib_list_T *tcb_list = NULL;
 
@@ -258,12 +257,7 @@ void cmos_task_pool_ready_add(const cmos_task_tcb_T *tcb)
     tcb_list = get_tcb_table_by_priority(priority);
 
     /* tcb_list为空会自动将tcb作为头结点 */
-    status = cmos_lib_list_push_tail(&tcb_list, tcb); /* 加入到该优先级链表 */
-    if(cmos_OK_E != status)
-    {
-        CMOS_ERR_STR("cmos_lib_list_push_tail failed.");
-        return;
-    }
+    cmos_lib_list_push_tail(&tcb_list, tcb); /* 加入到该优先级链表 */
 
     /* 处理边界条件: tcb是该优先级首个任务 */
     if(NULL == get_tcb_table_by_priority(priority))

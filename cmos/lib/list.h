@@ -45,7 +45,7 @@ cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list);           /* 链表长
 
 /* 1+2 = stack
  * 1+3 = queue */
-cmos_status_T cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data);/* 1 尾部加入 */
+void cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data);/* 1 尾部加入 */
 void *cmos_lib_list_pop_tail(cmos_lib_list_T **list);                           /* 2 尾部弹出 */
 void *cmos_lib_list_pop_head(cmos_lib_list_T **list);                           /* 3 头部弹出 */
 
@@ -59,6 +59,8 @@ void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, v
 /* 获取结点中数据域指针 */
 void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node);
 
+
+/* 以下是一些特性功能 由于多次使用所以提取到这里 后面移到专用文件 */
 /* 目前blocked中专用:删除链表中数据域为data的元素 
  * TODO: 考虑字典或者缓冲池数据结构 */
 cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, const void *data); 

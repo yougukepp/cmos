@@ -26,7 +26,7 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static void compare(cmos_task_tcb_T *data, cmos_fd_mutex_compare_para_T *para);
+static void work(cmos_task_tcb_T *data, cmos_fd_mutex_compare_para_T *para);
 
 /********************************** 变量实现区 *********************************/
 
@@ -145,9 +145,10 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
     cmos_assert(NULL != next_tcb, __FILE__, __LINE__);
 
     /* step2: 更新阻塞的最高优先级任务 */
-    cmos_fd_mutex_compare_para_T compare_para;
-    cmos_lib_list_walk(mutex->blocked_tcb_list, (cmos_lib_list_walk_func_T)compare, &compare_para); /* 遍历tcb链表 */
-    mutex->highest_blocked_tcb = compare_para.highest_tcb;
+    /* FIXME: 使用链表遍历十分低效 */
+    cmos_fd_mutex_compare_para_T compare_para = {cmos_priority_idle, NULL};
+    cmos_lib_list_walk(mutex->blocked_tcb_list, (cmos_lib_list_walk_func_T)work, &compare_para); /* 遍历tcb链表 */
+    mutex->highest_blocked_tcb = compare_para.highest_tcb; /* 链表空 则可以赋值为空 */
     
     /* step3: 恢复唤醒的任务 */ 
     cmos_task_resume(next_tcb);
@@ -174,6 +175,7 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 ******************************************************************************/
 inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
 {
+    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
     //while(CMOS_FD_MUTEX_LOCKED == mutex->lock);
     //mutex->lock = CMOS_FD_MUTEX_LOCKED;
 }
@@ -195,6 +197,7 @@ inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
 ******************************************************************************/
 inline void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex)
 {
+    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
     //mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
 }
 
@@ -213,15 +216,16 @@ inline void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex)
 * 其 它   : 立即返回
 *
 ******************************************************************************/
-void cmos_fd_mutex_free(cmos_fd_mutex_T *mutex)
+inline void cmos_fd_mutex_free(cmos_fd_mutex_T *mutex)
 {
+    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
     cmos_free(mutex);
     mutex = NULL;
 }
 
 /*******************************************************************************
 *
-* 函数名  : compare
+* 函数名  : work
 * 负责人  : 彭鹏
 * 创建日期: 20151223
 * 函数功能: 供cmos_fd_mutex_unlock中 获取链表中最高优先级任务使用
@@ -235,7 +239,38 @@ void cmos_fd_mutex_free(cmos_fd_mutex_T *mutex)
 * 其 它   : 无
 *
 ******************************************************************************/
-static void compare(cmos_task_tcb_T *data, cmos_fd_mutex_compare_para_T *para)
+static void work(cmos_task_tcb_T *tcb, cmos_fd_mutex_compare_para_T *para)
 {
-    ;
+    cmos_assert(NULL != tcb, __FILE__, __LINE__); 
+    cmos_assert(NULL != para, __FILE__, __LINE__); 
+    cmos_priority_T cur_priority = cmos_priority_err;
+
+    cur_priority = cmos_task_tcb_get_priority(tcb);
+    if(cur_priority > para->priority)
+    {
+        para->highest_tcb = tcb;
+    }
 }
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_mutex_get_highest_blocked_tcb
+* 负责人  : 彭鹏
+* 创建日期: 20151223
+* 函数功能: 获取mutex中阻塞的最高优先级tcb
+*
+* 输入参数: mutex 锁
+*
+* 输出参数: 获取的tcb指针
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+inline cmos_task_tcb_T *cmos_fd_mutex_get_highest_blocked_tcb(const cmos_fd_mutex_T *mutex)
+{
+    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
+
+    return mutex->highest_blocked_tcb;
+}
+

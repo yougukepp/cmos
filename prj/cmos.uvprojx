@@ -766,7 +766,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\task;..\cmos\ipc</IncludePath>
+                      <IncludePath>..\cmos\task;..\cmos\ipc;..\cmos\fd</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

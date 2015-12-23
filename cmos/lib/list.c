@@ -17,6 +17,7 @@
 #include "cmos_config.h"
 #include "list.h"
 #include "mem.h"
+#include "misc.h"
 #include "console.h"
 
 #ifdef _X64_PC_
@@ -139,30 +140,28 @@ cmos_int32_T cmos_lib_list_length(cmos_lib_list_T *list)
  *           data 待加入结点的数据域
  * 输出参数: 无
  *
- * 返回值  : 执行状态
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data)
+void cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data)
 {
     cmos_lib_list_node_T *node = NULL;
     cmos_lib_list_node_T *tail = NULL;
-    if(NULL == list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_push_tail with null pointer.");
-        return cmos_NULL_E;
-    }
+
+    cmos_assert(NULL != list, (uint8_t *)__FILE__, __LINE__);
 
     /* step1: malloc结点 */ 
     node = node_malloc(data);
+    cmos_assert(NULL != node, (uint8_t *)__FILE__, __LINE__);
 
     /* step2: 找到尾部 */ 
     tail = list_get_tail(*list);
     if(NULL == tail) /* 空表 */
     {
         *list = node;
-        return cmos_OK_E;
+        return;
     }
 
     /* step3: 操作指针 */ 
@@ -171,7 +170,7 @@ cmos_status_T cmos_lib_list_push_tail(cmos_lib_list_T **list, const void *data)
     tail->next = node;
     /* tail->prev 保持不变 */
 
-    return cmos_OK_E;
+    return;
 }
 
 /*******************************************************************************

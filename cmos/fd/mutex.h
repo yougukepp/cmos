@@ -29,9 +29,9 @@ typedef struct{
 }cmos_fd_mutex_T;
 
 typedef struct{
-        cmos_priority_T priority; /* 遍历过程中 当前最高优先级 */
-        cmos_task_tcb_T *highest_tcb; /* 最高优先级结果 */
-}cmos_fd_mutex_compare_para_T;
+        cmos_priority_T priority; /* 遍历过程中 当前最高优先级 输入 */
+        cmos_task_tcb_T *highest_tcb; /* 最高优先级结果 输出 */
+}cmos_fd_mutex_compare_para_T; /* mutex 模块专用 */
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -46,6 +46,11 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex);
 
 void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex);
 void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex);
+
+
+
+/* 设置与获取函数 */
+cmos_task_tcb_T *cmos_fd_mutex_get_highest_blocked_tcb(const cmos_fd_mutex_T *mutex);
 
 
 #endif /* #ifndef _CMOS_FD_MUTEX_H_ */
