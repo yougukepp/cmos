@@ -313,22 +313,22 @@ void cmos_fd_read_u(const cmos_fd_fcb_T *fcb)
 * 函数名  : cmos_fd_unlock_by_tcb
 * 负责人  : 彭鹏
 * 创建日期: 20151223
-* 函数功能: 通过tcb查找对应的锁定的fcb
+* 函数功能: 通过driver_id查找对应的锁定的fcb 并解锁
 *
-* 输入参数: fcb  文件控制块指针
+* 输入参数: driver_id 驱动底层标志
 * 输出参数: 无
 * 返回值  : 无
 * 调用关系: 无
 * 其 它   : 无
 *
 ******************************************************************************/
-void cmos_fd_unlock_by_tcb(const cmos_task_tcb_T *tcb)
+void cmos_fd_unlock_by_driver_id(const void *driver_id)
 {
-    cmos_assert(NULL != tcb, __FILE__, __LINE__);
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__);
     cmos_fd_mutex_T *mutex = NULL;
 
     /* step1: 遍历fcb_list查找highest_blocked_tcb为tcb的mutex */
-    cmos_fd_compare_para_T compare_para = {(cmos_task_tcb_T *)tcb, NULL};
+    cmos_fd_compare_para_T compare_para = {driver_id, NULL};
     cmos_lib_list_walk(s_fcb_list, (cmos_lib_list_walk_func_T)work, &compare_para); /* 遍历tcb链表 */
     mutex = compare_para.mutex;
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
@@ -355,15 +355,12 @@ void cmos_fd_unlock_by_tcb(const cmos_task_tcb_T *tcb)
 ******************************************************************************/
 static void work(cmos_fd_fcb_T *fcb, cmos_fd_compare_para_T *para)
 {
-    cmos_fd_mutex_T *mutex = cmos_fd_fcb_get_lock(fcb);
-    cmos_assert(NULL != mutex, __FILE__, __LINE__);
+    void *driver_id = cmos_fd_fcb_get_driver_id(fcb);
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__);
 
-    cmos_task_tcb_T *tcb = cmos_fd_mutex_get_highest_blocked_tcb(mutex);
-    cmos_assert(NULL != tcb, __FILE__, __LINE__);
-
-    if(tcb == para->tcb)
+    if(driver_id == para->driver_id)
     {
-        para->mutex = mutex;
+        para->mutex = fcb->mutex;
     }
 }
 

@@ -23,9 +23,9 @@
 
 /*********************************** 类型定义 **********************************/
 typedef struct{
-    cmos_task_tcb_T *tcb;   /* 任务控制块 输入 */
+    const void *driver_id;  /* 任务控制块 输入 */
     cmos_fd_mutex_T *mutex; /* 锁 输出 */
-}cmos_fd_compare_para_T; /* fd模块专用 */
+}cmos_fd_compare_para_T;    /* fd模块专用 */
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -47,9 +47,8 @@ cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_byt
 void cmos_fd_write_u(const cmos_fd_fcb_T *fcb);
 void cmos_fd_read_u(const cmos_fd_fcb_T *fcb);
 
-
 /* ISR中使用 */
-void cmos_fd_unlock_by_tcb(const cmos_task_tcb_T *tcb);
+void cmos_fd_unlock_by_driver_id(const void *driver_id);
 
 #endif // #ifndef _CMOS_FD_FD_H_
 

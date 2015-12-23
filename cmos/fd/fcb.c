@@ -137,10 +137,10 @@ inline void cmos_fd_fcb_set_driver_id(cmos_fd_fcb_T *fcb, const void *driver_id)
 * 其 它   : 无
 *
 ******************************************************************************/
-inline void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mutex_lock)
+inline void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mutex)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
-    fcb->mutex_lock = (cmos_fd_mutex_T *)mutex_lock;
+    fcb->mutex = (cmos_fd_mutex_T *)mutex;
 }
 
 /*******************************************************************************
@@ -160,7 +160,7 @@ inline void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mute
 inline cmos_fd_mutex_T *cmos_fd_fcb_get_lock(const cmos_fd_fcb_T *fcb)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
-    return fcb->mutex_lock;
+    return fcb->mutex;
 }
 
 /*******************************************************************************
