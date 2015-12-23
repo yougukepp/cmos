@@ -11,6 +11,9 @@
 ;* 修改日志： 无
 ;*
 ;*******************************************************************************/
+                PRESERVE8
+                THUMB
+
                 AREA    |.text|, CODE, READONLY
 
 SVC_Handler     PROC
@@ -60,7 +63,11 @@ cmos_delay      PROC
 
 cmos_enable_interrupt PROC
                 EXPORT cmos_enable_interrupt
-                SVC 0x30
+                IMPORT cmos_enable_interrupt_p
+                LDR R0, = cmos_enable_interrupt_p
+                BLX  R0
+                ; 开中断在关中断之后(已经无法响应svc) 使用svc会崩溃 
+                ; SVC 0x30
                 BX  LR
                 ENDP
 
@@ -101,16 +108,10 @@ cmos_read       PROC
                 BX  LR
                 ENDP
 
-cmos_write      PROC
-                EXPORT cmos_write
-                IMPORT cmos_write_u
-                ; TODO: 参数的问题?
-                ;PUSH    R0
-                LDR     R0, =cmos_write_u       ; svc之前加锁
-                BLX     R0
-                ;POP     R0
-                SVC 0xa3
-                BX  LR
+svc_write       PROC
+                EXPORT  svc_write
+                SVC  0xa3
+                BX   LR
                 ENDP
 
 cmos_ioctl      PROC

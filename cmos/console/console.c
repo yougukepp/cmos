@@ -54,7 +54,7 @@ static cmos_fd_T s_console_uart_fd = 0;
 void cmos_console_init(cmos_int32_T baud_rate)
 {
     s_console_uart_fd = cmos_open_p(CMOS_CONSOLE_PATH, CMOS_O_RDWR); 
-    cmos_assert(NULL == s_console_uart_fd, __FILE__, __LINE__);
+    cmos_assert(NULL != s_console_uart_fd, __FILE__, __LINE__);
 
     /* FIXME:暂时未实现uart ioctl系统调用 */
     /* 波特率的设置位于 hal/hardware/stm32f429idiscovery_hardware.c */
@@ -111,6 +111,7 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
 
     cmos_free(printf_buf);
+    printf_buf = NULL;
 
     return n;
 }
@@ -154,6 +155,7 @@ cmos_int32_T cmos_console_printf_svc(char *fmt, ...)
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
 
     cmos_free(printf_buf);
+    printf_buf = NULL;
 
     return n;
 }
@@ -199,6 +201,7 @@ cmos_int32_T cmos_console_printf_poll(char *fmt, ...)
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
 
     cmos_free(printf_buf);
+    printf_buf = NULL;
 
     return n;
 }

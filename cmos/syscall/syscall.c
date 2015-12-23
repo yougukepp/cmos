@@ -40,6 +40,7 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
+static void cmos_write_u(cmos_fd_T fcb);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -338,7 +339,7 @@ inline cmos_status_T cmos_delay_p(cmos_int32_T millisec)
  ******************************************************************************/
 inline void cmos_enable_interrupt_p(void)
 {
-    cmos_hal_cortex_cortex_disable_interrupt();
+    cmos_hal_cortex_cortex_enable_interrupt();
 }
 
 /*******************************************************************************
@@ -357,7 +358,7 @@ inline void cmos_enable_interrupt_p(void)
  ******************************************************************************/
 inline void cmos_disable_interrupt_p(void)
 {
-    cmos_hal_cortex_cortex_enable_interrupt();
+    cmos_hal_cortex_cortex_disable_interrupt();
 }
 
 /*******************************************************************************
@@ -520,6 +521,31 @@ cmos_int32_T cmos_read_poll_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_write
+ * 负责人  : 彭鹏
+ * 创建日期：20151223 
+ * 函数功能: 系统调用cmos_write
+ *
+ * 输入参数: fd      文件句柄(文件控制块)
+ *           buf     写入数据的缓存
+ *           n_bytes 要求写入的字节数
+ *
+ * 输出参数: 无
+ * 返回值  : 实际写入字节数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_write(cmos_fd_T fd, const void *buf, cmos_int32_T n_bytes)
+{ 
+    cmos_write_u(fd);
+
+    cmos_int32_T svc_write(cmos_fd_T fd, const void *buf, cmos_int32_T n_bytes); /* syscall.s中定义 */
+    return svc_write(fd, buf, n_bytes); 
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_write_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -560,18 +586,13 @@ cmos_int32_T cmos_write_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
  * 输出参数: 无
  * 返回值  : 实际写入字节数
  * 调用关系: syscall.s中使用
- * 其 它   : cmos_int32_T cmos_write(cmos_fd_T dev_id, const void *buf, cmos_int32_T n_bytes);
- *           系统调用栈结构 sp[0]为fd
+ * 其 它   : 仅使用cmos_write系统调用的第一个参数
  *
  ******************************************************************************/
-void cmos_write_u(void)
+static void cmos_write_u(cmos_fd_T fcb)
 {
-    /* step1:获取fcb */
-    cmos_uint32_T *sp = (cmos_uint32_T *)__get_PSP();
-    cmos_fd_fcb_T *fcb = (cmos_fd_fcb_T *)sp[0];
-
     /* step2: 判断是否可写 决定是否睡眠 */
-    cmos_fd_write_u(fcb); /* 此处可能会阻塞并调度其他任务 */
+    cmos_fd_write_u((cmos_fd_fcb_T *)fcb); /* 此处可能会阻塞并调度其他任务 */
 
     return;
 }

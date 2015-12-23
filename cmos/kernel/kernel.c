@@ -80,6 +80,7 @@ void cmos_kernel_init(void)
 
     /* 打印目录树 */
     cmos_console_printf_svc("cmos init done with vfs tree:\r\n");
+    vfs_print();
     
     /* 初始化用户内存 便于调试 */
 #if (CMOS_DEBUG_LEVEL > 0) 

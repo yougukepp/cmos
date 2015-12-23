@@ -249,7 +249,7 @@ cmos_int32_T cmos_fd_read_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_byte
 * 创建日期: 20151218
 * 函数功能: 写入fd指示的文件(轮询)
 *
-* 输入参数: fd      文件句柄
+* 输入参数: fcb     文件控制块指针
 *           buf     缓冲
 *           n_bytes 缓冲大小
 *           参数规则见Linux write
@@ -261,9 +261,24 @@ cmos_int32_T cmos_fd_read_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_byte
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 {
-    return 0;
+    cmos_int32_T write_bytes = 0;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    cmos_assert((NULL != buf) && (n_bytes > 0), __FILE__, __LINE__);
+
+    driver = cmos_fd_fcb_get_driver(fcb);
+    driver_id = cmos_fd_fcb_get_driver_id(fcb);
+
+    cmos_assert(NULL != driver, __FILE__, __LINE__);
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__); 
+    
+    write_bytes = driver->write_poll(driver_id, buf, n_bytes);
+
+    return write_bytes;
 }
 
 /*******************************************************************************

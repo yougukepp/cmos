@@ -116,6 +116,7 @@ void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 
     /* 开中断 */
     cmos_enable_interrupt();
+    //cmos_enable_interrupt_p();
 }
 
 /*******************************************************************************
