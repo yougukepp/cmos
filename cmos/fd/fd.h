@@ -43,5 +43,9 @@ cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_byt
 void cmos_fd_write_u(const cmos_fd_fcb_T *fcb);
 void cmos_fd_read_u(const cmos_fd_fcb_T *fcb);
 
+
+/* ISR中使用 */
+void cmos_fd_unlock_by_tcb(const cmos_task_tcb_T *tcb);
+
 #endif // #ifndef _CMOS_FD_FD_H_
 

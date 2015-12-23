@@ -6,7 +6,7 @@
  * 版本号  ： v1.0
  * 文件描述： 互斥锁实现
  * 版权说明： Copyright (c) 2000-2020 GNU
- * 其 它   :  运行与用户态 故需要互斥访问
+ * 其 它   :  TODO: 实现优先级队列
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -14,6 +14,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "cmos_api.h"
 #include "mem.h"
 #include "misc.h"
 #include "mutex.h"
@@ -25,6 +26,7 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
+static void compare(cmos_task_tcb_T *data, cmos_fd_mutex_compare_para_T *para);
 
 /********************************** 变量实现区 *********************************/
 
@@ -51,7 +53,6 @@ cmos_fd_mutex_T *cmos_fd_mutex_malloc(void)
     mutex = cmos_malloc(sizeof(cmos_fd_mutex_T));
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
-    mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
     mutex->highest_blocked_tcb = NULL;
     cmos_lib_list_init(&(mutex->blocked_tcb_list));
 
@@ -70,54 +71,51 @@ cmos_fd_mutex_T *cmos_fd_mutex_malloc(void)
 *
 * 返回值  : 无
 * 调用关系: 无
-* 其 它   : 无
+* 其 它   : 使用highest_blocked_tcb判断是否锁定 若无该tcb则未锁定
+*           运行与用户态 故需要互斥访问(关中断)
+*           FIXME: 如果性能不可接受需要修改
 *
 ******************************************************************************/
 void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 {
-    cmos_assert(NULL != mutex, __FILE__, __LINE__);
+    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
 
     cmos_task_tcb_T *tcb = NULL;
     cmos_priority_T highest_priority = cmos_priority_err;
     cmos_priority_T curr_priority = cmos_priority_err;
-
-    if(CMOS_FD_MUTEX_UNLOCKED == mutex->lock)
+    
+    /* 关中断 */
+    cmos_disable_interrupt(); 
+    
+    if(NULL == mutex->highest_blocked_tcb) /* 未锁定 */
     { 
-        mutex->lock = CMOS_FD_MUTEX_LOCKED;
-        /* 此后为关键域 */
-        return;
+        mutex->highest_blocked_tcb = tcb;  /* 加锁 */
     }
-    else /* 已经锁定 需要阻塞 */
-    {
+    else /* 已经锁定 需要睡眠 */
+    { 
         /* step1: 获取当前任务 */
         tcb = cmos_task_self(); 
         cmos_assert(NULL != tcb, __FILE__, __LINE__);
-        
-        /* step2: 更新阻塞tcb链表中最高优先级任务 */
-        if(NULL == mutex->highest_blocked_tcb) /* 链表首任务 */
-        { 
+        curr_priority = cmos_task_tcb_get_priority(tcb);
+
+        highest_priority = cmos_task_tcb_get_priority(mutex->highest_blocked_tcb);
+        if(highest_priority < curr_priority)    /* 当前任务优先级最高 */
+        {
+            /* step2.1: 将老的最高优先级tcb加入表 */
+            cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), mutex->highest_blocked_tcb);
+            /* step2.2: 更新最高优先级tcb */
             mutex->highest_blocked_tcb = tcb; 
         }
         else
         {
-            highest_priority = cmos_task_tcb_get_priority(mutex->highest_blocked_tcb);
-            curr_priority = cmos_task_tcb_get_priority(tcb);
-            if((highest_priority < curr_priority)    /**/
-            || (NULL == mutex->highest_blocked_tcb)) /* 链表首任务 */
-            {
-                mutex->highest_blocked_tcb = tcb; 
-            }
+            cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), tcb);
         }
-
-        /* step3: 插入阻塞tcb链表 */
-        cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), tcb);
-
-        /* step4: 阻塞当前任务 */
+        /* step3: 阻塞当前任务 */
         cmos_task_suspend(tcb);
-
-        /* TODO: 查找原因 此处需要实现无条件(无论是否在svc中)立即调度 */
-        /* TODO: 是否无法实现 */
     }
+
+    /* 开中断 */
+    cmos_enable_interrupt();
 }
 
 /*******************************************************************************
@@ -132,25 +130,30 @@ void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 *
 * 返回值  : 无
 * 调用关系: 无
-* 其 它   : svc(优先级高与外部中断)中执行等效于关中断 故无法互斥访问
+* 其 它   : 运行与用户态 故需要互斥访问(关中断)
 *
 ******************************************************************************/
 void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 {
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
-    /* step1: 获取唤醒任务 阻塞列表中最高优先级任务 */
+    /* 关中断 */
+    cmos_disable_interrupt();
+
+    /* step1: 获取阻塞的最高优先级任务 */
     cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
     cmos_assert(NULL != next_tcb, __FILE__, __LINE__);
 
-    /* step2: 唤醒的任务从阻塞列表中删除 */
-    cmos_lib_list_del_by_data(&(mutex->blocked_tcb_list), next_tcb); 
+    /* step2: 更新阻塞的最高优先级任务 */
+    cmos_fd_mutex_compare_para_T compare_para;
+    cmos_lib_list_walk(mutex->blocked_tcb_list, (cmos_lib_list_walk_func_T)compare, &compare_para); /* 遍历tcb链表 */
+    mutex->highest_blocked_tcb = compare_para.highest_tcb;
     
     /* step3: 恢复唤醒的任务 */ 
     cmos_task_resume(next_tcb);
 
-    /* step4: 解锁 */ 
-    mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
+    /* 开中断 */
+    cmos_enable_interrupt();
     /* 此后出关键域 */
 }
 
@@ -171,8 +174,8 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 ******************************************************************************/
 inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
 {
-    while(CMOS_FD_MUTEX_LOCKED == mutex->lock);
-    mutex->lock = CMOS_FD_MUTEX_LOCKED;
+    //while(CMOS_FD_MUTEX_LOCKED == mutex->lock);
+    //mutex->lock = CMOS_FD_MUTEX_LOCKED;
 }
 
 /*******************************************************************************
@@ -192,7 +195,7 @@ inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
 ******************************************************************************/
 inline void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex)
 {
-    mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
+    //mutex->lock = CMOS_FD_MUTEX_UNLOCKED;
 }
 
 /*******************************************************************************
@@ -216,3 +219,23 @@ void cmos_fd_mutex_free(cmos_fd_mutex_T *mutex)
     mutex = NULL;
 }
 
+/*******************************************************************************
+*
+* 函数名  : compare
+* 负责人  : 彭鹏
+* 创建日期: 20151223
+* 函数功能: 供cmos_fd_mutex_unlock中 获取链表中最高优先级任务使用
+*
+* 输入参数: data tcb结点
+*           para 定制化参数
+*
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static void compare(cmos_task_tcb_T *data, cmos_fd_mutex_compare_para_T *para)
+{
+    ;
+}

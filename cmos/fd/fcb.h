@@ -47,8 +47,11 @@ void cmos_fd_fcb_set_driver(cmos_fd_fcb_T *fcb, const cmos_hal_driver_T *driver)
 void cmos_fd_fcb_set_driver_id(cmos_fd_fcb_T *fcb, const void *driver_id);
 void cmos_fd_fcb_set_lock(cmos_fd_fcb_T *fcb, const cmos_fd_mutex_T *mutex_lock);
 
-cmos_fd_mutex_T *cmos_fd_fcb_get_lock(const cmos_fd_fcb_T *fcb);
+
 cmos_int8_T *cmos_fd_fcb_get_path(const cmos_fd_fcb_T *fcb);
+cmos_hal_driver_T *cmos_fd_fcb_get_driver(const cmos_fd_fcb_T *fcb);
+void *cmos_fd_fcb_get_driver_id(const cmos_fd_fcb_T *fcb);
+cmos_fd_mutex_T *cmos_fd_fcb_get_lock(const cmos_fd_fcb_T *fcb);
 
 #endif // #ifndef _CMOS_FD_FCB_H_
 

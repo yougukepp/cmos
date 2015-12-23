@@ -21,16 +21,17 @@
 #include "list.h"
 
 /************************************ 宏定义 ***********************************/
-#define CMOS_FD_MUTEX_UNLOCKED     (0)
-#define CMOS_FD_MUTEX_LOCKED       (1)
 
 /*********************************** 类型定义 **********************************/
 typedef struct{ 
-    cmos_uint8_T lock;
-
     cmos_task_tcb_T *highest_blocked_tcb; /* 阻塞的最高优先级tcb */
     cmos_lib_list_T *blocked_tcb_list; /* 阻塞tcb链表 */
 }cmos_fd_mutex_T;
+
+typedef struct{
+        cmos_priority_T priority; /* 遍历过程中 当前最高优先级 */
+        cmos_task_tcb_T *highest_tcb; /* 最高优先级结果 */
+}cmos_fd_mutex_compare_para_T;
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

@@ -46,6 +46,8 @@ const cmos_hal_driver_T g_uart_driver = {
 /* STM32F4Cube HAL驱动 */
 static UART_HandleTypeDef s_uart_handle;
 
+static cmos_task_tcb_T *s_write_blocked_tcb = NULL;
+
 /********************************** 函数声明区 *********************************/
 
 /********************************** 函数实现区 *********************************/
@@ -132,6 +134,13 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
         return 0;
     }
 
+    /* 当前任务阻塞 */
+    cmos_assert(NULL == s_write_blocked_tcb, __FILE__, __LINE__);
+    s_write_blocked_tcb = cmos_task_self(); 
+    cmos_task_suspend(s_write_blocked_tcb);
+
+    /* HAL_UART_TxCpltCallback 调用后恢复 */
+
     return n_bytes;
 }
 
@@ -161,8 +170,13 @@ void UART1_IRQHandler(void)
 /* 串口传输完成回调 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    /* TODO: */
-    /* 1、恢复发送任务 */
-    /* 2、解锁发送功能 */
+    /* 1.恢复XXX_IT后阻塞的任务 */
+    cmos_task_resume(s_write_blocked_tcb);
+
+    /* 2.文件锁解锁 */
+    cmos_fd_unlock_by_tcb(s_write_blocked_tcb);
+
+    /* 3.清理tcb */
+    s_write_blocked_tcb = NULL;
 }
 

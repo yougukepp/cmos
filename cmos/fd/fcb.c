@@ -183,3 +183,43 @@ inline cmos_int8_T *cmos_fd_fcb_get_path(const cmos_fd_fcb_T *fcb)
     return fcb->path;
 }
 
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_fcb_get_driver
+* 负责人  : 彭鹏
+* 创建日期: 20151222
+* 函数功能: 获取fcb的driver
+*
+* 输入参数: fcb  文件控制块指针
+* 输出参数: 无
+* 返回值  : driver 驱动指针
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+inline cmos_hal_driver_T *cmos_fd_fcb_get_driver(const cmos_fd_fcb_T *fcb)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__); 
+    return fcb->driver;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_fcb_get_driver_id
+* 负责人  : 彭鹏
+* 创建日期: 20151222
+* 函数功能: 获取fcb的driver_id
+*
+* 输入参数: fcb  文件控制块指针
+* 输出参数: 无
+* 返回值  : driver_id   driver需要的底层参数 例如STM32F4Cube的的xxxHanler
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+inline void *cmos_fd_fcb_get_driver_id(const cmos_fd_fcb_T *fcb)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__); 
+    return fcb->driver_id;
+}
+

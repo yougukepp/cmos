@@ -32,6 +32,7 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
+static cmos_lib_list_T *s_mutex_list = NULL;
 
 /********************************** 函数声明区 *********************************/
 
@@ -135,9 +136,24 @@ cmos_int32_T cmos_fd_read(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_int32_T cmos_fd_write(cmos_fd_fcb_T *fd, void *buf, cmos_int32_T n_bytes)
+cmos_int32_T cmos_fd_write(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 {
-    return 0;
+    cmos_int32_T write_bytes = 0;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    cmos_assert((NULL != buf) && (n_bytes > 0), __FILE__, __LINE__);
+
+    driver = cmos_fd_fcb_get_driver(fcb);
+    driver_id = cmos_fd_fcb_get_driver_id(fcb);
+
+    cmos_assert(NULL != driver, __FILE__, __LINE__);
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__); 
+    
+    write_bytes = driver->write(driver_id, buf, n_bytes);
+
+    return write_bytes;
 }
 
 /*******************************************************************************
@@ -265,8 +281,9 @@ void cmos_fd_write_u(const cmos_fd_fcb_T *fcb)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__);
     cmos_fd_mutex_T *mutex_lock = cmos_fd_fcb_get_lock(fcb); 
+    cmos_fd_mutex_lock(mutex_lock); 
     
-    cmos_fd_mutex_lock(mutex_lock);
+    /* 执行到此表示已经成功锁定 可以正常写 */
 }
 
 /*******************************************************************************
@@ -286,6 +303,29 @@ void cmos_fd_write_u(const cmos_fd_fcb_T *fcb)
 void cmos_fd_read_u(const cmos_fd_fcb_T *fcb)
 {
     ;
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_unlock_by_tcb
+* 负责人  : 彭鹏
+* 创建日期: 20151223
+* 函数功能: 通过tcb查找对应的锁定的fcb
+*
+* 输入参数: fcb  文件控制块指针
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : TODO:实现mutex链表
+*
+******************************************************************************/
+void cmos_fd_unlock_by_tcb(const cmos_task_tcb_T *tcb)
+{
+    cmos_assert(NULL != tcb, __FILE__, __LINE__);
+
+    /* step1: 遍历mutex查找highest_blocked_tcb为tcb的mutex*/
+
+    /* step2: 解锁mutex*/
 }
 
 #if 0
