@@ -31,10 +31,11 @@
 #include "cmos_api.h"
 
 #include "syscall.h"
+#include "init.h"
+#include "start.h"
 #include "open.h"
 #include "write.h"
 #include "ipc.h"
-#include "init.h"
 
 #include "cortex.h"
 #include "console.h"
@@ -115,7 +116,7 @@ void syscall_c(cmos_uint32_T *sp)
             }
         case 0x01:
             { 
-                cmos_start_p();
+                cmos_start_svc();
                 break;
             }
         case 0x02:
@@ -178,25 +179,6 @@ void syscall_c(cmos_uint32_T *sp)
     }
 
     return;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_start_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 多任务启动 特权
- *
- * 输入参数: 无
- * 输出参数: 无
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-inline void cmos_start_p(void)
-{
-    cmos_kernel_start();
 }
 
 /*******************************************************************************

@@ -1,23 +1,22 @@
 /******************************************************************************
  *
- * 文件名  ： syscall.h
+ * 文件名  ： start.h
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20151217 
+ * 创建日期： 20151224 
  * 版本号  ： v1.0
- * 文件描述： 系统调用内部接口
- * 版权说明： Copyright (c) 2000-2020   烽火通信科技股份有限公司
- * 其    他： 供内核代码使用 移除
+ * 文件描述： start系统调用
+ * 版权说明： Copyright (c) 2000-2020 GNU
+ * 其    他： 无
  * 修改日志： 无
  *
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_SYSCALL_SYSCALL_H_
-#define _CMOS_SYSCALL_SYSCALL_H_
+#ifndef _CMOS_SYSCALL_START_H_
+#define _CMOS_SYSCALL_START_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "fd.h"
 
 /************************************ 宏定义 ***********************************/
 
@@ -29,14 +28,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_bool_T cmos_running_p(void);
+void cmos_start_svc(void);
 
-cmos_status_T cmos_create_p(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
-cmos_status_T cmos_delay_p(cmos_int32_T millisec);
-
-cmos_status_T cmos_close_p(cmos_fd_T fd);
-cmos_int32_T cmos_read_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes);
-cmos_status_T cmos_ioctl_p(cmos_fd_T fd, cmos_uint32_T request, ...);
-
-#endif // #ifndef _CMOS_SYSCALL_SYSCALL_H_
+#endif // #ifndef _CMOS_SYSCALL_INIT_H_
 

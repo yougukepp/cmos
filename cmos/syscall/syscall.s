@@ -32,11 +32,8 @@ svc_init        PROC
                 BX LR
                 ENDP
 
-                ; 执行完成后MUC切换到idle任务,idle任务中进入特权级别
-                ; 之后只可通过svc作为入口
-                ; cmos_start的末尾使用中断返回 故必须使用 svc
-cmos_start      PROC
-                EXPORT  cmos_start
+svc_start       PROC
+                EXPORT  svc_start
                 SVC 0x01
                 ; 出错才会执行到此
                 BX LR
