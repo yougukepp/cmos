@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * 文件名  ： write.h
+ * 文件名  ： syscall_task.h
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20151223 
+ * 创建日期： 20151224 
  * 版本号  ： v1.0
- * 文件描述： write系统调用
+ * 文件描述： task相关系统调用
  * 版权说明： Copyright (c) 2000-2020 GNU
  * 其    他： 无
  * 修改日志： 无
@@ -12,12 +12,11 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_SYSCALL_WRITE_H_
-#define _CMOS_SYSCALL_WRITE_H_
+#ifndef _CMOS_SYSCALL_SYSCALL_TASK_H_
+#define _CMOS_SYSCALL_SYSCALL_TASK_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "fcb.h"
 
 /************************************ 宏定义 ***********************************/
 
@@ -29,7 +28,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
+void cmos_create_svc(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
 
-#endif // #ifndef _CMOS_SYSCALL_SYSCALL_H_
+#endif // #ifndef _CMOS_SYSCALL_SYSCALL_TASK_H_
 

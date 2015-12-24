@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * 文件名  ： init.h
+ * 文件名  ： syscall_kernel.h
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20151223 
  * 版本号  ： v1.0
- * 文件描述： init系统调用
+ * 文件描述： kernel相关系统调用
  * 版权说明： Copyright (c) 2000-2020 GNU
  * 其    他： 无
  * 修改日志： 无
@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_SYSCALL_INIT_H_
-#define _CMOS_SYSCALL_INIT_H_
+#ifndef _CMOS_SYSCALL_SYSCALL_KERNEL_H_
+#define _CMOS_SYSCALL_SYSCALL_KERNEL_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
@@ -31,6 +31,12 @@ extern cmos_task_id_T g_idle_task_id;
 
 /*********************************** 接口函数 **********************************/
 void cmos_init_svc(void);
+void cmos_start_svc(void);
+cmos_status_T cmos_status_svc(void);
 
-#endif // #ifndef _CMOS_SYSCALL_INIT_H_
+#endif // #ifndef _CMOS_SYSCALL_SYSCALL_KERNEL_H_
+
+
+
+
 

@@ -27,7 +27,7 @@
 
 
 /********************************** 函数声明区 *********************************/
-static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base);
+static void cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base);
 static cmos_bool_T cmos_task_tcb_with_float(const cmos_task_tcb_T *tcb);
 
 /********************************** 变量实现区 *********************************/
@@ -47,37 +47,24 @@ static cmos_bool_T cmos_task_tcb_with_float(const cmos_task_tcb_T *tcb);
  *
  * 输出参数: task_id 任务id号
  *
- * 返回值  : 执行状态
- *          
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
+void cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
         const cmos_task_attribute_T *task_attribute,
         cmos_task_tcb_psp_T stack_base)
 {
     cmos_int32_T stack_size = 0; /* 栈大小 Byte单位*/
-    cmos_status_T status = cmos_ERR_E;
 
-    if(NULL == tcb)
-    {
-        CMOS_ERR_STR("cmos_task_tcb_init with null tcb pointer.");
-        return cmos_NULL_E;
-    }
-
-    if(NULL == task_attribute)
-    {
-        CMOS_ERR_STR("task func and task attribute should not to be null.");
-        return cmos_PARA_E;
-    }
+    cmos_assert(NULL != tcb, __FILE__, __LINE__);
+    cmos_assert(NULL != task_attribute, __FILE__, __LINE__);
 
     stack_size = task_attribute->stack_size;
     /* 栈大小必须8Bytes(双字)对齐 */
-    if(0 != (stack_size & 0x00000007))
-    {
-        return cmos_PARA_E;
-    }
+    cmos_assert(0 != (stack_size & 0x00000007), __FILE__, __LINE__);
+
 
     /* TODO: 函数封装 */
     tcb->entry = task_attribute->entry;
@@ -92,13 +79,9 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
     tcb->delay_ms = 0;
 
     /* 初始化任务栈 */
-    status = cmos_task_tcb_stack_init(tcb, stack_base);
-    if(cmos_OK_E != status)
-    {
-        return status;
-    }
+    cmos_task_tcb_stack_init(tcb, stack_base);
 
-    return cmos_OK_E;
+    return;
 }
 
 /*******************************************************************************
@@ -120,17 +103,11 @@ cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb,
  * 其 它   : FIXME:目前仅使用非特权任务
  *
  ******************************************************************************/
-static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base)
+static void cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tcb_psp_T stack_base)
 {
+    cmos_assert((NULL != tcb) && (NULL != stack_base), __FILE__, __LINE__);
+
     cmos_task_tcb_psp_T sp = NULL;      /* 任务sp指针 */
-
-    if((NULL == tcb)
-    || (NULL == stack_base))
-    {
-        CMOS_ERR_STR("cmos_task_tcb_stack_init with null pointer.");
-        return cmos_NULL_E;
-    }
-
     const cmos_func_T entry = tcb->entry;
     const void *argv = tcb->argv;
     cmos_bool_T with_float = FALSE;
@@ -354,7 +331,7 @@ static cmos_status_T cmos_task_tcb_stack_init(cmos_task_tcb_T *tcb, cmos_task_tc
 
     tcb->psp = sp;
 
-    return cmos_OK_E;
+    return;
 }
 
 /*******************************************************************************

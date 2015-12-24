@@ -50,7 +50,7 @@ struct cmos_task_tcb_T_tag{
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
+void cmos_task_tcb_init(cmos_task_tcb_T *tcb, 
         const cmos_task_attribute_T *task_attribute,
         cmos_task_tcb_psp_T stack_base);
 

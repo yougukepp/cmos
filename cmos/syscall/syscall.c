@@ -31,12 +31,10 @@
 #include "cmos_api.h"
 
 #include "syscall.h"
-#include "init.h"
-#include "start.h"
-#include "open.h"
-#include "write.h"
-#include "ipc.h"
-#include "status.h"
+#include "syscall_kernel.h"
+#include "syscall_fd.h"
+#include "syscall_ipc.h"
+#include "syscall_task.h"
 
 #include "cortex.h"
 #include "console.h"
@@ -129,7 +127,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 任务控制 */
         case 0x10:
             { 
-                sp[0] = cmos_create_p((cmos_task_id_T *)stacked_r0, (const cmos_task_attribute_T *)stacked_r1);
+                cmos_create_svc((cmos_task_id_T *)stacked_r0, (const cmos_task_attribute_T *)stacked_r1);
                 break;
             }
 
@@ -192,26 +190,11 @@ void syscall_c(cmos_uint32_T *sp)
  * 输入参数: task_attribute 任务入口 任务参数 任务属性 堆栈 优先级 等
  * 输出参数: task_id 任务id号
  *
- * 返回值  : 执行状态
- *          
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_create_p(cmos_task_id_T *task_id, 
-        const cmos_task_attribute_T *task_attribute)
-{
-    cmos_status_T status = cmos_ERR_E;
-    if(NULL == task_attribute)
-    {
-        CMOS_ERR_STR("task attribute should not to be null.");
-        return cmos_NULL_E;
-    }
-
-    status = cmos_task_create(task_id, task_attribute);
-
-    return status;
-}
 
 /*******************************************************************************
  *

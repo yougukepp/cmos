@@ -45,8 +45,8 @@ svc_status      PROC
                 BX LR
                 ENDP
 
-cmos_create     PROC
-                EXPORT  cmos_create
+svc_create      PROC
+                EXPORT  svc_create
                 SVC 0x10
                 BX  LR
                 ENDP

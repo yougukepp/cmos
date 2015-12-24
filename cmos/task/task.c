@@ -25,6 +25,7 @@
 #include "blocked.h"
 #include "cortex.h"
 #include "mem.h"
+#include "misc.h"
 #include "console.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
@@ -52,44 +53,27 @@ static cmos_task_tcb_psp_T s_user_stack_base = CMOS_TASK_STACK_BASE;
  *           task_attribute 任务属性 堆栈 优先级 等
  *
  * 输出参数: task_id 任务id号
- *
- * 返回值  : 执行状态
- *          
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_task_create(cmos_task_id_T *task_id, 
+void cmos_task_create(cmos_task_id_T *task_id, 
         const cmos_task_attribute_T *task_attribute)
 {
     cmos_int32_T stack_size = 0;
     cmos_task_tcb_T *tcb = NULL;
-    cmos_status_T status = cmos_ERR_E;
 
-    /* step0: 参数检查 */
-    if((NULL == task_id)
-    || (NULL == task_attribute))
-    {
-        CMOS_ERR_STR("task id and task attribute should not to be null.");
-        status = cmos_PARA_E;
-        goto err;
-    }
+    cmos_assert(NULL != task_id, __FILE__, __LINE__);
+    cmos_assert(NULL != task_attribute, __FILE__, __LINE__);
 
     /* TODO: 任务删除的时候释放 */
     /* step1: 分配 tcb(任务控制块) */
     tcb = cmos_malloc(sizeof(cmos_task_tcb_T));
-    if(NULL == tcb)
-    {
-        status = cmos_MEM_LACK_E;
-        goto err;
-    }
+    cmos_assert(NULL != tcb, __FILE__, __LINE__);
 
     /* step2: 初始化任务tcb */
-    status = cmos_task_tcb_init(tcb, task_attribute, s_user_stack_base);
-    if(cmos_OK_E != status)
-    {
-        goto err;
-    }
+    cmos_task_tcb_init(tcb, task_attribute, s_user_stack_base);
 
     /* step3: 更新用户空间未用栈的顶 */
     stack_size = cmos_task_tcb_get_stack_size(tcb);
@@ -101,11 +85,7 @@ cmos_status_T cmos_task_create(cmos_task_id_T *task_id,
     cmos_task_pool_ready_add(tcb);
 
     *task_id = (cmos_task_id_T)tcb;
-    return cmos_OK_E;
-
-err: 
-    *task_id = NULL;
-    return status;
+    return;
 }
 
 /*******************************************************************************
