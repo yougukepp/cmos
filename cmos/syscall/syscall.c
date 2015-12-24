@@ -34,6 +34,7 @@
 #include "open.h"
 #include "write.h"
 #include "ipc.h"
+#include "init.h"
 
 #include "cortex.h"
 #include "console.h"
@@ -109,7 +110,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 内核基本 */
         case 0x00:
             {
-                cmos_init_p();
+                cmos_init_svc();
                 break;
             }
         case 0x01:
@@ -178,26 +179,6 @@ void syscall_c(cmos_uint32_T *sp)
 
     return;
 }
-
-/*******************************************************************************
- *
- * 函数名  : cmos_init_p
- * 负责人  : 彭鹏
- * 创建日期：20151119 
- * 函数功能: 内核初始化 特权
- *
- * 输入参数: 无
- * 输出参数: 无
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-inline void cmos_init_p(void)
-{
-   cmos_kernel_init();
-}
-
 
 /*******************************************************************************
  *

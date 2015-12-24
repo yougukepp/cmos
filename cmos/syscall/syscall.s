@@ -26,9 +26,8 @@ SVC_Handler     PROC
                 B     syscall_c                     ; 调用C语言主逻辑
                 ENDP
 
-                ; 内部调用 cmos_create_c
-cmos_init       PROC
-                EXPORT  cmos_init 
+svc_init        PROC
+                EXPORT  svc_init
                 SVC 0x00
                 BX LR
                 ENDP
@@ -95,18 +94,6 @@ svc_write       PROC
 cmos_ioctl      PROC
                 EXPORT  cmos_ioctl
                 SVC 0xa4
-                BX  LR
-                ENDP
-
-cmos_read_poll  PROC
-                EXPORT  cmos_read_poll
-                SVC 0xa5
-                BX  LR
-                ENDP
-
-cmos_write_poll PROC
-                EXPORT  cmos_write_poll
-                SVC 0xa6
                 BX  LR
                 ENDP
 

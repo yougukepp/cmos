@@ -18,27 +18,23 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 #include "kernel.h"
-#include "syscall.h"
 #include "task.h"
 #include "switch.h"
-#include "idle.h"
-#include "vfs.h"
 #include "hal.h"
-#include "console.h"
+#include "vfs.h"
 #include "cortex.h"
+#include "stm32f429idiscovery_hardware.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-
+/* 空闲任务id */
+cmos_task_id_T g_idle_task_id = 0;
 
 /********************************** 函数声明区 *********************************/
 
 
 /********************************** 变量实现区 *********************************/
-/* 空闲任务id */
-static cmos_task_id_T s_idle_task_id = 0;
-
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -78,13 +74,8 @@ void cmos_kernel_init(void)
 
     /* 后面的初始化可以使用控制台输出了 */
 
-    /* 打印目录树 */
-    cmos_console_printf_svc("cmos init done with vfs tree:\r\n");
-    vfs_print();
-    
     /* 初始化用户内存 便于调试 */
 #if (CMOS_DEBUG_LEVEL > 0) 
-#define CMOS_TASK_STACK_BASE  (0x20030000)
     cmos_int32_T *sp = NULL;
     cmos_int32_T i = 0;
     cmos_int32_T iMax = 1024 * 10; /* 10kword 40kbyte */
@@ -94,22 +85,7 @@ void cmos_kernel_init(void)
         sp -= 1;
         *sp = 0xA5A5A5A5;
     }
-#undef CMOS_TASK_STACK_BASE
 #endif
-
-    /* 创建idle任务 使用cmos_create_c */
-    cmos_task_attribute_T idle_attribute =
-    {
-        .entry = cmos_task_idle_task,
-        .argv = NULL,
-        .priority = CMOS_IDLE_PRIORITY,
-        .stack_size = CMOS_IDLE_STACK_SIZE,
-        .tick_total = CMOS_IDLE_TICK_TOTAL,
-        .flag = cmos_task_with_default
-    };
-    status = cmos_task_create(&s_idle_task_id, &idle_attribute);
-    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
-
     return;
 }
 
