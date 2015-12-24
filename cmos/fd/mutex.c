@@ -85,7 +85,7 @@ void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
     cmos_priority_T curr_priority = cmos_priority_err;
     
     /* 关中断 */
-    cmos_disable_interrupt(); 
+    cmos_interrupt_disable(); 
     
     if(NULL == mutex->highest_blocked_tcb) /* 未锁定 */
     { 
@@ -115,7 +115,7 @@ void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
     }
 
     /* 开中断 */
-    cmos_enable_interrupt();
+    cmos_interrupt_enable();
     //cmos_enable_interrupt_p();
 }
 
@@ -139,7 +139,7 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
     /* 关中断 */
-    cmos_disable_interrupt();
+    cmos_interrupt_disable();
 
     /* step1: 获取阻塞的最高优先级任务 */
     cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
@@ -155,7 +155,7 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
     cmos_task_resume(next_tcb);
 
     /* 开中断 */
-    cmos_enable_interrupt();
+    cmos_interrupt_enable();
     /* 此后出关键域 */
 }
 

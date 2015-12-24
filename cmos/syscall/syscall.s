@@ -61,31 +61,9 @@ cmos_delay      PROC
                 BX  LR
                 ENDP
 
-cmos_enable_interrupt PROC
-                EXPORT cmos_enable_interrupt
-                IMPORT cmos_enable_interrupt_p
-                LDR R0, = cmos_enable_interrupt_p
-                BLX  R0
-                ; 开中断在关中断之后(已经无法响应svc) 使用svc会崩溃 
-                ; SVC 0x30
-                BX  LR
-                ENDP
-
-cmos_disable_interrupt PROC
-                EXPORT cmos_disable_interrupt
-                SVC 0x31
-                BX  LR
-                ENDP
-
-cmos_enable_switch PROC
-                EXPORT cmos_enable_switch
-                SVC 0x32
-                BX  LR
-                ENDP
-
-cmos_disable_switch PROC
-                EXPORT cmos_disable_switch
-                SVC 0x33
+svc_ipc         PROC
+                EXPORT svc_ipc
+                SVC 0x30
                 BX  LR
                 ENDP
 

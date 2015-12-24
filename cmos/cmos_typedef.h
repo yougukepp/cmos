@@ -105,6 +105,17 @@ typedef struct{
 /* 文件句柄 */
 typedef cmos_uint32_T cmos_fd_T;
 
+/* IPC类型 */
+typedef enum{
+    cmos_ipc_interrupt_enable = 0x00,
+    cmos_ipc_interrupt_disable = 0x01,
+    cmos_ipc_switch_enable = 0x02,
+    cmos_ipc_switch_disable = 0x03,
+    cmos_ipc_mutex_lock = 0x04,
+    cmos_ipc_mutex_unlock = 0x05,
+    cmos_ipc_err = 0xff
+}cmos_ipc_type_T;
+
 /* i2c 相关 */
 /* TODO: 想办法移入驱动 */
 typedef struct cmos_i2c_addr_T_tag{

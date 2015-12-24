@@ -48,11 +48,12 @@ cmos_status_T cmos_create(cmos_task_id_T *task_id, const cmos_task_attribute_T *
 /* 时间管理 */
 cmos_status_T cmos_delay(cmos_int32_T ms);
 
-/* 任务通信与同步 */
-void cmos_enable_interrupt(void);
-void cmos_disable_interrupt(void);
-void cmos_enable_switch(void);
-void cmos_disable_switch(void);
+/* 任务通信与同步 所有的ipc共用一个系统调用 */
+void cmos_ipc(cmos_ipc_type_T type, void *para);
+#define cmos_interrupt_enable()     do{cmos_ipc(cmos_ipc_interrupt_enable, NULL);}while(0);
+#define cmos_interrupt_disable()    cmos_ipc(cmos_ipc_interrupt_disable, NULL)
+#define cmos_switch_enable()        cmos_ipc(cmos_ipc_interrupt_enable, NULL)
+#define cmos_switch_disable()       cmos_ipc(cmos_ipc_interrupt_disable, NULL)
 
 /* 外设驱动 */
 cmos_fd_T cmos_open(const cmos_int8_T *path, cmos_uint32_T flag, ...);

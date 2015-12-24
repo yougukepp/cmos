@@ -33,6 +33,7 @@
 #include "syscall.h"
 #include "open.h"
 #include "write.h"
+#include "ipc.h"
 
 #include "cortex.h"
 #include "console.h"
@@ -94,11 +95,7 @@ void syscall_c(cmos_uint32_T *sp)
      *        0x20 延迟
      *      0x3 任务通信与同步
      *        最强IPC 对实时性(中断延迟)影响巨大 数条指令使用
-     *        0x30 开中断     
-     *        0x31 关中断
-     *        任务同步IPC 对ISR无效 任务同步使用
-     *        0x32 开调度器锁
-     *        0x33 关调度器锁
+     *        0x30 ipc相关系统调用
      *      0xa 驱动系统调用(利用Linux VFS思想)
      *        0xa0 打开文件
      *        0xa1 关闭文件
@@ -143,28 +140,8 @@ void syscall_c(cmos_uint32_T *sp)
         /* 任务通信与同步 */
         case 0x30:
             {
-                cmos_enable_interrupt_p();
-                break;
+                cmos_ipc_svc((cmos_ipc_type_T)stacked_r0, (void *)stacked_r1);
             }
-
-        case 0x31:
-            {
-                cmos_disable_interrupt_p();
-                break;
-            }
-
-        case 0x32:
-            {
-                cmos_enable_switch_p();
-                break;
-            }
-
-        case 0x33:
-            {
-                cmos_disable_switch_p();
-                break;
-            }
-
 
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
@@ -316,82 +293,6 @@ inline cmos_status_T cmos_delay_p(cmos_int32_T millisec)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_enable_interrupt_p
- * 负责人  : 彭鹏
- * 创建日期：20151201 
- * 函数功能: 开中断 特权
- *
- * 输入参数: 无
- * 输出参数: 无
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-inline void cmos_enable_interrupt_p(void)
-{
-    cmos_hal_cortex_cortex_enable_interrupt();
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_disable_interrupt_p
- * 负责人  : 彭鹏
- * 创建日期：20151201 
- * 函数功能: 关中断 特权
- *
- * 输入参数: 无
- * 输出参数: 无
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-inline void cmos_disable_interrupt_p(void)
-{
-    cmos_hal_cortex_cortex_disable_interrupt();
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_enable_switch_p
- * 负责人  : 彭鹏
- * 创建日期：20151201 
- * 函数功能: 开调度器锁 特权
- *
- * 输入参数: 无
- * 输出参数: 无
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-inline void cmos_enable_switch_p(void)
-{
-    cmos_hal_cortex_cortex_enable_switch();
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_disable_switch_p
- * 负责人  : 彭鹏
- * 创建日期：20151201 
- * 函数功能: 关调度器锁 特权
- *
- * 输入参数: 无
- * 输出参数: 无
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-inline void cmos_disable_switch_p(void)
-{
-    cmos_hal_cortex_cortex_disalbe_switch();
-}
-
-/*******************************************************************************
- *
  * 函数名  : cmos_close_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -440,69 +341,6 @@ cmos_int32_T cmos_read_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
     n_reads = cmos_fd_read((cmos_fd_fcb_T *)fd, buf, n_bytes);
 
     return n_reads;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_read_poll_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 系统调用cmos_read_poll 特权
- *
- * 输入参数: fd      文件句柄
- *           buf     读取数据的缓存
- *           n_bytes 要求读取的字节数
- *
- * 输出参数: 无
- * 返回值  : 实际读取字节数
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_int32_T cmos_read_poll_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
-{
-    cmos_assert(0 != fd, __FILE__, __LINE__);
-    cmos_assert(NULL != buf, __FILE__, __LINE__);
-    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
-
-    cmos_int32_T n_reads = 0;
-
-    n_reads = cmos_fd_read_poll((cmos_fd_fcb_T *)fd, buf, n_bytes);
-
-    return n_reads;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_write_poll_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 系统调用cmos_write_poll 特权
- *
- * 输入参数: 
- *           fd      文件句柄
- *           buf     写入数据的缓存
- *           n_bytes 要求写入的字节数
- *
- * 输出参数: 无
- *
- * 返回值  : 实际写入字节数
- *          
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_int32_T cmos_write_poll_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
-{
-    cmos_assert(0 != fd, __FILE__, __LINE__);
-    cmos_assert(NULL != buf, __FILE__, __LINE__);
-    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
-
-    cmos_int32_T n_writes = 0;
-
-    n_writes = cmos_fd_write_poll((cmos_fd_fcb_T *)fd, buf, n_bytes);
-
-    return n_writes;
 }
 
 /*******************************************************************************
