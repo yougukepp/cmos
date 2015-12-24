@@ -133,21 +133,13 @@ void cmos_task_pool_blocked_update_tick(void)
  ******************************************************************************/
 inline static void dec_delay(cmos_task_tcb_T *tcb, void *para)
 {
-    cmos_status_T status = cmos_ERR_E;
-
     /* 自减延迟值 */
     cmos_task_tcb_dec_delay_ms(tcb);
 
     /* 延迟结束移出阻塞表 移入就绪表 */
     if(cmos_task_tcb_zero_delay_ms(tcb))
     {
-        status = cmos_lib_list_del_by_data(&s_blocked_tcb[cmos_blocked_delay_E], tcb);
-        if(cmos_OK_E != status)
-        {
-            CMOS_ERR_STR("cmos_lib_list_del_by_data err.");
-            return;
-        }
-
+        cmos_lib_list_del_by_data(&s_blocked_tcb[cmos_blocked_delay_E], tcb);
         cmos_task_pool_ready_add(tcb);
     }
 }

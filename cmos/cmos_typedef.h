@@ -57,19 +57,11 @@ typedef void(*cmos_func_T)(void *argv);
 /* CMOS函数状态返回 */
 typedef enum{
   cmos_OK_E             =  0x00000000, /* int32正数 最高位为 0 */
-
-  cmos_SINGLE_E         =  0x7FFFFFF2, /* 单任务 */
-  cmos_RUNNING_E        =  0x7FFFFFF3, /* 多任务运行中 */
-  cmos_RES_LACK_E       =  0x7FFFFFF4, /* 内部资源不足 需要修改config中相关配置 */
-  cmos_BUF_SMALL_E      =  0x7FFFFFF5, /* 缓冲过小 */
-  cmos_END_E            =  0x7FFFFFF6, /* 结束 */
-  cmos_PARA_E           =  0x7FFFFFF7, /* 参数错误 */
-  cmos_NULL_E           =  0x7FFFFFF8, /* 空指针 */
-  cmos_MEM_LACK_E       =  0x7FFFFFF9, /* 内存不足 无法malloc */
-  cmos_CONSOLE_E        =  0x7FFFFFFA, /* 串口错误 */
-  cmos_DEV_TIMEOUT_E    =  0x7FFFFFFB,
-  cmos_DEV_BUSY_E       =  0x7FFFFFFC,
-  cmos_DEV_ERR_E        =  0x7FFFFFFD,
+  cmos_SINGLE_E         =  0x7FFFFFF9, /* 单任务 */
+  cmos_RUNNING_E        =  0x7FFFFFFA, /* 多任务运行中 */
+  cmos_NULL_E           =  0x7FFFFFFB, /* 空指针 */
+  cmos_PARA_E           =  0x7FFFFFFC, /* 参数错误 */
+  cmos_MEM_LACK_E       =  0x7FFFFFFD, /* 内存不足 无法malloc */
   cmos_ERR_E            =  0x7FFFFFFE,
   cmos_RESERVED_E       =  0x7FFFFFFF
 }cmos_status_T;

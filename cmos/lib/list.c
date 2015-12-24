@@ -74,24 +74,17 @@ void cmos_lib_list_init(cmos_lib_list_T **list)
  *
  * 输入参数: list双重指针
  * 输出参数: 无
- *
  * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_destroy(cmos_lib_list_T **list)
+void cmos_lib_list_destroy(cmos_lib_list_T **list)
 {
-    cmos_status_T status = cmos_ERR_E;
-    if((NULL == list)
-    || (NULL == *list))
-    {
-        CMOS_ERR_STR("cmos_lib_list_destroy NULL pointer");
-        return cmos_NULL_E;
-    }
+    cmos_assert((NULL != list) && (NULL != *list), (uint8_t *)__FILE__, __LINE__);
 
     /* TODO:遍历list每个结点 后 */
-    return status;
+    return;
 }
 
 /*******************************************************************************
@@ -194,18 +187,7 @@ void *cmos_lib_list_pop_tail(cmos_lib_list_T **list)
     cmos_lib_list_node_T *tail = NULL;
     cmos_lib_list_node_T *new_tail = NULL;
 
-    if(NULL == list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_pop_tail with null pointer.");
-        return NULL;
-    }
-
-    /* 空链表 */
-    if(NULL == *list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_pop_tail can't call with null list.");
-        return NULL;
-    }
+    cmos_assert((NULL != list) && (NULL != *list), (uint8_t *)__FILE__, __LINE__);
 
     /* step1: 找到尾部 */ 
     tail = list_get_tail(*list);
@@ -256,18 +238,7 @@ void *cmos_lib_list_pop_head(cmos_lib_list_T **list)
     cmos_lib_list_node_T *head = NULL;
     cmos_lib_list_node_T *new_head = NULL;
 
-    if(NULL == list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_pop_head with null pointer.");
-        return NULL;
-    }
-
-    /* 空链表 */
-    if(NULL == *list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_pop_tail can't call with null list.");
-        return NULL;
-    }
+    cmos_assert((NULL != list) && (NULL != *list), (uint8_t *)__FILE__, __LINE__);
 
     /* step1: 找到头部 */ 
     head = list_get_head(*list);
@@ -315,14 +286,9 @@ void *cmos_lib_list_pop_head(cmos_lib_list_T **list)
  ******************************************************************************/
 inline void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list)
 {
-    cmos_lib_list_node_T *go_node = NULL;
-    if(NULL == list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_get_head_data with null list.");
-        return NULL;
-    }
+    cmos_assert(NULL != list, (uint8_t *)__FILE__, __LINE__);
 
-    go_node = list_get_head(list);
+    cmos_lib_list_node_T *go_node = list_get_head(list);
 
     return cmos_lib_list_node_get_data(go_node);
 }
@@ -346,23 +312,17 @@ inline void *cmos_lib_list_get_head_data(const cmos_lib_list_T *list)
  ******************************************************************************/
 void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, void *para)
 {
-    cmos_lib_list_node_T *go_node = NULL;
+    cmos_assert(NULL != func, (uint8_t *)__FILE__, __LINE__);
+
     cmos_lib_list_node_T *next = NULL;
     cmos_lib_list_node_T *data = NULL;
-
     
     if(NULL == list) /* NULL == list 该函数啥也不干 */
     {
         return;
     }
 
-    if(NULL == func)
-    {
-        CMOS_ERR_STR("cmos_lib_list_walk with null pointer.");
-        return;
-    }
-
-    go_node = list_get_head(list);
+    cmos_lib_list_node_T *go_node = list_get_head(list);
     while(NULL != go_node)
     { 
         /* 注意: 此处需要在调用func前获取next指针 否则func中若删除go_node则逻辑出错 */
@@ -386,32 +346,20 @@ void cmos_lib_list_walk(cmos_lib_list_T *list, cmos_lib_list_walk_func_T func, v
  *           data 数据域指针
  * 输出参数: 无
  *
- * 返回值  : 执行状态
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 未找到则不删除任何结点
  *
  ******************************************************************************/
-cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, const void *data)
+void cmos_lib_list_del_by_data(cmos_lib_list_T **list, const void *data)
 {
-    cmos_lib_list_node_T *go_node = NULL;
     cmos_lib_list_node_T *prev = NULL;
     cmos_lib_list_node_T *next = NULL;
     void *node_data = NULL;
 
-    if(NULL == list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_del_by_data with null pointer.");
-        return cmos_NULL_E;
-    }
+    cmos_assert((NULL != list) && (NULL != *list) && (NULL != data), (uint8_t *)__FILE__, __LINE__);
 
-    /* 空链表 */
-    if(NULL == *list)
-    {
-        CMOS_ERR_STR("cmos_lib_list_del_by_data can't call with null list.");
-        return cmos_NULL_E;
-    }
-
-    go_node = list_get_head(*list);
+    cmos_lib_list_node_T *go_node = list_get_head(*list);
     while(NULL != go_node)
     { 
         node_data = cmos_lib_list_node_get_data(go_node);
@@ -444,14 +392,14 @@ cmos_status_T cmos_lib_list_del_by_data(cmos_lib_list_T **list, const void *data
             node_free(go_node);
             go_node = NULL; 
             
-            return cmos_OK_E;
+            return;
         }
 
         go_node = go_node->next;
     } 
 
-    CMOS_ERR_STR("cmos_lib_list_del_by_data can't find data");
-    return cmos_PARA_E;
+    cmos_assert(FALSE, (uint8_t *)__FILE__, __LINE__);
+    return;
 }
 
 /*******************************************************************************
@@ -474,11 +422,7 @@ static cmos_lib_list_node_T *node_malloc(const void *data)
     cmos_lib_list_node_T *node = NULL;
 
     node = cmos_malloc(sizeof(cmos_lib_list_node_T));
-    if(NULL == node)
-    {
-        CMOS_ERR_STR("node_malloc malloc failed.");
-        return NULL;
-    }
+    cmos_assert(NULL != node, (uint8_t *)__FILE__, __LINE__);
 
     node->prev = NULL;
     node->next = NULL;
@@ -580,11 +524,7 @@ static cmos_lib_list_node_T *list_get_tail(const cmos_lib_list_T *list)
  ******************************************************************************/
 inline void *cmos_lib_list_node_get_data(const cmos_lib_list_node_T *node)
 {
-    if(NULL == node)
-    {
-        CMOS_ERR_STR("cmos_lib_list_node_get_data can not with null node pointer.");
-        return NULL;
-    }
+    cmos_assert(NULL != node, (uint8_t *)__FILE__, __LINE__);
 
     return node->data;
 }
