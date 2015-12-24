@@ -99,7 +99,7 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     va_end(args);
 
     /* 传输 */
-    if(cmos_running())
+    if(cmos_RUNNING_E == cmos_status())
     { 
         n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处可能会阻塞 */
     }

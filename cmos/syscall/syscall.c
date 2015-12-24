@@ -36,6 +36,7 @@
 #include "open.h"
 #include "write.h"
 #include "ipc.h"
+#include "status.h"
 
 #include "cortex.h"
 #include "console.h"
@@ -121,7 +122,7 @@ void syscall_c(cmos_uint32_T *sp)
             }
         case 0x02:
             { 
-                sp[0] = cmos_running_p();
+                sp[0] = cmos_status_svc();
                 break;
             }
 
@@ -179,27 +180,6 @@ void syscall_c(cmos_uint32_T *sp)
     }
 
     return;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_running_c
- * 负责人  : 彭鹏
- * 创建日期：20151218 
- * 函数功能: 多任务是否启动 特权
- *
- * 输入参数: 无
- * 输出参数: 无
- *
- * 返回值  : TRUE  多任务启动
- *           FALSE 多任务未启动
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-inline cmos_bool_T cmos_running_p(void)
-{
-    return cmos_kernel_running();
 }
 
 /*******************************************************************************

@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * 文件名  ： kernel.h
+ * 文件名  ： status.h
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
- * 创建日期： 20151117
+ * 创建日期： 20151224 
  * 版本号  ： v1.0
- * 文件描述： 系统整体功能的头文件
+ * 文件描述： status系统调用
  * 版权说明： Copyright (c) 2000-2020 GNU
  * 其    他： 无
  * 修改日志： 无
@@ -12,8 +12,8 @@
  *******************************************************************************/
 
 /*---------------------------------- 预处理区 ---------------------------------*/
-#ifndef _CMOS_KERNEL_KERNEL_H_
-#define _CMOS_KERNEL_KERNEL_H_
+#ifndef _CMOS_SYSCALL_STATUS_H_
+#define _CMOS_SYSCALL_STATUS_H_
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
@@ -28,9 +28,7 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-void cmos_kernel_init(void);
-void cmos_kernel_start(void);
-inline cmos_status_T cmos_kernel_status(void);
+cmos_status_T cmos_status_svc(void);
 
-#endif // #ifndef _CMOS_KERNEL_KERNEL_H_
+#endif // #ifndef _CMOS_SYSCALL_STATUS_H_
 

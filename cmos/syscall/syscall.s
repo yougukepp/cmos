@@ -39,8 +39,8 @@ svc_start       PROC
                 BX LR
                 ENDP
 
-cmos_running    PROC
-                EXPORT  cmos_running
+svc_status      PROC
+                EXPORT  svc_status
                 SVC 0x02
                 BX LR
                 ENDP

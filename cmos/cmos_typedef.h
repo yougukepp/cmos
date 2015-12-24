@@ -58,7 +58,9 @@ typedef void(*cmos_func_T)(void *argv);
 typedef enum{
   cmos_OK_E             =  0x00000000, /* int32正数 最高位为 0 */
 
-  cmos_RES_LACK_E       =  0x7FFFFFF9, /* 内部资源不足 需要修改config中相关配置 */
+  cmos_SINGLE_E         =  0x7FFFFFF2, /* 单任务 */
+  cmos_RUNNING_E        =  0x7FFFFFF3, /* 多任务运行中 */
+  cmos_RES_LACK_E       =  0x7FFFFFF4, /* 内部资源不足 需要修改config中相关配置 */
   cmos_BUF_SMALL_E      =  0x7FFFFFF5, /* 缓冲过小 */
   cmos_END_E            =  0x7FFFFFF6, /* 结束 */
   cmos_PARA_E           =  0x7FFFFFF7, /* 参数错误 */
