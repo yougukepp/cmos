@@ -1,10 +1,10 @@
 /******************************************************************************
  *
- * 文件名  ： open.c
+ * 文件名  ： syscall_fd.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20151224 
  * 版本号  ： 1.0
- * 文件描述： open系统调用
+ * 文件描述： 文件相关系统调用
  * 版权说明： Copyright (c) GNU
  * 其    他： 无
  * 修改日志： 无
@@ -31,12 +31,24 @@
 static void cmos_open_before(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
 static void cmos_open_after(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
 
+static void cmos_close_before(cmos_fd_fcb_T *fcb);
+static void cmos_close_after(cmos_fd_fcb_T *fcb);
+
+static void cmos_read_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
+static void cmos_read_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
+
 static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
 static void cmos_write_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes);
 
+static void cmos_ioctl_before(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para);
+static void cmos_ioctl_after(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para);
+
 /* syscall.s中定义 */
-cmos_fd_fcb_T *svc_open(const cmos_int8_T *path, cmos_uint32_T flag, ...);
+cmos_fd_fcb_T *svc_open(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
+void svc_close(cmos_fd_fcb_T *fcb);
 cmos_int32_T svc_write(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
+cmos_int32_T svc_read(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
+void svc_ioctl(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -247,5 +259,257 @@ inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_i
 inline static void cmos_write_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes)
 {
     return;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_close
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_close
+ *
+ * 输入参数: fcb 文件控制块
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_close(cmos_fd_fcb_T *fcb)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+
+    cmos_close_before(fcb);
+    svc_close(fcb);
+    cmos_close_after(fcb);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_close_svc
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_close特权代码
+ *
+ * 输入参数: fcb 文件控制块
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_close_svc(cmos_fd_fcb_T *fcb)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    cmos_fd_close(fcb);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_close_before
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_close特权代码之前的用户态代码
+ *
+ * 输入参数: fcb 文件控制块
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_close_before(cmos_fd_fcb_T *fcb)
+{
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_close_after
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_close特权代码之后的用户态代码
+ *
+ * 输入参数: fcb 文件控制块
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_close_after(cmos_fd_fcb_T *fcb)
+{
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_read
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read
+ *
+ * 输入参数: fcb     文件句柄
+ *           buf     读取数据的缓存
+ *           n_bytes 要求读取的字节数
+ *
+ * 输出参数: 无
+ * 返回值  : 实际读取字节数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_read(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_int32_T read_bytes = 0;
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+
+    cmos_read_before(fcb, buf, n_bytes);
+    read_bytes = svc_read(fcb, buf, n_bytes);
+    cmos_read_after(fcb, buf, n_bytes);
+
+    return read_bytes;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_read_svc
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read特权代码
+ *
+ * 输入参数: 与cmos_read一致
+ * 输出参数: 无
+ * 返回值  : 实际读取字节数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_read_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    return cmos_fd_read(fcb, buf, n_bytes);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_read_before
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read特权代码之前用户态代码
+ *
+ * 输入参数: 与cmos_read一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_read_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_read_after
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read特权代码之后用户态代码
+ *
+ * 输入参数: 与cmos_read一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_read_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_ioctl
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_ioctl
+ *
+ * 输入参数: fcb     文件句柄
+ *           request 操作类型
+ *           para    由操作类型决定
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_ioctl(cmos_fd_fcb_T *fcb, cmos_uint32_T request, ...)
+{ 
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+
+    cmos_uint32_T para = 0;
+    va_list args;
+
+    va_start(args, request);
+    para = va_arg(args, cmos_uint32_T);
+    va_end(args);
+
+    cmos_ioctl_before(fcb, request, para);
+    svc_ioctl(fcb, request, para);
+    cmos_ioctl_after(fcb, request, para);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_ioctl
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_ioctl特权代码
+ *
+ * 输入参数: 与cmos_ioctl一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+void cmos_ioctl_svc(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    cmos_fd_ioctl(fcb, request, para);
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_ioctl_before
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_ioctl特权代码之前用户态代码
+ *
+ * 输入参数: 与cmos_ioctl一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_ioctl_before(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para)
+{
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_ioctl_after
+ * 负责人  : 彭鹏
+ * 创建日期：20151224 
+ * 函数功能: 系统调用cmos_ioctl特权代码之后用户态代码
+ *
+ * 输入参数: 与cmos_ioctl一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_ioctl_after(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para)
+{
 }
 

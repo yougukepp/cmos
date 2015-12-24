@@ -53,7 +53,7 @@ svc_create      PROC
 
 svc_delay       PROC
                 EXPORT  svc_delay
-                SVC 0x20
+                SVC 0x11
                 BX  LR
                 ENDP
 
@@ -69,15 +69,15 @@ svc_open        PROC
                 BX  LR
                 ENDP
 
-cmos_close      PROC
-                EXPORT  cmos_close
+svc_close       PROC
+                EXPORT  svc_close
                 SVC 0xa1
                 BX  LR
                 ENDP
 
 
-cmos_read       PROC
-                EXPORT  cmos_read
+svc_read        PROC
+                EXPORT  svc_read
                 SVC 0xa2
                 BX  LR
                 ENDP
@@ -88,8 +88,8 @@ svc_write       PROC
                 BX   LR
                 ENDP
 
-cmos_ioctl      PROC
-                EXPORT  cmos_ioctl
+svc_ioctl       PROC
+                EXPORT  svc_ioctl
                 SVC 0xa4
                 BX  LR
                 ENDP

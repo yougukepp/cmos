@@ -6,17 +6,19 @@
  * 版本号  ： 1.1
  * 文件描述： 系统调用总控
  * 版权说明： Copyright (c) GNU
- * 其    他： 每个系统调用的主要逻辑在对应的文件中
- *            例如cmos_write系统调用在write.c中
+ * 其    他： 系统调用按照分类组织
+ *            例如文件相关系统调用在syscall_fd模块
  *            系统调用包含3部分:
- *            1. 用户态  执行类似锁定等需要用户态执行的逻辑
- *            2. svc执行 状态切换
- *            3. 内核态  执行特权级下执行的逻辑 由于svc中的级别很高 等效于关中断
+ *            1. svc前用户态        实现类似锁定(需要用户态执行的逻辑),参数检查等
+ *            2. svc陷入内核执行    实现特权级别才可以实现的功能
+ *            2. svc后用户态        实现类似系统调用嵌套的功能
  *
- *            _u 用户态代码
- *            _p 内核态代码
+ *            _before svc前用户态代码
+ *            _svc    特权代码
+ *            _after  svc后用户态代码
  *            syscall.s 中完成svc指令
  *
+ *            本文件实现不同的系统调用的判断(switch表格)
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -24,23 +26,14 @@
 /*---------------------------------- 预处理区 ---------------------------------*/
 
 /************************************ 头文件 ***********************************/
-#include <stdarg.h>
-
 #include "cmos_config.h"
-#include "stm32f4xx_hal_conf.h"
-#include "cmos_api.h"
+#include "misc.h"
 
 #include "syscall.h"
 #include "syscall_kernel.h"
 #include "syscall_fd.h"
 #include "syscall_ipc.h"
 #include "syscall_task.h"
-
-#include "cortex.h"
-#include "console.h"
-#include "kernel.h"
-#include "task.h"
-#include "switch.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -57,24 +50,17 @@
  * 函数功能: 系统调用C主逻辑
  *
  * 输入参数: sp任务堆栈
- *
  * 输出参数: 无
- *
- * 返回值  : 调用状态
- *          
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
 void syscall_c(cmos_uint32_T *sp)
 {
-    if(NULL == sp)
-    {
-        CMOS_ERR_STR("sp is null");
-    }
+    cmos_assert(NULL != sp, __FILE__, __LINE__);
 
     cmos_uint8_T svc_number = ((cmos_uint8_T *) sp[6])[-2];
-
     cmos_uint32_T stacked_r0 = sp[0];
     cmos_uint32_T stacked_r1 = sp[1];
     cmos_uint32_T stacked_r2 = sp[2];
@@ -92,8 +78,7 @@ void syscall_c(cmos_uint32_T *sp)
      *        0x02 多任务是否启动
      *      0x1 任务控制(参考CMSIS Thread Management)
      *        0x10 创建任务
-     *      0x2 时间管理(参考CMSIS Thread Management)
-     *        0x20 延迟
+     *        0x11 延迟
      *      0x3 任务通信与同步
      *        最强IPC 对实时性(中断延迟)影响巨大 数条指令使用
      *        0x30 ipc相关系统调用
@@ -130,9 +115,7 @@ void syscall_c(cmos_uint32_T *sp)
                 cmos_create_svc((cmos_task_id_T *)stacked_r0, (const cmos_task_attribute_T *)stacked_r1);
                 break;
             }
-
-        /* 时间管理 */
-        case 0x20:
+        case 0x11:
             { 
                 cmos_delay_svc((cmos_int32_T)stacked_r0);
                 break;
@@ -147,17 +130,19 @@ void syscall_c(cmos_uint32_T *sp)
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
             { 
-                sp[0] = (cmos_uint32_T)cmos_open_svc((const cmos_int8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
+                sp[0] = (cmos_uint32_T)cmos_open_svc((const cmos_int8_T *)stacked_r0, 
+                        (cmos_uint32_T)stacked_r1,
+                        stacked_r2); 
                 break;
             }
         case 0xa1:
             {
-                sp[0] = cmos_close_p((cmos_fd_T)stacked_r0); 
+                cmos_close_svc((cmos_fd_T)stacked_r0); 
                 break;
             }
         case 0xa2:
             {
-                sp[0] = cmos_read_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_read_svc((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa3:
@@ -167,7 +152,7 @@ void syscall_c(cmos_uint32_T *sp)
             }
         case 0xa4:
             {
-                sp[0] = cmos_ioctl_p((cmos_fd_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
+                cmos_ioctl_svc((cmos_fd_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
                 break;
             }
         default:
@@ -178,94 +163,5 @@ void syscall_c(cmos_uint32_T *sp)
     }
 
     return;
-}
-
-
-/*******************************************************************************
- *
- * 函数名  : cmos_close_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 系统调用cmos_close 特权
- *
- * 输入参数: fd 文件句柄
- *
- * 输出参数: 无
- * 返回值  : 执行状态
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_status_T cmos_close_p(cmos_fd_T fd)
-{
-    cmos_assert(0 != fd, __FILE__, __LINE__);
-    cmos_fd_close(fd);
-    return cmos_OK_E;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_read_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 系统调用cmos_read 特权
- *
- * 输入参数: fd      文件句柄
- *           buf     读取数据的缓存
- *           n_bytes 要求读取的字节数
- *
- * 输出参数: 无
- * 返回值  : 实际读取字节数
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_int32_T cmos_read_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
-{
-    cmos_assert(0 != fd, __FILE__, __LINE__);
-    cmos_assert(NULL != buf, __FILE__, __LINE__);
-    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
-
-    cmos_int32_T n_reads = 0;
-
-    n_reads = cmos_fd_read(fd, buf, n_bytes);
-
-    return n_reads;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_ioctl_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 系统调用cmos_ioctl 特权
- *
- * 输入参数: fd      文件句柄
- *           buf     操作类型
- *           n_bytes 由操作类型决定
- *
- * 输出参数: 无
- *
- * 返回值  : 实际写入字节数
- *          
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_status_T cmos_ioctl_p(cmos_fd_T fd, cmos_uint32_T request, ...)
-{ 
-    cmos_assert(0 != fd, __FILE__, __LINE__);
-
-    cmos_status_T status = cmos_ERR_E;
-    cmos_uint32_T mode = 0;
-    va_list args;
-
-    va_start(args, request);
-    mode = va_arg(args, cmos_uint32_T);
-    va_end(args);
-
-    /* 返回的是指针 */
-    status = cmos_fd_ioctl(fd, request, mode);
-    return status;
 }
 

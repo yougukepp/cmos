@@ -17,7 +17,6 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
-#include "fd.h"
 
 /************************************ 宏定义 ***********************************/
 
@@ -29,9 +28,5 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-cmos_status_T cmos_close_p(cmos_fd_T fd);
-cmos_int32_T cmos_read_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes);
-cmos_status_T cmos_ioctl_p(cmos_fd_T fd, cmos_uint32_T request, ...);
-
 #endif // #ifndef _CMOS_SYSCALL_SYSCALL_H_
 
