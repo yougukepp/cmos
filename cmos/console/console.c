@@ -98,16 +98,17 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     cmos_assert((0 < n) && (n < CMOS_PRINTF_BUF_SIZE), __FILE__, __LINE__);
     va_end(args);
 
-    /* 传输 */
-    if(cmos_RUNNING_E == cmos_status())
+    /* 单任务是轮询方式 */
+    if(cmos_SINGLE_E == cmos_status())
     { 
-        n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处可能会阻塞 */
-    }
+        cmos_ioctl(s_console_uart_fd, CMOS_I_SET_POLL);
+    } 
     else
-    { 
-        //n_writes = cmos_write_poll(s_console_uart_fcb, (cmos_uint8_T *)printf_buf, n); /* 此处不会任务切换 */
+    {
+        cmos_ioctl(s_console_uart_fd, CMOS_I_SET_IT);
     }
 
+    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处可能会阻塞 */
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
 
     cmos_free(printf_buf);
@@ -197,7 +198,8 @@ cmos_int32_T cmos_console_printf_poll(char *fmt, ...)
     va_end(args);
 
     /* 传输 */
-    //n_writes = cmos_write_poll(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
+    cmos_ioctl(s_console_uart_fd, CMOS_I_SET_POLL);
+    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
 
     cmos_free(printf_buf);
@@ -223,11 +225,10 @@ cmos_int32_T cmos_console_printf_poll(char *fmt, ...)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_console_uninit(void)
+void cmos_console_uninit(void)
 {
     /* FIXME:不使用 预留 */
-    cmos_status_T status = cmos_ERR_E;
-    status = cmos_close(s_console_uart_fd);
-    return status;
+    cmos_close(s_console_uart_fd);
+    return;
 }
 

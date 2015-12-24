@@ -177,9 +177,22 @@ cmos_int32_T cmos_fd_write(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 * 其 它   : 无
 *
 ******************************************************************************/
-cmos_status_T cmos_fd_ioctl(cmos_fd_fcb_T *fd, cmos_uint32_T request, cmos_uint32_T mode)
+cmos_status_T cmos_fd_ioctl(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para)
 {
-    return cmos_ERR_E;
+    cmos_hal_driver_T *driver = NULL;
+    void *driver_id = NULL;
+
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+
+    driver = cmos_fd_fcb_get_driver(fcb);
+    driver_id = cmos_fd_fcb_get_driver_id(fcb);
+
+    cmos_assert(NULL != driver, __FILE__, __LINE__);
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__); 
+    
+    driver->ioctl(driver_id, request, para);
+
+    return cmos_OK_E;
 }
 
 /*******************************************************************************
@@ -276,7 +289,7 @@ cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_by
     cmos_assert(NULL != driver, __FILE__, __LINE__);
     cmos_assert(NULL != driver_id, __FILE__, __LINE__); 
     
-    write_bytes = driver->write_poll(driver_id, buf, n_bytes);
+    //write_bytes = driver->write_poll(driver_id, buf, n_bytes);
 
     return write_bytes;
 }

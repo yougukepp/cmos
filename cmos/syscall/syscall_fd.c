@@ -17,7 +17,7 @@
 #include <stdarg.h>
 
 #include "cmos_config.h"
-#include "syscall_fd.h"
+#include "cmos_api.h"
 
 #include "misc.h"
 #include "fd.h"
@@ -234,6 +234,10 @@ inline cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n
 inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes)
 {
      cmos_assert(NULL != fcb, __FILE__, __LINE__); 
+     if(cmos_SINGLE_E == cmos_status())
+     {
+         return;
+     }
      
      cmos_fd_mutex_T *mutex_lock = cmos_fd_fcb_get_lock(fcb); 
      cmos_fd_mutex_lock(mutex_lock); 

@@ -21,6 +21,7 @@
 #include "console.h"
 #include "task.h"
 #include "fd.h"
+#include "cmos_api.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -30,8 +31,6 @@ static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_byte
 static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
 static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode);
 static cmos_status_T uart_close(const void *dev_id);
-static cmos_int32_T uart_read_poll(const void *dev_id, void *buf, cmos_int32_T n_bytes);
-static cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
 
 /* 驱动变量 加入到vfs */
 const cmos_hal_driver_T g_uart_driver = {
@@ -39,13 +38,12 @@ const cmos_hal_driver_T g_uart_driver = {
     .read = uart_read,
     .write = uart_write,
     .ioctl = uart_ioctl,
-    .close = uart_close,
-    .read_poll = uart_read_poll,
-    .write_poll = uart_write_poll
+    .close = uart_close
 };
 
 /* STM32F4Cube HAL驱动 */
 static UART_HandleTypeDef s_uart_handle;
+static cmos_int32_T s_write_mode = CMOS_I_SET_POLL;
 
 /********************************** 函数声明区 *********************************/
 
@@ -120,43 +118,43 @@ static cmos_int32_T uart_read(const void *dev_id, void *buf, cmos_int32_T n_byte
     return 0;
 }
 
-static cmos_int32_T uart_read_poll(const void *dev_id, void *buf, cmos_int32_T n_bytes)
-{
-    return 0;
-}
-
 static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
-    if(HAL_UART_Transmit_IT((UART_HandleTypeDef *)dev_id, (uint8_t *)buf, n_bytes)!= HAL_OK)
+    if(CMOS_I_SET_POLL == s_write_mode)
+    {
+        /* 轮询 发送 */
+        if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
+        {
+            assert_failed(__FILE__, __LINE__);
+            return 0;
+        }
+    }
+    else if(CMOS_I_SET_IT == s_write_mode)
+    {
+        if(HAL_UART_Transmit_IT((UART_HandleTypeDef *)dev_id, (uint8_t *)buf, n_bytes)!= HAL_OK)
+        {
+            cmos_assert(FALSE, __FILE__, __LINE__);
+            return 0;
+        }
+
+        /* 当前任务阻塞 等待传输完成 */
+        /* HAL_UART_TxCpltCallback 调用后恢复 */
+        cmos_task_tcb_T *tcb = cmos_task_self(); 
+        cmos_assert(NULL == tcb, __FILE__, __LINE__);
+        cmos_task_suspend(tcb);
+    }
+    else
     {
         cmos_assert(FALSE, __FILE__, __LINE__);
-        return 0;
     }
-
-    /* 当前任务阻塞 等待传输完成 */
-    /* HAL_UART_TxCpltCallback 调用后恢复 */
-    cmos_task_tcb_T *tcb = cmos_task_self(); 
-    cmos_assert(NULL == tcb, __FILE__, __LINE__);
-    cmos_task_suspend(tcb);
-
-    return n_bytes;
-}
-
-static cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
-{ 
-    /* 轮询 发送 */
-    if(HAL_UART_Transmit((UART_HandleTypeDef *)dev_id, (uint8_t*)buf, n_bytes, n_bytes/CMOS_UART_TIMEOUT_DIV)!= HAL_OK)
-    {
-        assert_failed(__FILE__, __LINE__);
-        return 0;
-    }	
 
     return n_bytes;
 }
 
 static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T para)
 {
-    return cmos_ERR_E;
+    s_write_mode = request;
+    return cmos_OK_E;
 }
 
 void UART1_IRQHandler(void)

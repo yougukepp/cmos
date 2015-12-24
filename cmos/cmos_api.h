@@ -25,10 +25,12 @@
 
 /* 系统调用cmos_open参数宏 */
 #define CMOS_O_RDWR             (0x00000000)
+
 /* 系统调用cmos_ioctl参数宏 */
 #define CMOS_I_SETBAUDRATE      (0x00000000)
-/* 系统调用cmos_ioctl参数宏 */
 #define CMOS_I_SET_I2C_ADDR     (0x00000001)
+#define CMOS_I_SET_POLL         (0x00000002)
+#define CMOS_I_SET_IT           (0x00000003)
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 
@@ -59,8 +61,8 @@ void cmos_ipc(cmos_ipc_type_T type, void *para);
 cmos_fd_T cmos_open(const cmos_int8_T *path, cmos_uint32_T flag, ...);
 cmos_int32_T cmos_read(cmos_fd_T dev_id, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_write(cmos_fd_T dev_id, const void *buf, cmos_int32_T n_bytes);
-cmos_status_T cmos_ioctl(cmos_fd_T dev_id, cmos_uint32_T request, ...);
-cmos_status_T cmos_close(cmos_fd_T dev_id);
+void cmos_ioctl(cmos_fd_T dev_id, cmos_uint32_T request, ...);
+void cmos_close(cmos_fd_T dev_id);
 cmos_int32_T cmos_read_poll(cmos_fd_T dev_id, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_write_poll(cmos_fd_T dev_id, const void *buf, cmos_int32_T n_bytes);
 

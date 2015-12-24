@@ -32,8 +32,6 @@ typedef struct cmos_hal_driver_T_tag{
     cmos_write_func_T   write;
     cmos_ioctl_func_T   ioctl;
     cmos_close_func_T   close;
-    cmos_read_func_T    read_poll;
-    cmos_write_func_T   write_poll;
 }cmos_hal_driver_T;
 /*--------------------------------- 接口声明区 --------------------------------*/
 

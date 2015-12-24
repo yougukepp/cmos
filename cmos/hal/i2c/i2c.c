@@ -30,8 +30,6 @@ static cmos_int32_T i2c_read(const void *dev_id, void *buf, cmos_int32_T n_bytes
 static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
 static cmos_status_T i2c_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode);
 static cmos_status_T i2c_close(const void *dev_id);
-static cmos_int32_T i2c_read_poll(const void *dev_id, void *buf, cmos_int32_T n_bytes);
-static cmos_int32_T i2c_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
 
 /* 驱动变量 加入到vfs */
 const cmos_hal_driver_T g_i2c_driver = {
@@ -39,9 +37,7 @@ const cmos_hal_driver_T g_i2c_driver = {
     .read = i2c_read,
     .write = i2c_write,
     .ioctl = i2c_ioctl,
-    .close = i2c_close,
-    .read_poll = i2c_read_poll,
-    .write_poll = i2c_write_poll
+    .close = i2c_close
 };
 
 /* STM32F4Cube HAL驱动 */

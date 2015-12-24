@@ -69,11 +69,6 @@ void cmos_kernel_init(void)
     status = hal_init();
     cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
 
-    /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
-    cmos_console_init(CMOS_CONSOLE_BAUDRATE);
-
-    /* 后面的初始化可以使用控制台输出了 */
-
     /* 初始化用户内存 便于调试 */
 #if (CMOS_DEBUG_LEVEL > 0) 
     cmos_int32_T *sp = NULL;

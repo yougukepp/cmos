@@ -125,6 +125,7 @@ void syscall_c(cmos_uint32_T *sp)
         case 0x30:
             {
                 cmos_ipc_svc((cmos_ipc_type_T)stacked_r0, (void *)stacked_r1);
+                break;
             }
 
         /* 驱动系统调用(利用Linux VFS思想) */

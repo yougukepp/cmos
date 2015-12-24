@@ -49,8 +49,6 @@ static void task_float(void *argv);
 ******************************************************************************/
 int main(void)
 {
-    cmos_status_T status = cmos_ERR_E;
-
     /* 初始化 */
     cmos_init(); 
 
@@ -69,9 +67,8 @@ int main(void)
         .tick_total = 2,
         .flag = cmos_task_with_default
     };
-    status = cmos_create(&task_int_id, &task_int_attribute); 
-    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
-    cmos_printf("task_int create %d:0x%08x.\r\n", status, (cmos_int32_T)task_int_id);
+    cmos_create(&task_int_id, &task_int_attribute); 
+    cmos_printf("task_int create:0x%08x.\r\n", (cmos_int32_T)task_int_id);
 #endif
 
     /* 浮点任务 */
@@ -88,9 +85,8 @@ int main(void)
         .tick_total = 3,
         .flag = cmos_task_with_float
     };
-    status = cmos_create(&task_float_id, &task_float_attribute); 
-    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
-    cmos_printf("task_float create %d:0x%08x.\r\n", status, (cmos_int32_T)task_float_id);
+    cmos_create(&task_float_id, &task_float_attribute); 
+    cmos_printf("task_float create:0x%08x.\r\n", (cmos_int32_T)task_float_id);
 #endif
 
     cmos_start();

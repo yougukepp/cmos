@@ -63,8 +63,7 @@ void cmos_task_tcb_init(cmos_task_tcb_T *tcb,
 
     stack_size = task_attribute->stack_size;
     /* 栈大小必须8Bytes(双字)对齐 */
-    cmos_assert(0 != (stack_size & 0x00000007), __FILE__, __LINE__);
-
+    cmos_assert(0 == (stack_size & 0x00000007), __FILE__, __LINE__);
 
     /* TODO: 函数封装 */
     tcb->entry = task_attribute->entry;

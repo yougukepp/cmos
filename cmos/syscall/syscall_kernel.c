@@ -79,9 +79,9 @@ void cmos_init(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-void cmos_init_svc(void)
+inline void cmos_init_svc(void)
 {
-   cmos_kernel_init();
+    cmos_kernel_init();
 }
 
 /*******************************************************************************
@@ -118,8 +118,12 @@ inline static void cmos_init_before(void)
  ******************************************************************************/
 inline static void cmos_init_after(void)
 {
-    cmos_status_T status = cmos_ERR_E;
+    cmos_status_T status = cmos_ERR_E; 
 
+    /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
+    cmos_console_init(CMOS_CONSOLE_BAUDRATE);
+
+    /* 后面的初始化可以使用控制台输出了 */
     /* 打印目录树 */
     cmos_console_printf("cmos init done with vfs tree:\r\n");
     vfs_print();
@@ -134,8 +138,7 @@ inline static void cmos_init_after(void)
         .tick_total = CMOS_IDLE_TICK_TOTAL,
         .flag = cmos_task_with_default
     };
-    status = cmos_create(&g_idle_task_id, &idle_attribute);
-    cmos_assert(cmos_OK_E == status, __FILE__, __LINE__);
+    cmos_create(&g_idle_task_id, &idle_attribute);
 
     cmos_printf("task_idle create %d:0x%08x.\r\n", status, (cmos_int32_T)g_idle_task_id);
 }
@@ -261,9 +264,9 @@ cmos_status_T cmos_status_svc(void)
     cmos_task_tcb_T *s_current_tcb = cmos_task_self();
     if(NULL == s_current_tcb)
     {
-        return cmos_RUNNING_E;
+        return cmos_SINGLE_E;
     }
-    return cmos_SINGLE_E;
+    return cmos_RUNNING_E;
 }
 
 /*******************************************************************************

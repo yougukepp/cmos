@@ -191,50 +191,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>118</LineNumber>
+          <LineNumber>202</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134234516</Address>
+          <Address>134232406</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\cmos\fd\mutex.c</Filename>
+          <Filename>..\cmos\console\console.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\cmos\../cmos/fd/mutex.c\118</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>544</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134243662</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\cmos\syscall\syscall.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\cmos\../cmos/syscall/syscall.c\544</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>541</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134243656</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\cmos\syscall\syscall.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\cmos\../cmos/syscall/syscall.c\541</Expression>
+          <Expression>\\cmos\../cmos/console/console.c\202</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -772,7 +740,7 @@
 
   <Group>
     <GroupName>task</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
