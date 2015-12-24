@@ -283,29 +283,6 @@ cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_by
 
 /*******************************************************************************
 *
-* 函数名  : cmos_fd_fcb_can_write
-* 负责人  : 彭鹏
-* 创建日期: 20151222
-* 函数功能: 判断fcb文件是否可写
-*
-* 输入参数: fcb  文件控制块指针
-* 输出参数: 无
-* 返回值  : 无
-* 调用关系: 无
-* 其 它   : 可能会阻塞并调度其他任务
-*
-******************************************************************************/
-void cmos_fd_write_u(const cmos_fd_fcb_T *fcb)
-{
-    cmos_assert(NULL != fcb, __FILE__, __LINE__);
-    cmos_fd_mutex_T *mutex_lock = cmos_fd_fcb_get_lock(fcb); 
-    cmos_fd_mutex_lock(mutex_lock); 
-    
-    /* 执行到此表示已经成功锁定 可以正常写 */
-}
-
-/*******************************************************************************
-*
 * 函数名  : cmos_fd_fcb_can_read
 * 负责人  : 彭鹏
 * 创建日期: 20151222

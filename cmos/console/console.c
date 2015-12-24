@@ -53,8 +53,8 @@ static cmos_fd_T s_console_uart_fd = 0;
 ******************************************************************************/
 void cmos_console_init(cmos_int32_T baud_rate)
 {
-    s_console_uart_fd = cmos_open_p(CMOS_CONSOLE_PATH, CMOS_O_RDWR); 
-    cmos_assert(NULL != s_console_uart_fd, __FILE__, __LINE__);
+    s_console_uart_fd = (cmos_fd_T)cmos_open(CMOS_CONSOLE_PATH, CMOS_O_RDWR); 
+    cmos_assert(0 != s_console_uart_fd, __FILE__, __LINE__);
 
     /* FIXME:暂时未实现uart ioctl系统调用 */
     /* 波特率的设置位于 hal/hardware/stm32f429idiscovery_hardware.c */
@@ -105,7 +105,7 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     }
     else
     { 
-        n_writes = cmos_write_poll(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处不会任务切换 */
+        //n_writes = cmos_write_poll(s_console_uart_fcb, (cmos_uint8_T *)printf_buf, n); /* 此处不会任务切换 */
     }
 
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
@@ -151,7 +151,7 @@ cmos_int32_T cmos_console_printf_svc(char *fmt, ...)
     va_end(args);
 
     /* 传输 */
-    n_writes = cmos_write_poll_p(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
+    //n_writes = cmos_write_poll_p(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
 
     cmos_free(printf_buf);
@@ -197,7 +197,7 @@ cmos_int32_T cmos_console_printf_poll(char *fmt, ...)
     va_end(args);
 
     /* 传输 */
-    n_writes = cmos_write_poll(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
+    //n_writes = cmos_write_poll(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
     cmos_assert( (n_writes == n), __FILE__, __LINE__);
 
     cmos_free(printf_buf);

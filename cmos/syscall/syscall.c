@@ -1,12 +1,14 @@
 /******************************************************************************
  *
- * 文件名  ： api.c
+ * 文件名  ： syscall.c
  * 负责人  ： 彭鹏(pengpeng@fiberhome.com)
  * 创建日期： 20150321 
  * 版本号  ： 1.1
- * 文件描述： 封装CMOS内部各模块 对应用层提供统一接口
+ * 文件描述： 系统调用总控
  * 版权说明： Copyright (c) GNU
- * 其    他： 系统调用包含3部分:
+ * 其    他： 每个系统调用的主要逻辑在对应的文件中
+ *            例如cmos_write系统调用在write.c中
+ *            系统调用包含3部分:
  *            1. 用户态  执行类似锁定等需要用户态执行的逻辑
  *            2. svc执行 状态切换
  *            3. 内核态  执行特权级下执行的逻辑 由于svc中的级别很高 等效于关中断
@@ -15,7 +17,6 @@
  *            _p 内核态代码
  *            syscall.s 中完成svc指令
  *
- *            目前仅实现write系统调用
  * 修改日志： 无
  *
  *******************************************************************************/
@@ -26,9 +27,13 @@
 #include <stdarg.h>
 
 #include "cmos_config.h"
-#include "cmos_api.h"
 #include "stm32f4xx_hal_conf.h"
+#include "cmos_api.h"
+
 #include "syscall.h"
+#include "open.h"
+#include "write.h"
+
 #include "cortex.h"
 #include "console.h"
 #include "kernel.h"
@@ -40,7 +45,6 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
-static void cmos_write_u(cmos_fd_T fcb);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -101,9 +105,6 @@ void syscall_c(cmos_uint32_T *sp)
      *        0xa2 读文件
      *        0xa3 写文件
      *        0xa4 文件杂项 类似Linux ioctl
-     *        0xa5 读文件(轮询)
-     *        0xa6 写文件(轮询)
-     *
      *
      **************************************************************************/
     switch(svc_number)
@@ -168,7 +169,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
             { 
-                sp[0] = (cmos_fd_T)cmos_open_p((const cmos_int8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
+                sp[0] = (cmos_fd_T)cmos_open_svc((const cmos_int8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
                 break;
             }
         case 0xa1:
@@ -183,22 +184,12 @@ void syscall_c(cmos_uint32_T *sp)
             }
         case 0xa3:
             {
-                sp[0] = cmos_write_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_write_svc((cmos_fd_fcb_T *)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa4:
             {
                 sp[0] = cmos_ioctl_p((cmos_fd_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
-                break;
-            }
-        case 0xa5:
-            {
-                sp[0] = cmos_read_poll_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
-                break;
-            }
-        case 0xa6:
-            {
-                sp[0] = cmos_write_poll_p((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         default:
@@ -401,44 +392,6 @@ inline void cmos_disable_switch_p(void)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_open_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 系统调用cmos_open 特权
- *
- * 输入参数: path vfs的路径
- *           flag 调用标记
- *           ...  第三个参数由flag决定
- *
- * 输出参数: 无
- * 返回值  : -1     出错
- *           其他   文件id从0开始
- *          
- * 调用关系: 无
- * 其 它   : TODO: 完成 实际功能
- *
- ******************************************************************************/
-cmos_fd_T cmos_open_p(const cmos_int8_T *path, cmos_uint32_T flag, ...)
-{ 
-    cmos_assert(NULL != path, __FILE__, __LINE__);
-
-    cmos_fd_T fd = 0;
-    cmos_uint32_T mode = 0;
-
-    va_list args;
-
-    va_start(args, flag);
-    mode = va_arg(args, cmos_uint32_T);
-    va_end(args);
-
-    /* 返回的是指针 */
-    fd = (cmos_fd_T)cmos_fd_open(path, flag, mode);
-
-    return fd;
-}
-
-/*******************************************************************************
- *
  * 函数名  : cmos_close_p
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -517,84 +470,6 @@ cmos_int32_T cmos_read_poll_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
     n_reads = cmos_fd_read_poll((cmos_fd_fcb_T *)fd, buf, n_bytes);
 
     return n_reads;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_write
- * 负责人  : 彭鹏
- * 创建日期：20151223 
- * 函数功能: 系统调用cmos_write
- *
- * 输入参数: fd      文件句柄(文件控制块)
- *           buf     写入数据的缓存
- *           n_bytes 要求写入的字节数
- *
- * 输出参数: 无
- * 返回值  : 实际写入字节数
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_int32_T cmos_write(cmos_fd_T fd, const void *buf, cmos_int32_T n_bytes)
-{ 
-    cmos_write_u(fd);
-
-    cmos_int32_T svc_write(cmos_fd_T fd, const void *buf, cmos_int32_T n_bytes); /* syscall.s中定义 */
-    return svc_write(fd, buf, n_bytes); 
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_write_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 系统调用cmos_write 特权
- *
- * 输入参数: fd      文件句柄
- *           buf     写入数据的缓存
- *           n_bytes 要求写入的字节数
- *
- * 输出参数: 无
- * 返回值  : 实际写入字节数
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-cmos_int32_T cmos_write_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
-{
-    cmos_assert(0 != fd, __FILE__, __LINE__);
-    cmos_assert(NULL != buf, __FILE__, __LINE__);
-    cmos_assert(0 < n_bytes, __FILE__, __LINE__);
-
-    cmos_int32_T n_writes = 0;
-
-    n_writes = cmos_fd_write((cmos_fd_fcb_T *)fd, buf, n_bytes);
-
-    return n_writes;
-}
-
-/*******************************************************************************
- *
- * 函数名  : cmos_write_u
- * 负责人  : 彭鹏
- * 创建日期：20151221 
- * 函数功能: 系统调用cmos_write 用户
- *           处理锁定相关等需要用户态处理的逻辑
- *
- * 输入参数: 无 (栈留给_p处理)
- * 输出参数: 无
- * 返回值  : 实际写入字节数
- * 调用关系: syscall.s中使用
- * 其 它   : 仅使用cmos_write系统调用的第一个参数
- *
- ******************************************************************************/
-static void cmos_write_u(cmos_fd_T fcb)
-{
-    /* step2: 判断是否可写 决定是否睡眠 */
-    cmos_fd_write_u((cmos_fd_fcb_T *)fcb); /* 此处可能会阻塞并调度其他任务 */
-
-    return;
 }
 
 /*******************************************************************************

@@ -89,8 +89,8 @@ cmos_disable_switch PROC
                 BX  LR
                 ENDP
 
-cmos_open       PROC
-                EXPORT  cmos_open
+svc_open        PROC
+                EXPORT  svc_open
                 SVC 0xa0
                 BX  LR
                 ENDP
