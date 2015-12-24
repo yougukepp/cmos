@@ -29,6 +29,7 @@
 
 /*********************************** 接口函数 **********************************/
 void cmos_create_svc(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute);
+void cmos_delay_svc(cmos_int32_T millisec);
 
 #endif // #ifndef _CMOS_SYSCALL_SYSCALL_TASK_H_
 

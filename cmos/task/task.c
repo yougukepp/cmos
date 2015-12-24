@@ -97,24 +97,16 @@ void cmos_task_create(cmos_task_id_T *task_id,
  *
  * 输入参数: 延迟时间(CMOS_TICK_TIMES)数
  * 输出参数: 无
- *
- * 返回值  : 执行状态
- *          
+ * 返回值  : 无
  * 调用关系: 无
  * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
  *
  ******************************************************************************/
-cmos_status_T cmos_task_delay(cmos_int32_T millisec)
+void cmos_task_delay(cmos_int32_T millisec)
 {
-    cmos_task_tcb_T *tcb = NULL;
-
     /* step1: 弹出就绪表 */
-    tcb = cmos_task_pool_ready_pop_tcb();
-    if(NULL == tcb)
-    {
-        CMOS_ERR_STR("cmos_task_delay get a null tcb!");
-        return cmos_NULL_E;
-    }
+    cmos_task_tcb_T *tcb = cmos_task_pool_ready_pop_tcb();
+    cmos_assert(NULL != tcb, __FILE__, __LINE__);
 
     /* step2: 加入阻塞表 */ 
     cmos_task_pool_blocked_add(tcb, cmos_blocked_delay_E);
@@ -125,7 +117,7 @@ cmos_status_T cmos_task_delay(cmos_int32_T millisec)
     /* step3: 调用任务切换 */ 
     cmos_hal_cortex_cortex_set_pendsv();
 
-    return cmos_OK_E;
+    return;
 }
 
 /*******************************************************************************

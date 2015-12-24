@@ -134,7 +134,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 时间管理 */
         case 0x20:
             { 
-                sp[0] = cmos_delay_p((cmos_int32_T)stacked_r0);
+                cmos_delay_svc((cmos_int32_T)stacked_r0);
                 break;
             }
 
@@ -147,7 +147,7 @@ void syscall_c(cmos_uint32_T *sp)
         /* 驱动系统调用(利用Linux VFS思想) */
         case 0xa0:
             { 
-                sp[0] = (cmos_fd_T)cmos_open_svc((const cmos_int8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
+                sp[0] = (cmos_uint32_T)cmos_open_svc((const cmos_int8_T *)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2); 
                 break;
             }
         case 0xa1:
@@ -162,7 +162,7 @@ void syscall_c(cmos_uint32_T *sp)
             }
         case 0xa3:
             {
-                sp[0] = cmos_write_svc((cmos_fd_fcb_T *)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                sp[0] = cmos_write_svc((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
                 break;
             }
         case 0xa4:
@@ -180,42 +180,6 @@ void syscall_c(cmos_uint32_T *sp)
     return;
 }
 
-/*******************************************************************************
- *
- * 函数名  : cmos_create_p
- * 负责人  : 彭鹏
- * 创建日期：20151023 
- * 函数功能: 创建任务 特权
- *
- * 输入参数: task_attribute 任务入口 任务参数 任务属性 堆栈 优先级 等
- * 输出参数: task_id 任务id号
- *
- * 返回值  : 无
- * 调用关系: 无
- * 其 它   : 无
- *
- ******************************************************************************/
-
-/*******************************************************************************
- *
- * 函数名  : cmos_delay_p
- * 负责人  : 彭鹏
- * 创建日期：20151123 
- * 函数功能: 延迟当前任务 特权
- *
- * 输入参数: 延迟时间(CMOS_TICK_TIMES)数
- * 输出参数: 无
- *
- * 返回值  : 执行状态
- *          
- * 调用关系: 无
- * 其 它   : CMOS_TICK_TIMES一般以ms为单位 该函数延迟任务millisec毫秒
- *
- ******************************************************************************/
-inline cmos_status_T cmos_delay_p(cmos_int32_T millisec)
-{
-    return cmos_task_delay(millisec);
-}
 
 /*******************************************************************************
  *
@@ -235,7 +199,7 @@ inline cmos_status_T cmos_delay_p(cmos_int32_T millisec)
 cmos_status_T cmos_close_p(cmos_fd_T fd)
 {
     cmos_assert(0 != fd, __FILE__, __LINE__);
-    cmos_fd_close((cmos_fd_fcb_T *)fd);
+    cmos_fd_close(fd);
     return cmos_OK_E;
 }
 
@@ -264,7 +228,7 @@ cmos_int32_T cmos_read_p(cmos_fd_T fd, void *buf, cmos_int32_T n_bytes)
 
     cmos_int32_T n_reads = 0;
 
-    n_reads = cmos_fd_read((cmos_fd_fcb_T *)fd, buf, n_bytes);
+    n_reads = cmos_fd_read(fd, buf, n_bytes);
 
     return n_reads;
 }
@@ -301,7 +265,7 @@ cmos_status_T cmos_ioctl_p(cmos_fd_T fd, cmos_uint32_T request, ...)
     va_end(args);
 
     /* 返回的是指针 */
-    status = cmos_fd_ioctl((cmos_fd_fcb_T *)fd, request, mode);
+    status = cmos_fd_ioctl(fd, request, mode);
     return status;
 }
 

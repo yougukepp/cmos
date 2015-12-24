@@ -51,8 +51,8 @@ svc_create      PROC
                 BX  LR
                 ENDP
 
-cmos_delay      PROC
-                EXPORT  cmos_delay
+svc_delay       PROC
+                EXPORT  svc_delay
                 SVC 0x20
                 BX  LR
                 ENDP

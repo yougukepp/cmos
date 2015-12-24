@@ -35,8 +35,8 @@ static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T 
 static void cmos_write_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes);
 
 /* syscall.s中定义 */
-cmos_int32_T svc_open(const cmos_int8_T *path, cmos_uint32_T flag, ...);
-cmos_int32_T svc_write(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes);
+cmos_fd_fcb_T *svc_open(const cmos_int8_T *path, cmos_uint32_T flag, ...);
+cmos_int32_T svc_write(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -99,7 +99,7 @@ cmos_fd_T cmos_open(const cmos_int8_T *path, cmos_uint32_T flag, ...)
  * 其 它   : TODO: 完成 实际功能
  *
  ******************************************************************************/
-cmos_fd_fcb_T *cmos_open_svc(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
+cmos_fd_T cmos_open_svc(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 { 
     cmos_assert(NULL != path, __FILE__, __LINE__);
 

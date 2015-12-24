@@ -23,12 +23,13 @@
 
 /*********************************** 类型定义 **********************************/
 /* 文件控制块 */
-typedef struct{
+typedef struct cmos_fd_fcb_T_tag cmos_fd_fcb_T;
+struct cmos_fd_fcb_T_tag{
     cmos_int8_T         *path;      /* vfs路径 */
     cmos_hal_driver_T   *driver;    /* 驱动指针 如uart等 */
     void                *driver_id; /* 驱动底层句柄 如STM32Cube4 HAL Handle等 */
     cmos_fd_mutex_T     *mutex;     /* 互斥锁 */
-}cmos_fd_fcb_T;
+};
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

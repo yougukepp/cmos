@@ -76,7 +76,8 @@ typedef enum{
 
 /* 任务控制 */
 /* 任务号 */
-typedef cmos_uint32_T cmos_task_id_T;
+typedef struct cmos_task_tcb_T_tag cmos_task_tcb_T;
+typedef cmos_task_tcb_T *cmos_task_id_T;
 /* 任务优先级 */
 typedef enum{
     cmos_priority_idle = 0x01,
@@ -88,7 +89,7 @@ typedef enum{
     cmos_priority_realtime = 0x40,
     cmos_priority_err = 0xff
 }cmos_priority_T;
-/* 任务优先级 */
+/* 任务flag属性 */
 typedef enum{
     cmos_task_with_default = 0x00,
     cmos_task_with_float = 0x01,
@@ -105,7 +106,8 @@ typedef struct{
 }cmos_task_attribute_T;
 
 /* 文件句柄 */
-typedef cmos_uint32_T cmos_fd_T;
+typedef struct cmos_fd_fcb_T_tag cmos_fd_fcb_T;
+typedef cmos_fd_fcb_T *cmos_fd_T;
 
 /* IPC类型 */
 typedef enum{
