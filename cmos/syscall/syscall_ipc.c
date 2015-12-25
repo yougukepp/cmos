@@ -19,6 +19,7 @@
 
 #include "misc.h"
 #include "cortex.h"
+#include "mutex.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -98,13 +99,15 @@ void cmos_ipc_svc(cmos_ipc_type_T type, void *para)
                 break;
             }
         case cmos_ipc_mutex_lock:
-            {
-                cmos_assert(FALSE, __FILE__, __LINE__);
+            { 
+                cmos_assert(NULL != para, __FILE__, __LINE__);
+                cmos_fd_mutex_lock(para);
                 break;
             }
         case cmos_ipc_mutex_unlock:
             {
-                cmos_assert(FALSE, __FILE__, __LINE__);
+                cmos_assert(NULL != para, __FILE__, __LINE__);
+                cmos_fd_mutex_unlock(para);
                 break;
             }
 

@@ -72,8 +72,7 @@ cmos_fd_mutex_T *cmos_fd_mutex_malloc(void)
 * 返回值  : 无
 * 调用关系: 无
 * 其 它   : 使用highest_blocked_tcb判断是否锁定 若无该tcb则未锁定
-*           运行与用户态 故需要互斥访问(关中断)
-*           FIXME: 如果性能不可接受需要修改
+*           svc中 运行与内核 不需要显示互斥访问(关中断)
 *
 ******************************************************************************/
 void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
@@ -83,9 +82,6 @@ void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
     cmos_task_tcb_T *tcb = NULL;
     cmos_priority_T highest_priority = cmos_priority_err;
     cmos_priority_T curr_priority = cmos_priority_err;
-    
-    /* 关中断 */
-    cmos_interrupt_disable(); 
     
     if(NULL == mutex->highest_blocked_tcb) /* 未锁定 */
     { 
@@ -114,9 +110,6 @@ void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
         cmos_task_suspend(tcb);
     }
 
-    /* 开中断 */
-    cmos_interrupt_enable();
-    //cmos_enable_interrupt_p();
 }
 
 /*******************************************************************************
@@ -138,9 +131,6 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 {
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
-    /* 关中断 */
-    cmos_interrupt_disable();
-
     /* step1: 获取阻塞的最高优先级任务 */
     cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
     cmos_assert(NULL != next_tcb, __FILE__, __LINE__);
@@ -154,8 +144,6 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
     /* step3: 恢复唤醒的任务 */ 
     cmos_task_resume(next_tcb);
 
-    /* 开中断 */
-    cmos_interrupt_enable();
     /* 此后出关键域 */
 }
 

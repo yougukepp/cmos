@@ -56,6 +56,8 @@ void cmos_ipc(cmos_ipc_type_T type, void *para);
 #define cmos_interrupt_disable()    cmos_ipc(cmos_ipc_interrupt_disable, NULL)
 #define cmos_switch_enable()        cmos_ipc(cmos_ipc_interrupt_enable, NULL)
 #define cmos_switch_disable()       cmos_ipc(cmos_ipc_interrupt_disable, NULL)
+#define cmos_mutex_lock(mutex)        cmos_ipc(cmos_ipc_mutex_lock, mutex)
+#define cmos_mutex_unlock(mutex)       cmos_ipc(cmos_ipc_mutex_unlock, mutex)
 
 /* 外设驱动 */
 cmos_fd_T cmos_open(const cmos_int8_T *path, cmos_uint32_T flag, ...);

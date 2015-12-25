@@ -240,7 +240,7 @@ inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_i
      }
      
      cmos_fd_mutex_T *mutex_lock = cmos_fd_fcb_get_lock(fcb); 
-     cmos_fd_mutex_lock(mutex_lock); 
+     cmos_mutex_lock(mutex_lock);
      /* 执行到此表示已经成功锁定 可以正常写 */ 
 
      return;
