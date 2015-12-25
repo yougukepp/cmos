@@ -57,8 +57,9 @@ typedef void(*cmos_func_T)(void *argv);
 /* CMOS函数状态返回 */
 typedef enum{
   cmos_OK_E             =  0x00000000, /* int32正数 最高位为 0 */
-  cmos_SINGLE_E         =  0x7FFFFFF9, /* 单任务 */
-  cmos_RUNNING_E        =  0x7FFFFFFA, /* 多任务运行中 */
+  cmos_MULT_E           =  0x7FFFFFF8, /* 多任务运行中 */
+  cmos_IDLE_E           =  0x7FFFFFF9, /* 空闲中 */
+  cmos_INIT_E           =  0x7FFFFFFA, /* 单任务 */
   cmos_NULL_E           =  0x7FFFFFFB, /* 空指针 */
   cmos_PARA_E           =  0x7FFFFFFC, /* 参数错误 */
   cmos_MEM_LACK_E       =  0x7FFFFFFD, /* 内存不足 无法malloc */

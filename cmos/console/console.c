@@ -98,8 +98,8 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
     cmos_assert((0 < n) && (n < CMOS_PRINTF_BUF_SIZE), __FILE__, __LINE__);
     va_end(args);
 
-    /* 单任务是轮询方式 */
-    if(cmos_SINGLE_E == cmos_status())
+    /* 单任务和空闲任务是轮询方式 */
+    if(cmos_MULT_E != cmos_status())
     { 
         cmos_ioctl(s_console_uart_fd, CMOS_I_SET_POLL);
     } 
@@ -119,115 +119,21 @@ cmos_int32_T cmos_console_printf(char *fmt, ...)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_console_printf_svc
-* 负责人  : 彭鹏
-* 创建日期: 20151218
-* 函数功能: 控制台打印(svc中使用)
-*
-* 输入参数: 与printf参数含义一致
-* 输出参数: 无
-*
-* 返回值  : 输出的字节数
-* 调用关系: 无
-* 其 它   : 有阻塞可能
-*
-******************************************************************************/
-cmos_int32_T cmos_console_printf_svc(char *fmt, ...)
-{ 
-    if(NULL == fmt) /* 无需打印 */
-    {
-        return 0;
-    }
-
-    char *printf_buf = cmos_malloc(CMOS_PRINTF_BUF_SIZE);
-    cmos_assert(NULL != printf_buf, __FILE__, __LINE__);
-
-    va_list args;
-    cmos_int32_T n = 0;
-    cmos_int32_T n_writes = 0;
-
-    va_start(args, fmt); 
-    n = vsnprintf(printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
-    cmos_assert((0 < n) && (n < CMOS_PRINTF_BUF_SIZE), __FILE__, __LINE__);
-    va_end(args);
-
-    /* 传输 */
-    //n_writes = cmos_write_poll_p(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
-    cmos_assert( (n_writes == n), __FILE__, __LINE__);
-
-    cmos_free(printf_buf);
-    printf_buf = NULL;
-
-    return n;
-}
-
-/*******************************************************************************
-*
-* 函数名  : cmos_console_printf_poll
-* 负责人  : 彭鹏
-* 创建日期: 20151218
-* 函数功能: 控制台打印(轮询 不阻塞)
-*
-* 输入参数: 与printf参数含义一致
-*
-* 输出参数: 无
-*
-* 返回值  : 函数执行状态
-*
-* 调用关系: 无
-* 其 它   : 某些情况下打印不可阻塞,如idle任务
-*
-******************************************************************************/
-cmos_int32_T cmos_console_printf_poll(char *fmt, ...)
-{ 
-    if(NULL == fmt) /* 无需打印 */
-    {
-        return 0;
-    }
-
-    char *printf_buf = cmos_malloc(CMOS_PRINTF_BUF_SIZE);
-    cmos_assert(NULL != printf_buf, __FILE__, __LINE__);
-
-    va_list args;
-    cmos_int32_T n = 0;
-    cmos_int32_T n_writes = 0;
-
-    va_start(args, fmt); 
-    n = vsnprintf(printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
-    cmos_assert((0 < n) && (n < CMOS_PRINTF_BUF_SIZE), __FILE__, __LINE__);
-    va_end(args);
-
-    /* 传输 */
-    cmos_ioctl(s_console_uart_fd, CMOS_I_SET_POLL);
-    n_writes = cmos_write(s_console_uart_fd, (cmos_uint8_T *)printf_buf, n); /* 此处肯能会任务切换 */
-    cmos_assert( (n_writes == n), __FILE__, __LINE__);
-
-    cmos_free(printf_buf);
-    printf_buf = NULL;
-
-    return n;
-}
-
-/*******************************************************************************
-*
 * 函数名  : cmos_console_uninit
 * 负责人  : 彭鹏
 * 创建日期: 20151023
 * 函数功能: 解除控制台串口的管腿复用
 *
 * 输入参数: 无
-*
 * 输出参数: 无
-*
 * 返回值  : 函数执行状态
-*
 * 调用关系: 无
 * 其 它   : 无
 *
 ******************************************************************************/
 void cmos_console_uninit(void)
 {
-    /* FIXME:不使用 预留 */
+    /* 注意:不使用 预留 */
     cmos_close(s_console_uart_fd);
     return;
 }

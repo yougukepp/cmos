@@ -193,7 +193,7 @@ cmos_int32_T cmos_write(cmos_fd_T fd, const void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
- * 函数名  : cmos_write_p
+ * 函数名  : cmos_write_svc
  * 负责人  : 彭鹏
  * 创建日期：20151023 
  * 函数功能: 系统调用cmos_write特权级代码
@@ -234,7 +234,7 @@ inline cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n
 inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes)
 {
      cmos_assert(NULL != fcb, __FILE__, __LINE__); 
-     if(cmos_SINGLE_E == cmos_status())
+     if(cmos_INIT_E == cmos_status())
      {
          return;
      }

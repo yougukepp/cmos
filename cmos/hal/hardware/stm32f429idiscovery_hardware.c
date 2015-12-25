@@ -65,11 +65,7 @@ const cmos_hardware_init_item_T g_hardware_init_list[] =
 ******************************************************************************/
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {  
-    if(NULL == huart)
-    {
-        CMOS_ERR_STR("HAL_UART_MspInit huart is null.");
-        return;
-    }
+    cmos_assert(NULL != huart, __FILE__, __LINE__);
 
     cmos_status_T status = cmos_ERR_E;
     /************************ 控制台使用的串口初始化 ************************/
@@ -118,12 +114,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 ******************************************************************************/
 void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 {
-    if(NULL == huart)
-    {
-        CMOS_ERR_STR("HAL_UART_MspDeInit huart is null.");
-        return;
-    }
-
+    cmos_assert(NULL != huart, __FILE__, __LINE__);
     cmos_status_T status = cmos_ERR_E;
     /*********************** 控制台使用的串口解初始化 ***********************/
     CONSOLE_UART_FORCE_RESET();
@@ -158,14 +149,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 ******************************************************************************/
 void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 {
-    if(NULL == hi2c)
-    {
-        CMOS_ERR_STR("HAL_I2C_MspInit hi2c is null.");
-        return;
-    }
+    cmos_assert(NULL != hi2c, __FILE__, __LINE__);
 
     cmos_status_T status = cmos_ERR_E; 
-    
     GPIO_InitTypeDef  GPIO_InitStruct; 
 
     /************************** 其他I2C3总线初始化 **************************/
@@ -228,11 +214,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 ******************************************************************************/
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
-    if(NULL == hi2c)
-    {
-        CMOS_ERR_STR("HAL_I2C_MspDeInit hi2c is null.");
-        return;
-    }
+    cmos_assert(NULL != hi2c, __FILE__, __LINE__);
 
     cmos_status_T status = cmos_ERR_E;
 

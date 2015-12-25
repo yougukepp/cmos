@@ -107,7 +107,7 @@ void cmos_kernel_start(void)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_kernel_running
+* 函数名  : cmos_kernel_status
 * 负责人  : 彭鹏
 * 创建日期: 20151218
 * 函数功能: CMOS 是否启动(已经开始多任务)
@@ -115,8 +115,9 @@ void cmos_kernel_start(void)
 * 输入参数: 无
 * 输出参数: 无
 *
-* 返回值  : cmos_RUNNING_E 多任务
-*           cmos_SINGLE_E  尚未开始多任务(单任务)
+* 返回值  : cmos_INIT_E  初始化阶段
+*           cmos_IDLE_E  当前空闲(空闲任务中)
+*           cmos_MULT_E  当前在多任务环境下非空闲(非空闲任务中)
 * 调用关系: 无
 * 其 它   : 永不返回
 *
@@ -124,11 +125,18 @@ void cmos_kernel_start(void)
 inline cmos_status_T cmos_kernel_status(void)
 { 
     /* 获取当前任务 */
-    cmos_task_tcb_T *s_current_tcb = cmos_task_self();
-    if(NULL == s_current_tcb)
+    cmos_task_tcb_T *cur_tcb = cmos_task_self();
+    if(NULL == cur_tcb)
     {
-        return cmos_RUNNING_E;
+        return cmos_INIT_E;
     }
-    return cmos_SINGLE_E;
+    else if(g_idle_task_id == cmos_task_self())
+    {
+        return cmos_IDLE_E;
+    }
+    else
+    {
+        return cmos_MULT_E;
+    }
 }
 

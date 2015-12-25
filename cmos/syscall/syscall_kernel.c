@@ -258,15 +258,9 @@ cmos_status_T cmos_status(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_status_T cmos_status_svc(void)
-{ 
-    /* 获取当前任务 */
-    cmos_task_tcb_T *s_current_tcb = cmos_task_self();
-    if(NULL == s_current_tcb)
-    {
-        return cmos_SINGLE_E;
-    }
-    return cmos_RUNNING_E;
+inline cmos_status_T cmos_status_svc(void)
+{
+    return cmos_kernel_status();
 }
 
 /*******************************************************************************

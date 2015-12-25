@@ -54,7 +54,7 @@ void cmos_task_idle_task(void *argv)
     
     while(TRUE)
     { 
-        cmos_console_printf_poll("idle      [%d]:\r\n", times);
+        cmos_console_printf("idle      [%d]:\r\n", times);
         times++;
     } 
     

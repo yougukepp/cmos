@@ -135,6 +135,7 @@ static cmos_int32_T i2c_read(const void *dev_id, void *buf, cmos_int32_T n_bytes
     return 0;
 }
 
+#if 0
 static cmos_int32_T i2c_read_poll(const void *dev_id, void *buf, cmos_int32_T n_bytes)
 { 
     cmos_assert(NULL != dev_id, __FILE__, __LINE__);
@@ -149,6 +150,7 @@ static cmos_int32_T i2c_read_poll(const void *dev_id, void *buf, cmos_int32_T n_
 
     return n_bytes;
 }
+#endif
 
 /* 未使用 暂不实现 */
 static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
@@ -157,6 +159,7 @@ static cmos_int32_T i2c_write(const void *dev_id, const void *buf, cmos_int32_T 
     return 0;
 }
 
+#if 0
 static cmos_int32_T i2c_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes)
 { 
     cmos_assert(NULL != dev_id, __FILE__, __LINE__);
@@ -171,6 +174,7 @@ static cmos_int32_T i2c_write_poll(const void *dev_id, const void *buf, cmos_int
 
     return n_bytes;
 }
+#endif
 
 static cmos_status_T i2c_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode)
 {
