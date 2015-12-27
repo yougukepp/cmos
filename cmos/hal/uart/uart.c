@@ -32,6 +32,8 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
 static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode);
 static cmos_status_T uart_close(const void *dev_id);
 
+static void unlock(UART_HandleTypeDef *huart); /* 用于解锁 */
+
 /* 驱动变量 加入到vfs */
 const cmos_hal_driver_T g_uart_driver = {
     .open = uart_open,
@@ -128,6 +130,7 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
             assert_failed(__FILE__, __LINE__);
             return 0;
         }
+        unlock((UART_HandleTypeDef *)dev_id);
     }
     else if(CMOS_I_SET_IT == s_write_mode)
     {
@@ -140,7 +143,7 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
         /* 当前任务阻塞 等待传输完成 */
         /* HAL_UART_TxCpltCallback 调用后恢复 */
         cmos_task_tcb_T *tcb = cmos_task_self(); 
-        cmos_assert(NULL == tcb, __FILE__, __LINE__);
+        cmos_assert(NULL != tcb, __FILE__, __LINE__);
         cmos_task_suspend(tcb);
     }
     else
@@ -166,7 +169,13 @@ void UART1_IRQHandler(void)
 /* 串口传输完成回调 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    /* 1.文件锁解锁 */
+    cmos_fd_unlock_by_driver_id(huart);
+}
+
+
+/* 解锁 */
+static void unlock(UART_HandleTypeDef *huart)
+{
     cmos_fd_unlock_by_driver_id(huart);
 }
 

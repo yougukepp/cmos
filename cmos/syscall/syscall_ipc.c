@@ -15,6 +15,7 @@
 
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
+#include "syscall.h"
 #include "syscall_ipc.h"
 
 #include "misc.h"
@@ -153,5 +154,6 @@ inline static void cmos_ipc_before(cmos_ipc_type_T type, void *para)
  ******************************************************************************/
 inline static void cmos_ipc_after(cmos_ipc_type_T type, void *para)
 {
+    syscall_wait_pendsv_ok();
 }
 

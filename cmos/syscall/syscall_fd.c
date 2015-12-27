@@ -19,6 +19,7 @@
 #include "cmos_config.h"
 #include "cmos_api.h"
 
+#include "syscall.h"
 #include "misc.h"
 #include "fd.h"
 #include "syscall_fd.h"
@@ -139,7 +140,6 @@ cmos_fd_T cmos_open_svc(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32
  ******************************************************************************/
 inline static void cmos_open_before(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 {
-     return;
 }
 
 /*******************************************************************************
@@ -157,8 +157,8 @@ inline static void cmos_open_before(const cmos_int8_T *path, cmos_uint32_T flag,
  *
  ******************************************************************************/
 inline static void cmos_open_after(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
-{
-    return;
+{ 
+    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -234,16 +234,10 @@ inline cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n
 inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes)
 {
      cmos_assert(NULL != fcb, __FILE__, __LINE__); 
-     if(cmos_INIT_E == cmos_status())
-     {
-         return;
-     }
      
      cmos_fd_mutex_T *mutex_lock = cmos_fd_fcb_get_lock(fcb); 
      cmos_mutex_lock(mutex_lock);
      /* 执行到此表示已经成功锁定 可以正常写 */ 
-
-     return;
 }
 
 /*******************************************************************************
@@ -262,7 +256,7 @@ inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_i
  ******************************************************************************/
 inline static void cmos_write_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes)
 {
-    return;
+    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -342,6 +336,7 @@ inline static void cmos_close_before(cmos_fd_fcb_T *fcb)
  ******************************************************************************/
 inline static void cmos_close_after(cmos_fd_fcb_T *fcb)
 {
+    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -427,6 +422,7 @@ inline static void cmos_read_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T 
  ******************************************************************************/
 inline static void cmos_read_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 {
+    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -515,5 +511,6 @@ inline static void cmos_ioctl_before(cmos_fd_fcb_T *fcb, cmos_uint32_T request, 
  ******************************************************************************/
 inline static void cmos_ioctl_after(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para)
 {
+    syscall_wait_pendsv_ok();
 }
 
