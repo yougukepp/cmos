@@ -79,8 +79,22 @@ cmos_fd_mutex_T *cmos_fd_mutex_malloc(void)
 *
 ******************************************************************************/
 inline void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
-{
-    lock(mutex, FALSE);
+{ 
+    /* 初始化过程不锁 */
+    if((cmos_INIT_E == cmos_kernel_status()))
+    {
+        return;
+    }
+    /* 空闲任务自旋锁 */
+    else if((cmos_IDLE_E != cmos_kernel_status()))
+    {
+        lock(mutex, TRUE);
+    }
+    /* 正常多任务阻塞锁 */
+    if((cmos_MULT_E != cmos_kernel_status()))
+    {
+        lock(mutex, FALSE);
+    }
 }
 
 /*******************************************************************************
@@ -100,7 +114,18 @@ inline void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 ******************************************************************************/
 inline void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 { 
-    unlock(mutex, FALSE);
+    if((cmos_INIT_E == cmos_kernel_status()))
+    {
+        return;
+    }
+    else if((cmos_IDLE_E != cmos_kernel_status()))
+    {
+        unlock(mutex, TRUE);
+    }
+    if((cmos_MULT_E != cmos_kernel_status()))
+    {
+        unlock(mutex, FALSE);
+    }
 }
 
 /*******************************************************************************
@@ -240,12 +265,6 @@ static void lock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
     cmos_task_tcb_T *tcb = NULL;
     cmos_priority_T highest_priority = cmos_priority_err;
     cmos_priority_T curr_priority = cmos_priority_err; 
-
-    /* step0: 初始化不进行锁操作 */
-    if((cmos_INIT_E == cmos_kernel_status()))
-    {
-        return;
-    }
     
     /* step1: 获取当前任务 */
     tcb = cmos_task_self(); 
@@ -276,7 +295,7 @@ static void lock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
         /* step3: 阻塞或自旋当前任务 */
         if(TRUE == spin)
         {
-            while(tcb != mutex->highest_blocked_tcb); /* 等待其他高优先级任务解锁 */
+            while(tcb != mutex->highest_blocked_tcb); /* 等待可以成功获取互斥锁 */
         }
         else 
         {
@@ -304,12 +323,6 @@ static void lock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
 static void unlock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
 {
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
-
-    /* step0: 初始化 不进行锁操作 */
-    if((cmos_MULT_E != cmos_kernel_status()))
-    {
-        return;
-    }
 
     /* step1: 获取阻塞的最高优先级任务 */
     cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
