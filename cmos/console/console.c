@@ -63,7 +63,6 @@ void cmos_console_init(cmos_int32_T baud_rate)
     return;
 }
 
-
 /*******************************************************************************
 *
 * 函数名  : cmos_console_printf

@@ -47,11 +47,8 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex);
 void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex);
 void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex);
 
-
-
 /* 设置与获取函数 */
 cmos_task_tcb_T *cmos_fd_mutex_get_highest_blocked_tcb(const cmos_fd_mutex_T *mutex);
-
 
 #endif /* #ifndef _CMOS_FD_MUTEX_H_ */
 

@@ -27,6 +27,8 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
+static void lock(cmos_fd_mutex_T *mutex, cmos_bool_T spin);
+static void unlock(cmos_fd_mutex_T *mutex, cmos_bool_T spin);
 static void work(cmos_task_tcb_T *data, cmos_fd_mutex_compare_para_T *para);
 
 /********************************** 变量实现区 *********************************/
@@ -76,48 +78,9 @@ cmos_fd_mutex_T *cmos_fd_mutex_malloc(void)
 *           svc中 运行与内核 不需要显示互斥访问(关中断)
 *
 ******************************************************************************/
-void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
+inline void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 {
-    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
-
-    /* step0: 初始化和空任务中 不进行锁操作 */
-    if((cmos_MULT_E != cmos_kernel_status()))
-    {
-        return;
-    }
-
-    cmos_task_tcb_T *tcb = NULL;
-    cmos_priority_T highest_priority = cmos_priority_err;
-    cmos_priority_T curr_priority = cmos_priority_err; 
-    
-    /* step1: 获取当前任务 */
-    tcb = cmos_task_self(); 
-    
-    if(NULL == mutex->highest_blocked_tcb) /* 未锁定 */
-    { 
-        mutex->highest_blocked_tcb = tcb;  /* 加锁 */
-    }
-    else /* 已经锁定 需要睡眠 */
-    { 
-        cmos_assert(NULL != tcb, __FILE__, __LINE__);
-        curr_priority = cmos_task_tcb_get_priority(tcb);
-
-        highest_priority = cmos_task_tcb_get_priority(mutex->highest_blocked_tcb);
-        if(highest_priority < curr_priority)    /* 当前任务优先级最高 */
-        {
-            /* step2.1: 将老的最高优先级tcb加入表 */
-            cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), mutex->highest_blocked_tcb);
-            /* step2.2: 更新最高优先级tcb */
-            mutex->highest_blocked_tcb = tcb; 
-        }
-        else
-        {
-            cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), tcb);
-        }
-        /* step3: 阻塞当前任务 */
-        cmos_task_suspend(tcb);
-    }
-
+    lock(mutex, FALSE);
 }
 
 /*******************************************************************************
@@ -135,29 +98,9 @@ void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 * 其 它   : svc中 运行与内核 不需要显示互斥访问(关中断)
 *
 ******************************************************************************/
-void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
-{
-    cmos_assert(NULL != mutex, __FILE__, __LINE__);
-
-    /* step0: 初始化和空任务中 不进行锁操作 */
-    if((cmos_MULT_E != cmos_kernel_status()))
-    {
-        return;
-    }
-
-    /* step1: 获取阻塞的最高优先级任务 */
-    cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
-
-    /* step2: 更新阻塞的最高优先级任务 */
-    /* FIXME: 使用链表遍历十分低效 */
-    cmos_fd_mutex_compare_para_T compare_para = {cmos_priority_idle, NULL};
-    cmos_lib_list_walk(mutex->blocked_tcb_list, (cmos_lib_list_walk_func_T)work, &compare_para); /* 遍历tcb链表 */
-    mutex->highest_blocked_tcb = compare_para.highest_tcb; /* 链表空 则可以赋值为空 */
-    
-    /* step3: 恢复唤醒的任务 */ 
-    cmos_task_resume(next_tcb);
-
-    /* 此后出关键域 */
+inline void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
+{ 
+    unlock(mutex, FALSE);
 }
 
 /*******************************************************************************
@@ -177,15 +120,7 @@ void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
 {
     cmos_assert(NULL != mutex, __FILE__, __LINE__); 
-
-    /* step1: 获取当前任务 */
-    cmos_task_tcb_T *tcb = cmos_task_self(); 
-
-    /* step2: 自旋 */
-    while(NULL != cmos_fd_mutex_get_highest_blocked_tcb(mutex)); 
-
-    /* step3: 加锁 */
-    mutex->highest_blocked_tcb = tcb;
+    lock(mutex, TRUE);
 }
 
 /*******************************************************************************
@@ -206,6 +141,7 @@ inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
 inline void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex)
 {
     cmos_assert(NULL != mutex, __FILE__, __LINE__); 
+    unlock(mutex, TRUE);
 }
 
 /*******************************************************************************
@@ -279,5 +215,117 @@ inline cmos_task_tcb_T *cmos_fd_mutex_get_highest_blocked_tcb(const cmos_fd_mute
     cmos_assert(NULL != mutex, __FILE__, __LINE__); 
 
     return mutex->highest_blocked_tcb;
+}
+
+/*******************************************************************************
+*
+* 函数名  : lock
+* 负责人  : 彭鹏
+* 创建日期: 20151217
+* 函数功能: 互斥加锁
+*
+* 输入参数: mutex 互斥量指针
+*           spin  是否自旋
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 使用highest_blocked_tcb判断是否锁定 若无该tcb则未锁定
+*           svc中 运行与内核 不需要显示互斥访问(关中断)
+*
+******************************************************************************/
+static void lock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
+{
+    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
+
+    cmos_task_tcb_T *tcb = NULL;
+    cmos_priority_T highest_priority = cmos_priority_err;
+    cmos_priority_T curr_priority = cmos_priority_err; 
+
+    /* step0: 初始化不进行锁操作 */
+    if((cmos_INIT_E == cmos_kernel_status()))
+    {
+        return;
+    }
+    
+    /* step1: 获取当前任务 */
+    tcb = cmos_task_self(); 
+    
+    if(NULL == mutex->highest_blocked_tcb) /* 未锁定 */
+    { 
+        mutex->highest_blocked_tcb = tcb;  /* 加锁 */
+    }
+    else /* 已经锁定 需要睡眠 */
+    { 
+        /* step2: 更新内部数据接口 */
+        cmos_assert(NULL != tcb, __FILE__, __LINE__);
+        curr_priority = cmos_task_tcb_get_priority(tcb);
+
+        highest_priority = cmos_task_tcb_get_priority(mutex->highest_blocked_tcb);
+        if(highest_priority < curr_priority)    /* 当前任务优先级最高 */
+        {
+            /* step2.1: 将老的最高优先级tcb加入表 */
+            cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), mutex->highest_blocked_tcb);
+            /* step2.2: 更新最高优先级tcb */
+            mutex->highest_blocked_tcb = tcb; 
+        }
+        else
+        {
+            cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), tcb);
+        } 
+        
+        /* step3: 阻塞或自旋当前任务 */
+        if(TRUE == spin)
+        {
+            while(tcb != mutex->highest_blocked_tcb); /* 等待其他高优先级任务解锁 */
+        }
+        else 
+        {
+            cmos_task_suspend(tcb); /* 阻塞模式则阻塞 */
+        }
+    }
+
+}
+
+/*******************************************************************************
+*
+* 函数名  : unlock
+* 负责人  : 彭鹏
+* 创建日期: 20151228
+* 函数功能: 解锁
+*
+* 输入参数: mutex 互斥量指针
+*           spin  是否自旋
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : svc中 运行与内核 不需要显示互斥访问(关中断)
+*
+******************************************************************************/
+static void unlock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
+{
+    cmos_assert(NULL != mutex, __FILE__, __LINE__);
+
+    /* step0: 初始化 不进行锁操作 */
+    if((cmos_MULT_E != cmos_kernel_status()))
+    {
+        return;
+    }
+
+    /* step1: 获取阻塞的最高优先级任务 */
+    cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
+
+    /* step2: 更新阻塞的最高优先级任务 */
+    /* FIXME: 使用链表遍历十分低效 */
+    cmos_fd_mutex_compare_para_T compare_para = {cmos_priority_idle, NULL};
+    cmos_lib_list_walk(mutex->blocked_tcb_list, (cmos_lib_list_walk_func_T)work, &compare_para); /* 遍历tcb链表 */
+    mutex->highest_blocked_tcb = compare_para.highest_tcb; /* 链表空 则可以赋值为空 */ 
+    
+    /* step3: 恢复唤醒的任务 */ 
+    if(TRUE != spin)
+    {
+        cmos_task_resume(next_tcb);
+    }
+
+    /* 此后出关键域 */
 }
 
