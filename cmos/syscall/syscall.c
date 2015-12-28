@@ -29,6 +29,7 @@
 #include "cmos_config.h"
 #include "misc.h"
 
+#include "cortex.h"
 #include "syscall.h"
 #include "syscall_kernel.h"
 #include "syscall_fd.h"
@@ -40,6 +41,7 @@
 /********************************** 变量声明区 *********************************/
 
 /********************************** 函数声明区 *********************************/
+static void syscall_wait_pendsv_ok(void);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -163,6 +165,8 @@ void syscall_c(cmos_uint32_T *sp)
             }
     }
 
+    syscall_wait_pendsv_ok();
+
     return;
 }
 
@@ -180,8 +184,8 @@ void syscall_c(cmos_uint32_T *sp)
  * 其 它   : 用于系统调用尾部
  *
  ******************************************************************************/
-inline void syscall_wait_pendsv_ok(void)
+inline static void syscall_wait_pendsv_ok(void)
 {
-    ;
+    while(cmos_hal_cortex_cortex_has_pendsv());
 }
 

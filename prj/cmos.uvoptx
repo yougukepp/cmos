@@ -191,50 +191,50 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>173</LineNumber>
+          <LineNumber>137</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134243404</Address>
+          <Address>134243754</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\app\test\main.c</Filename>
+          <Filename>..\cmos\hal\uart\uart.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\cmos\../app/test/main.c\173</Expression>
+          <Expression>\\cmos\../cmos/hal/uart/uart.c\137</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>154</LineNumber>
+          <LineNumber>168</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134243502</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\app\test\main.c</Filename>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\cmos\hal\uart\uart.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\cmos\../app/test/main.c\154</Expression>
+          <Expression></Expression>
         </Bp>
         <Bp>
           <Number>2</Number>
           <Type>0</Type>
-          <LineNumber>58</LineNumber>
+          <LineNumber>174</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134218272</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\cmos\task\pendsv.s</Filename>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\cmos\hal\uart\uart.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\cmos\../cmos/task/pendsv.s\58</Expression>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -257,6 +257,36 @@
           <count>3</count>
           <WinNumber>1</WinNumber>
           <ItemText>mutex</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SCB-&gt;ICSR</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SCB-&gt;ICSR</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SCB-&gt;ICSR &amp; SCB_ICSR_PENDSVSET_Msk</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>!(SCB-&gt;ICSR &amp; SCB_ICSR_PENDSVSET_Msk)</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SCB-&gt;ICSR</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SCB-&gt;ICSR &amp; SCB_ICSR_PENDSVSET_Msk</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -474,7 +504,7 @@
 
   <Group>
     <GroupName>hal</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

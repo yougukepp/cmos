@@ -139,7 +139,7 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
             cmos_assert(FALSE, __FILE__, __LINE__);
             return 0;
         }
-
+				
         /* 当前任务阻塞 等待传输完成 */
         /* HAL_UART_TxCpltCallback 调用后恢复 */
         cmos_task_tcb_T *tcb = cmos_task_self(); 

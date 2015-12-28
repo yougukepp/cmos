@@ -17,6 +17,7 @@
 /************************************ 头文件 ***********************************/
 #include "cmos_config.h"
 #include "stm32f429idiscovery_hardware.h"
+#include "cortex.h"
 #include "tcb.h"
 #include "switch.h"
 #include "task.h"

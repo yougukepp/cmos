@@ -86,14 +86,18 @@ inline void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
         return;
     }
     /* 空闲任务自旋锁 */
-    else if((cmos_IDLE_E != cmos_kernel_status()))
+    else if((cmos_IDLE_E == cmos_kernel_status()))
     {
         lock(mutex, TRUE);
     }
     /* 正常多任务阻塞锁 */
-    if((cmos_MULT_E != cmos_kernel_status()))
+    else if((cmos_MULT_E == cmos_kernel_status()))
     {
         lock(mutex, FALSE);
+    }
+    else
+    {
+        cmos_assert(FALSE, __FILE__, __LINE__);
     }
 }
 
@@ -118,13 +122,17 @@ inline void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
     {
         return;
     }
-    else if((cmos_IDLE_E != cmos_kernel_status()))
+    else if((cmos_IDLE_E == cmos_kernel_status()))
     {
         unlock(mutex, TRUE);
     }
-    if((cmos_MULT_E != cmos_kernel_status()))
+    else if((cmos_MULT_E == cmos_kernel_status()))
     {
         unlock(mutex, FALSE);
+    }
+    else
+    {
+        cmos_assert(FALSE, __FILE__, __LINE__);
     }
 }
 

@@ -158,7 +158,6 @@ inline static void cmos_open_before(const cmos_int8_T *path, cmos_uint32_T flag,
  ******************************************************************************/
 inline static void cmos_open_after(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
 { 
-    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -214,7 +213,9 @@ inline cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n
     cmos_assert(NULL != buf, __FILE__, __LINE__);
     cmos_assert(0 < n_bytes, __FILE__, __LINE__);
 
-    return cmos_fd_write(fcb, buf, n_bytes);
+    cmos_int32_T rst = cmos_fd_write(fcb, buf, n_bytes);
+
+    return rst;
 }
 
 /*******************************************************************************
@@ -256,7 +257,6 @@ inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_i
  ******************************************************************************/
 inline static void cmos_write_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes)
 {
-    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -300,6 +300,7 @@ void cmos_close_svc(cmos_fd_fcb_T *fcb)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__);
     cmos_fd_close(fcb);
+
 }
 
 /*******************************************************************************
@@ -336,7 +337,6 @@ inline static void cmos_close_before(cmos_fd_fcb_T *fcb)
  ******************************************************************************/
 inline static void cmos_close_after(cmos_fd_fcb_T *fcb)
 {
-    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -385,7 +385,10 @@ cmos_int32_T cmos_read(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 cmos_int32_T cmos_read_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__);
-    return cmos_fd_read(fcb, buf, n_bytes);
+    cmos_int32_T rst = cmos_fd_read(fcb, buf, n_bytes);
+
+
+    return rst;
 }
 
 /*******************************************************************************
@@ -422,7 +425,6 @@ inline static void cmos_read_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T 
  ******************************************************************************/
 inline static void cmos_read_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 {
-    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -475,6 +477,7 @@ void cmos_ioctl_svc(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T par
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__);
     cmos_fd_ioctl(fcb, request, para);
+
 }
 
 /*******************************************************************************
@@ -511,6 +514,4 @@ inline static void cmos_ioctl_before(cmos_fd_fcb_T *fcb, cmos_uint32_T request, 
  ******************************************************************************/
 inline static void cmos_ioctl_after(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para)
 {
-    syscall_wait_pendsv_ok();
 }
-

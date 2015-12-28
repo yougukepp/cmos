@@ -120,7 +120,6 @@ inline static void cmos_create_before(cmos_task_id_T *task_id, const cmos_task_a
  ******************************************************************************/
 inline static void cmos_create_after(cmos_task_id_T *task_id, const cmos_task_attribute_T *task_attribute)
 {
-    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -201,6 +200,5 @@ inline static void cmos_delay_before(cmos_int32_T millisec)
  ******************************************************************************/
 inline static void cmos_delay_after(cmos_int32_T millisec)
 {
-    syscall_wait_pendsv_ok();
 }
 

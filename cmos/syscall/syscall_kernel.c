@@ -142,8 +142,6 @@ inline static void cmos_init_after(void)
     cmos_create(&g_idle_task_id, &idle_attribute);
 
     cmos_printf("task_idle create %d:0x%08x.\r\n", status, (cmos_int32_T)g_idle_task_id);
-
-    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -220,7 +218,6 @@ inline static void cmos_start_before(void)
  ******************************************************************************/
 inline static void cmos_start_after(void)
 {
-    syscall_wait_pendsv_ok();
 }
 
 /*******************************************************************************
@@ -301,6 +298,6 @@ inline static void cmos_status_before(void)
  ******************************************************************************/
 inline static void cmos_status_after(void)
 {
-    syscall_wait_pendsv_ok();
+    //syscall_wait_pendsv_ok();
 }
 

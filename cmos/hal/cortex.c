@@ -77,6 +77,34 @@ inline void cmos_hal_cortex_cortex_set_pendsv(void)
     }
 }
 
+/*******************************************************************************
+ *
+ * 函数名  : cmos_hal_cortex_cortex_set_pendsv
+ * 负责人  : 彭鹏
+ * 创建日期：20151228 
+ * 函数功能: 检查PendSV异常是否已经处理 pend位已经被硬件置0
+ *
+ * 输入参数: 无
+ * 输出参数: 无
+ * 返回值  : 无
+ *          
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline cmos_bool_T cmos_hal_cortex_cortex_has_pendsv(void)
+{ 
+    /* 检查PendSV异常是否已经处理 pend位已经被硬件置0 */
+    if(0x0 != (SCB->ICSR & SCB_ICSR_PENDSVSET_Msk))
+    {
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+
 
 /*******************************************************************************
  *
