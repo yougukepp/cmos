@@ -86,7 +86,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
     GPIO_InitStruct.Alternate = CONSOLE_UART_RX_AF;
     HAL_GPIO_Init(CONSOLE_UART_RX_GPIO_PORT, &GPIO_InitStruct);
 
-    HAL_NVIC_SetPriority(CONSOLE_UART_IRQn, 0, 1);
+    HAL_NVIC_SetPriority(CONSOLE_UART_IRQn, PER_INT_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(CONSOLE_UART_IRQn);
 
     status = hal_device_add(CMOS_CONSOLE_NAME, &g_uart_driver);
@@ -174,9 +174,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
     IMU_I2C_RELEASE_RESET(); 
     
     /* 设置I2C中断优先级 */
-    HAL_NVIC_SetPriority(IMU_I2C_EV_IRQn, 0x00, 0);
+    HAL_NVIC_SetPriority(IMU_I2C_EV_IRQn, PER_INT_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(IMU_I2C_EV_IRQn);
-    HAL_NVIC_SetPriority(IMU_I2C_ER_IRQn, 0x00, 0);
+    HAL_NVIC_SetPriority(IMU_I2C_ER_IRQn, PER_INT_PRIORITY, 0);
     HAL_NVIC_EnableIRQ(IMU_I2C_ER_IRQn); 
     
     /* 设置中断 */
@@ -186,8 +186,8 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Mode  = GPIO_MODE_IT_RISING;
     HAL_GPIO_Init(IMU_INT_GPIO_PORT, &GPIO_InitStruct);
-    HAL_NVIC_SetPriority((IRQn_Type)(IMU_INT_EXTI), 0x00, 0x00);
-    HAL_NVIC_EnableIRQ((IRQn_Type)(IMU_INT_EXTI));
+    HAL_NVIC_SetPriority(IMU_INT_EXTI, PER_INT_PRIORITY, 0);
+    HAL_NVIC_EnableIRQ(IMU_INT_EXTI);
 
     /* 加入总线设备 */
     status = hal_device_add(CMOS_IMU_I2CBUS_NAME, &g_i2c_driver);
