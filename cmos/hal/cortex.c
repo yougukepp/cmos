@@ -50,6 +50,7 @@ inline static cmos_bool_T cmos_hal_cortex_cortex_switch_locked(void);
 inline void cmos_hal_cortex_cortex_goto_unprivileged(void)
 {
     __set_CONTROL(0x00000003);
+    __ISB();
 }
 
 /*******************************************************************************
@@ -73,7 +74,9 @@ inline void cmos_hal_cortex_cortex_set_pendsv(void)
     if(!cmos_hal_cortex_cortex_switch_locked())
     {
         /* 悬起PendSV异常 准备任务切换 */
-        HAL_NVIC_SetPendingIRQ(PendSV_IRQn);
+        HAL_NVIC_SetPendingIRQ(PendSV_IRQn); 
+        __DSB();
+        __ISB();
     }
 }
 

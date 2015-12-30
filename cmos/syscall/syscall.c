@@ -35,7 +35,6 @@
 #include "syscall_fd.h"
 #include "syscall_ipc.h"
 #include "syscall_task.h"
-#include "stm32f4xx_hal_conf.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -183,11 +182,10 @@ void syscall_c(cmos_uint32_T *sp)
  * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 用于系统调用尾部
+ *           将逻辑移入hal/cortex.c模块
  *
  ******************************************************************************/
 inline static void syscall_wait_pendsv_ok(void)
 {
-    __DSB();
-    __ISB();
 }
 
