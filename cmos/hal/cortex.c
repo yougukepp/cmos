@@ -71,9 +71,9 @@ inline void cmos_hal_cortex_cortex_set_pendsv(void)
 {
     /* 未锁才可调度 */
     if(!cmos_hal_cortex_cortex_switch_locked())
-    { 
+    {
         /* 悬起PendSV异常 准备任务切换 */
-        SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+        HAL_NVIC_SetPendingIRQ(PendSV_IRQn);
     }
 }
 
@@ -92,10 +92,10 @@ inline void cmos_hal_cortex_cortex_set_pendsv(void)
  * 其 它   : 无
  *
  ******************************************************************************/
-inline cmos_bool_T cmos_hal_cortex_cortex_has_pendsv(void)
+inline cmos_bool_T cmos_hal_cortex_cortex_get_pendsv(void)
 { 
     /* 检查PendSV异常是否已经处理 pend位已经被硬件置0 */
-    if(0x0 != (SCB->ICSR & SCB_ICSR_PENDSVSET_Msk))
+    if(HAL_NVIC_GetPendingIRQ(PendSV_IRQn))
     {
         return TRUE;
     }
@@ -104,7 +104,6 @@ inline cmos_bool_T cmos_hal_cortex_cortex_has_pendsv(void)
         return FALSE;
     }
 }
-
 
 /*******************************************************************************
  *

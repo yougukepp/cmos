@@ -80,6 +80,7 @@ PendSV_Tail     BL cmos_task_switch_switch
 
                 ; step 7
                 MSR PSP, R0
+                DSB
                 ISB
 
                 ; step 8

@@ -35,6 +35,7 @@
 #include "syscall_fd.h"
 #include "syscall_ipc.h"
 #include "syscall_task.h"
+#include "stm32f4xx_hal_conf.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -175,7 +176,7 @@ void syscall_c(cmos_uint32_T *sp)
  * 函数名  : syscall_wait_pendsv_ok
  * 负责人  : 彭鹏
  * 创建日期：20151226 
- * 函数功能: 任务切换汇编进入 较慢 这里等待切换完成继续
+ * 函数功能: 流水线可能导致任务切换汇编进入较慢 这里清空流水线
  *
  * 输入参数: 无
  * 输出参数: 无
@@ -186,6 +187,7 @@ void syscall_c(cmos_uint32_T *sp)
  ******************************************************************************/
 inline static void syscall_wait_pendsv_ok(void)
 {
-    while(cmos_hal_cortex_cortex_has_pendsv());
+    __DSB();
+    __ISB();
 }
 
