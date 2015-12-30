@@ -17,7 +17,6 @@
 #include "cmos_config.h"
 #include "cortex.h"
 #include "stm32f4xx_hal_conf.h"
-#include "stm32f4xx_hal.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -74,7 +73,7 @@ inline void cmos_hal_cortex_cortex_set_pendsv(void)
     if(!cmos_hal_cortex_cortex_switch_locked())
     {
         /* 悬起PendSV异常 准备任务切换 */
-        HAL_NVIC_SetPendingIRQ(PendSV_IRQn); 
+        SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;  
         __DSB();
         __ISB();
     }
@@ -98,7 +97,7 @@ inline void cmos_hal_cortex_cortex_set_pendsv(void)
 inline cmos_bool_T cmos_hal_cortex_cortex_get_pendsv(void)
 { 
     /* 检查PendSV异常是否已经处理 pend位已经被硬件置0 */
-    if(HAL_NVIC_GetPendingIRQ(PendSV_IRQn))
+    if(0x0 != (SCB->ICSR & SCB_ICSR_PENDSVSET_Msk))
     {
         return TRUE;
     }
