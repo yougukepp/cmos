@@ -298,19 +298,17 @@ static void lock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
         else
         {
             cmos_lib_list_push_tail(&(mutex->blocked_tcb_list), tcb);
-        } 
-        
-        /* step3: 阻塞或自旋当前任务 */
-        if(TRUE == spin)
-        {
-            while(tcb != mutex->highest_blocked_tcb); /* 等待可以成功获取互斥锁 */
         }
-        else 
+
+        /* step3: 阻塞或自旋当前任务 */
+        if(TRUE != spin)
         {
             cmos_task_suspend(tcb); /* 阻塞模式则阻塞 */
-        }
-    }
+        } 
 
+        /* svc中自旋会死锁 */
+        /* 自旋锁的自旋 在出svc之后做 */
+    }
 }
 
 /*******************************************************************************

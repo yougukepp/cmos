@@ -1113,7 +1113,7 @@
                       <MiscControls></MiscControls>
                       <Define></Define>
                       <Undefine></Undefine>
-                      <IncludePath>..\cmos\hal;..\cmos\fd;..\cmos\task</IncludePath>
+                      <IncludePath>..\cmos\hal;..\cmos\fd;..\cmos\task;..\cmos\kernel</IncludePath>
                     </VariousControls>
                   </Cads>
                 </FileArmAds>

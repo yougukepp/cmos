@@ -17,6 +17,8 @@
 #include "cmos_config.h"
 #include "syscall.h"
 #include "syscall_ipc.h"
+#include "kernel.h"
+#include "task.h"
 
 #include "misc.h"
 #include "cortex.h"
@@ -154,5 +156,16 @@ inline static void cmos_ipc_before(cmos_ipc_type_T type, void *para)
  ******************************************************************************/
 inline static void cmos_ipc_after(cmos_ipc_type_T type, void *para)
 {
+    /* 仅仅在idle中自旋 */
+    if((cmos_ipc_mutex_lock == type)
+    && (cmos_IDLE_E == cmos_kernel_status()))
+    { 
+        /* 获取当前任务 */
+        cmos_task_tcb_T *tcb = cmos_task_self(); 
+        cmos_fd_mutex_T *mutex = (cmos_fd_mutex_T *)para; 
+
+        /* 等待可以成功获取互斥锁 */
+        while(tcb != mutex->highest_blocked_tcb);
+    }
 }
 
