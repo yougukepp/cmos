@@ -154,6 +154,8 @@ inline static void cmos_ipc_before(cmos_ipc_type_T type, void *para)
  * 其 它   : 无
  *
  ******************************************************************************/
+cmos_task_tcb_T *tcb;
+cmos_task_tcb_T *tcb1;
 inline static void cmos_ipc_after(cmos_ipc_type_T type, void *para)
 {
     /* 仅仅在idle中自旋 */
@@ -161,11 +163,21 @@ inline static void cmos_ipc_after(cmos_ipc_type_T type, void *para)
     && (cmos_IDLE_E == cmos_kernel_status()))
     { 
         /* 获取当前任务 */
-        cmos_task_tcb_T *tcb = cmos_task_self(); 
+        tcb = cmos_task_self(); 
         cmos_fd_mutex_T *mutex = (cmos_fd_mutex_T *)para; 
 
         /* 等待可以成功获取互斥锁 */
-        while(tcb != mutex->highest_blocked_tcb);
+        do{
+            tcb1 = mutex->highest_blocked_tcb;
+					  if(tcb1 == tcb)
+						{
+							break;
+						}
+						if(NULL == tcb1)
+						{
+							break;
+						}
+        }while(1);
     }
 }
 
