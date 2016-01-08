@@ -74,31 +74,32 @@ cmos_fd_mutex_T *cmos_fd_mutex_malloc(void)
 *
 * 返回值  : 无
 * 调用关系: 无
-* 其 它   : 使用highest_blocked_tcb判断是否锁定 若无该tcb则未锁定
-*           svc中 运行与内核 不需要显示互斥访问(关中断)
+* 其 它   : 无
 *
 ******************************************************************************/
 inline void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 { 
-    /* 初始化过程不锁 */
-    if((cmos_INIT_E == cmos_kernel_status()))
-    {
-        return;
-    }
-    /* 空闲任务自旋锁 */
-    else if((cmos_IDLE_E == cmos_kernel_status()))
-    {
-        lock(mutex, TRUE);
-    }
-    /* 正常多任务阻塞锁 */
-    else if((cmos_MULT_E == cmos_kernel_status()))
-    {
-        lock(mutex, FALSE);
-    }
-    else
-    {
-        cmos_assert(FALSE, __FILE__, __LINE__);
-    }
+    lock(mutex, FALSE);
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_mutex_lock_spin
+* 负责人  : 彭鹏
+* 创建日期: 20160108
+* 函数功能: 互斥加锁 自旋
+*
+* 输入参数: 互斥量指针
+* 输出参数: 无
+*
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+inline void cmos_fd_mutex_lock_spin(cmos_fd_mutex_T *mutex)
+{
+    lock(mutex, TRUE);
 }
 
 /*******************************************************************************
@@ -113,68 +114,56 @@ inline void cmos_fd_mutex_lock(cmos_fd_mutex_T *mutex)
 *
 * 返回值  : 无
 * 调用关系: 无
-* 其 它   : svc中 运行与内核 不需要显示互斥访问(关中断)
+* 其 它   : 无
 *
 ******************************************************************************/
 inline void cmos_fd_mutex_unlock(cmos_fd_mutex_T *mutex)
 { 
-    if((cmos_INIT_E == cmos_kernel_status()))
-    {
-        return;
-    }
-    else if((cmos_IDLE_E == cmos_kernel_status()))
-    {
-        unlock(mutex, TRUE);
-    }
-    else if((cmos_MULT_E == cmos_kernel_status()))
-    {
-        unlock(mutex, FALSE);
-    }
-    else
-    {
-        cmos_assert(FALSE, __FILE__, __LINE__);
-    }
+    unlock(mutex, FALSE);
 }
 
 /*******************************************************************************
 *
-* 函数名  : cmos_fd_mutex_spin_lock
+* 函数名  : cmos_fd_mutex_unlock_spin
 * 负责人  : 彭鹏
-* 创建日期: 20151218
-* 函数功能: 自旋加锁
+* 创建日期: 20160108
+* 函数功能: 互斥解锁 自旋
 *
-* 输入参数: mutex 自旋锁
-* 输出参数: 无
-* 返回值  : 无
-* 调用关系: 无
-* 其 它   : 比较耗费CPU
-*
-******************************************************************************/
-inline void cmos_fd_mutex_spin_lock(cmos_fd_mutex_T *mutex)
-{
-    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
-    lock(mutex, TRUE);
-}
-
-/*******************************************************************************
-*
-* 函数名  : cmos_fd_mutex_spin_unlock
-* 负责人  : 彭鹏
-* 创建日期: 20151218
-* 函数功能: 解自旋锁
-*
-* 输入参数: mutex 互斥锁
+* 输入参数: 互斥量指针
 * 输出参数: 无
 *
 * 返回值  : 无
 * 调用关系: 无
-* 其 它   : 与普通解锁一样
+* 其 它   : 无
 *
 ******************************************************************************/
-inline void cmos_fd_mutex_spin_unlock(cmos_fd_mutex_T *mutex)
+inline void cmos_fd_mutex_unlock_spin(cmos_fd_mutex_T *mutex)
 {
-    cmos_assert(NULL != mutex, __FILE__, __LINE__); 
     unlock(mutex, TRUE);
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_mutex_spin
+* 负责人  : 彭鹏
+* 创建日期: 20160108
+* 函数功能: 自旋
+*
+* 输入参数: 互斥量指针
+* 输出参数: 无
+*
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void cmos_fd_mutex_spin(cmos_fd_mutex_T *mutex)
+{
+    cmos_task_tcb_T *tcb = cmos_task_self();
+
+    /* 自旋 */
+    /* 等待高优先级的任务解锁 */
+    while(tcb != mutex->highest_blocked_tcb);
 }
 
 /*******************************************************************************

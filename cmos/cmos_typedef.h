@@ -110,6 +110,8 @@ typedef enum{
     cmos_ipc_switch_disable = 0x03,
     cmos_ipc_mutex_lock = 0x04,
     cmos_ipc_mutex_unlock = 0x05,
+    cmos_ipc_mutex_lock_spin = 0x06,
+    cmos_ipc_mutex_unlock_spin = 0x07,
     cmos_ipc_err = 0xff
 }cmos_ipc_type_T;
 

@@ -21,6 +21,7 @@
 
 #include "syscall.h"
 #include "misc.h"
+#include "kernel.h"
 #include "fd.h"
 #include "syscall_fd.h"
 
@@ -236,8 +237,25 @@ inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_i
 {
      cmos_assert(NULL != fcb, __FILE__, __LINE__); 
      
-     cmos_fd_mutex_T *mutex_lock = cmos_fd_fcb_get_lock(fcb); 
-     cmos_mutex_lock(mutex_lock);
+     cmos_fd_mutex_T *mutex = cmos_fd_fcb_get_lock(fcb); 
+     cmos_status_T status = cmos_kernel_status();
+     
+     /* 初始化 不锁 */
+     if(cmos_INIT_E == status)
+     {
+         return;
+     }
+     /* 空闲任务自旋锁 */
+     else if(cmos_IDLE_E == status)
+     {
+         cmos_mutex_lock_spin(mutex);
+     }
+     /* 正常多任务阻塞锁 */
+     else if(cmos_MULT_E == status)
+     {
+         cmos_mutex_lock(mutex);
+     }
+
      /* 执行到此表示已经成功锁定 可以正常写 */ 
 }
 

@@ -17,6 +17,7 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 1. 互斥锁
 
 ### 近期计划
+0. 自旋锁和阻塞锁需要分离为不同的系统调用
 1. 实现I2C的轮询与阻塞读写
 2. 实现app/flyer/doc/README.md计划
 

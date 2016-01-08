@@ -113,7 +113,18 @@ void cmos_ipc_svc(cmos_ipc_type_T type, void *para)
                 cmos_fd_mutex_unlock(para);
                 break;
             }
-
+        case cmos_ipc_mutex_lock_spin:
+            { 
+                cmos_assert(NULL != para, __FILE__, __LINE__);
+                cmos_fd_mutex_lock_spin(para);
+                break;
+            }
+        case cmos_ipc_mutex_unlock_spin:
+            {
+                cmos_assert(NULL != para, __FILE__, __LINE__);
+                cmos_fd_mutex_unlock_spin(para);
+                break;
+            }
         default:
             {
                 cmos_assert(FALSE, __FILE__, __LINE__);
@@ -154,30 +165,13 @@ inline static void cmos_ipc_before(cmos_ipc_type_T type, void *para)
  * 其 它   : 无
  *
  ******************************************************************************/
-cmos_task_tcb_T *tcb;
-cmos_task_tcb_T *tcb1;
 inline static void cmos_ipc_after(cmos_ipc_type_T type, void *para)
 {
-    /* 仅仅在idle中自旋 */
-    if((cmos_ipc_mutex_lock == type)
-    && (cmos_IDLE_E == cmos_kernel_status()))
+    /* 需要自旋 */
+    if(type == cmos_ipc_mutex_lock_spin)
     { 
-        /* 获取当前任务 */
-        tcb = cmos_task_self(); 
-        cmos_fd_mutex_T *mutex = (cmos_fd_mutex_T *)para; 
-
-        /* 等待可以成功获取互斥锁 */
-        do{
-            tcb1 = mutex->highest_blocked_tcb;
-					  if(tcb1 == tcb)
-						{
-							break;
-						}
-						if(NULL == tcb1)
-						{
-							break;
-						}
-        }while(1);
+        /* 自旋 */
+        cmos_fd_mutex_spin((cmos_fd_mutex_T *)para);
     }
 }
 
