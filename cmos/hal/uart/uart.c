@@ -32,7 +32,7 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
 static cmos_status_T uart_ioctl(const void *dev_id, cmos_uint32_T request, cmos_uint32_T mode);
 static cmos_status_T uart_close(const void *dev_id);
 
-static void unlock(UART_HandleTypeDef *huart); /* 用于解锁 */
+static void unlock(UART_HandleTypeDef *huart, cmos_ipc_type_T type); /* 用于解锁 */
 
 /* 驱动变量 加入到vfs */
 const cmos_hal_driver_T g_uart_driver = {
@@ -130,7 +130,7 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
             assert_failed(__FILE__, __LINE__);
             return 0;
         }
-        unlock((UART_HandleTypeDef *)dev_id);
+        unlock((UART_HandleTypeDef *)dev_id, cmos_ipc_mutex_unlock_spin);
     }
     else if(CMOS_I_SET_IT == s_write_mode)
     {
@@ -169,13 +169,19 @@ void UART1_IRQHandler(void)
 /* 串口传输完成回调 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    cmos_fd_unlock_by_driver_id(huart);
+    unlock(huart, cmos_ipc_mutex_unlock_spin);
 }
 
-
 /* 解锁 */
-static void unlock(UART_HandleTypeDef *huart)
+static void unlock(UART_HandleTypeDef *huart, cmos_ipc_type_T type)
 {
-    cmos_fd_unlock_by_driver_id(huart);
+    if(cmos_ipc_mutex_unlock_spin == type)
+    {
+        cmos_fd_unlock_by_driver_id_spin(huart);
+    }
+    else
+    { 
+        cmos_fd_unlock_by_driver_id(huart);
+    }
 }
 

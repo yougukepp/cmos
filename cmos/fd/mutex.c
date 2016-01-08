@@ -329,7 +329,7 @@ static void unlock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
     mutex->highest_blocked_tcb = compare_para.highest_tcb; /* 链表空 则可以赋值为空 */ 
     
     /* step3: 恢复唤醒的任务 */ 
-    if(TRUE != spin)
+    if(FALSE == spin)
     {
         cmos_task_resume(next_tcb);
     }

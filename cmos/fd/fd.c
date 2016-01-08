@@ -36,6 +36,7 @@ static cmos_lib_list_T *s_fcb_list = NULL;
 
 /********************************** 函数声明区 *********************************/
 static void work(cmos_fd_fcb_T *fcb, cmos_fd_compare_para_T *para);
+static cmos_fd_mutex_T *cmos_fd_find_mutex_by_driver_id(const void *driver_id);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -315,10 +316,10 @@ void cmos_fd_read_u(const cmos_fd_fcb_T *fcb)
 
 /*******************************************************************************
 *
-* 函数名  : cmos_fd_unlock_by_tcb
+* 函数名  : cmos_fd_unlock_by_driver_id
 * 负责人  : 彭鹏
 * 创建日期: 20151223
-* 函数功能: 通过driver_id查找对应的锁定的fcb 并解锁
+* 函数功能: 通过driver_id查找对应的锁定的fcb 并解锁 阻塞
 *
 * 输入参数: driver_id 驱动底层标志
 * 输出参数: 无
@@ -330,6 +331,56 @@ void cmos_fd_read_u(const cmos_fd_fcb_T *fcb)
 void cmos_fd_unlock_by_driver_id(const void *driver_id)
 {
     cmos_assert(NULL != driver_id, __FILE__, __LINE__);
+
+    /* step1: 查找mutex */
+    cmos_fd_mutex_T *mutex = cmos_fd_find_mutex_by_driver_id(driver_id);
+
+    /* step2: 解锁mutex*/
+    cmos_fd_mutex_unlock(mutex);
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_unlock_by_driver_id_spin
+* 负责人  : 彭鹏
+* 创建日期: 20151223
+* 函数功能: 通过driver_id查找对应的锁定的fcb 并解锁 自旋
+*
+* 输入参数: driver_id 驱动底层标志
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+void cmos_fd_unlock_by_driver_id_spin(const void *driver_id)
+{
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__);
+
+    /* step1: 查找mutex */
+    cmos_fd_mutex_T *mutex = cmos_fd_find_mutex_by_driver_id(driver_id);
+
+    cmos_fd_mutex_unlock_spin(mutex);
+}
+
+/*******************************************************************************
+*
+* 函数名  : cmos_fd_find_mutex_by_driver_id
+* 负责人  : 彭鹏
+* 创建日期: 20160108
+* 函数功能: 通过driver_id查找对应的锁
+*
+* 输入参数: driver_id 驱动底层标志
+* 输出参数: 无
+* 返回值  : NULL 未找到
+*           其他 互斥锁指针
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static cmos_fd_mutex_T *cmos_fd_find_mutex_by_driver_id(const void *driver_id)
+{
+    cmos_assert(NULL != driver_id, __FILE__, __LINE__);
     cmos_fd_mutex_T *mutex = NULL;
 
     /* step1: 遍历fcb_list查找highest_blocked_tcb为tcb的mutex */
@@ -338,8 +389,7 @@ void cmos_fd_unlock_by_driver_id(const void *driver_id)
     mutex = compare_para.mutex;
     cmos_assert(NULL != mutex, __FILE__, __LINE__);
 
-    /* step2: 解锁mutex*/
-    cmos_fd_mutex_unlock(mutex);
+    return mutex;
 }
 
 /*******************************************************************************
