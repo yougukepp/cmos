@@ -240,10 +240,10 @@ inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_i
      cmos_fd_mutex_T *mutex = cmos_fd_fcb_get_lock(fcb); 
      cmos_status_T status = cmos_kernel_status();
      
-     /* 初始化 自旋锁 */
+     /* 初始化 不锁定 */
      if(cmos_INIT_E == status)
      {
-         cmos_mutex_lock_spin(mutex);
+         return;
      }
      /* 空闲任务自旋锁 */
      else if(cmos_IDLE_E == status)

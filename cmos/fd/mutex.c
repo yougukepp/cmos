@@ -164,6 +164,9 @@ void cmos_fd_mutex_spin(cmos_fd_mutex_T *mutex)
     /* 自旋 */
     /* 等待高优先级的任务解锁 */
     while(tcb != mutex->highest_blocked_tcb);
+
+    /* 处理mutex内部数据结构 */
+    cmos_fd_mutex_unlock_spin(mutex);
 }
 
 /*******************************************************************************
@@ -211,10 +214,15 @@ static void work(cmos_task_tcb_T *tcb, cmos_fd_mutex_compare_para_T *para)
     cmos_priority_T cur_priority = cmos_priority_err;
 
     cur_priority = cmos_task_tcb_get_priority(tcb);
-    if(cur_priority > para->priority)
+    
+    if(cur_priority < para->priority)
     {
-        para->highest_tcb = tcb;
+        return;
     }
+
+    /* tcb是目前为止最高优先级任务 */
+    para->highest_tcb = tcb;
+    para->priority = cur_priority;
 }
 
 /*******************************************************************************
@@ -322,11 +330,15 @@ static void unlock(cmos_fd_mutex_T *mutex, cmos_bool_T spin)
     /* step1: 获取阻塞的最高优先级任务 */
     cmos_task_tcb_T *next_tcb = mutex->highest_blocked_tcb;
 
-    /* step2: 更新阻塞的最高优先级任务 */
     /* FIXME: 使用链表遍历十分低效 */
+    /* 将最高优先级任务从链表中移出到highest_blocked_tcb */
+    /* step2.1: 更新阻塞的最高优先级任务 */
     cmos_fd_mutex_compare_para_T compare_para = {cmos_priority_idle, NULL};
     cmos_lib_list_walk(mutex->blocked_tcb_list, (cmos_lib_list_walk_func_T)work, &compare_para); /* 遍历tcb链表 */
     mutex->highest_blocked_tcb = compare_para.highest_tcb; /* 链表空 则可以赋值为空 */ 
+
+    /* step2.2: 从链表 删除最高优先级任务 */ 
+    cmos_lib_list_del_by_data(&(mutex->blocked_tcb_list), compare_para.highest_tcb); 
     
     /* step3: 恢复唤醒的任务 */ 
     if(FALSE == spin)

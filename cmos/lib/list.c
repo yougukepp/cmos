@@ -357,7 +357,12 @@ void cmos_lib_list_del_by_data(cmos_lib_list_T **list, const void *data)
     cmos_lib_list_node_T *next = NULL;
     void *node_data = NULL;
 
-    cmos_assert((NULL != list) && (NULL != *list) && (NULL != data), (uint8_t *)__FILE__, __LINE__);
+    cmos_assert((NULL != list), (uint8_t *)__FILE__, __LINE__);
+
+    if((NULL == *list) || (NULL == data))
+    {
+        return;
+    }
 
     cmos_lib_list_node_T *go_node = list_get_head(*list);
     while(NULL != go_node)

@@ -130,7 +130,9 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
             assert_failed(__FILE__, __LINE__);
             return 0;
         }
-        unlock((UART_HandleTypeDef *)dev_id, cmos_ipc_mutex_unlock_spin);
+
+        // 自旋锁不解锁
+        //unlock((UART_HandleTypeDef *)dev_id, cmos_ipc_mutex_unlock_spin);
     }
     else if(CMOS_I_SET_IT == s_write_mode)
     {
@@ -169,7 +171,7 @@ void UART1_IRQHandler(void)
 /* 串口传输完成回调 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    unlock(huart, cmos_ipc_mutex_unlock_spin);
+    unlock(huart, cmos_ipc_mutex_unlock);
 }
 
 /* 解锁 */

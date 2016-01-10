@@ -17,6 +17,8 @@ cmos将作为一个符合CMSIS标准的系统,他是Cortex-M Operating System的
 1. 互斥锁
 
 ### 近期计划
+0. write与read必须要加poll类型系统调用,否则无法保证ioctl与write间的原子性
+0. 自旋锁只能在idle中使用(若在高优先级任务中使用会死锁)
 0. 自旋锁和阻塞锁需要分离为不同的系统调用
 1. 实现I2C的轮询与阻塞读写
 2. 实现app/flyer/doc/README.md计划
