@@ -290,7 +290,7 @@ cmos_int32_T cmos_fd_write_poll(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_by
     cmos_assert(NULL != driver, __FILE__, __LINE__);
     cmos_assert(NULL != driver_id, __FILE__, __LINE__); 
     
-    //write_bytes = driver->write_poll(driver_id, buf, n_bytes);
+    write_bytes = driver->write_poll(driver_id, buf, n_bytes);
 
     return write_bytes;
 }

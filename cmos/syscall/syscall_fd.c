@@ -31,7 +31,7 @@
 
 /********************************** 函数声明区 *********************************/
 static void cmos_open_before(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
-static void cmos_open_after(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode);
+static void cmos_open_after(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode, cmos_fd_fcb_T *fcb);
 
 static void cmos_close_before(cmos_fd_fcb_T *fcb);
 static void cmos_close_after(cmos_fd_fcb_T *fcb);
@@ -39,8 +39,14 @@ static void cmos_close_after(cmos_fd_fcb_T *fcb);
 static void cmos_read_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
 static void cmos_read_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
 
+static void cmos_read_poll_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
+static void cmos_read_poll_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
+
 static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
 static void cmos_write_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes);
+
+static void cmos_write_poll_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
+static void cmos_write_poll_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes);
 
 static void cmos_ioctl_before(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para);
 static void cmos_ioctl_after(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para);
@@ -50,6 +56,8 @@ cmos_fd_fcb_T *svc_open(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32
 void svc_close(cmos_fd_fcb_T *fcb);
 cmos_int32_T svc_write(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
 cmos_int32_T svc_read(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
+cmos_int32_T svc_write_poll(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
+cmos_int32_T svc_read_poll(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes);
 void svc_ioctl(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para);
 
 /********************************** 函数实现区 *********************************/
@@ -89,7 +97,7 @@ cmos_fd_T cmos_open(const cmos_int8_T *path, cmos_uint32_T flag, ...)
     fd = svc_open(path, flag, mode);
     cmos_assert(0 != fd, __FILE__, __LINE__);
 
-    cmos_open_after(path, flag, mode);
+    cmos_open_after(path, flag, mode, fd);
 
     return fd;
 }
@@ -151,14 +159,29 @@ inline static void cmos_open_before(const cmos_int8_T *path, cmos_uint32_T flag,
  * 函数功能: 系统调用cmos_open_after返回用户级别之后的操作
  *
  * 输入参数: 与cmos_open一致
+ *           fcb为文件描述符
  * 输出参数: 无
  * 返回值  : 无
  * 调用关系: 无
  * 其 它   : 无
  *
  ******************************************************************************/
-inline static void cmos_open_after(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode)
-{ 
+static void cmos_open_after(const cmos_int8_T *path, cmos_uint32_T flag, cmos_uint32_T mode, cmos_fd_fcb_T *fcb)
+{
+     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
+     
+     cmos_fd_mutex_T *mutex = cmos_fd_fcb_get_lock(fcb); 
+     cmos_status_T status = cmos_kernel_status();
+
+     /* 初始化 不锁定 */
+     if(cmos_INIT_E == status)
+     {
+         return;
+     }
+
+     /* 正常多任务阻塞锁 */
+     cmos_mutex_lock(mutex);
+     /* 执行到此表示已经成功锁定 可以正常写 */ 
 }
 
 /*******************************************************************************
@@ -193,6 +216,72 @@ cmos_int32_T cmos_write(cmos_fd_T fd, const void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_write_poll
+ * 负责人  : 彭鹏
+ * 创建日期：20151223 
+ * 函数功能: 系统调用cmos_write轮询版本
+ *
+ * 输入参数: fd      文件句柄(文件控制块)
+ *           buf     写入数据的缓存
+ *           n_bytes 要求写入的字节数
+ *
+ * 输出参数: 无
+ * 返回值  : 实际写入字节数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_write_poll(cmos_fd_T fd, const void *buf, cmos_int32_T n_bytes)
+{ 
+    cmos_int32_T rst = 0;
+
+    cmos_write_poll_before((cmos_fd_fcb_T *)fd, buf, n_bytes);
+
+    rst = svc_write_poll((cmos_fd_fcb_T *)fd, buf, n_bytes); 
+
+    cmos_write_poll_after((cmos_fd_fcb_T *)fd, buf, n_bytes);
+
+    return rst;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_write_poll_before
+ * 负责人  : 彭鹏
+ * 创建日期：20151221 
+ * 函数功能: 系统调用cmos_write陷入特权级别之前的操作 轮询
+ *
+ * 输入参数: 与cmos_write一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_write_poll_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes)
+{
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_write_poll_after
+ * 负责人  : 彭鹏
+ * 创建日期：20151221 
+ * 函数功能: 系统调用cmos_write陷入特权级别之后的操作 轮询
+ *
+ * 输入参数: 与cmos_write一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_write_poll_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes)
+{
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_write_svc
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -221,6 +310,28 @@ inline cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_write_poll_svc
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_write特权代码 轮询
+ *
+ * 输入参数: 与cmos_write一致
+ * 输出参数: 无
+ * 返回值  : 实际读取字节数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_write_poll_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    cmos_int32_T rst = cmos_fd_write_poll(fcb, buf, n_bytes);
+
+    return rst;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_write_before
  * 负责人  : 彭鹏
  * 创建日期：20151221 
@@ -235,21 +346,6 @@ inline cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n
  ******************************************************************************/
 inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes)
 {
-     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
-     
-     cmos_fd_mutex_T *mutex = cmos_fd_fcb_get_lock(fcb); 
-     cmos_status_T status = cmos_kernel_status();
-
-     /* 初始化 不锁定 */
-     if(cmos_INIT_E == status)
-     {
-         return;
-     }
-
-     /* 正常多任务阻塞锁 */
-     cmos_mutex_lock(mutex);
-
-     /* 执行到此表示已经成功锁定 可以正常写 */ 
 }
 
 /*******************************************************************************
@@ -266,7 +362,7 @@ inline static void cmos_write_before(cmos_fd_fcb_T *fcb, const void *buf, cmos_i
  * 其 它   : 无
  *
  ******************************************************************************/
-inline static void cmos_write_after(cmos_fd_fcb_T *fd, const void *buf, cmos_int32_T n_bytes)
+inline static void cmos_write_after(cmos_fd_fcb_T *fcb, const void *buf, cmos_int32_T n_bytes)
 {
 }
 
@@ -311,7 +407,6 @@ void cmos_close_svc(cmos_fd_fcb_T *fcb)
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__);
     cmos_fd_close(fcb);
-
 }
 
 /*******************************************************************************
@@ -330,6 +425,19 @@ void cmos_close_svc(cmos_fd_fcb_T *fcb)
  ******************************************************************************/
 inline static void cmos_close_before(cmos_fd_fcb_T *fcb)
 {
+     cmos_assert(NULL != fcb, __FILE__, __LINE__); 
+     
+     cmos_fd_mutex_T *mutex = cmos_fd_fcb_get_lock(fcb); 
+     cmos_status_T status = cmos_kernel_status();
+
+     /* 初始化 无锁操作 */
+     if(cmos_INIT_E == status)
+     {
+         return;
+     }
+
+     /* 解锁 */
+     cmos_mutex_unlock(mutex);
 }
 
 /*******************************************************************************
@@ -381,6 +489,35 @@ cmos_int32_T cmos_read(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_read_poll
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read轮询版本
+ *
+ * 输入参数: fcb     文件句柄
+ *           buf     读取数据的缓存
+ *           n_bytes 要求读取的字节数
+ *
+ * 输出参数: 无
+ * 返回值  : 实际读取字节数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_read_poll(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_int32_T read_bytes = 0;
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+
+    cmos_read_poll_before(fcb, buf, n_bytes);
+    read_bytes = svc_read_poll(fcb, buf, n_bytes);
+    cmos_read_poll_after(fcb, buf, n_bytes);
+
+    return read_bytes;
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_read_svc
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -398,6 +535,27 @@ cmos_int32_T cmos_read_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
     cmos_assert(NULL != fcb, __FILE__, __LINE__);
     cmos_int32_T rst = cmos_fd_read(fcb, buf, n_bytes);
 
+    return rst;
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_read_poll_svc
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read特权代码 轮询
+ *
+ * 输入参数: 与cmos_read一致
+ * 输出参数: 无
+ * 返回值  : 实际读取字节数
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+cmos_int32_T cmos_read_poll_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+    cmos_assert(NULL != fcb, __FILE__, __LINE__);
+    cmos_int32_T rst = cmos_fd_read_poll(fcb, buf, n_bytes);
 
     return rst;
 }
@@ -422,6 +580,24 @@ inline static void cmos_read_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T 
 
 /*******************************************************************************
  *
+ * 函数名  : cmos_read_poll_before
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read特权代码之前用户态代码 轮询
+ *
+ * 输入参数: 与cmos_read一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_read_poll_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+}
+
+/*******************************************************************************
+ *
  * 函数名  : cmos_read_after
  * 负责人  : 彭鹏
  * 创建日期：20151023 
@@ -435,6 +611,24 @@ inline static void cmos_read_before(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T 
  *
  ******************************************************************************/
 inline static void cmos_read_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
+{
+}
+
+/*******************************************************************************
+ *
+ * 函数名  : cmos_read_poll_after
+ * 负责人  : 彭鹏
+ * 创建日期：20151023 
+ * 函数功能: 系统调用cmos_read特权代码之前用户态代码 轮询
+ *
+ * 输入参数: 与cmos_read一致
+ * 输出参数: 无
+ * 返回值  : 无
+ * 调用关系: 无
+ * 其 它   : 无
+ *
+ ******************************************************************************/
+inline static void cmos_read_poll_after(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes)
 {
 }
 
@@ -488,7 +682,6 @@ void cmos_ioctl_svc(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T par
 {
     cmos_assert(NULL != fcb, __FILE__, __LINE__);
     cmos_fd_ioctl(fcb, request, para);
-
 }
 
 /*******************************************************************************

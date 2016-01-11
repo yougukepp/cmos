@@ -38,11 +38,15 @@ const cmos_hal_driver_T g_uart_driver = {
     .read = uart_read,
     .write = uart_write,
     .ioctl = uart_ioctl,
-    .close = uart_close
+    .close = uart_close,
+    .read_poll = NULL,
+    .write_poll = uart_write_poll
 };
 
 /* STM32F4Cube HAL驱动 */
 static UART_HandleTypeDef s_uart_handle;
+
+static cmos_task_tcb_T *s_write_tcb = NULL;
 
 /********************************** 函数声明区 *********************************/
 
@@ -127,9 +131,9 @@ static cmos_int32_T uart_write(const void *dev_id, const void *buf, cmos_int32_T
     
     /* 当前任务阻塞 等待传输完成 */
     /* HAL_UART_TxCpltCallback 调用后恢复 */
-    cmos_task_tcb_T *tcb = cmos_task_self(); 
-    cmos_assert(NULL != tcb, __FILE__, __LINE__);
-    cmos_task_suspend(tcb);
+    s_write_tcb = cmos_task_self(); 
+    cmos_assert(NULL != s_write_tcb, __FILE__, __LINE__);
+    cmos_task_suspend(s_write_tcb);
 
     return n_bytes;
 }
@@ -160,6 +164,6 @@ void UART1_IRQHandler(void)
 /* 串口传输完成回调 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 { 
-    cmos_fd_unlock_by_driver_id(huart);
+    cmos_task_resume(s_write_tcb);
 }
 

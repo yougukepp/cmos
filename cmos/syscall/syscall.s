@@ -94,6 +94,19 @@ svc_ioctl       PROC
                 BX  LR
                 ENDP
 
+svc_read_poll   PROC
+                EXPORT  svc_read_poll
+                SVC 0xa5
+                BX  LR
+                ENDP
+
+svc_write_poll  PROC
+                EXPORT  svc_write_poll
+                SVC  0xa6
+                BX   LR
+                ENDP
+
+
                 ALIGN 
                 
                 END

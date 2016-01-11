@@ -126,7 +126,7 @@ inline static void cmos_init_after(void)
 
     /* 后面的初始化可以使用控制台输出了 */
     /* 打印目录树 */
-    cmos_console_printf("cmos init done with vfs tree:\r\n");
+    cmos_console_printf_poll("cmos init done with vfs tree:\r\n");
     vfs_print();
 
     /* 创建idle任务 使用cmos_create_c */
@@ -141,7 +141,7 @@ inline static void cmos_init_after(void)
     };
     cmos_create(&g_idle_task_id, &idle_attribute);
 
-    cmos_printf("task_idle create %d:0x%08x.\r\n", status, (cmos_int32_T)g_idle_task_id);
+    cmos_console_printf_poll("task_idle create %d:0x%08x.\r\n", status, (cmos_int32_T)g_idle_task_id);
 }
 
 /*******************************************************************************

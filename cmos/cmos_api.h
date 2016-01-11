@@ -62,7 +62,9 @@ void cmos_ipc(cmos_ipc_type_T type, void *para);
 /* 外设驱动 */
 cmos_fd_T cmos_open(const cmos_int8_T *path, cmos_uint32_T flag, ...);
 cmos_int32_T cmos_read(cmos_fd_T dev_id, void *buf, cmos_int32_T n_bytes);
+cmos_int32_T cmos_read_poll(cmos_fd_T dev_id, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_write(cmos_fd_T dev_id, const void *buf, cmos_int32_T n_bytes);
+cmos_int32_T cmos_write_poll(cmos_fd_T dev_id, const void *buf, cmos_int32_T n_bytes);
 void cmos_ioctl(cmos_fd_T dev_id, cmos_uint32_T request, ...);
 void cmos_close(cmos_fd_T dev_id);
 cmos_int32_T cmos_read_poll(cmos_fd_T dev_id, void *buf, cmos_int32_T n_bytes);

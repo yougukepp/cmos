@@ -447,19 +447,19 @@ static void node_print(cmos_lib_tree_node_T *node, void *para)
 
     for(i = 0; i < space_num; i++)
     {
-        cmos_console_printf(" "); 
+        cmos_console_printf_poll(" "); 
     }
 
     if(0 == distance)
     {
-        cmos_console_printf("|");
+        cmos_console_printf_poll("|");
     }
     else
     {
-        cmos_console_printf("|-");
+        cmos_console_printf_poll("|-");
     }
-    cmos_console_printf(data_str);
-    cmos_console_printf("\r\n");
+    cmos_console_printf_poll(data_str);
+    cmos_console_printf_poll("\r\n");
 
     return;
 }

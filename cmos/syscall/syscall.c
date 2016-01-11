@@ -158,6 +158,16 @@ void syscall_c(cmos_uint32_T *sp)
                 cmos_ioctl_svc((cmos_fd_T)stacked_r0, (cmos_uint32_T)stacked_r1, stacked_r2);
                 break;
             }
+        case 0xa5:
+            {
+                sp[0] = cmos_read_poll_svc((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                break;
+            }
+        case 0xa6:
+            {
+                sp[0] = cmos_write_poll_svc((cmos_fd_T)stacked_r0, (void *)stacked_r1, (cmos_int32_T)stacked_r2);
+                break;
+            }
         default:
             {
                 cmos_assert(FALSE, __FILE__, __LINE__);

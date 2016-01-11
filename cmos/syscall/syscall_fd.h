@@ -33,6 +33,8 @@ cmos_fd_fcb_T *cmos_open_svc(const cmos_int8_T *path, cmos_uint32_T flag, cmos_u
 void cmos_close_svc(cmos_fd_fcb_T *fcb);
 cmos_int32_T cmos_read_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
 cmos_int32_T cmos_write_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
+cmos_int32_T cmos_read_poll_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
+cmos_int32_T cmos_write_poll_svc(cmos_fd_fcb_T *fcb, void *buf, cmos_int32_T n_bytes);
 void cmos_ioctl_svc(cmos_fd_fcb_T *fcb, cmos_uint32_T request, cmos_uint32_T para);
 
 #endif // #ifndef _CMOS_SYSCALL_SYSCALL_FD_H_

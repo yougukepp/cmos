@@ -67,7 +67,7 @@ int main(void)
         .flag = cmos_task_with_default
     };
     cmos_create(&task_int_id, &task_int_attribute); 
-    cmos_printf("task_int create:0x%08x.\r\n", (cmos_int32_T)task_int_id);
+    cmos_console_printf_poll("task_int create:0x%08x.\r\n", (cmos_int32_T)task_int_id);
 #endif
 
     /* 浮点任务 */
@@ -84,7 +84,7 @@ int main(void)
         .flag = cmos_task_with_float
     };
     cmos_create(&task_float_id, &task_float_attribute); 
-    cmos_printf("task_float create:0x%08x.\r\n", (cmos_int32_T)task_float_id);
+    cmos_console_printf_poll("task_float create:0x%08x.\r\n", (cmos_int32_T)task_float_id);
 #endif
 
     cmos_start();
@@ -150,7 +150,7 @@ static void task_int(void *argv)
     {
         val /=  val2;
         cmos_printf("task_int  [%d]: %d\r\n", times, val);
-        cmos_delay(10); /* 延迟10ms */
+        //cmos_delay(10); /* 延迟10ms */
         times++;
     }
 }
@@ -169,7 +169,7 @@ static void task_float(void *argv)
     {
         val /= val2;
         cmos_printf("task_float[%d]: %4.2f \r\n", times, val);
-        cmos_delay(5); /* 延迟5ms */
+        //cmos_delay(5); /* 延迟5ms */
         times++;
     }
 }
