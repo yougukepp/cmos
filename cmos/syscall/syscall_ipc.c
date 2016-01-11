@@ -113,6 +113,7 @@ void cmos_ipc_svc(cmos_ipc_type_T type, void *para)
                 cmos_fd_mutex_unlock(para);
                 break;
             }
+#if 0
         case cmos_ipc_mutex_lock_spin:
             { 
                 cmos_assert(NULL != para, __FILE__, __LINE__);
@@ -125,6 +126,7 @@ void cmos_ipc_svc(cmos_ipc_type_T type, void *para)
                 cmos_fd_mutex_unlock_spin(para);
                 break;
             }
+#endif
         default:
             {
                 cmos_assert(FALSE, __FILE__, __LINE__);
@@ -167,11 +169,13 @@ inline static void cmos_ipc_before(cmos_ipc_type_T type, void *para)
  ******************************************************************************/
 inline static void cmos_ipc_after(cmos_ipc_type_T type, void *para)
 {
+#if 0
     /* 需要自旋 */
     if(type == cmos_ipc_mutex_lock_spin)
     { 
         /* 自旋 */
         cmos_fd_mutex_spin((cmos_fd_mutex_T *)para);
     }
+#endif
 }
 

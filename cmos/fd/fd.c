@@ -339,6 +339,7 @@ void cmos_fd_unlock_by_driver_id(const void *driver_id)
     cmos_fd_mutex_unlock(mutex);
 }
 
+#if 0
 /*******************************************************************************
 *
 * 函数名  : cmos_fd_unlock_by_driver_id_spin
@@ -362,6 +363,7 @@ void cmos_fd_unlock_by_driver_id_spin(const void *driver_id)
 
     cmos_fd_mutex_unlock_spin(mutex);
 }
+#endif
 
 /*******************************************************************************
 *

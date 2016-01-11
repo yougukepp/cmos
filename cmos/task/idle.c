@@ -54,7 +54,8 @@ void cmos_task_idle_task(void *argv)
     
     while(TRUE)
     { 
-        cmos_console_printf("idle      [%d]:\r\n", times);
+        /* idle任务不可阻塞(休眠) 只能轮询 */
+        cmos_console_printf_poll("idle      [%d]:\r\n", times);
         times++;
     } 
     

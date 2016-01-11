@@ -36,5 +36,8 @@ extern const cmos_hal_driver_T g_uart_driver; /* 驱动变量由vfs指示 */
 /* 初始化函数 */
 void cmos_hal_uart_init(void *para);
 
+/* 轮询发送 用于idle函数 */
+cmos_int32_T uart_write_poll(const void *dev_id, const void *buf, cmos_int32_T n_bytes);
+
 #endif /* _CMOS_HAL_UART_UART_H_ */
 

@@ -49,7 +49,9 @@ void cmos_fd_read_u(const cmos_fd_fcb_T *fcb);
 
 /* 驱动中使用 */
 void cmos_fd_unlock_by_driver_id(const void *driver_id);
+#if 0
 void cmos_fd_unlock_by_driver_id_spin(const void *driver_id);
+#endif
 
 #endif // #ifndef _CMOS_FD_FD_H_
 
