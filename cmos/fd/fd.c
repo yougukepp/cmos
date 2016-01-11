@@ -69,6 +69,9 @@ cmos_fd_fcb_T *cmos_fd_open(const cmos_int8_T *path, cmos_uint32_T flag, cmos_ui
     void *driver_id = NULL;
     cmos_fd_mutex_T *mutex_lock = NULL;
 
+    /* step0: 查找是否已经新建该文件 */
+    /* pp继续实现 */
+
     /* step1: 分配文件控制块 */
     fcb = cmos_malloc(sizeof(cmos_fd_fcb_T));
     cmos_assert(NULL != fcb, __FILE__, __LINE__);

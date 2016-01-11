@@ -119,8 +119,6 @@ inline static void cmos_init_before(void)
  ******************************************************************************/
 inline static void cmos_init_after(void)
 {
-    cmos_status_T status = cmos_ERR_E; 
-
     /* 尽早初始化控制台便于打印 所以放在这里而没有放在hal_init函数执行之后 */
     cmos_console_init(CMOS_CONSOLE_BAUDRATE);
 
@@ -140,8 +138,7 @@ inline static void cmos_init_after(void)
         .flag = cmos_task_with_default
     };
     cmos_create(&g_idle_task_id, &idle_attribute);
-
-    cmos_console_printf_poll("task_idle create %d:0x%08x.\r\n", status, (cmos_int32_T)g_idle_task_id);
+    cmos_console_printf_poll("create:0x%08x task_idle.\r\n", (cmos_int32_T)g_idle_task_id);
 }
 
 /*******************************************************************************

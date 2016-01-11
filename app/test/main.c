@@ -67,7 +67,7 @@ int main(void)
         .flag = cmos_task_with_default
     };
     cmos_create(&task_int_id, &task_int_attribute); 
-    cmos_console_printf_poll("task_int create:0x%08x.\r\n", (cmos_int32_T)task_int_id);
+    cmos_console_printf_poll("create:0x%08x task_int.\r\n", (cmos_int32_T)task_int_id);
 #endif
 
     /* 浮点任务 */
@@ -84,7 +84,7 @@ int main(void)
         .flag = cmos_task_with_float
     };
     cmos_create(&task_float_id, &task_float_attribute); 
-    cmos_console_printf_poll("task_float create:0x%08x.\r\n", (cmos_int32_T)task_float_id);
+    cmos_console_printf_poll("create:0x%08x task_float.\r\n", (cmos_int32_T)task_float_id);
 #endif
 
     cmos_start();
