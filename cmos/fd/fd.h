@@ -27,6 +27,11 @@ typedef struct{
     cmos_fd_mutex_T *mutex; /* 锁 输出 */
 }cmos_fd_compare_para_T;    /* fd模块专用 */
 
+typedef struct{
+    const cmos_int8_T *path;/* 文件路径 */
+    cmos_fd_fcb_T *fcb;     /* 文件控制块 输出 */
+}cmos_fd_find_para_T;    /* fd模块专用 */
+
 /*--------------------------------- 接口声明区 --------------------------------*/
 
 /*********************************** 全局变量 **********************************/

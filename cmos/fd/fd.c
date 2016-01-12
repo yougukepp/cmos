@@ -36,6 +36,7 @@ static cmos_lib_list_T *s_fcb_list = NULL;
 
 /********************************** 函数声明区 *********************************/
 static void work(cmos_fd_fcb_T *fcb, cmos_fd_compare_para_T *para);
+static void find(cmos_fd_fcb_T *fcb, cmos_fd_find_para_T *para);
 static cmos_fd_mutex_T *cmos_fd_find_mutex_by_driver_id(const void *driver_id);
 
 /********************************** 函数实现区 *********************************/
@@ -69,8 +70,16 @@ cmos_fd_fcb_T *cmos_fd_open(const cmos_int8_T *path, cmos_uint32_T flag, cmos_ui
     void *driver_id = NULL;
     cmos_fd_mutex_T *mutex_lock = NULL;
 
+    /* FIXME: 遍历低效, 优化性能 */
     /* step0: 查找是否已经新建该文件 */
-    /* pp继续实现 */
+    cmos_fd_find_para_T find_para = {path, NULL};
+    /* 遍历fcb链表 查找是否已经新建path对应的文件 */
+    cmos_lib_list_walk(s_fcb_list, (cmos_lib_list_walk_func_T)find, &find_para);
+    fcb = find_para.fcb;
+    if(NULL != fcb) /* 已经新建 */
+    {
+        return fcb;
+    }
 
     /* step1: 分配文件控制块 */
     fcb = cmos_malloc(sizeof(cmos_fd_fcb_T));
@@ -404,7 +413,7 @@ static cmos_fd_mutex_T *cmos_fd_find_mutex_by_driver_id(const void *driver_id)
 * 创建日期: 20151223
 * 函数功能: 供cmos_fd_unlock_by_tcb中 获取tcb对应的mutex
 *
-* 输入参数: data tcb结点
+* 输入参数: fcb  fcb结点
 *           para 定制化参数
 *
 * 输出参数: 无
@@ -421,6 +430,31 @@ static void work(cmos_fd_fcb_T *fcb, cmos_fd_compare_para_T *para)
     if(driver_id == para->driver_id)
     {
         para->mutex = fcb->mutex;
+    }
+}
+
+/*******************************************************************************
+*
+* 函数名  : find
+* 负责人  : 彭鹏
+* 创建日期: 20160112
+* 函数功能: 供cmos_fd_open中 获取path对应的fcb
+*
+* 输入参数: fcb  fcb结点
+*           para 定制化参数
+*
+* 输出参数: 无
+* 返回值  : 无
+* 调用关系: 无
+* 其 它   : 无
+*
+******************************************************************************/
+static void find(cmos_fd_fcb_T *fcb, cmos_fd_find_para_T *para)
+{
+    /* 找到 */
+    if(0 == strcmp(fcb->path, para->path)) 
+    {
+        para->fcb = fcb;
     }
 }
 
