@@ -41,7 +41,7 @@
 ******************************************************************************/
 void assert_failed(unsigned char* file, unsigned int line)
 {
-    cmos_debug_log("%s,%d: assert failed!", file, line);
+    debug_log("%s,%d: assert failed!", file, line);
     while(1);
 }
 

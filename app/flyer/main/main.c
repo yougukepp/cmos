@@ -19,7 +19,10 @@
 #include "cmos_config.h"
 #include "misc.h"
 #include "console.h"
+#include "imu.h"
 #include "main.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_conf.h"
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
@@ -31,6 +34,8 @@ static void init(void);
 static void task_gyro(void);
 static void task_accel(void);
 static void task_mag(void);
+
+static void clock_init(void);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -49,17 +54,20 @@ static void task_mag(void);
 *
 ******************************************************************************/
 int main(void)
-{ 
+{
+    init();
+
 #if 0
     int times = 0;
 
     while(1)
     {
-        cmos_debug_log("%05d: % 5d, %.5f", times++, 3, 7.1);
+        debug_log("%05d: % 5d, %.5f", times++, 3, 7.1);
     }
 #else
-
-    init();
+    /* 每轮循环从优先级最高的开始逐个检查 */
+    /* GYRO > ACCEL > MAG */
+    /* IMU(MPU9250)数据 获取优先级最高 使用中断 */
     while(1)
     {
         if(TASK_GYRO && s_task_flag)
@@ -79,7 +87,6 @@ int main(void)
             assert_failed(__FILE__, __LINE__);
         }
     }
-
 #endif
 }
 
@@ -87,8 +94,28 @@ int main(void)
 static void init(void)
 { 
     /* step1: 初始化硬件 */
+    if(HAL_OK != HAL_Init())
+    {
+        while(1);
+    }
 
-    /* step1: 启动任务 */
+    /* HAL_Init 执行后才可以使用 */
+    /* 时钟配置 180M */
+    clock_init();
+
+    /* 设置核心中断优先级 */
+    HAL_NVIC_SetPriority(MemoryManagement_IRQn, MEM_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(BusFault_IRQn, BUS_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(UsageFault_IRQn, USAGE_INT_PRIORITY, 0);
+    HAL_NVIC_SetPriority(SysTick_IRQn, TICK_INT_PRIORITY, 0);
+
+    /* 逐个初始化硬件 */
+    /* 串口 */
+    console_init(); /* 此后可以开始打印 */
+    /* imu i2c */
+    imu_init();
+
+    /* step2: 启动任务 */
     s_task_flag = (TASK_GYRO | TASK_ACCEL | TASK_MAG);
 }
 
@@ -103,4 +130,42 @@ static void task_accel(void)
 /* 磁场融合 */
 static void task_mag(void)
 {}
+
+static void clock_init(void)
+{
+    RCC_ClkInitTypeDef RCC_ClkInitStruct;
+    RCC_OscInitTypeDef RCC_OscInitStruct;
+
+    __HAL_RCC_PWR_CLK_ENABLE();
+
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM = 8;
+    RCC_OscInitStruct.PLL.PLLN = 360;
+    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+    RCC_OscInitStruct.PLL.PLLQ = 7;
+    if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
+        while(1);
+    }
+
+    HAL_PWREx_EnableOverDrive();
+
+    RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK
+            | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
+    if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+    {
+        while(1);
+    }
+
+    return;
+}
 

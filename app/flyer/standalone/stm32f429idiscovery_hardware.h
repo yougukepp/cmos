@@ -20,10 +20,9 @@
 /************************************ 宏定义 ***********************************/
 /* 任务栈 顶部 */
 /* FIXME:与芯片的RAM空间大小相关 */
-#define CMOS_TASK_STACK_BASE                                ((cmos_task_tcb_psp_T)(0x20030000))
 
 /* 串口个数 控制台+ESP8266 */
-#define CMOS_HAL_UART_NUMS                      (2)
+#define UART_NUMS                               (2)
 /* 控制台串口定义 */
 #define CONSOLE_UART                            USART1
 #define CONSOLE_UART_CLK_ENABLE()               __HAL_RCC_USART1_CLK_ENABLE()
@@ -41,7 +40,7 @@
 /* TODO:ESP82699串口定义 */
 
 /* I2C个数 MPU9250+功能板 */
-#define CMOS_HAL_I2C_NUMS                      (2)
+#define I2C_NUMS                                (2)
 /* IMU I2C定义 FIXME:使用I2C1 */
 #define IMU_I2C                                 I2C3
 #define IMU_I2C_CLOCK_ENABLE()                  __I2C3_CLK_ENABLE()
