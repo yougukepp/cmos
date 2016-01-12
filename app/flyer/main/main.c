@@ -16,7 +16,7 @@
 #pragma  diag_suppress 870
 
 /************************************ 头文件 ***********************************/
-#include "cmos_config.h"
+#include "config.h"
 #include "misc.h"
 #include "console.h"
 #include "imu.h"
@@ -27,7 +27,7 @@
 /*----------------------------------- 声明区 ----------------------------------*/
 
 /********************************** 变量声明区 *********************************/
-static cmos_int32_T s_task_flag = 0;
+static int32_T s_task_flag = 0;
 
 /********************************** 函数声明区 *********************************/
 static void init(void);
@@ -57,12 +57,12 @@ int main(void)
 {
     init();
 
-#if 0
+#if 1
     int times = 0;
 
     while(1)
     {
-        debug_log("%05d: % 5d, %.5f", times++, 3, 7.1);
+        debug_log("%05d: % 5d, %.5f\r\n", times++, 3, 7.1);
     }
 #else
     /* 每轮循环从优先级最高的开始逐个检查 */

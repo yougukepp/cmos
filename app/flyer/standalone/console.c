@@ -67,7 +67,7 @@ void console_printf_poll(char *fmt, ...)
     va_end(args);
 
     /* 轮询 发送 */
-    if(HAL_UART_Transmit(NULL, (uint8_t*)printf_buf, n, n/UART_TIMEOUT_DIV)!= HAL_OK)
+    if(HAL_UART_Transmit(&s_uart_handle, (uint8_t*)printf_buf, n, n/UART_TIMEOUT_DIV)!= HAL_OK)
     {
         while(1);
     }
