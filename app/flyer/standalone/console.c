@@ -17,6 +17,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "cmos_config.h"
+#include "cmos_typedef.h"
 #include "console.h"
 #include "stm32f4xx_hal_conf.h"
 
@@ -30,7 +32,8 @@ static UART_HandleTypeDef s_uart_handle;
 /********************************** 函数实现区 *********************************/
 void cmos_console_init(void)
 { 
-    s_uart_handle.Init.BaudRate     = USART1;
+    s_uart_handle.Instance          = USART1;
+    s_uart_handle.Init.BaudRate     = CMOS_CONSOLE_BAUDRATE;
     s_uart_handle.Init.WordLength   = UART_WORDLENGTH_8B;
     s_uart_handle.Init.StopBits     = UART_STOPBITS_1;
     s_uart_handle.Init.Parity       = UART_PARITY_NONE;
@@ -57,7 +60,6 @@ void cmos_console_printf_poll(char *fmt, ...)
 
     va_list args;
     cmos_int32_T n = 0;
-    cmos_int32_T n_writes = 0;
 
     va_start(args, fmt); 
     n = vsnprintf(printf_buf, CMOS_PRINTF_BUF_SIZE, fmt, args);
