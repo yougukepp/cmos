@@ -15,9 +15,8 @@
 /* 消除中文打印警告 */
 #pragma  diag_suppress 870
 
-#define DATA_SIZE       (16)
 #define DATA_NUM        (1000)
-#define BUF_SIZE        ((DATA_SIZE) * (DATA_NUM))
+#define DATA_SIZE       (12)
 
 /************************************ 头文件 ***********************************/
 #include "config.h"
@@ -33,6 +32,11 @@
 
 /********************************** 变量声明区 *********************************/
 static int32_T s_task_flag = 0;
+
+typedef struct{
+    uint32_T time;
+    uint8_T  data[DATA_SIZE];
+}data_T;
 
 /********************************** 函数声明区 *********************************/
 static void init(void);
@@ -65,37 +69,41 @@ int main(void)
 #if 1
     HAL_Delay(1000); /* 1s等待 待稳定 */
 
-    static uint8_T buf[BUF_SIZE] = {0};
     int i = 0;
-    int j = 0;
-    uint32_T ms = 0;
-    uint8_T *ptr = buf;
-    while(1)
+    data_T data[DATA_NUM];
+    for(i = 0; i < DATA_NUM; i++)
     {
         /* accel + gyro */
-        imu_read(0xD0, 0x3B, buf + i, 12); /**/
-        *(uint32_T *)buf = HAL_GetTick();
-        i += DATA_SIZE; 
-        
+        imu_read(0xD0, 0x3B, data[i].data, DATA_SIZE);
+
         /* 研究 */
         //mpu_get_compass_reg(compass_i, time_stamp); 
 
-        if(i >= BUF_SIZE)
-        {
-            debug_log("data:\r\n");
-            for(j = 0 ; j < BUF_SIZE; j+=DATA_SIZE)
-            {
-                debug_log("ms:% 9daccel:0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\tgyro: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\r\n", ms,
-                        *(uint32_T *)ptr[12],
-                        ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5],
-                        ptr[6], ptr[7], ptr[8], ptr[9], ptr[10], ptr[11]);
+        /* 时间 */
+        data[i].time = HAL_GetTick();
 
-                ptr += 12;
-            }
+    } 
+    
+    for(i = 0; i < DATA_NUM; i++)
+    {
+        debug_log("time:%05d", data[i].time);
+        debug_log("accel:0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\t", 
+                data[i].data[0],
+                data[i].data[1],
+                data[i].data[2],
+                data[i].data[3],
+                data[i].data[4],
+                data[i].data[5]);
+        debug_log("gyro: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\r\n",
+                data[i].data[6],
+                data[i].data[7],
+                data[i].data[8],
+                data[i].data[9],
+                data[i].data[10],
+                data[i].data[11]);
+    } 
 
-            while(1);
-        }
-    }
+    while(1);
 
 #else
     /* 每轮循环从优先级最高的开始逐个检查 */
@@ -152,7 +160,7 @@ static void init(void)
     debug_log("imu i2c 初始化完成.\r\n");
 
     /* bmp180 */
-#if 1
+#if 0
     unsigned char val = 0;
     int i = 0;
     int iMax = 0;
