@@ -152,7 +152,7 @@ static void init(void)
     debug_log("imu i2c 初始化完成.\r\n");
 
     /* bmp180 */
-#if 0
+#if 1
     unsigned char val = 0;
     int i = 0;
     int iMax = 0;

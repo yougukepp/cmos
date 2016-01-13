@@ -27,8 +27,8 @@
 /*********************************** 接口函数 **********************************/
 void imu_init(void);
 
-void imu_read(uint8_T dev_addr, uint8_T reg_offset, uint8_T *buf, int32_T n);
-void imu_write(uint8_T dev_addr, uint8_T reg_offset, const uint8_T *buf, int32_T n);
+void imu_read(uint8_T dev_addr, uint16_T reg_offset, uint8_T *buf, uint32_T n);
+void imu_write(uint8_T dev_addr, uint16_T reg_offset, const uint8_T *buf, uint32_T n);
 
 #endif
 
