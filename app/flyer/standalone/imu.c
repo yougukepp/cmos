@@ -54,7 +54,7 @@ void imu_init(void)
     return;
 }
 
-void imu_read(uint8_T dev_addr, uint8_T reg_offset, void *buf, int32_T n)
+void imu_read(uint8_T dev_addr, uint8_T reg_offset, uint8_T *buf, int32_T n)
 {
     /* 中断 读取 */
     if(HAL_OK != HAL_I2C_Mem_Read_IT(&s_imu_handle, dev_addr, reg_offset,
@@ -66,7 +66,7 @@ void imu_read(uint8_T dev_addr, uint8_T reg_offset, void *buf, int32_T n)
     return;
 }
 
-void imu_write(uint8_T dev_addr, uint8_T reg_offset, void *buf, int32_T n)
+void imu_write(uint8_T dev_addr, uint8_T reg_offset, const uint8_T *buf, int32_T n)
 { 
     if(HAL_OK != HAL_I2C_Mem_Write(&s_imu_handle, dev_addr, reg_offset,
                 I2C_MEMADD_SIZE_8BIT, (uint8_T *)buf, (uint16_T)(n), HAL_MAX_DELAY))

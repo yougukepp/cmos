@@ -15,12 +15,11 @@
 #define _MPU9250_H_
 
 /************************************ 头文件 ***********************************/
-#include "cmos_api.h"
+#include "config.h"
+#include "console.h"
 
 /************************************ 宏定义 ***********************************/
 /*********************************** 板级定义 **********************************/
-#define MPU9250_SPEED                       (100000)/* 100k */
-#define MPU9250_I2C_INDEX                   (3)     /* stm32f429 dis 板i2c3 */
 #define MPU9250_DMP_FIFO_RATE               (40)    /* MPU9250采样率 */
 
 /*--------------------------------- 接口声明区 --------------------------------*/
@@ -28,8 +27,9 @@
 /*********************************** 全局变量 **********************************/
 
 /*********************************** 接口函数 **********************************/
-#define mpu9250_log_i   cmos_printf
-#define mpu9250_log_e   cmos_err_log
+/* inv适配 */
+#define mpu9250_log_i   debug_log
+#define mpu9250_log_e   err_log
 int mpu9250_read_buf(unsigned char dev_addr, unsigned char reg_addr,
         unsigned short buf_len, unsigned char *ptr_read_buf);
 int mpu9250_write_buf(unsigned char dev_addr, unsigned char reg_addr, 
@@ -37,11 +37,8 @@ int mpu9250_write_buf(unsigned char dev_addr, unsigned char reg_addr,
 int mpu9250_get_ms(unsigned long *count);
 void mpu9250_delay_ms(unsigned int ms);
 
-
-
-/* FIXME:仅仅方便 可以不使用 */
-unsigned char mpu9250_read_byte(unsigned char dev_addr, unsigned char reg_addr);
-void mpu9250_write_byte(unsigned char dev_addr, unsigned char reg_addr, unsigned char write_byte);
+/* 初始化 */
+void mpu9250_init(void);
 
 #endif /* _MPU9250_H_ */
 

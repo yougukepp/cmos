@@ -20,6 +20,7 @@
 #include "misc.h"
 #include "console.h"
 #include "imu.h"
+#include "mpu9250.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_conf.h"
@@ -57,14 +58,6 @@ int main(void)
 {
     init();
 
-#if 1
-    int times = 0;
-
-    while(1)
-    {
-        debug_log("%05d: % 5d, %.5f\r\n", times++, 3, 7.1);
-    }
-#else
     /* 每轮循环从优先级最高的开始逐个检查 */
     /* GYRO > ACCEL > MAG */
     /* IMU(MPU9250)数据 获取优先级最高 使用中断 */
@@ -87,7 +80,6 @@ int main(void)
             assert_failed(__FILE__, __LINE__);
         }
     }
-#endif
 }
 
 /* 初始化 */
@@ -111,9 +103,43 @@ static void init(void)
 
     /* 逐个初始化硬件 */
     /* 串口 */
-    console_init(); /* 此后可以开始打印 */
+    console_init(); /* 此后可以开始打印 */ 
+    debug_log("串口初始化完成.\r\n");
+
     /* imu i2c */
     imu_init();
+    debug_log("imu i2c 初始化完成.\r\n");
+
+    /* bmp180 */
+#if 1
+    unsigned char val = 0;
+    int i = 0;
+    int iMax = 0;
+    unsigned char bmp180_reg_addr[] = {
+        0xAA, 0xAB,
+        0xAC, 0xAD,
+        0xAE, 0xAF,
+        0xBA, 0xBB,
+        0xBC, 0xBD,
+        0xBE, 0xBF,
+        0xD0, 0xE0, 0xF4, 0xF6, 0xF7, 0xF8};
+
+    /* 初始化硬件 */
+
+    debug_log("BMP180 寄存器值:\r\n");
+    iMax = sizeof(bmp180_reg_addr) /sizeof(bmp180_reg_addr[0]);
+    for(i=0;i<iMax;i++) 
+    { 
+        imu_read(0xEF, bmp180_reg_addr[i], &val, 1);
+        debug_log("0x%02x:0x%02x\r\n", bmp180_reg_addr[i], val);
+    }
+    while(TRUE);
+#else
+
+    /* imu mpu9250 */
+    mpu9250_init();
+    debug_log("mpu9250 初始化完成.\r\n");
+#endif
 
     /* step2: 启动任务 */
     s_task_flag = (TASK_GYRO | TASK_ACCEL | TASK_MAG);
@@ -168,4 +194,3 @@ static void clock_init(void)
 
     return;
 }
-
