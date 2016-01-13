@@ -15,6 +15,10 @@
 /* 消除中文打印警告 */
 #pragma  diag_suppress 870
 
+#define DATA_SIZE       (16)
+#define DATA_NUM        (1000)
+#define BUF_SIZE        ((DATA_SIZE) * (DATA_NUM))
+
 /************************************ 头文件 ***********************************/
 #include "config.h"
 #include "misc.h"
@@ -61,29 +65,28 @@ int main(void)
 #if 1
     HAL_Delay(1000); /* 1s等待 待稳定 */
 
-    static uint8_T buf[1024 * 12] = {0};
+    static uint8_T buf[BUF_SIZE] = {0};
     int i = 0;
     int j = 0;
+    uint32_T ms = 0;
     uint8_T *ptr = buf;
     while(1)
     {
-        /* gyro */
-        imu_read(0xD0, 0x43, buf + i, 6);
-        i += 6;
-
-        /* accel */
-        imu_read(0xD0, 0x3B, buf + i, 6);
-        i += 6; 
+        /* accel + gyro */
+        imu_read(0xD0, 0x3B, buf + i, 12); /**/
+        *(uint32_T *)buf = HAL_GetTick();
+        i += DATA_SIZE; 
         
         /* 研究 */
         //mpu_get_compass_reg(compass_i, time_stamp); 
 
-        if(i >= 1024 * 12)
+        if(i >= BUF_SIZE)
         {
             debug_log("data:\r\n");
-            for(j = 0 ; j < 1024*12; j+=12)
+            for(j = 0 ; j < BUF_SIZE; j+=DATA_SIZE)
             {
-                debug_log("0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\t0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\r\n",
+                debug_log("ms:% 9daccel:0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\tgyro: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\r\n", ms,
+                        *(uint32_T *)ptr[12],
                         ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5],
                         ptr[6], ptr[7], ptr[8], ptr[9], ptr[10], ptr[11]);
 
