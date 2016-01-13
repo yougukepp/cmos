@@ -59,16 +59,37 @@ int main(void)
     init();
 
 #if 1
-    static uint8_T buf[1024 * 10] = {0};
+    HAL_Delay(1000); /* 1s等待 待稳定 */
+
+    static uint8_T buf[1024 * 12] = {0};
     int i = 0;
+    int j = 0;
+    uint8_T *ptr = buf;
     while(1)
     {
-        imu_read(, , buf + i, 6);
+        /* gyro */
+        imu_read(0xD0, 0x43, buf + i, 6);
         i += 6;
 
+        /* accel */
+        imu_read(0xD0, 0x3B, buf + i, 6);
+        i += 6; 
+        
+        /* 研究 */
+        //mpu_get_compass_reg(compass_i, time_stamp); 
 
-        if(i >= 1024 * 10)
+        if(i >= 1024 * 12)
         {
+            debug_log("data:\r\n");
+            for(j = 0 ; j < 1024*12; j+=12)
+            {
+                debug_log("0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\t0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\r\n",
+                        ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5],
+                        ptr[6], ptr[7], ptr[8], ptr[9], ptr[10], ptr[11]);
+
+                ptr += 12;
+            }
+
             while(1);
         }
     }
