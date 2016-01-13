@@ -58,6 +58,22 @@ int main(void)
 {
     init();
 
+#if 1
+    static uint8_T buf[1024 * 10] = {0};
+    int i = 0;
+    while(1)
+    {
+        imu_read(, , buf + i, 6);
+        i += 6;
+
+
+        if(i >= 1024 * 10)
+        {
+            while(1);
+        }
+    }
+
+#else
     /* 每轮循环从优先级最高的开始逐个检查 */
     /* GYRO > ACCEL > MAG */
     /* IMU(MPU9250)数据 获取优先级最高 使用中断 */
@@ -80,6 +96,7 @@ int main(void)
             assert_failed(__FILE__, __LINE__);
         }
     }
+#endif
 }
 
 /* 初始化 */
@@ -111,7 +128,7 @@ static void init(void)
     debug_log("imu i2c 初始化完成.\r\n");
 
     /* bmp180 */
-#if 1
+#if 0
     unsigned char val = 0;
     int i = 0;
     int iMax = 0;
