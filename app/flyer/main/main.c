@@ -16,7 +16,7 @@
 #pragma  diag_suppress 870
 
 #define DATA_NUM        (1000)
-#define DATA_SIZE       (12)
+#define DATA_SIZE       (18)
 
 /************************************ 头文件 ***********************************/
 #include "config.h"
@@ -35,11 +35,11 @@
 static int32_T s_task_flag = 0;
 
 typedef struct{
-    uint32_T time;
+    uint32_T time1;
+    uint32_T time2;
+    uint32_T time3;
     uint8_T  data[DATA_SIZE];
-
     /* 磁力计需要单独读取 */
-    uint32_T time_compass;
     uint8_T  data_compass[3];
 }data_T;
 
@@ -68,7 +68,8 @@ static void clock_init(void);
 *
 ******************************************************************************/
 int main(void)
-{
+{ 
+    
     init();
 
 #if 1
@@ -78,18 +79,19 @@ int main(void)
     data_T data[DATA_NUM];
     for(i = 0; i < DATA_NUM; i++)
     {
-        /* accel + gyro */
-        imu_read(0xD0, 0x3B, data[i].data, DATA_SIZE);
         /* 时间 */
-        data[i].time = HAL_GetTick();
+        data[i].time1 = HAL_GetTick();
 
-#if 0
-        /* 研究 */
-        //mpu_get_compass_reg(compass_i, time_stamp); 
-        unsigned long *time = NULL;
+        /* accel + gyro */
+        imu_read(0xD0, 0x3B, data[i].data, 12);
+
+        data[i].time2 = HAL_GetTick();
+
+        /* mag 实现mag数据读取 */
+        //imu_read(0xD0, 0xXX, data[i].data + 12, 6);
         short compass[3] = {0};
-        mpu_get_compass_reg(compass, time); 
-#endif
+        mpu_get_compass_reg(compass, NULL); 
+        data[i].time3 = HAL_GetTick();
     } 
 
     float gyro_sens = 0.0f;
@@ -108,7 +110,7 @@ int main(void)
     
     for(i = 0; i < DATA_NUM; i++)
     { 
-        debug_log("time:%05d", data[i].time);
+        debug_log("time:%05d", data[i].time1);
 
         x_i = (data[i].data[0] << 8 | data[i].data[1]);
         y_i = (data[i].data[2] << 8 | data[i].data[3]);
