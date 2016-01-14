@@ -74,18 +74,15 @@ static void clock_init(void);
 * 其 它   : 获取MPU9250数据 中断中完成
 *
 ******************************************************************************/
+ static data_T data[DATA_NUM];
 int main(void)
 { 
-    
     init();
-
-    get_time();
 
 #if 1
     HAL_Delay(1000); /* 1s等待 待稳定 */
 
     int i = 0;
-    data_T data[DATA_NUM];
     for(i = 0; i < DATA_NUM; i++)
     {
         /* 时间 */
@@ -104,6 +101,7 @@ int main(void)
         mpu_get_compass_reg(compass, NULL); 
         data[i].time4 = HAL_GetTick();
     } 
+
 
     float gyro_sens = 0.0f;
     unsigned short accel_sens = 0;
@@ -245,6 +243,10 @@ static void init(void)
     /* imu mpu9250 */
     mpu9250_init();
     debug_log("mpu9250 初始化完成.\r\n");
+
+    /* 参数设置 */
+    get_time();
+    debug_log("参数设置完成.\r\n");
 #endif
 
     /* step2: 启动任务 */
