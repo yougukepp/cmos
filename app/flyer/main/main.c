@@ -39,13 +39,12 @@ uint32_T g_get_gyro_data_time = 0;
 static int32_T s_task_flag = 0;
 
 typedef struct{
-    uint32_T time1;
-    uint32_T time2;
-    uint32_T time3;
-    uint32_T time4;
-    uint8_T  data[DATA_SIZE];
-    /* 磁力计需要单独读取 */
-    uint8_T  data_compass[3];
+    unsigned long time1;
+    unsigned long time2;
+    unsigned long time3;
+    float accel[3];
+    float gyro[3];
+    float compass[3];
 }data_T;
 
 /********************************** 函数声明区 *********************************/
@@ -57,6 +56,10 @@ static void task_mag(void);
 static void get_time(void);
 
 static void clock_init(void);
+
+static void get_gyro(float *gyro, unsigned long *time_stamp);
+static void get_accel(float *accel, unsigned long *time_stamp);
+static void get_compass(float *compass, unsigned long *time_stamp);
 
 /********************************** 函数实现区 *********************************/
 /*******************************************************************************
@@ -74,14 +77,27 @@ static void clock_init(void);
 * 其 它   : 获取MPU9250数据 中断中完成
 *
 ******************************************************************************/
- static data_T data[DATA_NUM];
+static data_T data[DATA_NUM];
 int main(void)
 { 
     init();
 
-#if 1
-    HAL_Delay(1000); /* 1s等待 待稳定 */
+    int i = 0;
+    for(i = 0; i < DATA_NUM; i++)
+    { 
+        get_gyro(data[i].gyro, &data[i].time1);
+        get_accel(data[i].accel, &data[i].time2);
+        get_compass(data[i].compass, &data[i].time3);
 
+        debug_log("accel  :% 5ld,%7.4f,%7.4f,%7.4f\r\n", data[i].time1, data[i].accel[0], data[i].accel[1], data[i].accel[2]);
+        debug_log("gyro   :% 5ld,%7.4f,%7.4f,%7.4f\r\n", data[i].time2, data[i].gyro[0], data[i].gyro[1], data[i].gyro[2]);
+        debug_log("compass:% 5ld,%7.4f,%7.4f,%7.4f\r\n", data[i].time2, data[i].compass[0], data[i].compass[1], data[i].compass[2]);
+        debug_log("\r\n");
+        HAL_Delay(1000);
+    }
+
+#if 0
+#if 1
     int i = 0;
     for(i = 0; i < DATA_NUM; i++)
     {
@@ -97,9 +113,9 @@ int main(void)
 
         /* mag 实现mag数据读取 */
         //imu_read(MPU9250_DEV_ADDR, 0xXX, data[i].data + 12, 6);
-        short compass[3] = {0};
-        mpu_get_compass_reg(compass, NULL); 
-        data[i].time4 = HAL_GetTick();
+        //short compass[3] = {0};
+        //mpu_get_compass_reg(compass, NULL); 
+        //data[i].time4 = HAL_GetTick();
     } 
 
 
@@ -157,6 +173,8 @@ int main(void)
 
         debug_log("\r\n");
     } 
+    
+    debug_log("sens:%7.4f, %d\r\n", gyro_sens, accel_sens);
 
     while(1);
 
@@ -183,6 +201,7 @@ int main(void)
             assert_failed(__FILE__, __LINE__);
         }
     }
+#endif
 #endif
 }
 
@@ -337,3 +356,40 @@ static void get_time(void)
     g_get_gyro_data_time = get_accel_gyro_time(MPU9250_GYRO_DATA_ADDR);
 }
 
+static void get_gyro(float *gyro, unsigned long *time_stamp)
+{ 
+    short gyro_i[3] = {0};
+    float sens = 0;
+
+    mpu_get_gyro_reg(gyro_i, time_stamp);
+    mpu_get_gyro_sens(&sens);
+    for(int i=0;i<3;i++)
+    {
+        gyro[i] = gyro_i[i] / sens;
+    }
+}
+
+static void get_accel(float *accel, unsigned long *time_stamp)
+{
+    short accel_i[3] = {0};
+    unsigned short sens = 0;
+
+    mpu_get_accel_reg(accel_i, time_stamp);
+    mpu_get_accel_sens(&sens);
+    for(int i=0;i<3;i++)
+    {
+        accel[i] = 1.0 * accel_i[i] / sens;
+    }
+}
+
+static void get_compass(float *compass, unsigned long *time_stamp)
+{ 
+    short compass_i[3] = {0};
+
+    mpu_get_compass_reg(compass_i, time_stamp); 
+
+    for(int i=0;i<3;i++)
+    {
+        compass[i] = 1.0 * compass_i[i];
+    }
+}
