@@ -17,6 +17,7 @@
 
 #define DATA_NUM        (1000)
 #define DATA_SIZE       (18)
+#define GET_TIME_TIMES  (1000)
 
 /************************************ 头文件 ***********************************/
 #include "config.h"
@@ -31,13 +32,17 @@
 
 /*----------------------------------- 声明区 ----------------------------------*/
 
-/********************************** 变量声明区 *********************************/
+/********************************** 变量声明区 *********************************/ 
+uint32_T g_get_accel_data_time = 0;
+uint32_T g_get_gyro_data_time = 0;
+
 static int32_T s_task_flag = 0;
 
 typedef struct{
     uint32_T time1;
     uint32_T time2;
     uint32_T time3;
+    uint32_T time4;
     uint8_T  data[DATA_SIZE];
     /* 磁力计需要单独读取 */
     uint8_T  data_compass[3];
@@ -48,6 +53,8 @@ static void init(void);
 static void task_gyro(void);
 static void task_accel(void);
 static void task_mag(void);
+
+static void get_time(void);
 
 static void clock_init(void);
 
@@ -72,6 +79,8 @@ int main(void)
     
     init();
 
+    get_time();
+
 #if 1
     HAL_Delay(1000); /* 1s等待 待稳定 */
 
@@ -81,17 +90,19 @@ int main(void)
     {
         /* 时间 */
         data[i].time1 = HAL_GetTick();
-
-        /* accel + gyro */
-        imu_read(0xD0, 0x3B, data[i].data, 12);
-
+        /* accel */
+        imu_read(MPU9250_DEV_ADDR, MPU9250_ACCEL_DATA_ADDR, data[i].data, 6);
         data[i].time2 = HAL_GetTick();
 
+        /* gyro */
+        imu_read(MPU9250_DEV_ADDR, MPU9250_GYRO_DATA_ADDR, data[i].data, 6);
+        data[i].time3 = HAL_GetTick();
+
         /* mag 实现mag数据读取 */
-        //imu_read(0xD0, 0xXX, data[i].data + 12, 6);
+        //imu_read(MPU9250_DEV_ADDR, 0xXX, data[i].data + 12, 6);
         short compass[3] = {0};
         mpu_get_compass_reg(compass, NULL); 
-        data[i].time3 = HAL_GetTick();
+        data[i].time4 = HAL_GetTick();
     } 
 
     float gyro_sens = 0.0f;
@@ -110,7 +121,7 @@ int main(void)
     
     for(i = 0; i < DATA_NUM; i++)
     { 
-        debug_log("time:%05d", data[i].time1);
+        debug_log("time:%05d,%05d,%05d,%05d\r\n", data[i].time1, data[i].time2, data[i].time3, data[i].time4);
 
         x_i = (data[i].data[0] << 8 | data[i].data[1]);
         y_i = (data[i].data[2] << 8 | data[i].data[3]);
@@ -289,3 +300,38 @@ static void clock_init(void)
 
     return;
 }
+
+/* TODO:使用中断测试延迟 */
+static uint32_T get_accel_gyro_time(uint8_T addr)
+{
+    uint32_T start = 0;
+    uint32_T end = 0;
+    uint32_T max = 0;
+    uint8_T  buf[6];
+
+    int i = 0;
+    for(i = 0; i< GET_TIME_TIMES; i++)
+    {
+        /* 时间 */
+        start = HAL_GetTick();
+
+        /* accel */
+        imu_read(MPU9250_DEV_ADDR, addr, buf, 6);
+
+        end = HAL_GetTick();
+
+        if(max < end - start)
+        {
+            max = end - start;
+        }
+    }
+
+    return max;
+}
+
+static void get_time(void)
+{ 
+    g_get_accel_data_time = get_accel_gyro_time(MPU9250_ACCEL_DATA_ADDR);
+    g_get_gyro_data_time = get_accel_gyro_time(MPU9250_GYRO_DATA_ADDR);
+}
+
