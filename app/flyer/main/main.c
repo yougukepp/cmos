@@ -25,6 +25,7 @@
 #include "imu.h"
 #include "mpu9250.h"
 #include "main.h"
+#include "inv_mpu.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_conf.h"
 
@@ -39,7 +40,7 @@ typedef struct{
 
     /* 磁力计需要单独读取 */
     uint32_T time_compass;
-    uint8_T  data[3];
+    uint8_T  data_compass[3];
 }data_T;
 
 /********************************** 函数声明区 *********************************/

@@ -22,5 +22,17 @@ app/flyer/algorithm/*.exe
 app/flyer/algorithm/test
 
 app/flyer/doc/latex/fig/*.pdf
-app/flyer/doc/latex/*.pdf
+app/flyer/doc/latex/*.pdf 
+
+app/flyer/main/flyer.IAB
+app/flyer/main/flyer.IAD
+app/flyer/main/flyer.IMB
+app/flyer/main/flyer.IMD
+app/flyer/main/flyer.PFI
+app/flyer/main/flyer.PO
+app/flyer/main/flyer.PR
+app/flyer/main/flyer.PRI
+app/flyer/main/flyer.PS
+app/flyer/main/flyer.SearchResults
+app/flyer/main/flyer.WK3
 
