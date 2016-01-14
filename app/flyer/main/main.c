@@ -36,6 +36,10 @@ static int32_T s_task_flag = 0;
 typedef struct{
     uint32_T time;
     uint8_T  data[DATA_SIZE];
+
+    /* 磁力计需要单独读取 */
+    uint32_T time_compass;
+    uint8_T  data[3];
 }data_T;
 
 /********************************** 函数声明区 *********************************/
@@ -75,19 +79,56 @@ int main(void)
     {
         /* accel + gyro */
         imu_read(0xD0, 0x3B, data[i].data, DATA_SIZE);
-
-        /* 研究 */
-        //mpu_get_compass_reg(compass_i, time_stamp); 
-
         /* 时间 */
         data[i].time = HAL_GetTick();
 
+#if 0
+        /* 研究 */
+        //mpu_get_compass_reg(compass_i, time_stamp); 
+        unsigned long *time = NULL;
+        short compass[3] = {0};
+        mpu_get_compass_reg(compass, time); 
+#endif
     } 
+
+    float gyro_sens = 0.0f;
+    unsigned short accel_sens = 0;
+
+    int x_i = 0;
+    int y_i = 0;
+    int z_i = 0;
+
+    float x = 0;
+    float y = 0;
+    float z = 0; 
+
+    mpu_get_gyro_sens(&gyro_sens);
+    mpu_get_accel_sens(&accel_sens);
     
     for(i = 0; i < DATA_NUM; i++)
-    {
+    { 
         debug_log("time:%05d", data[i].time);
-        debug_log("accel:0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\t", 
+
+        x_i = (data[i].data[0] << 8 | data[i].data[1]);
+        y_i = (data[i].data[2] << 8 | data[i].data[3]);
+        z_i = (data[i].data[4] << 8 | data[i].data[5]);
+
+        x = x_i / gyro_sens;
+        y = y_i / gyro_sens;
+        z = z_i / gyro_sens;
+
+        debug_log("accel:%7.4f,%7.4f,%7.4f,", x, y, z);
+
+        x_i = (data[i].data[6] << 8 | data[i].data[7]);
+        y_i = (data[i].data[8] << 8 | data[i].data[9]);
+        z_i = (data[i].data[10] << 8 | data[i].data[11]);
+
+        x = 1.0 * x_i / accel_sens;
+        y = 1.0 * y_i / accel_sens;
+        z = 1.0 * z_i / accel_sens;
+        debug_log("gyro:%7.4f,%7.4f,%7.4f\r\n", x, y, z);
+
+        debug_log("accel:0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,", 
                 data[i].data[0],
                 data[i].data[1],
                 data[i].data[2],
@@ -101,6 +142,8 @@ int main(void)
                 data[i].data[9],
                 data[i].data[10],
                 data[i].data[11]);
+
+        debug_log("\r\n");
     } 
 
     while(1);
