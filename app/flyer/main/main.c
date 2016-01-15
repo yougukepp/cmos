@@ -40,8 +40,6 @@ f32_T    g_gyro_sens = 0.0f;
 uint16_T g_sample_rate = 0;
 uint16_T g_compass_sample_rate = 0;
 
-static int32_T s_task_flag = 0;
-
 typedef struct{
     unsigned long time1;
     unsigned long time2;
@@ -62,9 +60,12 @@ typedef struct{
 
 /********************************** 函数声明区 *********************************/
 static void init(void);
+
+#if 0
 static void task_gyro(void);
 static void task_accel(void);
 static void task_mag(void);
+#endif
 
 static void set_config(void);
 
@@ -94,7 +95,7 @@ static void get_compass(float *compass, unsigned long *time_stamp);
 *
 ******************************************************************************/
 static data_real_T data_real[DATA_NUM];
-static data_T data[DATA_NUM];
+//static data_T data[DATA_NUM];
 int main(void)
 { 
     init();
@@ -335,9 +336,10 @@ static void init(void)
 #endif
 
     /* step2: 启动任务 */
-    s_task_flag = (TASK_GYRO | TASK_ACCEL | TASK_MAG);
+    //s_task_flag = (TASK_GYRO | TASK_ACCEL | TASK_MAG);
 }
 
+#if 0
 /* 陀螺仪融合 */
 static void task_gyro(void)
 {}
@@ -349,6 +351,7 @@ static void task_accel(void)
 /* 磁场融合 */
 static void task_mag(void)
 {}
+#endif
 
 static void clock_init(void)
 {
@@ -418,10 +421,8 @@ static uint32_T get_accel_gyro_time(uint8_T addr)
 
 static void set_config(void)
 { 
-#if 0
     g_get_accel_data_time = get_accel_gyro_time(MPU9250_ACCEL_DATA_ADDR);
     g_get_gyro_data_time = get_accel_gyro_time(MPU9250_GYRO_DATA_ADDR);
-#endif
 
     g_accel_sens = get_accel_sens();
     g_gyro_sens = get_gyro_sens();

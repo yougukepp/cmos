@@ -77,6 +77,12 @@ void imu_write_poll(uint8_T dev_addr, uint16_T reg_addr, const uint8_T *buf, uin
     return;
 }
 
+void imu_read(uint8_T dev_addr, uint16_T reg_offset, uint8_T *buf, uint32_T n)
+{}
+
+void imu_write(uint8_T dev_addr, uint16_T reg_offset, const uint8_T *buf, uint32_T n)
+{}
+
 #if 0
 /* 中断相关代码作为前台 移入main */
 void I2C3_EV_IRQHandler(void)
