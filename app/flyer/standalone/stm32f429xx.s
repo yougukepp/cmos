@@ -137,7 +137,7 @@ __Vectors       DCD     __initial_sp            ; Top of Stack
                 DCD     0                       ; DMA2 Stream 6
                 DCD     0                       ; DMA2 Stream 7
                 DCD     0                       ; USART6
-                DCD     0                       ; I2C3 event
+                DCD     I2C3_EV_IRQHandler      ; I2C3 event
                 DCD     0                       ; I2C3 error
                 DCD     0                       ; USB OTG HS End Point 1 Out
                 DCD     0                       ; USB OTG HS End Point 1 In
@@ -223,6 +223,11 @@ UART1_IRQHandler PROC
                 B       .
                 ENDP
 
+; IMU I2C读取代码
+I2C3_EV_IRQHandler PROC
+                EXPORT  I2C3_EV_IRQHandler [WEAK]
+                B       .
+                ENDP
 
                 ALIGN
 

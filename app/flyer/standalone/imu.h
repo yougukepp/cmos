@@ -31,7 +31,12 @@ void imu_read_poll(uint8_T dev_addr, uint16_T reg_offset, uint8_T *buf, uint32_T
 void imu_write_poll(uint8_T dev_addr, uint16_T reg_offset, const uint8_T *buf, uint32_T n);
 
 void imu_read(uint8_T dev_addr, uint16_T reg_offset, uint8_T *buf, uint32_T n);
+uint32_T get_imu_read_max(void);
+
+/* 不使用中断写 */
+#if 0
 void imu_write(uint8_T dev_addr, uint16_T reg_offset, const uint8_T *buf, uint32_T n);
+#endif
 
 #endif
 

@@ -416,6 +416,12 @@ static uint32_T get_accel_gyro_time(uint8_T addr)
         }
     }
 
+#if 1
+    imu_read(MPU9250_DEV_ADDR, addr, buf, 6); 
+    mpu9250_delay_ms(1000); /* 延迟 */
+    max = get_imu_read_max(); 
+#endif
+
     return max;
 }
 
@@ -490,4 +496,5 @@ static void get_compass(float *compass, unsigned long *time_stamp)
         compass[i] = 1.0 * compass_i[i];
     }
 }
+
 
