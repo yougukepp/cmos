@@ -27,6 +27,7 @@
 #include "mpu9250.h"
 #include "main.h"
 #include "inv_mpu.h"
+#include "fusion.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_conf.h"
 
@@ -339,20 +340,6 @@ static void init(void)
     //s_task_flag = (TASK_GYRO | TASK_ACCEL | TASK_MAG);
 }
 
-#if 0
-/* 陀螺仪融合 */
-static void task_gyro(void)
-{}
-
-/* 加计融合 */
-static void task_accel(void)
-{}
-
-/* 磁场融合 */
-static void task_mag(void)
-{}
-#endif
-
 static void clock_init(void)
 {
     RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -419,7 +406,7 @@ static uint32_T get_accel_gyro_time(uint8_T addr)
 #if 0
     imu_read(MPU9250_DEV_ADDR, addr, buf, 6); 
     mpu9250_delay_ms(1000); /* 延迟 */
-    max = get_imu_read_max(); 
+    max = imu_read_max(); 
 #endif
 
     return max;

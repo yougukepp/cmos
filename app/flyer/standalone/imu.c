@@ -136,8 +136,19 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
     imu_read(s_dev_addr, s_reg_addr, s_buf, s_n);
 }
 
-inline uint32_T get_imu_read_max(void)
+inline uint32_T imu_read_max(void)
 {
     return s_max;
+}
+
+bool_T imu_get_gyro(f32_T *gyro, uint32_T *time)
+{
+    gyro[0] = 0.1f;
+    gyro[1] = 0.2f;
+    gyro[2] = 0.3f;
+
+    *time = 33;
+
+    return TRUE;
 }
 
