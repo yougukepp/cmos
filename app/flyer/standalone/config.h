@@ -28,6 +28,13 @@
 /* 2: 输出trace_log */
 #define DEBUG_LEVEL                                         (1)
 
+/* 每秒钟 systick中断数 默认1ms */
+#define SLICE_PER_SECONDS                                   (1000)
+/* 每秒钟 systick中断数 默认0.1ms */
+//#define SLICE_PER_SECONDS                                   (10000)
+/* 每ms秒 systick中断数 */
+#define SLICE_PER_MSECONDS                                  (SLICE_PER_SECONDS / 1000)
+
 /* printf缓存 */
 #define PRINTF_BUF_SIZE                                     (256)
 

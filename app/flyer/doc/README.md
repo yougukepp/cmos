@@ -9,11 +9,9 @@
 
 ## 工作计划
 ### STM飞控框架
-1. 改采样率
-2. 磁力计 I2C裸读
-3. accel gyro compass裸读时间
-4. accel gyro compass中断读时间
-
+1. 磁力计 I2C裸读
+2. accel gyro compass裸读时间
+3. accel gyro compass中断读时间
 
 3线程:
 a. 读取MPU9250数据      数据缓存

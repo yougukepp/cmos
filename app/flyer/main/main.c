@@ -274,6 +274,12 @@ static void init(void)
         while(1);
     }
 
+    /* systick频率 */
+    if( 0!= HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/SLICE_PER_SECONDS))
+    {
+        while(1);
+    }
+
     /* HAL_Init 执行后才可以使用 */
     /* 时钟配置 180M */
     clock_init();
@@ -397,7 +403,7 @@ static uint32_T get_accel_gyro_time(uint8_T addr)
         start = HAL_GetTick();
 
         /* accel */
-        imu_read(MPU9250_DEV_ADDR, addr, buf, 6);
+        imu_read_poll(MPU9250_DEV_ADDR, addr, buf, 6);
 
         end = HAL_GetTick();
 

@@ -58,7 +58,7 @@ inline int mpu9250_read_buf(unsigned char dev_addr,
 {
     uint8_T dev_addr_real = addr_convert(dev_addr);
    
-    imu_read(dev_addr_real, reg_addr, buf, buf_len);
+    imu_read_poll(dev_addr_real, reg_addr, buf, buf_len);
 
     return 0;
 }
@@ -90,7 +90,7 @@ inline int mpu9250_write_buf(unsigned char dev_addr,
 {
     uint8_T dev_addr_real = addr_convert(dev_addr);
 
-    imu_write(dev_addr_real, reg_addr, buf, buf_len);
+    imu_write_poll(dev_addr_real, reg_addr, buf, buf_len);
 
     return 0;
 }
@@ -133,7 +133,7 @@ inline int mpu9250_get_ms(unsigned long *count)
 ******************************************************************************/
 inline void mpu9250_delay_ms(unsigned int ms)
 {
-    HAL_Delay(ms);
+    HAL_Delay(ms * SLICE_PER_MSECONDS);
 }
 
 /*******************************************************************************

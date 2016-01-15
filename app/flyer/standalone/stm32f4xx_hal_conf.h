@@ -92,14 +92,12 @@
 #define  INSTRUCTION_CACHE_ENABLE     1
 #define  DATA_CACHE_ENABLE            1
 
-/* Fault 0 > SVC 1 > SysTick 2 > UART|I2C|SPI等外设 3 > PendSV 15 */
+/* Fault 0 > UART|I2C|SPI等外设 1 > SysTick 2 */
 #define  MEM_INT_PRIORITY             ((uint32_t)0) /* Memory Management 中断优先级 */
 #define  BUS_INT_PRIORITY             ((uint32_t)0) /* Bus Fault 中断优先级 */
 #define  USAGE_INT_PRIORITY           ((uint32_t)0) /* Usage Fault 中断优先级 */
-#define  SVC_INT_PRIORITY             ((uint32_t)1) /* 系统调用中断优先级 */
+#define  PER_INT_PRIORITY             ((uint32_t)1) /* UART|I2C灯外设的中断的优先级 */
 #define  TICK_INT_PRIORITY            ((uint32_t)2) /* SysTick 中断优先级 */
-#define  PER_INT_PRIORITY             ((uint32_t)3) /* UART|I2C灯外设的中断的优先级 */
-#define  PENDSV_INT_PRIORITY          ((uint32_t)15)/* 任务切换优先级 最低级别保证不会延迟其他中断 以免deadline违反 */
 
 /* include头文件 */
 #ifdef HAL_RCC_MODULE_ENABLED
