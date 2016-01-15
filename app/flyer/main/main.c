@@ -416,7 +416,7 @@ static uint32_T get_accel_gyro_time(uint8_T addr)
         }
     }
 
-#if 1
+#if 0
     imu_read(MPU9250_DEV_ADDR, addr, buf, 6); 
     mpu9250_delay_ms(1000); /* 延迟 */
     max = get_imu_read_max(); 

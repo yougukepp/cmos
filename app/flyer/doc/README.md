@@ -14,6 +14,9 @@
 3. accel gyro compass中断读整理 冗余
 4. accel gyro compass中断读时间
 
+5. 融合算法时间(三种)
+6. pid算法时间
+
 3线程:
 a. 读取MPU9250数据      数据缓存
 b. 姿态融合             四元数
