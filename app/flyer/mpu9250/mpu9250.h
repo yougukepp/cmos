@@ -25,6 +25,9 @@
 #define MPU9250_DEV_ADDR                    (0xD0)
 #define MPU9250_ACCEL_DATA_ADDR             (0x3B)
 #define MPU9250_GYRO_DATA_ADDR              (0x43)
+#define MPU9250_ACCEL_FSR                   (2)
+#define MPU9250_GYRO_FSR                    (2000)
+#define MPU9250_SAMPLE_RATE                 (1000)
 
 /*--------------------------------- 接口声明区 --------------------------------*/
 

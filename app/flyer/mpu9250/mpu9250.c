@@ -176,17 +176,25 @@ void mpu9250_init(void)
         return;
     }
     debug_log("设置陀螺仪量程...\r\n");
-    if (mpu_set_gyro_fsr(2000)!=0)
+    if (mpu_set_gyro_fsr(MPU9250_GYRO_FSR)!=0)
     {
         debug_log("设置陀螺仪量程失败.\r\n");
         return;
     }
     debug_log("设置加速度计量程...\r\n");
-    if (mpu_set_accel_fsr(2)!=0)
+    if (mpu_set_accel_fsr(MPU9250_ACCEL_FSR)!=0)
     {
         debug_log("设置加速度计量程失败.\r\n");
         return;
     }
+#if 0
+    debug_log("设置采样率...\r\n");
+    if(mpu_set_sample_rate(MPU9250_SAMPLE_RATE) !=0)
+    {
+        debug_log("设置采样率失败.\r\n");
+        return;
+    }
+#endif
     debug_log("MPU上电...\r\n");
     mpu_get_power_state(&dev_status);
     debug_log("MPU9250 上电%s", dev_status? "成功!\r\n" : "失败!\r\n");

@@ -46,6 +46,7 @@ typedef short               int16_T;
 typedef int                 int32_T;
 typedef long long           int64_T;
 typedef unsigned char       bool_T;
+typedef float               f32_T;
 typedef void(*func_T)       (void *argv);
 
 /*--------------------------------- 接口声明区 --------------------------------*/
