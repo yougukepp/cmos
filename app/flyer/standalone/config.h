@@ -43,6 +43,7 @@
 
 /* imu i2c 速率 */
 #define IMU_RATE                                            (100000)
+//#define IMU_RATE                                            (400000)
 
 /* 阻塞发送串口数据超时参数 */ 
 #define UART_TIMEOUT_DIV                                    (1)

@@ -9,6 +9,7 @@
 
 ## 工作计划
 ### STM飞控框架
+0. I2C使用400kHz
 1. 磁力计 I2C裸读代码整出
 2. accel gyro compass裸读时间
 3. accel gyro compass中断读整理 冗余
